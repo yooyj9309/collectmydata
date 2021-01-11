@@ -1,0 +1,42 @@
+plugins {
+	id 'java'
+}
+
+group 'com.banksalad.collectmydata'
+version '1.0-SNAPSHOT'
+
+repositories {
+	mavenCentral()
+}
+ext {
+	// Do not update spring boot version as 2.3.1 (micrometer timer is not working)
+	springBootVersion = "2.2.8.RELEASE"
+	grpcVersion = "1.30.2"
+	apacheCommonsVersion = "3.10"
+	slf4jVersion = "1.7.30"
+	logbackVersion = "1.2.3"
+	lombokVersion = "1.18.12"
+}
+
+dependencies {
+	// grpc
+	implementation("io.grpc:grpc-context:${grpcVersion}")
+
+	// apache commons
+	implementation("org.apache.commons:commons-lang3:${apacheCommonsVersion}")
+
+	// log
+	implementation("org.slf4j:slf4j-api:${slf4jVersion}")
+	implementation("org.slf4j:jcl-over-slf4j:${slf4jVersion}")
+	implementation("ch.qos.logback:logback-classic:${logbackVersion}")
+
+	// logback json
+	implementation("ch.qos.logback.contrib:logback-json-classic:0.1.5")
+	implementation("ch.qos.logback.contrib:logback-jackson:0.1.5")
+
+	// lombok
+	compileOnly("org.projectlombok:lombok:${lombokVersion}")
+	annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+
+	testCompile group: 'junit', name: 'junit', version: '4.12'
+}

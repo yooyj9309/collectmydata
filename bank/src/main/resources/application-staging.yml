@@ -1,0 +1,52 @@
+spring:
+  profiles:
+    active: staging
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.MySQLDialect
+        default_batch_fetch_size: 100
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:mysql://collectbank-cluster.cluster-ciy3wcu0axct.ap-northeast-2.rds.amazonaws.com:3306/collectbank?useSSL=false&useUnicode=true&allowPublicKeyRetrieval=true
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: developer
+    password: ${DEVELOPMENT_COLLECTMYDATA_BANK_DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 20
+      connection-timeout: 5000
+      validation-timeout: 4000
+      max-lifetime: 60000
+      minimum-idle: 10
+      idle-timeout: 54000
+    type: com.zaxxer.hikari.HikariDataSource
+
+logging:
+  level:
+    com.zaxxer.hikari.HikariConfig: INFO
+    com.zaxxer.hikari: INFO
+    org.hibernate.SQL: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: INFO
+
+connect-server:
+  target: dns:///connect-headless:18081
+
+bank:
+  wooribank:
+    organizationId: wooribank
+    objectId: 596d666a2c4069c168b57d19
+    host: https://topenapi.wooribank.com
+    secret: ${DEVELOPMENT_WOORIBANK_CLIENT_SECRET}
+    clientId: ${DEVELOPMENT_WOORIBANK_CLIENT_ID}
+    partnerCode: 8MOPN002
+
+  kbkookminbank:
+    organizationId: kbkookminbank
+    objectId: 596d666a2c4069c168b57cfb
+    host: https://dev-openapi.kbstar.com:8443
+    secret: ${DEVELOPMENT_KBKOOKMINBANK_CLIENT_SECRET}
+    clientId: ${DEVELOPMENT_KBKOOKMINBANK_CLIENT_ID}

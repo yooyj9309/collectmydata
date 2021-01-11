@@ -1,0 +1,8 @@
+rootProject.name = 'collectmydata'
+include ":common",
+        ":bank",
+        ":capital",
+        ":card",
+        ":efin",
+        ":insu",
+        ":invest"
