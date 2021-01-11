@@ -1,8 +1,10 @@
 rootProject.name = 'collectmydata'
 include ":common",
         ":bank",
+        ":connect",
         ":capital",
         ":card",
         ":efin",
         ":insu",
-        ":invest"
+        ":invest",
+        ":oauth"
