@@ -45,13 +45,6 @@ ext {
     micrometerVersion = "1.6.2"
     apacheCommonsVersion = "3.10"
     json_path_version = "2.4.0"
-    awsSdkVersion = "2.14.21"
-}
-
-dependencyManagement {
-    imports {
-        mavenBom "software.amazon.awssdk:bom:${awsSdkVersion}"
-    }
 }
 
 dependencies {
@@ -62,8 +55,8 @@ dependencies {
 
     // spring
     implementation("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
     implementation("org.springframework.boot:spring-boot-starter-webflux:${springBootVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
 
     // armeria
     implementation platform("com.linecorp.armeria:armeria-bom:${armeriaVersion}")
@@ -92,12 +85,6 @@ dependencies {
 
     // apache commons
     implementation("org.apache.commons:commons-lang3:${apacheCommonsVersion}")
-
-    // DB
-    implementation("org.mariadb.jdbc:mariadb-java-client:2.6.0")
-
-    // AWS
-    implementation("software.amazon.awssdk:kms:2.14.21")
 
     // log
     implementation("org.slf4j:slf4j-api:${slf4jVersion}")

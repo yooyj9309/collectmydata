@@ -1,0 +1,12 @@
+<html lang="ko"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/">
+
+
+<div th:fragment="resource(file)">
+    <script src="https://cdn.banksalad.com/resources/protocol/protocol.min.js"></script>
+    <script src="/lib/jquery/jquery-3.4.1.min.js"></script>
+    <script th:src="'/app/'+${file}+'.js'"></script>
+</div>
+
+</html>

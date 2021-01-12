@@ -1,0 +1,65 @@
+<html lang="ko"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>로딩중...</title>
+    <link rel="stylesheet" href="https://cdn.banksalad.com/resources/css/reset.app.min.css">
+    <style>
+        html,
+        body,
+        .wrap,
+        .content {
+            width: 100%;
+            height: 100%;
+        }
+        .wrap {
+            display: table;
+            padding: 16px;
+            table-layout: fixed;
+        }
+        .image {
+            max-width: 100%;
+            vertical-align: top;
+        }
+        .content {
+            display: table-cell;
+            vertical-align: middle;
+            font-size: 16px;
+            text-align: center;
+        }
+        .description {
+            display: block;
+            margin: 20px auto 0;
+            color: #7b7b7b;
+        }
+        .link {
+            display: inline-block;
+            margin: 10px 0 0;
+            padding: 20px 8px 16px;
+            min-width: 150px;
+            max-width: 150px;
+            border-radius: 4px;
+            background: #2cb783;
+            color: #fff;
+            line-height: 1.25;
+        }
+    </style>
+</head>
+
+
+<body>
+<div class="wrap">
+    <div class="content">
+        <img src="/png/image_redirect_94x109.png" alt="로딩중..." class="image">
+        <p id="description" class="description">로딩중</p>
+    </div>
+</div>
+
+
+<input id="redirectUrl" type="hidden" th:value="${redirectUrl}">
+<div th:replace="fragment/resource :: resource('redirect')"></div>
+</body>
+</html>
