@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.oauth.common;
+package com.banksalad.collectmydata.oauth.common.config;
 
 import org.springframework.context.annotation.Configuration;
 

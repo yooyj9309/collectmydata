@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    active: local
+  application:
+    name: mydata-oauth
+
+organization:
+  mydata-client-id: tmp

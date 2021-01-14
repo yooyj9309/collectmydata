@@ -1,0 +1,11 @@
+spring:
+  profiles:
+    active: local
+  application:
+    name: mydata-oauth
+
+logging:
+  config: classpath:logback/logback-${spring.profiles.active}.xml
+
+organization:
+  mydata-client-id: tmp
