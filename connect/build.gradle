@@ -124,6 +124,9 @@ dependencies {
 
     testCompile("org.projectlombok:lombok:${lombokVersion}")
     testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+
+    // temp dependency for dev
+    implementation("com.h2database:h2")
 }
 
 test {
