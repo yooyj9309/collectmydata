@@ -25,7 +25,7 @@ public class ExceptionController {
     message.append((e.getReason()));
     log.error("ServerWebInputException occurs : {}  , Exception message : {}", message, e.getMessage(), e);
 
-    setView(model);
+    setViewModel(model);
     return "pages/error";
   }
   
@@ -37,8 +37,8 @@ public class ExceptionController {
       message.append(" \n");
     }
     log.error("WebExchangeBindException occurs : {}  , Exception message : {}", message, e.getMessage(), e);
-    
-    setView(model);
+
+    setViewModel(model);
     return "pages/error";
   }
 
