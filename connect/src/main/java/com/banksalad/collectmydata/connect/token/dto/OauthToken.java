@@ -10,7 +10,7 @@ import java.util.List;
 @Builder
 public class OauthToken {
 
-  private String accessToken;
-  private String refreshToken;
-  private List<String> scopes = new ArrayList<>();
+  private final String accessToken;
+  private final String refreshToken;
+  private final List<String> scopes;
 }
