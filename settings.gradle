@@ -5,7 +5,8 @@ include ":common"
 
 // common service
 include ":connect",
-        ":oauth"
+        ":oauth",
+        ":schedule"
 
 // industry service
 include ":bank",
