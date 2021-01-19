@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ControllerAdvice
-public class ExceptionController {
+public class ExceptionControllerAdvice {
 
   //TODO client와 협의 후, 변경해야할 부분
   private String DEEP_LINK = "banksalad://webview?url=https%3A%2F%2Fsupport.banksalad.com%2Fhc%2Fko%2Farticles%2F360047387994&aos-need-custom-tab=true&ios-present-config=present&title=%EA%B3%B5%EC%A7%80%EC%82%AC%ED%95%AD";
@@ -28,7 +28,7 @@ public class ExceptionController {
     setViewModel(model);
     return "pages/error";
   }
-  
+
   @ExceptionHandler
   public String bindException(WebExchangeBindException e, Model model) {
     StringBuilder message = new StringBuilder();

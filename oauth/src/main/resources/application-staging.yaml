@@ -3,6 +3,8 @@ spring:
     active: staging
   application:
     name: mydata-oauth
-
+  redis:
+    host: something
+    port: 6379
 organization:
   mydata-client-id: tmp

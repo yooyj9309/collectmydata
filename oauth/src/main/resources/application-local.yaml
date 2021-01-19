@@ -3,6 +3,9 @@ spring:
     active: local
   application:
     name: mydata-oauth
+  redis:
+    host: localhost
+    port: 6379
 
 organization:
   mydata-client-id: tmp
