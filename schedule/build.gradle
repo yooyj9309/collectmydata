@@ -71,7 +71,6 @@ dependencies {
     implementation("com.linecorp.armeria:armeria-spring-boot2-webflux-starter:${armeriaVersion}")
     implementation("com.linecorp.armeria:armeria-grpc:${armeriaVersion}")
 
-
     // grpc
     implementation("io.grpc:grpc-context:${grpcVersion}")
     implementation("io.grpc:grpc-api:${grpcVersion}")
@@ -110,6 +109,9 @@ dependencies {
     // application monitoring
     implementation("io.micrometer:micrometer-core:${micrometerVersion}")
     implementation("io.micrometer:micrometer-registry-statsd:${micrometerVersion}")
+
+    // kafka
+    implementation("org.springframework.kafka:spring-kafka")
 
     //test
     testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}") {
