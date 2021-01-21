@@ -5,20 +5,20 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
-import com.banksalad.collectmydata.schedule.common.db.entity.SyncEntity;
+import com.banksalad.collectmydata.schedule.common.db.entity.ScheduledSync;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SyncKafkaTemplate implements SyncTemplate {
+public class ScheduledSyncKafkaTemplate implements ScheduledSyncTemplate {
 
   private final KafkaTemplate<Integer, String> template;
   private static final String TOPIC = "test-topic";
 
   @Override
-  public void sync(SyncEntity sync) {
+  public void sync(ScheduledSync scheduledSync) {
     template
         .send(TOPIC, "test-message")
         .addCallback(new ListenableFutureCallback<>() {

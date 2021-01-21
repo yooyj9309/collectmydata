@@ -5,9 +5,8 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class SyncRequest {
+public class ScheduledSyncRequest {
 
-  private final String requestId;
   private final String banksaladUserId;
   private final String organizationId;
   private final String orgCode;

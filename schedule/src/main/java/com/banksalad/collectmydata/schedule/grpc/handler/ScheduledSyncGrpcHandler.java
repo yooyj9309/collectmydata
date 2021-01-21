@@ -2,27 +2,26 @@ package com.banksalad.collectmydata.schedule.grpc.handler;
 
 import org.springframework.stereotype.Service;
 
-import com.banksalad.collectmydata.schedule.sync.dto.SyncRequest;
-import com.banksalad.collectmydata.schedule.sync.schedule.SyncScheduler;
+import com.banksalad.collectmydata.schedule.sync.dto.ScheduledSyncRequest;
+import com.banksalad.collectmydata.schedule.sync.schedule.ScheduledSyncScheduler;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class SyncGrpcHandler extends CollectScheduleGrpc.CollectscheduleImplBase implements SyncHandler {
+public class ScheduledSyncGrpcHandler extends CollectScheduleGrpc.CollectscheduleImplBase implements
+    ScheduledSyncHandler {
 
-  private final SyncScheduler syncScheduler;
+  private final ScheduledSyncScheduler scheduledSyncScheduler;
 
   public void registerScheduledSync(RegisterScheduledSyncRequest request,
       StreamObserver<RegisterScheduledSyncResponse> responseObserver) {
     try {
-      SyncRequest syncRequest = SyncRequest.builder()
+      ScheduledSyncRequest scheduledSyncRequest = ScheduledSyncRequest.builder()
           .banksaladUserId()
           .orgCode()
           .organizationId()
-          .requestId()
           .build();
-
-      syncScheduler.register(syncRequest);
+      scheduledSyncScheduler.register(scheduledSyncRequest);
 
       responseObserver.onNext(response);
       responseObserver.onCompleted();
@@ -34,14 +33,12 @@ public class SyncGrpcHandler extends CollectScheduleGrpc.CollectscheduleImplBase
   public void unregisterScheduledSync(UnregisterScheduledSyncRequest request,
       StreamObserver<UnregisterScheduledSyncResponse> responseObserver) {
     try {
-      SyncRequest syncRequest = SyncRequest.builder()
+      ScheduledSyncRequest scheduledSyncRequest = ScheduledSyncRequest.builder()
           .banksaladUserId()
           .orgCode()
           .organizationId()
-          .requestId()
           .build();
-
-      syncScheduler.unregister(syncRequest);
+      scheduledSyncScheduler.unregister(scheduledSyncRequest);
 
       responseObserver.onNext(response);
       responseObserver.onCompleted();
