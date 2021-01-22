@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class OauthPageRequestDto {
+public class OauthPageRequest {
 
   @NotEmpty(message = "organizationObjectId값 필수입니다.")
   private String organizationObjectId;

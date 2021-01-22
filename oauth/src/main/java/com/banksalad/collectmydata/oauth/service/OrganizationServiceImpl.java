@@ -1,5 +1,7 @@
 package com.banksalad.collectmydata.oauth.service;
 
+import com.banksalad.collectmydata.oauth.dto.Organization;
+
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -15,7 +17,7 @@ public class OrganizationServiceImpl implements OrganizationService {
   }
 
   @Override
-  public String getOrganizationByObjectId(String organizationObjectId) {
+  public Organization getOrganizationByObjectId(String organizationObjectId) {
     return null;
   }
 }

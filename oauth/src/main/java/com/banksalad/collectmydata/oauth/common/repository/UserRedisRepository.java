@@ -8,5 +8,5 @@ public interface UserRedisRepository {
 
   public Optional<UserEntity> getUserInfo(String key);
 
-  public Boolean setUserInfo(String key, Object value);
+  public Boolean setUserInfo(String key, UserEntity value);
 }

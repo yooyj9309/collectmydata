@@ -13,8 +13,8 @@ public class UserRedisRepositoryImpl implements UserRedisRepository {
 
   private final OauthRedisTemplate oauthRedisTemplate;
 
-  private final Long days = 7L;
-  private final TimeUnit timeUnit = TimeUnit.DAYS;
+  private static final Long DAYS = 7L;
+  private static final TimeUnit TIME_UNIT = TimeUnit.DAYS;
 
   public UserRedisRepositoryImpl(OauthRedisTemplate oauthRedisTemplate) {
     this.oauthRedisTemplate = oauthRedisTemplate;
@@ -26,7 +26,7 @@ public class UserRedisRepositoryImpl implements UserRedisRepository {
   }
 
   @Override
-  public Boolean setUserInfo(String key, Object value) {
-    return oauthRedisTemplate.setIfAbsent(key, value, days, timeUnit);
+  public Boolean setUserInfo(String key, UserEntity value) {
+    return oauthRedisTemplate.setIfAbsent(key, value, DAYS, TIME_UNIT);
   }
 }

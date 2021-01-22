@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class IssueTokenRequestDto {
+public class IssueTokenRequest {
 
   @NotEmpty(message = "state는 필수 값 입니다.")
   private String state;
