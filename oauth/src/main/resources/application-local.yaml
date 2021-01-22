@@ -9,3 +9,16 @@ spring:
 
 organization:
   mydata-client-id: tmp
+
+internal:
+  auth.url: http://localhost:8001/api/v1/namespaces/staging/services/auth:80/proxy
+
+
+connect-server:
+  host: localhost
+  port: 9999
+
+auth-server:
+  url: localhost:18081
+  host: localhost
+  port: 9998

@@ -22,5 +22,7 @@ public class UserEntity implements Serializable {
 
   private String organizationCode;
 
+  private String os;
+
   private LocalDateTime createdAt;
 }

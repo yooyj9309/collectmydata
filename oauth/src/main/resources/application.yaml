@@ -14,10 +14,14 @@ spring:
 
 logging:
   config: classpath:logback/logback-${spring.profiles.active}.xml
-  level:
-    root: debug
 
 
 organization:
   mydata-client-id: tmp
 
+connect-server:
+  host: connect
+  port: 8080
+
+auth-server:
+  url: dns:///auth-headless:18081
