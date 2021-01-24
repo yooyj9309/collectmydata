@@ -1,7 +1,8 @@
 package com.banksalad.collectmydata.oauth.service;
 
-import com.banksalad.collectmydata.common.exception.CollectException;
 import com.banksalad.collectmydata.oauth.common.enums.MydataSector;
+import com.banksalad.collectmydata.oauth.common.enums.OauthErrorType;
+import com.banksalad.collectmydata.oauth.common.exception.OauthException;
 import com.banksalad.collectmydata.oauth.dto.Organization;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +19,7 @@ public class OauthInfoServiceImpl implements OauthInfoService {
   private String CLIENT_ID;
 
   @Override
-  public String getRedirectUrl(MydataSector sector, String state, Organization organization) throws CollectException {
+  public String getRedirectUrl(MydataSector sector, String state, Organization organization) {
 
     switch (sector) {
       case FINANCE:
@@ -28,7 +29,7 @@ public class OauthInfoServiceImpl implements OauthInfoService {
       case PUBLIC:
       default:
         // TODO
-        throw new CollectException("해당부분은 메시지 정리후 변경 예정 ");
+        throw new OauthException(OauthErrorType.INVALID_SECTOR, organization.getOrganizationId());
     }
   }
 

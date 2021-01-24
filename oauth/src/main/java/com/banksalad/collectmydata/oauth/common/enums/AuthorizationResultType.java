@@ -10,8 +10,8 @@ import java.util.Map;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public enum AuthorizationErrorType {
-
+public enum AuthorizationResultType {
+  SUCCESS("success", "성공, 현재 성공의 경우 데이터가 없어서 가안."), // TODO 성공인경우에도 필수값이라 우선 가안으로 적용.
   INVALID_REQUESET("invalid_request", "client_id 및 redirect_uri가 유효하지만, 요청 파라미터에 문제가 있는 경우"),
   UNAUTHORIZED_CLIENT("unauthorized_client", "클라이언트가 권한이 없는 경우(허용되지 않은 원격지 IP 등)"),
   ACCESS_DENIED("access_denied", "정보주체가 요청을 거부한 경우(전송요구 취소 등)"),
@@ -24,18 +24,18 @@ public enum AuthorizationErrorType {
   private String error;
   private String description;
 
-  private static Map<String, AuthorizationErrorType> authorizationErrorCode;
+  private static Map<String, AuthorizationResultType> authorizationErrorCode;
 
   static {
-    Map<String, AuthorizationErrorType> map = new HashMap<>();
-    for (AuthorizationErrorType authorizationErrorType : AuthorizationErrorType.values()) {
-      String key = authorizationErrorType.getError().replaceAll("([\\p{Z}_-]*)", "").toLowerCase();
-      map.put(key, authorizationErrorType);
+    Map<String, AuthorizationResultType> map = new HashMap<>();
+    for (AuthorizationResultType authorizationResultType : AuthorizationResultType.values()) {
+      String key = authorizationResultType.getError().replaceAll("([\\p{Z}_-]*)", "").toLowerCase();
+      map.put(key, authorizationResultType);
     }
     authorizationErrorCode = Collections.unmodifiableMap(map);
   }
 
-  public static AuthorizationErrorType getAuthorizationErrorCode(String error) {
+  public static AuthorizationResultType getAuthorizationResultCode(String error) {
     String key = error.replaceAll("([\\p{Z}_-]*)", "").toLowerCase();
     if (authorizationErrorCode.containsKey(key)) {
       return authorizationErrorCode.get(key);
