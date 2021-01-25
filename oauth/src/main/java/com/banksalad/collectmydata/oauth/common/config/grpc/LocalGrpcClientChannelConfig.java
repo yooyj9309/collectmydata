@@ -12,7 +12,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
 @Configuration
-@Profile("local")
+@Profile({"local", "test"})
 public class LocalGrpcClientChannelConfig {
 
   // connect 연동

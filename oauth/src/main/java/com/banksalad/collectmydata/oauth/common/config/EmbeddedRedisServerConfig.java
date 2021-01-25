@@ -9,7 +9,7 @@ import javax.annotation.PreDestroy;
 import redis.embedded.RedisServer;
 
 @Configuration
-@Profile(value = {"local", "test"})
+@Profile(value = {"local"})
 public class EmbeddedRedisServerConfig {
 
   private RedisServer redisServer;
