@@ -5,11 +5,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.connect.common.db.repository.OauthTokenRepository;
 import com.banksalad.collectmydata.connect.token.dto.OauthToken;
-import com.github.banksalad.idl.apis.external.v1.connect.ConnectProto.GetAccessTokenRequest;
-import com.github.banksalad.idl.apis.external.v1.connect.ConnectProto.IssueTokenRequest;
-import com.github.banksalad.idl.apis.external.v1.connect.ConnectProto.RefreshTokenRequest;
-import com.github.banksalad.idl.apis.external.v1.connect.ConnectProto.RevokeAllTokensRequest;
-import com.github.banksalad.idl.apis.external.v1.connect.ConnectProto.RevokeTokenRequest;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenRequest;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.IssueTokenRequest;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RefreshTokenRequest;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeAllTokensRequest;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeTokenRequest;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;

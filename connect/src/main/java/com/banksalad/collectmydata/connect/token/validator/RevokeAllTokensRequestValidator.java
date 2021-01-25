@@ -1,6 +1,6 @@
 package com.banksalad.collectmydata.connect.token.validator;
 
-import com.github.banksalad.idl.apis.external.v1.connect.ConnectProto.RevokeAllTokensRequest;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeAllTokensRequest;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 import lombok.Builder;

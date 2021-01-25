@@ -1,6 +1,6 @@
 package com.banksalad.collectmydata.connect.token.validator;
 
-import com.github.banksalad.idl.apis.external.v1.connect.ConnectProto.GetAccessTokenRequest;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenRequest;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 import lombok.Builder;
@@ -23,7 +23,7 @@ public class GetAccessTokenRequestValidator {
   public static GetAccessTokenRequestValidator of(GetAccessTokenRequest request) {
     return GetAccessTokenRequestValidator.builder()
         .banksaladId(request.getBanksaladUserId())
-        .organizationId(request.getOrganizationObjectid()) // request.getOrganizationId()로 변경 예정(connect-mydata IDL)
+        .organizationId(request.getOrganizationId())
         .build();
   }
 }
