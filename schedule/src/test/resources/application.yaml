@@ -1,6 +1,6 @@
 spring:
   kafka:
-    bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
     producer:
       acks: 1
       key-serializer: org.apache.kafka.common.serialization.StringSerializer

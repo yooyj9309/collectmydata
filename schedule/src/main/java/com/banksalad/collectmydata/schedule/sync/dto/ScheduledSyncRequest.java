@@ -8,6 +8,7 @@ import lombok.Getter;
 public class ScheduledSyncRequest {
 
   private final String banksaladUserId;
+  private final String sector;
+  private final String industry;
   private final String organizationId;
-  private final String orgCode;
 }
