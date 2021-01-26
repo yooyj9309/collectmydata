@@ -1,0 +1,133 @@
+name: CI
+
+on:
+  - push
+
+jobs:
+  tests:
+    name: Lint and Test
+    runs-on: [self-hosted, jvm]
+    steps:
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '11'
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 5
+          token: ${{ secrets.GH_ACCESS_TOKEN }}
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Test
+        env:
+          GH_USERNAME: ${{ secrets.GH_USERNAME }}
+          GH_DAAS_PACKAGES_TOKEN: ${{ secrets.GH_DAAS_PACKAGES_TOKEN }}
+        run: ./gradlew -s test
+
+#      - name: Send to codecov
+#        uses: codecov/codecov-action@v1
+#        with:
+#          token: ${{ secrets.CODECOV_TOKEN }}
+
+  build:
+    name: Build
+    runs-on: [self-hosted, jvm]
+    steps:
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '11'
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 5
+          token: ${{ secrets.GH_ACCESS_TOKEN }}
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        env:
+          GH_USERNAME: ${{ secrets.GH_USERNAME }}
+          GH_DAAS_PACKAGES_TOKEN: ${{ secrets.GH_DAAS_PACKAGES_TOKEN }}
+        run: ./gradlew clean build -x test
+      
+      - name: bank docker push
+        uses: docker/build-push-action@v2
+        with:
+          context: bank
+          push: true
+          tags: rainist/collectmydata-bank:${{ github.sha }}
+          
+      - name: card docker push
+        uses: docker/build-push-action@v2
+        with:
+          context: card
+          push: true
+          tags: rainist/collectmydata-card:${{ github.sha }}
+      
+      - name: connect docker push
+        uses: docker/build-push-action@v2
+        with:
+          context: connect
+          push: true
+          tags: rainist/collectmydata-connect:${{ github.sha }}
+
+      - name: efin docker push
+        uses: docker/build-push-action@v2
+        with:
+          context: efin
+          push: true
+          tags: rainist/collectmydata-efin:${{ github.sha }}
+
+      - name: insu docker push
+        uses: docker/build-push-action@v2
+        with:
+          context: insu
+          push: true
+          tags: rainist/collectmydata-insu:${{ github.sha }}
+
+      - name: invest docker push
+        uses: docker/build-push-action@v2
+        with:
+          context: invest
+          push: true
+          tags: rainist/collectmydata-invest:${{ github.sha }}
+
+      - name: oauth docker push
+        uses: docker/build-push-action@v2
+        with:
+          context: oauth
+          push: true
+          tags: rainist/collectmydata-oauth:${{ github.sha }}
+
+      - name: schedule docker push
+        uses: docker/build-push-action@v2
+        with:
+          context: schedule
+          push: true
+          tags: rainist/collectmydata-schedule:${{ github.sha }}
