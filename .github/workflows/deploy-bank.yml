@@ -8,7 +8,7 @@ on:
 
 jobs:
   deploy-bank:
-    runs-on: [self-hosted, jvm]
+    runs-on: [self-hosted, default]
     if: (github.event.deployment.task == 'deploy:bank') && (github.event.deployment.environment == 'production' || github.event.deployment.environment == 'staging')
     steps:
       - name: Checkout
