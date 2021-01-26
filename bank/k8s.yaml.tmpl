@@ -19,10 +19,10 @@
 {{ $namespace := $env }}
 
 # development
-{{ $development_collectmydata_bank_db_password := getenv "DEVELOPMENT_COLLECTMYDATA_BANK_DB_PASSWORD" }}
+{{ $staging_collectmydata_bank_db_password := getenv "STAGING_COLLECTMYDATA_BANK_DB_PASSWORD" }}
 
 # production
-{{ $development_collectmydata_bank_db_password := getenv "DEVELOPMENT_COLLECTMYDATA_BANK_DB_PASSWORD" }}
+{{ $staging_collectmydata_bank_db_password := getenv "STAGING_COLLECTMYDATA_BANK_DB_PASSWORD" }}
 
 {{ if ne $env $sub_env_id }}
   {{ $namespace = join (slice $env $sub_env_id) "-" }}
@@ -141,8 +141,8 @@ spec:
               value: {{ $sub_env_id }}
             - name: NAMESPACE
               value: {{ $namespace }}
-            - name: DEVELOPMENT_COLLECTMYDATA_BANK_DB_PASSWORD
-              value: {{ $development_collectbank_db_password }}
+            - name: STAGING_COLLECTMYDATA_BANK_DB_PASSWORD
+              value: {{ $staging_collectmydata_bank_db_password }}
           resources:
             limits:
               memory: 8Gi
