@@ -27,7 +27,7 @@ public class UserRedisRepositoryTest {
 
   private LocalDateTime now = LocalDateTime.now();
   private String key = "key";
-  private Long userId = 1L;
+  private long banksaladUserId = 1L;
   private String organizationId = "shinhancard";
   private String organizationCode = "000";
   private String os = "android";
@@ -59,7 +59,7 @@ public class UserRedisRepositoryTest {
 
   private UserEntity generateUserEntity() {
     return UserEntity.builder()
-        .banksaladUserId(userId)
+        .banksaladUserId(banksaladUserId)
         .organizationId(organizationId)
         .organizationCode(organizationCode)
         .os(os)

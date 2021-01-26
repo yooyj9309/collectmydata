@@ -25,7 +25,7 @@ public class OauthServiceImplTest {
   @Autowired
   private OauthServiceImpl oauthServiceImpl;
 
-  private final int userId = 1;
+  private final long banksaladUserId = 1L;
   private final String organizationCode = "000";
   private final String os = "android";
   private final String organizationId = "shinhancard";
@@ -41,7 +41,7 @@ public class OauthServiceImplTest {
     assertThat(responseEntity).usingRecursiveComparison()
         .ignoringFields("createdAt")
         .isEqualTo(UserEntity.builder()
-            .banksaladUserId((long) userId)
+            .banksaladUserId(banksaladUserId)
             .organizationId(organizationId)
             .organizationCode(organizationCode)
             .os(os)

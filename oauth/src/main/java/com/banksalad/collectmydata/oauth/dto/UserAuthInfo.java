@@ -8,6 +8,6 @@ import lombok.Getter;
 public class UserAuthInfo {
 
   private String token;
-  private Integer banksaladUserId;
+  private Long banksaladUserId;
   private String os;
 }

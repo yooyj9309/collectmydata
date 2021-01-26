@@ -29,7 +29,7 @@ repositories {
 }
 
 ext {
-    idlVersion = "20201125.39749bd.RELEASE"
+    idlVersion = "20210125.fd715c5.RELEASE"
 
     springBootVersion = "2.4.1"
     armeriaVersion = "1.3.0"

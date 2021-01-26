@@ -5,9 +5,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import com.github.banksalad.idl.apis.external.v1.auth.AuthGrpc;
-import com.github.banksalad.idl.apis.external.v1.auth.AuthGrpc.AuthBlockingStub;
-import com.github.banksalad.idl.apis.external.v1.connect.ConnectGrpc;
+import com.github.banksalad.idl.apis.v1.auth.AuthGrpc;
+import com.github.banksalad.idl.apis.v1.auth.AuthGrpc.AuthBlockingStub;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataGrpc;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataGrpc.ConnectmydataBlockingStub;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
@@ -29,18 +30,18 @@ public class GrpcClientChannelConfig {
 
   @Bean
   public AuthBlockingStub authBlockingStub() {
-    ManagedChannel accountbookChannel = ManagedChannelBuilder.forTarget(authUrl)
+    ManagedChannel authChannel = ManagedChannelBuilder.forTarget(authUrl)
         .defaultLoadBalancingPolicy(CLIENT_LOAD_BALANCING_POLICY_ROUND_ROBIN)
         .usePlaintext()
         .build();
-    return AuthGrpc.newBlockingStub(accountbookChannel);
+    return AuthGrpc.newBlockingStub(authChannel);
   }
 
   @Bean
-  public ConnectGrpc.ConnectBlockingStub connectStub() {
+  public ConnectmydataBlockingStub connectmydataBlockingStub() {
     ManagedChannel connectChannel = ManagedChannelBuilder.forAddress(connectHost, connectPort)
         .usePlaintext()
         .build();
-    return ConnectGrpc.newBlockingStub(connectChannel);
+    return ConnectmydataGrpc.newBlockingStub(connectChannel);
   }
 }

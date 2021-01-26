@@ -10,8 +10,7 @@ import java.util.Map;
 
 public interface OauthService {
 
-  public String ready(OauthPageRequest oauthPageRequest, Model model, Map<String, String> headers)
-      throws Exception;
+  public String ready(OauthPageRequest oauthPageRequest, Model model, Map<String, String> headers);
 
   public String approve(IssueTokenRequest issueTokenRequest); // 작업하면서 return값 변경 예정
 }

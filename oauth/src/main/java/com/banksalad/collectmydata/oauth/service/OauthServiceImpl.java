@@ -12,11 +12,11 @@ import com.banksalad.collectmydata.oauth.dto.IssueTokenRequest;
 import com.banksalad.collectmydata.oauth.dto.OauthPageRequest;
 import com.banksalad.collectmydata.oauth.dto.Organization;
 import com.banksalad.collectmydata.oauth.dto.UserAuthInfo;
-import com.banksalad.collectmydata.oauth.grpc.client.AuthClient;
 
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
@@ -26,33 +26,27 @@ import java.util.UUID;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class OauthServiceImpl implements OauthService {
 
   private final OrganizationService organizationService;
   private final UserRedisRepository userRedisRepository;
   private final OauthInfoService oauthInfoService;
   private final OauthMeterRegistry oauthMeterRegistry;
-  private final AuthClient authClient;
+  private final AuthService authService;
   public static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
 
-
-  public OauthServiceImpl(OrganizationService organizationService, UserRedisRepository userRedisRepository,
-      OauthInfoService oauthInfoService, OauthMeterRegistry oauthMeterRegistry, AuthClient authClient) {
-    this.organizationService = organizationService;
-    this.userRedisRepository = userRedisRepository;
-    this.oauthInfoService = oauthInfoService;
-    this.oauthMeterRegistry = oauthMeterRegistry;
-    this.authClient = authClient;
-  }
-
   @Override
-  public String ready(OauthPageRequest oauthPageRequest, Model model, Map<String, String> headers)
-      throws Exception {
-    UserAuthInfo userAuthInfo = authClient.getUserAuthInfoByToken(headers);
+  public String ready(OauthPageRequest oauthPageRequest, Model model, Map<String, String> headers) {
+    // banksalad token을 통해 user정보조회, organizationObjectId를 통해 organization조회
     Organization organization = organizationService
         .getOrganizationByObjectId(oauthPageRequest.getOrganizationObjectId());
+    UserAuthInfo userAuthInfo = authService.getUserAuthInfo(organization.getOrganizationId(), headers);
+
+    // 유저정보 저장및 key return
     String state = generateStateAndKeepUserInfo(userAuthInfo, organization);
 
+    // redirect url 생성
     String redirectUrl = oauthInfoService.getRedirectUrl(organization.getMydataSector(), state, organization);
 
     // metric logging
@@ -64,13 +58,16 @@ public class OauthServiceImpl implements OauthService {
 
   @Override
   public String approve(IssueTokenRequest issueTokenRequest) {
+    // state를 통해 유저 정보 조회.
     UserEntity userEntity = getUserInfo(issueTokenRequest.getState());
 
-    validateError(issueTokenRequest.getState(), userEntity.getOrganizationId());
-    // Token 발급 진행.
-    // 해당 코드 안에서 Exception 코드작업 진행.
-    //organizationService.issueToken(UserEntity);
+    // error param 검증
+    validateError(issueTokenRequest.getError(), userEntity.getOrganizationId());
 
+    // 토큰발급
+    organizationService.issueToken(userEntity, issueTokenRequest.getCode());
+
+    // metric logging
     oauthMeterRegistry.incrementUserAuthStepCount(userEntity.getOrganizationId(), userEntity.getOs(),
         OauthMeterRegistryImpl.OAUTH_COMPLETE);
     return "pages/oauth";
