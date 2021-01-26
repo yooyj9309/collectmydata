@@ -10,7 +10,7 @@ import lombok.Getter;
 @Builder
 public class TokenResponse {
 
-  private OauthToken oauthToken;
+  private final OauthToken oauthToken;
 
   public IssueTokenResponse toIssueTokenResponseProto() {
     return IssueTokenResponse.newBuilder()

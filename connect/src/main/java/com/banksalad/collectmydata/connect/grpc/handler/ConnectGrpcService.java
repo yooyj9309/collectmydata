@@ -2,11 +2,15 @@ package com.banksalad.collectmydata.connect.grpc.handler;
 
 import org.springframework.stereotype.Service;
 
+import com.banksalad.collectmydata.connect.organization.dto.Organization;
+import com.banksalad.collectmydata.connect.organization.dto.OrganizationResponse;
+import com.banksalad.collectmydata.connect.organization.service.OrganizationService;
 import com.banksalad.collectmydata.connect.token.dto.OauthToken;
 import com.banksalad.collectmydata.connect.token.dto.TokenResponse;
 import com.banksalad.collectmydata.connect.token.service.OauthTokenService;
-import com.banksalad.collectmydata.connect.token.service.ValidatorService;
+import com.banksalad.collectmydata.connect.common.service.ValidatorService;
 import com.banksalad.collectmydata.connect.token.validator.GetAccessTokenRequestValidator;
+import com.banksalad.collectmydata.connect.organization.validator.GetOrganizationRequestValidator;
 import com.banksalad.collectmydata.connect.token.validator.IssueTokenRequestValidator;
 import com.banksalad.collectmydata.connect.token.validator.RefreshTokenRequestValidator;
 import com.banksalad.collectmydata.connect.token.validator.RevokeAllTokensRequestValidator;
@@ -14,6 +18,8 @@ import com.banksalad.collectmydata.connect.token.validator.RevokeTokenRequestVal
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataGrpc;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenResponse;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationRequest;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.HealthCheckRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.HealthCheckResponse;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.IssueTokenRequest;
@@ -32,6 +38,7 @@ import lombok.RequiredArgsConstructor;
 public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase {
 
   private final OauthTokenService oauthTokenService;
+  private final OrganizationService organizationService;
   private final ValidatorService validatorService;
 
   @Override
@@ -101,6 +108,20 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
     oauthTokenService.revokeAllTokens(request);
 
     responseObserver.onNext(RevokeAllTokensResponse.getDefaultInstance());
+    responseObserver.onCompleted();
+  }
+
+  @Override
+  public void getOrganization(GetOrganizationRequest request, StreamObserver<GetOrganizationResponse> responseObserver) {
+    GetOrganizationRequestValidator validator = GetOrganizationRequestValidator.of(request);
+    validatorService.validate(validator);
+
+    Organization organization = organizationService.getOrganization(request);
+    OrganizationResponse organizationResponse = OrganizationResponse.builder()
+        .organization(organization)
+        .build();
+
+    responseObserver.onNext(organizationResponse.toGetOrganizationProto());
     responseObserver.onCompleted();
   }
 }

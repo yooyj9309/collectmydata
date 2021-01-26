@@ -1,9 +1,10 @@
-package com.banksalad.collectmydata.connect.token.service;
+package com.banksalad.collectmydata.connect.common.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.banksalad.collectmydata.connect.token.validator.GetAccessTokenRequestValidator;
+import com.banksalad.collectmydata.connect.organization.validator.GetOrganizationRequestValidator;
 import com.banksalad.collectmydata.connect.token.validator.IssueTokenRequestValidator;
 import com.banksalad.collectmydata.connect.token.validator.RefreshTokenRequestValidator;
 import com.banksalad.collectmydata.connect.token.validator.RevokeAllTokensRequestValidator;
@@ -27,6 +28,9 @@ public class ValidatorService {
   }
 
   public void validate(@Valid RevokeAllTokensRequestValidator validator) {
+  }
+
+  public void validate(@Valid GetOrganizationRequestValidator validator) {
   }
 }
 
