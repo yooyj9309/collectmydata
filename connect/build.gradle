@@ -41,7 +41,6 @@ ext {
     logbackVersion = "1.2.3"
     lombokVersion = "1.18.12"
 
-    sentryLogbackVersion = "1.7.30"
     micrometerVersion = "1.6.2"
     apacheCommonsVersion = "3.10"
     json_path_version = "2.4.0"

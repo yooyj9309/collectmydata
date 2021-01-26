@@ -31,22 +31,3 @@ logging:
     com.zaxxer.hikari: INFO
     org.hibernate.SQL: INFO
     org.hibernate.type.descriptor.sql.BasicBinder: INFO
-
-connect-server:
-  target: dns:///connect-headless:18081
-
-bank:
-  wooribank:
-    organizationId: wooribank
-    objectId: 596d666a2c4069c168b57d19
-    host: https://topenapi.wooribank.com
-    secret: ${DEVELOPMENT_WOORIBANK_CLIENT_SECRET}
-    clientId: ${DEVELOPMENT_WOORIBANK_CLIENT_ID}
-    partnerCode: 8MOPN002
-
-  kbkookminbank:
-    organizationId: kbkookminbank
-    objectId: 596d666a2c4069c168b57cfb
-    host: https://dev-openapi.kbstar.com:8443
-    secret: ${DEVELOPMENT_KBKOOKMINBANK_CLIENT_SECRET}
-    clientId: ${DEVELOPMENT_KBKOOKMINBANK_CLIENT_ID}

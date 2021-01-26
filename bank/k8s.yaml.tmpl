@@ -1,5 +1,7 @@
 {{ $service_name := "collectmydata-bank" }}
 
+{{ $service_http_port := "8080" }}
+
 {{ $service_grpc_port := "8080" }}
 
 {{ $graceful_shutdown_timeout_sec := "30" }}
@@ -152,26 +154,6 @@ spec:
           terminationMessagePath: "/dev/termination-log"
           terminationMessagePolicy: File
           imagePullPolicy: Always
-          livenessProbe:
-            httpGet:
-              path: "/health"
-              port: {{ $service_http_port }}
-              scheme: HTTP
-            initialDelaySeconds: 5
-            timeoutSeconds: 2
-            periodSeconds: 5
-            successThreshold: 1
-            failureThreshold: 3
-          readinessProbe:
-            httpGet:
-              path: "/health"
-              port: {{ $service_http_port }}
-              scheme: HTTP
-            initialDelaySeconds: 10
-            timeoutSeconds: 1
-            periodSeconds: 3
-            successThreshold: 1
-            failureThreshold: 2
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst

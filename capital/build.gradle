@@ -45,7 +45,6 @@ ext {
 
 	mapstructVersion = "1.3.1.Final"
 
-	sentryLogbackVersion = "1.7.30"
 	// Do not update micrometer version as 1.5.2 before testing
 	micrometerVersion = "1.4.0"
 

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-  <include resource="logback/logback-sentry.xml"/>
   <springProperty scope="context" name="port" source="server.port"/>
 
   <appender name="ConsoleJson" class="ch.qos.logback.core.ConsoleAppender">
@@ -41,7 +40,6 @@
   <logger name="org.springframework" level="INFO"/>
 
   <root level="INFO">
-    <appender-ref ref="Sentry"/>
     <appender-ref ref="File"/>
     <appender-ref ref="ConsoleJson"/>
   </root>
