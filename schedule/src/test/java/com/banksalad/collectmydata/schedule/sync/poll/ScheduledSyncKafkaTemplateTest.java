@@ -68,7 +68,7 @@ class ScheduledSyncKafkaTemplateTest {
     // Given
     ScheduledSync scheduledSync = getScheduledSync();
     String topic = "collect-mydata-card";
-    String message = "{\"scheduledSyncId\":1,\"banksaladUserId\":\"123324\",\"sector\":\"finance\",\"industry\":\"card\",\"organizationId\":\"shinhancard\"}";
+    String message = "{\"scheduledSyncId\":1,\"banksaladUserId\":\"123324\",\"sector\":\"finance\",\"industry\":\"card\",\"organizationId\":\"shinhancard\",\"isDeleted\":null,\"syncType\":null,\"createdAt\":null,\"updatedAt\":null}";
 
     // When
     scheduledSyncKafkaTemplate.sync(scheduledSync);
