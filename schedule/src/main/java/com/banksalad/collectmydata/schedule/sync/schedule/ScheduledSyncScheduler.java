@@ -6,7 +6,6 @@ import com.banksalad.collectmydata.schedule.common.db.entity.ScheduledSync;
 import com.banksalad.collectmydata.schedule.common.db.repository.ScheduledSyncRepository;
 import com.banksalad.collectmydata.schedule.sync.dto.ScheduledSyncRequest;
 import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import static java.lang.Boolean.FALSE;
@@ -19,7 +18,7 @@ public class ScheduledSyncScheduler {
   private final ScheduledSyncRepository scheduledSyncRepository;
 
   public void register(ScheduledSyncRequest scheduledSyncRequest) {
-    ScheduledSync scheduledSync = getScheduledSyncFrom(scheduledSyncRequest);
+    ScheduledSync scheduledSync = ScheduledSync.of(scheduledSyncRequest);
     scheduledSyncRepository.save(scheduledSync);
   }
 
@@ -33,17 +32,7 @@ public class ScheduledSyncScheduler {
             )
             .orElseThrow(EntityNotFoundException::new);
 
-    scheduledSync.setIsDeleted(TRUE);
+    scheduledSync.disable();
     scheduledSyncRepository.save(scheduledSync);
-  }
-
-  private ScheduledSync getScheduledSyncFrom(ScheduledSyncRequest scheduledSyncRequest) {
-    return ScheduledSync.builder()
-        .banksaladUserId(scheduledSyncRequest.getBanksaladUserId())
-        .sector(scheduledSyncRequest.getSector())
-        .industry(scheduledSyncRequest.getIndustry())
-        .organizationId(scheduledSyncRequest.getOrganizationId())
-        .isDeleted(FALSE)
-        .build();
   }
 }

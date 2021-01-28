@@ -122,6 +122,7 @@ dependencies {
     testImplementation("org.mockito:mockito-inline:3.1.0")
     testImplementation("com.google.protobuf:protobuf-java-util:3.11.0")
     testImplementation("org.springframework.kafka:spring-kafka-test")
+    testImplementation("org.awaitility:awaitility")
 
     testCompile("org.projectlombok:lombok:${lombokVersion}")
     testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")

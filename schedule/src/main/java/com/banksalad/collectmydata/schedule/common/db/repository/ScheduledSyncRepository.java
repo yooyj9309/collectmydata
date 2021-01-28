@@ -7,6 +7,7 @@ import com.banksalad.collectmydata.schedule.common.db.entity.ScheduledSync;
 import java.util.List;
 import java.util.Optional;
 
+// TODO : How to balance load
 public interface ScheduledSyncRepository extends JpaRepository<ScheduledSync, Long> {
 
   List<ScheduledSync> findAllByIsDeletedEquals(Boolean isDeleted);

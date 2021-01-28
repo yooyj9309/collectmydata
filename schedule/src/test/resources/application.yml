@@ -5,3 +5,7 @@ spring:
       acks: 1
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  jackson:
+    serialization:
+      write_dates_as_timestamps: false
+

@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ScheduledSyncKafkaTemplate implements ScheduledSyncTemplate {
 
+  private final ObjectMapper objectMapper;
   private final KafkaTemplate<String, String> template;
   private static final String TOPIC_PREFIX = "collect-mydata-";
 
@@ -50,7 +51,7 @@ public class ScheduledSyncKafkaTemplate implements ScheduledSyncTemplate {
     String message = null;
 
     try {
-      message = new ObjectMapper().writeValueAsString(scheduledSync);
+      message = objectMapper.writeValueAsString(scheduledSync);
     } catch (JsonProcessingException e) {
       log.error("ScheduledSync Serialization Fail, Exception : {}", e.getMessage());
     }

@@ -29,12 +29,7 @@ public class ScheduledSyncGrpcHandler extends CollectscheduleImplBase implements
       StreamObserver<RegisterScheduledSyncResponse> responseObserver
   ) {
     try {
-      ScheduledSyncRequest scheduledSyncRequest = ScheduledSyncRequest.builder()
-          .banksaladUserId(request.getBanksaladUserId())
-          .sector(request.getSector())
-          .industry(request.getIndustry())
-          .organizationId(request.getOrganizationId())
-          .build();
+      ScheduledSyncRequest scheduledSyncRequest = ScheduledSyncRequest.of(request);
       scheduledSyncScheduler.register(scheduledSyncRequest);
 
       RegisterScheduledSyncResponse response = RegisterScheduledSyncResponse.newBuilder().build();
@@ -51,12 +46,7 @@ public class ScheduledSyncGrpcHandler extends CollectscheduleImplBase implements
       StreamObserver<UnregisterScheduledSyncResponse> responseObserver
   ) {
     try {
-      ScheduledSyncRequest scheduledSyncRequest = ScheduledSyncRequest.builder()
-          .banksaladUserId(request.getBanksaladUserId())
-          .sector(request.getSector())
-          .industry(request.getIndustry())
-          .organizationId(request.getOrganizationId())
-          .build();
+      ScheduledSyncRequest scheduledSyncRequest = ScheduledSyncRequest.of(request);
       scheduledSyncScheduler.unregister(scheduledSyncRequest);
 
       UnregisterScheduledSyncResponse response = UnregisterScheduledSyncResponse.newBuilder().build();

@@ -26,9 +26,12 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import static com.banksalad.collectmydata.schedule.common.enums.SyncType.ADDITIONAL;
+import static java.lang.Boolean.FALSE;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EmbeddedKafka
 @SpringBootTest
@@ -64,11 +67,12 @@ class ScheduledSyncKafkaTemplateTest {
   @Test
   @DisplayName("Kafka Produce Test")
   public void givenScheduledSync_whenProduceToKafka_thenSavedToTopic() throws InterruptedException {
-
     // Given
     ScheduledSync scheduledSync = getScheduledSync();
     String topic = "collect-mydata-card";
-    String message = "{\"scheduledSyncId\":1,\"banksaladUserId\":\"123324\",\"sector\":\"finance\",\"industry\":\"card\",\"organizationId\":\"shinhancard\",\"isDeleted\":null,\"syncType\":null,\"createdAt\":null,\"updatedAt\":null}";
+    String message =
+        "{\"scheduledSyncId\":1,\"banksaladUserId\":\"123324\",\"sector\":\"finance\",\"industry\":\"card\","
+            + "\"organizationId\":\"shinhancard\",\"isDeleted\":false,\"syncType\":\"ADDITIONAL\",";
 
     // When
     scheduledSyncKafkaTemplate.sync(scheduledSync);
@@ -77,7 +81,7 @@ class ScheduledSyncKafkaTemplateTest {
     ConsumerRecord<String, String> record = records.poll(2, SECONDS);
     assertNotNull(record);
     assertEquals(topic, record.topic());
-    assertEquals(message, record.value());
+    assertTrue(record.value().contains(message));
   }
 
   private ScheduledSync getScheduledSync() {
@@ -87,6 +91,8 @@ class ScheduledSyncKafkaTemplateTest {
         .sector("finance")
         .industry("card")
         .organizationId("shinhancard")
+        .isDeleted(FALSE)
+        .syncType(ADDITIONAL)
         .build();
   }
 

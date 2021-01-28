@@ -1,6 +1,6 @@
 spring:
   kafka:
-    bootstrap-servers: localhost:9091,localhost:9092,localhost:9093
+    bootstrap-servers: b-2.collectmydata.of5yls.c3.kafka.ap-northeast-2.amazonaws.com:9092,b-3.collectmydata.of5yls.c3.kafka.ap-northeast-2.amazonaws.com:9092,b-1.collectmydata.of5yls.c3.kafka.ap-northeast-2.amazonaws.com:9092
     producer:
       acks: 1
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
