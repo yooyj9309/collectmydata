@@ -109,6 +109,9 @@ dependencies {
 	implementation("io.micrometer:micrometer-core:${micrometerVersion}")
 	implementation("io.micrometer:micrometer-registry-statsd:${micrometerVersion}")
 
+	// kafka
+	implementation("org.springframework.kafka:spring-kafka")
+
 	//test
 	testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}") {
 		exclude group: "org.junit.vintage", module: "junit-vintage-engine"
@@ -118,6 +121,8 @@ dependencies {
 	testImplementation("com.h2database:h2")
 	testImplementation("org.mockito:mockito-inline:3.1.0")
 	testImplementation("com.google.protobuf:protobuf-java-util:3.11.0")
+	testImplementation("org.springframework.kafka:spring-kafka-test")
+	testImplementation("org.awaitility:awaitility")
 
 	testCompile("org.projectlombok:lombok:${lombokVersion}")
 	testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
