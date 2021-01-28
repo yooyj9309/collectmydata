@@ -1,0 +1,330 @@
+{{ $service_name := "collectmydata-oauth" }}
+
+{{ $service_port := "8080" }}
+
+{{ $nginx_tag := "1.17.4" }}
+{{ $telegraf_tag := "1.11.5" }}
+
+{{ $env := .Env.ENV }}
+{{ $sub_env_id := .Env.SUB_ENV_ID }}
+
+{{ $no_sub_env_id_envs := slice "production" "staging" }}
+{{ if has $no_sub_env_id_envs $env }}
+  {{ assert (eq $env $sub_env_id) }}
+{{ end }}
+
+{{ $namespace := $env }}
+{{ if ne $env $sub_env_id }}
+  {{ $namespace = join (slice $env $sub_env_id) "-" }}
+{{ end }}
+
+{{ $ingress_host := "collectmydata-oauth.staging.banksalad.com" }} #TODO
+
+{{ if eq $env "production" }}
+  {{ $ingress_host = "collectmydata-oauth.banksalad.com" }}  #TODO
+{{ end }}
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ $service_name }}-nginx
+  namespace: {{ $namespace }}
+data:
+  default.conf: |
+    upstream oauth-app {
+        server 127.0.0.1:{{ $service_port }};
+    }
+
+    server {
+        gzip on;
+        gzip_disable "msie6";
+        gzip_vary on;
+        gzip_proxied any;
+        gzip_comp_level 6;
+        gzip_buffers 16 8k;
+        gzip_http_version 1.1;
+        gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+
+        listen 80;
+        charset utf-8;
+        proxy_buffer_size 128k;
+        proxy_buffers 4 256k;
+        proxy_busy_buffers_size 256k;
+        client_max_body_size 30M;
+
+        location / {
+            proxy_pass http://oauth-app;
+            proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+            proxy_intercept_errors on;
+            expires -1;
+            add_header Cache-Control "private, no-cache, no-store, max-age=0";
+        }
+    }
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ $service_name }}-telegraf
+  namespace: {{ $namespace }}
+data:
+  telegraf.conf: |
+    [global_tags]
+
+    [agent]
+      interval = "10s"
+      round_interval = true
+      metric_batch_size = 1000
+      metric_buffer_limit = 10000
+      collection_jitter = "0s"
+      flush_interval = "10s"
+      flush_jitter = "0s"
+      precision = ""
+      hostname = ""
+      omit_hostname = false
+
+    [[outputs.influxdb]]
+      urls = ["http://influxdb-service.{{ $namespace }}.banksalad.in:8086"]
+      database = "collect"
+
+    [[inputs.statsd]]
+      protocol = "udp"
+      max_tcp_connections = 250
+      tcp_keep_alive = false
+      service_address = ":8126"
+      delete_gauges = true
+      delete_counters = true
+      delete_sets = true
+      delete_timings = true
+      percentiles = [99, 95, 90, 50]
+      metric_separator = "."
+      parse_data_dog_tags = false
+      datadog_extensions = false
+      allowed_pending_messages = 10000
+      percentile_limit = 1000
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ $service_name }}
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ $service_name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ $service_name }}
+  template:
+    metadata:
+      creationTimestamp:
+      labels:
+        app: {{ $service_name }}
+    spec:
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: {{ $service_name }}-nginx
+            defaultMode: 420
+        - name: {{ $service_name }}-telegraf-conf
+          configMap:
+            name: {{ $service_name }}-telegraf
+            defaultMode: 420
+      containers:
+        - name: nginx
+          image: rainist/nginx:{{ $nginx_tag }}
+          resources:
+            limits:
+              cpu: '1'
+              memory: 300Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: "/etc/nginx/conf.d"
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - sh
+                  - "-c"
+                  - sleep 5 && /usr/sbin/nginx -s quit
+          terminationMessagePath: "/dev/termination-log"
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+        - name: {{ $service_name }}-telegraf
+          image: telegraf:{{ $telegraf_tag }}
+          ports:
+            - containerPort: 8126
+              protocol: UDP
+          resources:
+            limits:
+              cpu: 1
+              memory: 500Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          volumeMounts:
+            - name: {{ $service_name }}-telegraf-conf
+              mountPath: "/etc/telegraf"
+          terminationMessagePath: "/dev/termination-log"
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+        - name: {{ $service_name }}
+          image: rainist/{{ $service_name }}:{{ getenv "IMAGE_TAG" }}
+          ports:
+            - containerPort: {{ $service_port }}
+              protocol: TCP
+          env:
+            - name: ENV
+              value: {{ $env }}
+          resources:
+            limits:
+              cpu: 1
+              memory: 2Gi
+            requests:
+              cpu: 500m
+              memory: 1Gi
+          livenessProbe:
+            httpGet:
+              path: "/ping/health"
+              port: {{ $service_port }}
+              scheme: HTTP
+            initialDelaySeconds: 60
+            timeoutSeconds: 2
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: "/ping/health"
+              port: {{ $service_port }}
+              scheme: HTTP
+            initialDelaySeconds: 20
+            timeoutSeconds: 1
+            periodSeconds: 3
+            successThreshold: 1
+            failureThreshold: 2
+          terminationMessagePath: "/dev/termination-log"
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      imagePullSecrets:
+        - name: docker-hub-registry-credential
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 30%
+      maxSurge: 30%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+
+---
+kind: HorizontalPodAutoscaler
+apiVersion: autoscaling/v1
+metadata:
+  name: {{ $service_name }}
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ $service_name }}
+spec:
+  scaleTargetRef:
+    kind: Deployment
+    name: {{ $service_name }}
+    apiVersion: apps/v1
+  minReplicas: {{ if eq $env "production" }} 3 {{ else }} 2 {{ end }}
+  maxReplicas: {{ if eq $env "production" }} 6 {{ else }} 2 {{ end }}
+  targetCPUUtilizationPercentage: 50
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ $service_name }}
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ $service_name }}
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  selector:
+    app: {{ $service_name }}
+  type: ClusterIP
+  sessionAffinity: None
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ $service_name }}
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ $service_name }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ $service_name }}
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: auth
+    - podSelector:
+        matchLabels:
+          app: connect
+    ports:
+    - protocol: TCP
+      port: 80
+    - protocol: TCP
+      port: 18081
+    - protocol: TCP
+      port: 8080
+#TODO REDIS 세
+
+---
+kind: PodDisruptionBudget
+apiVersion: policy/v1beta1
+metadata:
+  name: {{ $service_name }}
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ $service_name }}
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: {{ $service_name }}
+
+---
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ $service_name }}
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ $service_name }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    ingress.kubernetes.io/service-upstream: "true"
+spec:
+  rules:
+    - host: {{ $ingress_host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $service_name }}
+                port:
+                  number: 80
