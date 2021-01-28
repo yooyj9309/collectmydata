@@ -6,7 +6,8 @@ include ":common"
 // common service
 include ":connect",
         ":oauth",
-        ":schedule"
+        ":schedule",
+        ":gateway"
 
 // industry service
 include ":bank",
@@ -18,4 +19,5 @@ include ":bank",
 
 // etc
 include 'kafkaclient'
+
 
