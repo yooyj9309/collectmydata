@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.schedule.sync.poll;
+package com.banksalad.collectmydata.schedule.sync.scheduler;
 
 import com.banksalad.collectmydata.schedule.common.db.entity.ScheduledSync;
 

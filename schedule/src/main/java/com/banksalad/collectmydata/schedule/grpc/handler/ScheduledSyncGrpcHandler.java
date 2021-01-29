@@ -3,7 +3,7 @@ package com.banksalad.collectmydata.schedule.grpc.handler;
 import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.schedule.sync.dto.ScheduledSyncRequest;
-import com.banksalad.collectmydata.schedule.sync.schedule.ScheduledSyncScheduler;
+import com.banksalad.collectmydata.schedule.sync.service.ScheduledSyncService;
 import com.github.banksalad.idl.apis.v1.collectschedule.CollectScheduleProto.HealthCheckRequest;
 import com.github.banksalad.idl.apis.v1.collectschedule.CollectScheduleProto.HealthCheckResponse;
 import com.github.banksalad.idl.apis.v1.collectschedule.CollectScheduleProto.RegisterScheduledSyncRequest;
@@ -22,15 +22,13 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ScheduledSyncGrpcHandler extends CollectscheduleImplBase implements ScheduledSyncHandler {
 
-  private final ScheduledSyncScheduler scheduledSyncScheduler;
+  private final ScheduledSyncService scheduledSyncService;
 
-  public void registerScheduledSync(
-      RegisterScheduledSyncRequest request,
-      StreamObserver<RegisterScheduledSyncResponse> responseObserver
-  ) {
+  public void registerScheduledSync(RegisterScheduledSyncRequest request,
+      StreamObserver<RegisterScheduledSyncResponse> responseObserver) {
     try {
       ScheduledSyncRequest scheduledSyncRequest = ScheduledSyncRequest.of(request);
-      scheduledSyncScheduler.register(scheduledSyncRequest);
+      scheduledSyncService.register(scheduledSyncRequest);
 
       RegisterScheduledSyncResponse response = RegisterScheduledSyncResponse.newBuilder().build();
       responseObserver.onNext(response);
@@ -41,13 +39,11 @@ public class ScheduledSyncGrpcHandler extends CollectscheduleImplBase implements
     }
   }
 
-  public void unregisterScheduledSync(
-      UnregisterScheduledSyncRequest request,
-      StreamObserver<UnregisterScheduledSyncResponse> responseObserver
-  ) {
+  public void unregisterScheduledSync(UnregisterScheduledSyncRequest request,
+      StreamObserver<UnregisterScheduledSyncResponse> responseObserver) {
     try {
       ScheduledSyncRequest scheduledSyncRequest = ScheduledSyncRequest.of(request);
-      scheduledSyncScheduler.unregister(scheduledSyncRequest);
+      scheduledSyncService.unregister(scheduledSyncRequest);
 
       UnregisterScheduledSyncResponse response = UnregisterScheduledSyncResponse.newBuilder().build();
       responseObserver.onNext(response);
@@ -59,10 +55,7 @@ public class ScheduledSyncGrpcHandler extends CollectscheduleImplBase implements
   }
 
   @Override
-  public void healthCheck(
-      HealthCheckRequest request,
-      StreamObserver<HealthCheckResponse> responseObserver
-  ) {
+  public void healthCheck(HealthCheckRequest request, StreamObserver<HealthCheckResponse> responseObserver) {
     try {
       HealthCheckResponse response = HealthCheckResponse.newBuilder().build();
       responseObserver.onCompleted();

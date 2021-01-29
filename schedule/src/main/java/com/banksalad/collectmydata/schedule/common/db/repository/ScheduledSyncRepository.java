@@ -13,6 +13,5 @@ public interface ScheduledSyncRepository extends JpaRepository<ScheduledSync, Lo
   List<ScheduledSync> findAllByIsDeletedEquals(Boolean isDeleted);
 
   Optional<ScheduledSync> findByBanksaladUserIdAndSectorAndIndustryAndOrganizationIdAndIsDeleted(
-      String banksaladUserId, String sector, String industry, String organizationId, Boolean isDeleted
-  );
+      String banksaladUserId, String sector, String industry, String organizationId, Boolean isDeleted);
 }

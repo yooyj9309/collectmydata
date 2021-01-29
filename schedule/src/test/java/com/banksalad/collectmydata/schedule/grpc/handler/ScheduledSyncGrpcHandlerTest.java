@@ -2,7 +2,7 @@ package com.banksalad.collectmydata.schedule.grpc.handler;
 
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.banksalad.collectmydata.schedule.sync.schedule.ScheduledSyncScheduler;
+import com.banksalad.collectmydata.schedule.sync.service.ScheduledSyncService;
 import com.github.banksalad.idl.apis.v1.collectschedule.CollectScheduleProto.HealthCheckRequest;
 import com.github.banksalad.idl.apis.v1.collectschedule.CollectScheduleProto.HealthCheckResponse;
 import com.github.banksalad.idl.apis.v1.collectschedule.CollectScheduleProto.RegisterScheduledSyncRequest;
@@ -24,14 +24,14 @@ import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.times;
 
 @SpringBootTest
-@DisplayName("ScheduledSyncGrpcHandlerTest")
+@DisplayName("ScheduledSyncGrpcHandler Test")
 class ScheduledSyncGrpcHandlerTest {
 
   @InjectMocks
   private ScheduledSyncGrpcHandler scheduledSyncGrpcHandler;
 
   @Mock
-  private ScheduledSyncScheduler scheduledSyncScheduler;
+  private ScheduledSyncService scheduledSyncService;
 
   @Test
   @DisplayName("gRPC Call Success Test : registerScheduledSync")
@@ -45,7 +45,7 @@ class ScheduledSyncGrpcHandlerTest {
 
     // Then
     assertNull(streamRecorder.getError());
-    then(scheduledSyncScheduler).should(times(1)).register(any());
+    then(scheduledSyncService).should(times(1)).register(any());
   }
 
   @Test
@@ -54,7 +54,7 @@ class ScheduledSyncGrpcHandlerTest {
     // Given
     RegisterScheduledSyncRequest registerScheduledSyncRequest = getRegisterScheduledSyncRequest();
     StreamRecorder<RegisterScheduledSyncResponse> streamRecorder = StreamRecorder.create();
-    willThrow(new RuntimeException("Test Message")).given(scheduledSyncScheduler).register(any());
+    willThrow(new RuntimeException("Test Message")).given(scheduledSyncService).register(any());
 
     // When
     scheduledSyncGrpcHandler.registerScheduledSync(registerScheduledSyncRequest, streamRecorder);
@@ -77,7 +77,7 @@ class ScheduledSyncGrpcHandlerTest {
 
     // Then
     assertNull(streamRecorder.getError());
-    then(scheduledSyncScheduler).should(times(1)).unregister(any());
+    then(scheduledSyncService).should(times(1)).unregister(any());
   }
 
   @Test
@@ -86,7 +86,7 @@ class ScheduledSyncGrpcHandlerTest {
     // Given
     UnregisterScheduledSyncRequest unregisterScheduledSyncRequest = getUnregisterScheduledSyncRequest();
     StreamRecorder<UnregisterScheduledSyncResponse> streamRecorder = StreamRecorder.create();
-    willThrow(new RuntimeException("Test Message")).given(scheduledSyncScheduler).unregister(any());
+    willThrow(new RuntimeException("Test Message")).given(scheduledSyncService).unregister(any());
 
     // When
     scheduledSyncGrpcHandler.unregisterScheduledSync(unregisterScheduledSyncRequest, streamRecorder);

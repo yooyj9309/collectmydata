@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.schedule.sync.schedule;
+package com.banksalad.collectmydata.schedule.sync.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,12 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.*;
 
 @SpringBootTest
-@DisplayName("ScheduledSyncScheduler Test")
+@DisplayName("ScheduledSyncService Test")
 @DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
-class ScheduledSyncSchedulerTest {
+class ScheduledSyncServiceTest {
 
   @Autowired
-  private ScheduledSyncScheduler scheduledSyncScheduler;
+  private ScheduledSyncService scheduledSyncService;
 
   @Autowired
   private ScheduledSyncRepository scheduledSyncRepository;
@@ -36,7 +36,7 @@ class ScheduledSyncSchedulerTest {
     ScheduledSyncRequest scheduledSyncRequest = getScheduledSyncRequest();
 
     // When
-    scheduledSyncScheduler.register(scheduledSyncRequest);
+    scheduledSyncService.register(scheduledSyncRequest);
 
     // Then
     ScheduledSync savedScheduledSync = scheduledSyncRepository.findById(1L).orElseThrow(EntityNotFoundException::new);
@@ -58,7 +58,7 @@ class ScheduledSyncSchedulerTest {
     ScheduledSyncRequest scheduledSyncRequest = getScheduledSyncRequest();
 
     // When, Then
-    assertThrows(EntityNotFoundException.class, () -> scheduledSyncScheduler.unregister(scheduledSyncRequest));
+    assertThrows(EntityNotFoundException.class, () -> scheduledSyncService.unregister(scheduledSyncRequest));
   }
 
   @Test
@@ -70,7 +70,7 @@ class ScheduledSyncSchedulerTest {
     scheduledSyncRepository.save(scheduledSync);
 
     // When
-    scheduledSyncScheduler.unregister(scheduledSyncRequest);
+    scheduledSyncService.unregister(scheduledSyncRequest);
 
     // Then
     ScheduledSync deletedScheduledSync = scheduledSyncRepository.findById(1L).orElseThrow(EntityNotFoundException::new);

@@ -1,10 +1,11 @@
-package com.banksalad.collectmydata.schedule.sync.poll;
+package com.banksalad.collectmydata.schedule.sync.scheduler;
 
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.banksalad.collectmydata.schedule.common.db.entity.ScheduledSync;
 import com.banksalad.collectmydata.schedule.common.db.repository.ScheduledSyncRepository;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -20,7 +21,8 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
 @SpringBootTest
-class AdditionalScheduledSyncPollerTest {
+@DisplayName("AdditionalScheduledSyncSchedulerTest Test")
+class AdditionalScheduledSyncSchedulerTest {
 
   @Mock
   private ScheduledSyncRepository scheduledSyncRepository;
@@ -29,7 +31,7 @@ class AdditionalScheduledSyncPollerTest {
   private ScheduledSyncKafkaTemplate scheduledSyncKafkaTemplate;
 
   @InjectMocks
-  private AdditionalScheduledSyncPoller additionalScheduledSyncPoller;
+  private AdditionalScheduledSyncScheduler additionalScheduledSyncScheduler;
 
   // TODO : - 문제 : ShortScheduledSyncPoller 의 cron schedule time 을 조작해야, 다음 테스트 코드가 성공
   //        - 해결 : 조작하지 않아도 테스트 코드가 성공하도록 수정 필요
@@ -38,7 +40,7 @@ class AdditionalScheduledSyncPollerTest {
   public void whenWaitThirtySeconds_thenScheduledIsCalledAtLeastOneTimes() {
     await()
         .atMost(30, SECONDS)
-        .untilAsserted(() -> then(additionalScheduledSyncPoller).should(times(1)).poll());
+        .untilAsserted(() -> then(additionalScheduledSyncScheduler).should(times(1)).schedule());
   }
 
   @Test
@@ -49,7 +51,7 @@ class AdditionalScheduledSyncPollerTest {
     given(scheduledSyncRepository.findAllByIsDeletedEquals(FALSE)).willReturn(asList(scheduledSync01, scheduledSync02));
 
     // When
-    additionalScheduledSyncPoller.poll();
+    additionalScheduledSyncScheduler.schedule();
 
     // Then
     then(scheduledSyncKafkaTemplate).should().sync(scheduledSync01);

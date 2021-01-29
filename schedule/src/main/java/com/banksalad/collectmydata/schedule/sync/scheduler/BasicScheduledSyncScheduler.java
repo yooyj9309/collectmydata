@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.schedule.sync.poll;
+package com.banksalad.collectmydata.schedule.sync.scheduler;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -7,26 +7,26 @@ import com.banksalad.collectmydata.schedule.common.db.repository.ScheduledSyncRe
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.banksalad.collectmydata.schedule.common.enums.SyncType.*;
+import static com.banksalad.collectmydata.schedule.common.enums.SyncType.BASIC;
 import static java.lang.Boolean.FALSE;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class AdditionalScheduledSyncPoller implements ScheduledSyncPoller {
+public class BasicScheduledSyncScheduler implements ScheduledSyncScheduler {
 
   private final ScheduledSyncRepository scheduledSyncRepository;
   private final ScheduledSyncTemplate scheduledSyncKafkaTemplate;
-  private static final String EVERY_AM_ZERO = "0 0 0 * * *";
+  private static final String EVERY_TUESDAY_AM_ZERO = "0 0 0 * * TUE";
 
   @Override
-  @Scheduled(cron = EVERY_AM_ZERO)
-  public void poll() {
-    log.info("AdditionalScheduledSyncPoller Starts Every 00:00:00");
+  @Scheduled(cron = EVERY_TUESDAY_AM_ZERO)
+  public void schedule() {
+    log.info("Basic Scheduler Starts, Every Tuesday 00:00:00");
 
     scheduledSyncRepository.findAllByIsDeletedEquals(FALSE)
         .forEach(target -> {
-          target.setSyncType(ADDITIONAL);
+          target.setSyncType(BASIC);
           scheduledSyncKafkaTemplate.sync(target);
         });
   }

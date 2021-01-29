@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.schedule.sync.poll;
+package com.banksalad.collectmydata.schedule.sync.scheduler;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,7 +10,7 @@ import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.banksalad.collectmydata.schedule.common.db.entity.ScheduledSync;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -19,7 +19,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EmbeddedKafka
 @SpringBootTest
-@ExtendWith(SpringExtension.class)
+@ActiveProfiles("test")
 @DisplayName("ScheduledSyncKafkaTemplate Test")
 class ScheduledSyncKafkaTemplateTest {
 
@@ -98,12 +97,10 @@ class ScheduledSyncKafkaTemplateTest {
 
   private KafkaMessageListenerContainer<String, String> getKafkaMessageListenerContainer() {
     Map<String, Object> consumerConfigs = new HashMap<>(
-        KafkaTestUtils.consumerProps("consumer", "false", embeddedKafka)
-    );
+        KafkaTestUtils.consumerProps("consumer", "false", embeddedKafka));
 
     DefaultKafkaConsumerFactory<String, String> consumerFactory = new DefaultKafkaConsumerFactory<>(
-        consumerConfigs, new StringDeserializer(), new StringDeserializer()
-    );
+        consumerConfigs, new StringDeserializer(), new StringDeserializer());
 
     ContainerProperties containerProperties = new ContainerProperties("collect-mydata-card");
 

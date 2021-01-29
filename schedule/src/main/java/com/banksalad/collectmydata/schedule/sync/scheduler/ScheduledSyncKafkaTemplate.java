@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.schedule.sync.poll;
+package com.banksalad.collectmydata.schedule.sync.scheduler;
 
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;

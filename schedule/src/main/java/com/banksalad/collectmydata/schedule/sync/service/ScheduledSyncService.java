@@ -1,6 +1,6 @@
-package com.banksalad.collectmydata.schedule.sync.schedule;
+package com.banksalad.collectmydata.schedule.sync.service;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.schedule.common.db.entity.ScheduledSync;
 import com.banksalad.collectmydata.schedule.common.db.repository.ScheduledSyncRepository;
@@ -9,11 +9,10 @@ import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 
-@Component
+@Service
 @RequiredArgsConstructor
-public class ScheduledSyncScheduler {
+public class ScheduledSyncService {
 
   private final ScheduledSyncRepository scheduledSyncRepository;
 
@@ -23,14 +22,11 @@ public class ScheduledSyncScheduler {
   }
 
   public void unregister(ScheduledSyncRequest scheduledSyncRequest) {
-    ScheduledSync scheduledSync =
-        scheduledSyncRepository
-            .findByBanksaladUserIdAndSectorAndIndustryAndOrganizationIdAndIsDeleted(
-                scheduledSyncRequest.getBanksaladUserId(), scheduledSyncRequest.getSector(),
-                scheduledSyncRequest.getIndustry(), scheduledSyncRequest.getOrganizationId(),
-                FALSE
-            )
-            .orElseThrow(EntityNotFoundException::new);
+    ScheduledSync scheduledSync = scheduledSyncRepository
+        .findByBanksaladUserIdAndSectorAndIndustryAndOrganizationIdAndIsDeleted(
+            scheduledSyncRequest.getBanksaladUserId(), scheduledSyncRequest.getSector(),
+            scheduledSyncRequest.getIndustry(), scheduledSyncRequest.getOrganizationId(), FALSE)
+        .orElseThrow(EntityNotFoundException::new);
 
     scheduledSync.disable();
     scheduledSyncRepository.save(scheduledSync);
