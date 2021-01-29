@@ -33,6 +33,8 @@ import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeT
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 
+import static com.banksalad.collectmydata.common.exception.ExceptionHandler.*;
+
 @Service
 @RequiredArgsConstructor
 public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase {
@@ -43,85 +45,113 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
 
   @Override
   public void healthCheck(HealthCheckRequest request, StreamObserver<HealthCheckResponse> responseObserver) {
-    responseObserver.onNext(HealthCheckResponse.getDefaultInstance());
-    responseObserver.onCompleted();
+    try {
+      responseObserver.onNext(HealthCheckResponse.getDefaultInstance());
+      responseObserver.onCompleted();
+    } catch (Exception e) {
+      responseObserver.onError(handle(e));
+    }
   }
 
   @Override
   public void issueToken(IssueTokenRequest request, StreamObserver<IssueTokenResponse> responseObserver) {
-    IssueTokenRequestValidator validator = IssueTokenRequestValidator.of(request);
-    validatorService.validate(validator);
+    try {
+      IssueTokenRequestValidator validator = IssueTokenRequestValidator.of(request);
+      validatorService.validate(validator);
 
-    OauthToken oauthToken = oauthTokenService.issueToken(request);
-    TokenResponse tokenResponse = TokenResponse.builder()
-        .oauthToken(oauthToken)
-        .build();
+      OauthToken oauthToken = oauthTokenService.issueToken(request);
+      TokenResponse tokenResponse = TokenResponse.builder()
+          .oauthToken(oauthToken)
+          .build();
 
-    responseObserver.onNext(tokenResponse.toIssueTokenResponseProto());
-    responseObserver.onCompleted();
+      responseObserver.onNext(tokenResponse.toIssueTokenResponseProto());
+      responseObserver.onCompleted();
+    } catch (Exception e) {
+      responseObserver.onError(handle(e));
+    }
   }
 
   @Override
   public void getAccessToken(GetAccessTokenRequest request, StreamObserver<GetAccessTokenResponse> responseObserver) {
-    GetAccessTokenRequestValidator validator = GetAccessTokenRequestValidator.of(request);
-    validatorService.validate(validator);
+    try {
+      GetAccessTokenRequestValidator validator = GetAccessTokenRequestValidator.of(request);
+      validatorService.validate(validator);
 
-    OauthToken oauthToken = oauthTokenService.getAccessToken(request);
-    TokenResponse tokenResponse = TokenResponse.builder()
-        .oauthToken(oauthToken)
-        .build();
+      OauthToken oauthToken = oauthTokenService.getAccessToken(request);
+      TokenResponse tokenResponse = TokenResponse.builder()
+          .oauthToken(oauthToken)
+          .build();
 
-    responseObserver.onNext(tokenResponse.toGetAccessTokenResponseProto());
-    responseObserver.onCompleted();
+      responseObserver.onNext(tokenResponse.toGetAccessTokenResponseProto());
+      responseObserver.onCompleted();
+    } catch (Exception e) {
+      responseObserver.onError(handle(e));
+    }
   }
 
   @Override
   public void refreshToken(RefreshTokenRequest request, StreamObserver<RefreshTokenResponse> responseObserver) {
-    RefreshTokenRequestValidator validator = RefreshTokenRequestValidator.of(request);
-    validatorService.validate(validator);
+    try {
+      RefreshTokenRequestValidator validator = RefreshTokenRequestValidator.of(request);
+      validatorService.validate(validator);
 
-    OauthToken oauthToken = oauthTokenService.refreshToken(request);
-    TokenResponse tokenResponse = TokenResponse.builder()
-        .oauthToken(oauthToken)
-        .build();
+      OauthToken oauthToken = oauthTokenService.refreshToken(request);
+      TokenResponse tokenResponse = TokenResponse.builder()
+          .oauthToken(oauthToken)
+          .build();
 
-    responseObserver.onNext(tokenResponse.toRefreshTokenResponseProto());
-    responseObserver.onCompleted();
+      responseObserver.onNext(tokenResponse.toRefreshTokenResponseProto());
+      responseObserver.onCompleted();
+    } catch (Exception e) {
+      responseObserver.onError(handle(e));
+    }
   }
 
   @Override
   public void revokeToken(RevokeTokenRequest request, StreamObserver<RevokeTokenResponse> responseObserver) {
-    RevokeTokenRequestValidator validator = RevokeTokenRequestValidator.of(request);
-    validatorService.validate(validator);
+    try {
+      RevokeTokenRequestValidator validator = RevokeTokenRequestValidator.of(request);
+      validatorService.validate(validator);
 
-    oauthTokenService.revokeToken(request);
+      oauthTokenService.revokeToken(request);
 
-    responseObserver.onNext(RevokeTokenResponse.getDefaultInstance());
-    responseObserver.onCompleted();
+      responseObserver.onNext(RevokeTokenResponse.getDefaultInstance());
+      responseObserver.onCompleted();
+    } catch (Exception e) {
+      responseObserver.onError(handle(e));
+    }
   }
 
   @Override
   public void revokeAllTokens(RevokeAllTokensRequest request, StreamObserver<RevokeAllTokensResponse> responseObserver) {
-    RevokeAllTokensRequestValidator validator = RevokeAllTokensRequestValidator.of(request);
-    validatorService.validate(validator);
+    try {
+      RevokeAllTokensRequestValidator validator = RevokeAllTokensRequestValidator.of(request);
+      validatorService.validate(validator);
 
-    oauthTokenService.revokeAllTokens(request);
+      oauthTokenService.revokeAllTokens(request);
 
-    responseObserver.onNext(RevokeAllTokensResponse.getDefaultInstance());
-    responseObserver.onCompleted();
+      responseObserver.onNext(RevokeAllTokensResponse.getDefaultInstance());
+      responseObserver.onCompleted();
+    } catch (Exception e) {
+      responseObserver.onError(handle(e));
+    }
   }
 
   @Override
   public void getOrganization(GetOrganizationRequest request, StreamObserver<GetOrganizationResponse> responseObserver) {
-    GetOrganizationRequestValidator validator = GetOrganizationRequestValidator.of(request);
-    validatorService.validate(validator);
+    try {
+      GetOrganizationRequestValidator validator = GetOrganizationRequestValidator.of(request);
+      validatorService.validate(validator);
 
-    Organization organization = organizationService.getOrganization(request);
-    OrganizationResponse organizationResponse = OrganizationResponse.builder()
-        .organization(organization)
-        .build();
+      Organization organization = organizationService.getOrganization(request);
+      OrganizationResponse organizationResponse = OrganizationResponse.builder()
+          .organization(organization)
+          .build();
 
-    responseObserver.onNext(organizationResponse.toGetOrganizationProto());
-    responseObserver.onCompleted();
+      responseObserver.onNext(organizationResponse.toGetOrganizationProto());
+      responseObserver.onCompleted();
+    } catch (Exception e) {
+      responseObserver.onError(handle(e));
+    }
   }
 }
