@@ -19,7 +19,7 @@ public enum AuthorizationResultType {
   INVALID_SCOPE("invalid_scope", "지정한 scope 값이 잘못된 경우"),
   SERVER_ERROR("server_error", "Internal Server Error"),
   TEMPORARILY_UNAVAILABLE("temporarily_unavailable", "서버가 일시적인 부하 등으로 서비스가 불가한 경우"),
-  UNKNOWN("Unknown error", "알 수 없는 오류입니다.");
+  UNKNOWN("unknown_error", "알 수 없는 오류입니다.");
 
   private String error;
   private String description;
