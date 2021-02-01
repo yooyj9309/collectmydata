@@ -9,3 +9,7 @@ spring:
     url: jdbc:h2:mem://localhost/~/connect
     name: sa
     password:
+
+
+organization:
+  finance-portal-domain: http://fixme.com
