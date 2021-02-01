@@ -9,21 +9,18 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.List;
 
 @Entity
 @Getter
 @Builder
-@ToString
-public class OauthTokenEntity {
+public class OauthTokenHistoryEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long oauthTokenHistoryId;
+
   private Long oauthTokenId;
 
   private Long banksaladUserId;
@@ -55,16 +52,4 @@ public class OauthTokenEntity {
 
   @LastModifiedDate
   private LocalDateTime updatedAt;
-
-  public List<String> getParseScope() {
-    return Arrays.asList(scope.split(" "));
-  }
-
-  public boolean isAccessTokenExpired() {
-    return accessTokenExpiresAt.isBefore(LocalDateTime.now(ZoneId.of("Asia/Seoul")));
-  }
-
-  public void disableToken() {
-    this.isExpired = true;
-  }
 }
