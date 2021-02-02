@@ -12,55 +12,51 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "oauth_token_history")
-public class OauthTokenHistoryEntity extends BaseTimeAndUserEntity{
+@Table(name = "connect_organization")
+public class ConnectOrganizationEntity extends BaseTimeAndUserEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long oauthTokenHistoryId;
+  private Long connectOrganizationId;
 
   @Column(nullable = false)
-  private String oauthTokenId;
+  private String sector;
 
   @Column(nullable = false)
-  private Long banksaladUserId;
+  private String industry;
 
   @Column(nullable = false)
   private String organizationId;
 
   @Column(nullable = false)
-  private String authorizationCode;
+  private String organizationObjectId;
 
   @Column(nullable = false)
-  private String accessToekn;
+  private String orgCode;
 
   @Column(nullable = false)
-  private String refreshToken;
+  private String orgType;
+
+  private String orgName;
 
   @Column(nullable = false)
-  private LocalDateTime accessTokenExpiresAt;
+  private String organizationStatus;
 
-  @Column(nullable = false)
-  private Integer accessTokenExpiresIn;
+  private String orgRegno;
 
-  @Column(nullable = false)
-  private LocalDateTime refreshTokenExpiresAt;
+  private String corpRegno;
 
-  @Column(nullable = false)
-  private Integer refreshTokenExpiresIn;
+  private String address;
 
-  private String tokenType;
-
-  @Column(nullable = false)
-  private String scope;
+  private String domain;
 
   @Column(nullable = false, columnDefinition = "BIT", length = 1)
-  private Boolean isExpired;
+  private Boolean isRelayOrganization;
+
+  private String relayOrgCode;
 }
