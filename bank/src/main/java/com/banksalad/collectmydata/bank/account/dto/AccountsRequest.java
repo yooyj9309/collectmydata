@@ -15,14 +15,10 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class Account {
+public class AccountsRequest {
 
-  private String accountNum;
-  private String isConsent;
-  private int seqno;
-  private String currencyCode;
-  private String prodName;
-  private String accountType;
-  private String accountStatus;
-
+  private String orgCode;
+  private long searchTimestamp;
+  private String nextPage;
+  private int limit;
 }

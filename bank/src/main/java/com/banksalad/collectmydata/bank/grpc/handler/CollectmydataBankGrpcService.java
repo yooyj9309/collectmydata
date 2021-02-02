@@ -1,10 +1,8 @@
 package com.banksalad.collectmydata.bank.grpc.handler;
 
-import com.banksalad.collectmydata.bank.account.AccountService;
 import com.banksalad.collectmydata.bank.common.dto.UserSyncStatus;
 import com.banksalad.collectmydata.bank.common.dto.UserSyncStatusResponse;
 import com.banksalad.collectmydata.bank.common.service.UserSyncStatusService;
-import com.banksalad.collectmydata.bank.transaction.TransactionService;
 import com.banksalad.collectmydata.common.logging.CollectLogbackJsonLayout;
 
 import org.springframework.stereotype.Service;
@@ -21,7 +19,6 @@ import com.github.banksalad.idl.daas.v1.collect.bank.BankProto.HealthCheckRespon
 import com.github.banksalad.idl.daas.v1.collect.bank.BankProto.SyncUserRequest;
 import com.github.banksalad.idl.daas.v1.collect.bank.BankProto.SyncUserResponse;
 import io.grpc.stub.StreamObserver;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import reactor.core.publisher.Mono;
@@ -29,14 +26,16 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 @Slf4j
-//@GRpcService(interceptors = {StatsUnaryServerInterceptor.class})
 @Service
-@RequiredArgsConstructor
 public class CollectmydataBankGrpcService extends BankGrpc.BankImplBase {
 
-  private final AccountService accountService;
-  private final TransactionService transactionService;
   private final UserSyncStatusService userSyncStatusService;
+
+  public CollectmydataBankGrpcService(
+      UserSyncStatusService userSyncStatusService
+  ) {
+    this.userSyncStatusService = userSyncStatusService;
+  }
 
   @Override
   public void healthCheck(HealthCheckRequest request, StreamObserver<HealthCheckResponse> responseObserver) {

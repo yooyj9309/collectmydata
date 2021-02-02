@@ -1,7 +1,6 @@
 package com.banksalad.collectmydata.bank.common.config;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.Clock;
@@ -9,7 +8,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.statsd.StatsdConfig;
 import io.micrometer.statsd.StatsdMeterRegistry;
 
-@Configuration
+//@Configuration
 public class MicrometerConfig {
 
   private final CustomNamingConvention customNamingConvention;

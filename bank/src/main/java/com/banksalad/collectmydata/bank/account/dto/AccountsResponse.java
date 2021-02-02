@@ -9,20 +9,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class Account {
+public class AccountsResponse {
 
-  private String accountNum;
-  private String isConsent;
-  private int seqno;
-  private String currencyCode;
-  private String prodName;
-  private String accountType;
-  private String accountStatus;
+  private String rspCode;
+  private String rspMsg;
+  private String searchTimestamp;
+  private String regDate;
+  private int nextPage;
 
+  private int accountCnt;
+  private List<Account> accountList;
 }

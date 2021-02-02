@@ -1,61 +1,82 @@
 plugins {
-	id 'java'
+    id 'java'
 }
 
 group 'com.banksalad.collectmydata'
 version '1.0-SNAPSHOT'
 
 repositories {
-	mavenCentral()
-	maven {
-		name = "GitHubPackages"
-		url = uri("https://maven.pkg.github.com/banksalad/**")
-		credentials {
-			username = System.getenv("GH_USERNAME")
-			password = System.getenv("GH_DAAS_PACKAGES_TOKEN")
-		}
-	}
+    mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/banksalad/**")
+        credentials {
+            username = System.getenv("GH_USERNAME")
+            password = System.getenv("GH_DAAS_PACKAGES_TOKEN")
+        }
+    }
 }
 
 ext {
-	idlVersion = "20210122.7e9d732.RELEASE"
+    idlVersion = "20210122.7e9d732.RELEASE"
 
-	// Do not update spring boot version as 2.3.1 (micrometer timer is not working)
-	springBootVersion = "2.2.8.RELEASE"
-	grpcVersion = "1.30.2"
-	apacheCommonsVersion = "3.10"
-	slf4jVersion = "1.7.30"
-	logbackVersion = "1.2.3"
-	lombokVersion = "1.18.12"
+    springBootVersion = "2.4.1"
+    grpcVersion = "1.30.2"
+    apacheCommonsVersion = "3.10"
+    slf4jVersion = "1.7.30"
+    logbackVersion = "1.2.3"
+    lombokVersion = "1.18.12"
+
+    jacksonVersion = '2.11.0'
+    jsonPathVersion = '2.4.0'
+    camelVersion = '3.2.0'
+    slf4jVersion = '1.7.30'
+    logbackVersion = '1.2.3'
+    reactorVersion = '3.4.2'
 }
 
 dependencies {
-	// idl
-	implementation("com.banksalad:idl:${idlVersion}")
+    // idl
+    implementation("com.banksalad:idl:${idlVersion}")
 
-	// grpc
-	implementation("io.grpc:grpc-context:${grpcVersion}")
-	implementation("io.grpc:grpc-api:${grpcVersion}")
-	implementation("io.grpc:grpc-protobuf:${grpcVersion}")
+    // grpc
+    implementation("io.grpc:grpc-context:${grpcVersion}")
+    implementation("io.grpc:grpc-api:${grpcVersion}")
+    implementation("io.grpc:grpc-protobuf:${grpcVersion}")
 
-	// apache commons
-	implementation("org.apache.commons:commons-lang3:${apacheCommonsVersion}")
+    // spring
+    implementation("org.springframework.boot:spring-boot-starter-webflux:${springBootVersion}")
 
-	// log
-	implementation("org.slf4j:slf4j-api:${slf4jVersion}")
-	implementation("org.slf4j:jcl-over-slf4j:${slf4jVersion}")
-	implementation("ch.qos.logback:logback-classic:${logbackVersion}")
+    // Jackson
+    implementation("com.fasterxml.jackson.core:jackson-core:${jacksonVersion}")
+    implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
+    implementation("com.jayway.jsonpath:json-path:${jsonPathVersion}")
 
-	// logback json
-	implementation("ch.qos.logback.contrib:logback-json-classic:0.1.5")
-	implementation("ch.qos.logback.contrib:logback-jackson:0.1.5")
+    // camel-jslt
+    implementation("org.apache.camel:camel-jslt:${camelVersion}")
 
-	// lombok
-	compileOnly("org.projectlombok:lombok:${lombokVersion}")
-	annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+    // apache commons
+    implementation("org.apache.commons:commons-lang3:${apacheCommonsVersion}")
 
-	// valid
-	implementation ("org.springframework.boot:spring-boot-starter-validation:${springBootVersion}")
+    // log
+    implementation("org.slf4j:slf4j-api:${slf4jVersion}")
+    implementation("org.slf4j:jcl-over-slf4j:${slf4jVersion}")
+    implementation("ch.qos.logback:logback-classic:${logbackVersion}")
 
-	testCompile group: 'junit', name: 'junit', version: '4.12'
+    // logback json
+    implementation("ch.qos.logback.contrib:logback-json-classic:0.1.5")
+    implementation("ch.qos.logback.contrib:logback-jackson:0.1.5")
+
+    // lombok
+    compileOnly("org.projectlombok:lombok:${lombokVersion}")
+    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+
+    // valid
+    implementation("org.springframework.boot:spring-boot-starter-validation:${springBootVersion}")
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    // spring
+    testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
 }
