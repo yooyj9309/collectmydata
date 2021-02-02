@@ -3,6 +3,8 @@ package com.banksalad.collectmydata.connect.common.db.entity;
 import javax.persistence.Column;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import com.banksalad.collectmydata.connect.token.dto.ExternalTokenResponse;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,17 +14,18 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 
 @Entity
 @Getter
 @Builder
-
+@ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "oauth_token")
 public class OauthTokenEntity extends BaseTimeAndUserEntity{
@@ -65,12 +68,33 @@ public class OauthTokenEntity extends BaseTimeAndUserEntity{
   @Column(nullable = false, columnDefinition = "BIT", length = 1)
   private Boolean isExpired;
 
+  @CreatedDate
+  private LocalDateTime createdAt;
+
+  @LastModifiedDate
+  private LocalDateTime updatedAt;
+
+  public void update(String authorizationCode, ExternalTokenResponse response) {
+    this.authorizationCode = authorizationCode;
+    this.accessToken = response.getAccessToken();
+    this.refreshToken = response.getRefreshToken();
+    this.accessTokenExpiresAt = LocalDateTime.now()
+        .plusSeconds(response.getAccessTokenExpiresIn());
+    this.accessTokenExpiresIn = response.getAccessTokenExpiresIn();
+    this.refreshTokenExpiresAt = LocalDateTime.now()
+        .plusSeconds(response.getRefreshTokenExpiresIn());
+    this.refreshTokenExpiresIn = response.getRefreshTokenExpiresIn();
+    this.tokenType = response.getTokenType();
+    this.scope = response.getScope();
+    this.isExpired = false;
+  }
+
   public List<String> getParseScope() {
     return Arrays.asList(scope.split(" "));
   }
 
   public boolean isAccessTokenExpired() {
-    return accessTokenExpiresAt.isBefore(LocalDateTime.now(ZoneId.of("Asia/Seoul")));
+    return accessTokenExpiresAt.isBefore(LocalDateTime.now());
   }
 
   public void disableToken() {

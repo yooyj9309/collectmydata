@@ -13,6 +13,12 @@ public class NotFoundTokenException extends CollectMydataException {
   private String message;
   private ErrorResultResponse errorResultResponse;
 
+  public NotFoundTokenException() {
+    this.code = Code.NOT_FOUND;
+    this.message = "Not Found Token";
+    this.errorResultResponse = buildErrorResultResponse();
+  }
+
   public NotFoundTokenException(String message) {
     this.code = Code.NOT_FOUND;
     this.message = message;

@@ -2,23 +2,34 @@ package com.banksalad.collectmydata.connect.token.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.banksalad.collectmydata.common.exception.collectMydataException.NotFoundOrganizationException;
 import com.banksalad.collectmydata.common.exception.collectMydataException.NotFoundTokenException;
 import com.banksalad.collectmydata.connect.common.db.entity.OauthTokenEntity;
+import com.banksalad.collectmydata.connect.common.db.entity.OrganizationInfoEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.OauthTokenRepository;
+import com.banksalad.collectmydata.connect.common.db.repository.OrganizationInfoRepository;
+import com.banksalad.collectmydata.connect.token.dto.ExternalTokenResponse;
 import com.banksalad.collectmydata.connect.token.dto.OauthToken;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenRequest;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.IssueTokenRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RefreshTokenRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
+@ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @DisplayName("OauthTokenService Test")
@@ -29,6 +40,12 @@ class OauthTokenServiceTest {
 
   @Autowired
   private OauthTokenRepository oauthTokenRepository;
+
+  @Autowired
+  private OrganizationInfoRepository organizationInfoRepository;
+
+  @MockBean
+  private ExternalTokenService externalTokenService;
 
   @Test
   @Transactional
@@ -59,7 +76,8 @@ class OauthTokenServiceTest {
 
     // when
     Long NonExistBanksaladUserId = 98765L;
-    GetAccessTokenRequest request = getAccessTokenRequest(NonExistBanksaladUserId.toString(), oauthTokenEntity.getOrganizationId());
+    GetAccessTokenRequest request = getAccessTokenRequest(NonExistBanksaladUserId.toString(),
+        oauthTokenEntity.getOrganizationId());
 
     // then
     assertThrows(NotFoundTokenException.class, () -> oauthTokenService.getAccessToken(request));
@@ -83,16 +101,65 @@ class OauthTokenServiceTest {
     OauthToken oauthToken = oauthTokenService.getAccessToken(accessTokenRequest);
 
     // then
-    assertEquals(oauthToken, oauthTokenService.refreshToken(refreshTokenRequest));
+    assertThat(oauthToken).usingRecursiveComparison().isEqualTo(oauthTokenService.refreshToken(refreshTokenRequest));
+  }
+
+  @Test
+  @Transactional
+  @DisplayName("access token 발급을 성공하는 테스트")
+  public void issueToken_success() {
+    // given
+    OauthTokenEntity oauthTokenEntity = getOauthTokenEntity();
+    oauthTokenRepository.save(oauthTokenEntity);
+    OrganizationInfoEntity organizationInfoEntity = getOrganizationInfoEntity();
+    organizationInfoRepository.save(organizationInfoEntity);
+
+    IssueTokenRequest request = getIssueTokenRequest(oauthTokenEntity.getBanksaladUserId().toString(),
+        oauthTokenEntity.getOrganizationId(),
+        oauthTokenEntity.getAuthorizationCode());
+
+    // when
+    ExternalTokenResponse externalTokenResponse = getExternalTokenResponse();
+    when(externalTokenService.issueToken(organizationInfoEntity.getOrganizationCode(), request.getAuthorizationCode()))
+        .thenReturn(externalTokenResponse);
+    OauthToken oauthToken = oauthTokenService.issueToken(request);
+
+    // then
+    assertEquals(oauthToken.getAccessToken(), externalTokenResponse.getAccessToken());
+    assertEquals(oauthToken.getRefreshToken(), externalTokenResponse.getRefreshToken());
+    assertEquals(oauthToken.getScopes(), Arrays.asList(externalTokenResponse.getScope().split(" ")));
+  }
+
+  @Test
+  @Transactional
+  @DisplayName("access token 발급을 실패하는 테스트 - 없는 organizationId 조회")
+  public void issueToken_fail() {
+    // given
+    OauthTokenEntity oauthTokenEntity = getOauthTokenEntity();
+    oauthTokenRepository.save(oauthTokenEntity);
+    OrganizationInfoEntity organizationInfoEntity = getOrganizationInfoEntity();
+    organizationInfoRepository.save(organizationInfoEntity);
+
+    IssueTokenRequest request = getIssueTokenRequest(oauthTokenEntity.getBanksaladUserId().toString(),
+        "non_exist_organizationId",
+        oauthTokenEntity.getAuthorizationCode());
+
+    // when
+    ExternalTokenResponse externalTokenResponse = getExternalTokenResponse();
+    when(externalTokenService.issueToken(organizationInfoEntity.getOrganizationCode(), request.getAuthorizationCode()))
+        .thenReturn(externalTokenResponse);
+
+    // then
+    assertThrows(NotFoundOrganizationException.class, () -> oauthTokenService.issueToken(request));
   }
 
   private OauthTokenEntity getOauthTokenEntity() {
     return OauthTokenEntity.builder()
         .banksaladUserId(1234567890L)
-        .organizationId("shinhancard")
-        .authorizationCode("authorizationCode123")
-        .accessToken("accessToken123")
-        .refreshToken("refreshToken123")
+        .organizationId("test_shinhancard")
+        .authorizationCode("test_authorizationCode")
+        .accessToken("test_accessToken")
+        .refreshToken("test_refreshToken")
         .accessTokenExpiresAt(LocalDateTime.now().plusDays(90))
         .accessTokenExpiresIn(90 * 3600)
         .refreshTokenExpiresAt(LocalDateTime.now().plusDays(365))
@@ -106,10 +173,10 @@ class OauthTokenServiceTest {
   private OauthTokenEntity getExpiredOauthTokenEntity() {
     return OauthTokenEntity.builder()
         .banksaladUserId(1234567890L)
-        .organizationId("shinhancard")
-        .authorizationCode("authorizationCode123")
-        .accessToken("accessToken123")
-        .refreshToken("refreshToken123")
+        .organizationId("test_shinhancard")
+        .authorizationCode("test_authorizationCode")
+        .accessToken("test_accessToken")
+        .refreshToken("test_refreshToken")
         .accessTokenExpiresAt(LocalDateTime.now().minusDays(5))
         .accessTokenExpiresIn(90 * 3600)
         .refreshTokenExpiresAt(LocalDateTime.now().plusDays(365))
@@ -120,10 +187,41 @@ class OauthTokenServiceTest {
         .build();
   }
 
+  private OrganizationInfoEntity getOrganizationInfoEntity() {
+    return OrganizationInfoEntity.builder()
+        .sector("test_finance")
+        .industry("test_card")
+        .organizationId("test_shinhancard")
+        .organizationObjectid("test_objectId")
+        .organizationCode("test_001")
+        .organizationDomain("test_shinhancard.com")
+        .build();
+  }
+
+  private ExternalTokenResponse getExternalTokenResponse() {
+    return ExternalTokenResponse.builder()
+        .tokenType("Bearer")
+        .accessToken("test_received_accessToken")
+        .accessTokenExpiresIn(90 * 3600)
+        .refreshToken("test_received_refreshToken")
+        .refreshTokenExpiresIn(365 * 3600)
+        .scope("received_scope1 received_scope2")
+        .build();
+  }
+
   private GetAccessTokenRequest getAccessTokenRequest(String banksaladId, String organizationId) {
     return GetAccessTokenRequest.newBuilder()
         .setBanksaladUserId(banksaladId)
         .setOrganizationId(organizationId)
+        .build();
+  }
+
+  private IssueTokenRequest getIssueTokenRequest(String banksaladId, String organizationId,
+      String authorizationCode) {
+    return IssueTokenRequest.newBuilder()
+        .setBanksaladUserId(banksaladId)
+        .setOrganizationId(organizationId)
+        .setAuthorizationCode(authorizationCode)
         .build();
   }
 }
