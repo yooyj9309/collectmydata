@@ -26,6 +26,9 @@ repositories {
             password = System.getenv("GH_DAAS_PACKAGES_TOKEN")
         }
     }
+    maven {
+        url = uri("https://repo.spring.io/release")
+    }
 }
 
 ext {
@@ -45,11 +48,13 @@ ext {
     apacheCommonsVersion = "3.10"
     json_path_version = "2.4.0"
     awsSdkVersion = "2.14.21"
+    springCloudVersion = "2020.0.0"
 }
 
 dependencyManagement {
     imports {
         mavenBom "software.amazon.awssdk:bom:${awsSdkVersion}"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
 
@@ -119,10 +124,12 @@ dependencies {
         exclude group: "org.junit.vintage", module: "junit-vintage-engine"
     }
 
+    testImplementation("org.springframework.cloud:spring-cloud-starter-contract-stub-runner")
     testImplementation("commons-io:commons-io:2.6")
     testImplementation("com.h2database:h2")
     testImplementation("org.mockito:mockito-inline:3.1.0")
     testImplementation("com.google.protobuf:protobuf-java-util:3.11.0")
+    testImplementation("io.projectreactor:reactor-test:3.4.2")
 
     testCompile("org.projectlombok:lombok:${lombokVersion}")
     testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")

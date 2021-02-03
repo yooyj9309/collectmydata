@@ -1,0 +1,30 @@
+{
+  "rsp_code": "000",
+  "rsp_msg": "rsp_msg",
+  "search_timestamp": 1000,
+  "org_cnt": 2,
+  "org_list": [
+    {
+      "op_type": "I",
+      "org_code": "020",
+      "org_type": "01",
+      "org_name": "기관1",
+      "org_regno": "1234567890",
+      "corp_regno": "1234567890",
+      "address": "address1",
+      "domain" : "domain1",
+      "relay_org_code" : "relay_org_code1"
+    },
+    {
+      "op_type": "I",
+      "org_code": "030",
+      "org_type": "02",
+      "org_name": "기관2",
+      "org_regno": "1234567890",
+      "corp_regno": "1234567890",
+      "address": "address2",
+      "domain" : "domain2",
+      "relay_org_code" : "relay_org_code2"
+    }
+  ]
+}
