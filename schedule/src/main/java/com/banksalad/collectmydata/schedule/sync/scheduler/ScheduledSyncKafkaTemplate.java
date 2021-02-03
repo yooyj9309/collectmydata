@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import com.banksalad.collectmydata.schedule.common.db.entity.ScheduledSync;
+import com.banksalad.collectmydata.schedule.common.enums.SyncType;
+import com.banksalad.collectmydata.schedule.sync.dto.ScheduledSyncMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +23,9 @@ public class ScheduledSyncKafkaTemplate implements ScheduledSyncTemplate {
   private static final String TOPIC_PREFIX = "collect-mydata-";
 
   @Override
-  public void sync(ScheduledSync scheduledSync) {
+  public void sync(ScheduledSync scheduledSync, SyncType syncType) {
     String topic = getTopicNameFrom(scheduledSync);
-    String message = getMessageFrom(scheduledSync);
+    String message = getMessageFrom(scheduledSync, syncType);
     if (message == null) {
       return;
     }
@@ -47,11 +49,12 @@ public class ScheduledSyncKafkaTemplate implements ScheduledSyncTemplate {
     return TOPIC_PREFIX + scheduledSync.getIndustry();
   }
 
-  private String getMessageFrom(ScheduledSync scheduledSync) {
+  private String getMessageFrom(ScheduledSync scheduledSync, SyncType syncType) {
     String message = null;
 
     try {
-      message = objectMapper.writeValueAsString(scheduledSync);
+      ScheduledSyncMessage scheduledSyncMessage = ScheduledSyncMessage.of(scheduledSync, syncType);
+      message = objectMapper.writeValueAsString(scheduledSyncMessage);
     } catch (JsonProcessingException e) {
       log.error("ScheduledSync Serialization Fail, Exception : {}", e.getMessage());
     }

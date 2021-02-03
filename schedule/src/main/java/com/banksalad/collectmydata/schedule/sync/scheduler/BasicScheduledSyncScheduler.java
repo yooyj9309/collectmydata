@@ -24,10 +24,8 @@ public class BasicScheduledSyncScheduler implements ScheduledSyncScheduler {
   public void schedule() {
     log.info("Basic Scheduler Starts, Every Tuesday 00:00:00");
 
-    scheduledSyncRepository.findAllByIsDeletedEquals(FALSE)
-        .forEach(target -> {
-          target.setSyncType(BASIC);
-          scheduledSyncKafkaTemplate.sync(target);
-        });
+    scheduledSyncRepository
+        .findAllByIsDeletedEquals(FALSE)
+        .forEach(target -> scheduledSyncKafkaTemplate.sync(target, BASIC));
   }
 }

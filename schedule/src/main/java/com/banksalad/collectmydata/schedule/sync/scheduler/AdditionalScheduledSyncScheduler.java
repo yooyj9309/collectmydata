@@ -24,10 +24,8 @@ public class AdditionalScheduledSyncScheduler implements ScheduledSyncScheduler 
   public void schedule() {
     log.info("Additional Scheduler Starts, Every 00:00:00");
 
-    scheduledSyncRepository.findAllByIsDeletedEquals(FALSE)
-        .forEach(target -> {
-          target.setSyncType(ADDITIONAL);
-          scheduledSyncKafkaTemplate.sync(target);
-        });
+    scheduledSyncRepository
+        .findAllByIsDeletedEquals(FALSE)
+        .forEach(target -> scheduledSyncKafkaTemplate.sync(target, ADDITIONAL));
   }
 }
