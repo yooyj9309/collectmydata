@@ -18,7 +18,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "service_client_ip")
-public class FinanceServiceClientIpEntity extends BaseTimeAndUserEntity{
+public class FinanceServiceClientIpEntity extends BaseTimeAndUserEntity {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long serviceClientIpId;

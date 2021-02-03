@@ -39,7 +39,7 @@ public class OauthTokenHistoryEntity extends BaseTimeAndUserEntity{
   private String authorizationCode;
 
   @Column(nullable = false)
-  private String accessToekn;
+  private String accessToken;
 
   @Column(nullable = false)
   private String refreshToken;

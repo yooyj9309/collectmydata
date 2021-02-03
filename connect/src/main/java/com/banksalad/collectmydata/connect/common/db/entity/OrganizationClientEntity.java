@@ -1,6 +1,5 @@
 package com.banksalad.collectmydata.connect.common.db.entity;
 
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

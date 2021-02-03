@@ -1,10 +1,7 @@
 package com.banksalad.collectmydata.connect.common.db.entity;
 
-import javax.persistence.Column;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import com.banksalad.collectmydata.connect.token.dto.ExternalTokenResponse;
-
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -43,6 +40,7 @@ public class OauthTokenEntity extends BaseTimeAndUserEntity{
   @Column(nullable = false)
   private String authorizationCode;
 
+  @Column(nullable = false)
   private String accessToken;
 
   @Column(nullable = false)
@@ -68,14 +66,7 @@ public class OauthTokenEntity extends BaseTimeAndUserEntity{
   @Column(nullable = false, columnDefinition = "BIT", length = 1)
   private Boolean isExpired;
 
-  @CreatedDate
-  private LocalDateTime createdAt;
-
-  @LastModifiedDate
-  private LocalDateTime updatedAt;
-
-  public void update(String authorizationCode, ExternalTokenResponse response) {
-    this.authorizationCode = authorizationCode;
+  public void updateFrom(ExternalTokenResponse response) {
     this.accessToken = response.getAccessToken();
     this.refreshToken = response.getRefreshToken();
     this.accessTokenExpiresAt = LocalDateTime.now()
@@ -89,6 +80,11 @@ public class OauthTokenEntity extends BaseTimeAndUserEntity{
     this.isExpired = false;
   }
 
+  public void updateFrom(String authorizationCode, ExternalTokenResponse response) {
+    this.authorizationCode = authorizationCode;
+    updateFrom(response);
+  }
+
   public List<String> getParseScope() {
     return Arrays.asList(scope.split(" "));
   }
@@ -99,5 +95,9 @@ public class OauthTokenEntity extends BaseTimeAndUserEntity{
 
   public void disableToken() {
     this.isExpired = true;
+  }
+
+  public boolean isRefreshTokenExpired() {
+    return refreshTokenExpiresAt.isBefore(LocalDateTime.now());
   }
 }

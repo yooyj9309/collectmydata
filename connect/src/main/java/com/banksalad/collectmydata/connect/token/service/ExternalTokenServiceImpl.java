@@ -41,4 +41,26 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
         .scope("received_scope1 received_scope2")
         .build();
   }
+
+  @Override
+  public ExternalTokenResponse refreshToken(String organizationCode, String refreshToken) {
+    ExternalTokenRequest externalTokenRequest = ExternalTokenRequest.builder()
+        .organizationCode(organizationCode)
+        .grantType("refresh_token")
+        .refreshToken(refreshToken)
+        .clientId("client_id_form_DB") // fixme
+        .clientSecret("client_secret_from_DB") // fixme
+        .build();
+
+    // TODO : refresh token logic using collect library
+
+    return ExternalTokenResponse.builder()
+        .tokenType("Bearer")
+        .accessToken("received_access_token")
+        .accessTokenExpiresIn(90 * 3600)
+        .refreshToken("received_refresh_token")
+        .refreshTokenExpiresIn(365 * 3600)
+        .scope("received_scope1 received_scope2")
+        .build();
+  }
 }

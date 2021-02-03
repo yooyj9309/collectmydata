@@ -9,7 +9,6 @@ import com.banksalad.collectmydata.connect.common.db.entity.OauthTokenEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.OrganizationInfoEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.OauthTokenRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationInfoRepository;
-import com.banksalad.collectmydata.connect.token.dto.ExternalTokenRequest;
 import com.banksalad.collectmydata.connect.token.dto.ExternalTokenResponse;
 import com.banksalad.collectmydata.connect.token.dto.OauthToken;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenRequest;
@@ -18,9 +17,6 @@ import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.Refresh
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeAllTokensRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeTokenRequest;
 import lombok.RequiredArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +39,7 @@ public class OauthTokenServiceImpl implements OauthTokenService {
     OauthTokenEntity oauthTokenEntity = oauthTokenRepository
         .findByBanksaladUserIdAndOrganizationIdAndIsExpired(banksaladUserId, request.getOrganizationId(), false)
         .orElse(createOauthTokenEntity(banksaladUserId, request.getOrganizationId()));
-    oauthTokenEntity.update(request.getAuthorizationCode(), externalTokenResponse);
+    oauthTokenEntity.updateFrom(request.getAuthorizationCode(), externalTokenResponse);
     oauthTokenRepository.save(oauthTokenEntity);
 
     return OauthToken.builder()
@@ -78,20 +74,26 @@ public class OauthTokenServiceImpl implements OauthTokenService {
   @Override
   @Transactional
   public OauthToken refreshToken(RefreshTokenRequest request) {
+    Long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+    OauthTokenEntity oauthTokenEntity = oauthTokenRepository
+        .findByBanksaladUserIdAndOrganizationIdAndIsExpired(banksaladUserId, request.getOrganizationId(), false)
+        .orElseThrow(NotFoundTokenException::new);
 
-    /**
-     * TODO
-     * 1. DB를 조회하고 refresh token 만료시간 확인 후 유효하지 않다면 예외처리 진행
-     * 2. 기관 인증페이지에 기관 정보 바탕으로 토큰갱신 요청 : webClient
-     * 3. 갱신받은 토큰정보 DB 저장
-     * 4. DTO 생성 후 필요한 정보만 가공하여 응답
-     */
-    String accessToken = "access_token_ok3";
-    List<String> scopes = new ArrayList<>();
+    if (oauthTokenEntity.isRefreshTokenExpired()) {
+      throw new NotFoundTokenException("Expired refresh Token");
+    }
+
+    OrganizationInfoEntity organizationInfoEntity = organizationInfoRepository
+        .findByOrganizationId(request.getOrganizationId()).orElseThrow(NotFoundOrganizationException::new);
+    ExternalTokenResponse externalTokenResponse = externalTokenService
+        .refreshToken(organizationInfoEntity.getOrganizationCode(), oauthTokenEntity.getRefreshToken());
+
+    oauthTokenEntity.updateFrom(externalTokenResponse);
+    oauthTokenRepository.save(oauthTokenEntity);
 
     return OauthToken.builder()
-        .accessToken(accessToken)
-        .scopes(scopes)
+        .accessToken(oauthTokenEntity.getAccessToken())
+        .scopes(oauthTokenEntity.getParseScope())
         .build();
   }
 
