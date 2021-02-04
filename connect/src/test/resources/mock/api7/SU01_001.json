@@ -1,0 +1,6 @@
+{
+  "token_type": "Bearer",
+  "access_token": "accessToken",
+  "expires_in": 123456789,
+  "scope": "manage"
+}

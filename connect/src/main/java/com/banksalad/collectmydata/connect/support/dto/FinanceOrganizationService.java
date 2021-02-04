@@ -19,6 +19,6 @@ public class FinanceOrganizationService {
   private String clientId; // 클라이언트 id
   private String clientSecret; // 클라이언트 secret
   private String redirectUri; // Callback URL
-  private Integer clientIpCnt; // 클라이언트 IP 목록 수
+  private int clientIpCnt; // 클라이언트 IP 목록 수
   private List<FinanceOrganizationServiceIp> clientIpList; // 클라이언트 IP 목록
 }

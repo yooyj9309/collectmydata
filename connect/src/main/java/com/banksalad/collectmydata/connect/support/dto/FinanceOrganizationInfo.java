@@ -30,6 +30,6 @@ public class FinanceOrganizationInfo {
   private String relayOrgCode; //중계기관 기관코드
 
   //7.1.3 사용 목록
-  private Integer serviceCnt; // 서비스 목록
+  private int serviceCnt; // 서비스 목록
   private List<FinanceOrganizationService> serviceList; // 서비스 목록
 }

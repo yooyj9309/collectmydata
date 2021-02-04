@@ -14,5 +14,5 @@ public class FinanceOrganizationServiceResponse {
 
   private String rspCode;
   private String rspMsg;
-  private Long searchTimestamp;
+  private long searchTimestamp;
 }

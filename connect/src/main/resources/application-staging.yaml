@@ -1,3 +1,6 @@
 spring:
   profiles:
     active: staging
+
+organization:
+  finance-portal-domain: http://fixme.com

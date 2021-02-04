@@ -8,18 +8,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class FinanceOrganizationResponse {
+public class FinanceOrganizationTokenRequest {
 
-  private String rspCode;
-  private String rspMsg;
-  private long searchTimestamp;
-  private int orgCnt;
-  private List<FinanceOrganizationInfo> orgList;
+  private String grantType = "client_credentials";
+  private String clientId;
+  private String clientSecret;
+  private String scope = "manage";
 }

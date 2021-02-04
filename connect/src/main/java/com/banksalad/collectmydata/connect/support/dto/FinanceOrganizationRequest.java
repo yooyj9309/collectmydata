@@ -14,5 +14,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class FinanceOrganizationRequest {
-  public Long searchTimestamp;
+
+  public long searchTimestamp;
 }
