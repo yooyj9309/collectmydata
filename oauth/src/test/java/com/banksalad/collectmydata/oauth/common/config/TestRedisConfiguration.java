@@ -16,7 +16,7 @@ public class TestRedisConfiguration {
 
   public TestRedisConfiguration(RedisProperties redisProperties) {
     port = SocketUtils.findAvailableTcpPort();
-    redisProperties.setPort(port);
+    redisProperties.getCluster().getNodes().set(0,"localhost:"+port);
     this.redisServer = new RedisServer(port);
   }
 

@@ -4,8 +4,10 @@ spring:
   application:
     name: collectmydata-oauth
   redis:
-    host: something
-    port: 6379
+    cluster:
+      nodes:
+        - collect.a8qgjr.ng.0001.apn2.cache.amazonaws.com:6379
+        - collect-ro.a8qgjr.ng.0001.apn2.cache.amazonaws.com:6379
 
 organization:
-  mydata-client-id: tmp
+  mydata-client-id: fixme

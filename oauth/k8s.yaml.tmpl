@@ -24,6 +24,16 @@
   {{ $ingress_host = "collectmydata-oauth.banksalad.com" }}  #TODO
 {{ end }}
 
+{{ $redis_cidr_a := "10.120.251.128/25" }}
+{{ $redis_cidr_b := "10.120.252.0/25" }}
+{{ $redis_cidr_c := "10.120.252.128/25" }}
+
+{{ if eq $env "production" }}
+  {{ $redis_cidr_a = "10.130.251.128/25" }}
+  {{ $redis_cidr_b = "10.130.252.0/25" }}
+  {{ $redis_cidr_c = "10.130.252.128/25" }}
+{{ end }}
+
 ---
 kind: ConfigMap
 apiVersion: v1
@@ -289,7 +299,16 @@ spec:
       port: 18081
     - protocol: TCP
       port: 8080
-#TODO REDIS 세
+  - to:
+    - ipBlock:
+        cidr: {{ $redis_cidr_a }}
+    - ipBlock:
+        cidr: {{ $redis_cidr_b }}
+    - ipBlock:
+        cidr: {{ $redis_cidr_c }}
+    ports:
+    - protocol: TCP
+      port: 6379
 
 ---
 kind: PodDisruptionBudget

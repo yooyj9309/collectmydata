@@ -4,7 +4,9 @@ spring:
   application:
     name: collectmydata-oauth
   redis:
-    host: localhost
+    cluster:
+      nodes:
+        - localhost:6379
     port: 6379
 
 organization:
