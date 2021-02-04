@@ -34,10 +34,10 @@ public class ConnectOrganizationEntity extends BaseTimeAndUserEntity {
   private String organizationId;
 
   @Column(nullable = false)
-  private String organizationObjectId;
+  private String organizationObjectid;
 
-  @Column(nullable = false)
-  private String orgCode;
+  @Column(name = "org_code", nullable = false)
+  private String organizationCode;
 
   @Column(nullable = false)
   private String orgType;
