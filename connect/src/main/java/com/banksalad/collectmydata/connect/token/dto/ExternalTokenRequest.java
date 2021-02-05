@@ -20,6 +20,9 @@ public class ExternalTokenRequest {
   // code
   private String authorizationCode;
 
+  // token
+  private String accessToken;
+
   // refresh_token
   private String refreshToken;
 

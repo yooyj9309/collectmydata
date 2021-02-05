@@ -63,4 +63,16 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
         .scope("received_scope1 received_scope2")
         .build();
   }
+
+  @Override
+  public void revokeToken(String organizationCode, String accessToken) {
+    ExternalTokenRequest externalTokenRequest = ExternalTokenRequest.builder()
+        .organizationCode(organizationCode)
+        .accessToken(accessToken)
+        .clientId("client_id_form_DB") // fixme
+        .clientSecret("client_secret_from_DB") // fixme
+        .build();
+
+    // TODO : revoke token logic using collect library
+  }
 }

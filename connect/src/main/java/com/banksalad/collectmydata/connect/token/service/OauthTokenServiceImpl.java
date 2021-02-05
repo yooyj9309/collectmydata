@@ -6,9 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.banksalad.collectmydata.common.exception.collectMydataException.NotFoundOrganizationException;
 import com.banksalad.collectmydata.common.exception.collectMydataException.NotFoundTokenException;
 import com.banksalad.collectmydata.connect.common.db.entity.OauthTokenEntity;
-import com.banksalad.collectmydata.connect.common.db.entity.OrganizationInfoEntity;
+import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.OauthTokenRepository;
-import com.banksalad.collectmydata.connect.common.db.repository.OrganizationInfoRepository;
+import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;
 import com.banksalad.collectmydata.connect.token.dto.ExternalTokenResponse;
 import com.banksalad.collectmydata.connect.token.dto.OauthToken;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenRequest;
@@ -18,23 +18,25 @@ import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeA
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeTokenRequest;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class OauthTokenServiceImpl implements OauthTokenService {
 
   private final OauthTokenRepository oauthTokenRepository;
-  private final OrganizationInfoRepository organizationInfoRepository;
+  private final ConnectOrganizationRepository connectOrganizationRepository;
   private final ExternalTokenService externalTokenService;
 
   @Override
   @Transactional
   public OauthToken issueToken(IssueTokenRequest request) {
     Long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-    OrganizationInfoEntity organizationInfoEntity = organizationInfoRepository
+    ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
         .findByOrganizationId(request.getOrganizationId()).orElseThrow(NotFoundOrganizationException::new);
 
     ExternalTokenResponse externalTokenResponse = externalTokenService
-        .issueToken(organizationInfoEntity.getOrganizationCode(), request.getAuthorizationCode());
+        .issueToken(connectOrganizationEntity.getOrganizationCode(), request.getAuthorizationCode());
 
     OauthTokenEntity oauthTokenEntity = oauthTokenRepository
         .findByBanksaladUserIdAndOrganizationIdAndIsExpired(banksaladUserId, request.getOrganizationId(), false)
@@ -83,10 +85,10 @@ public class OauthTokenServiceImpl implements OauthTokenService {
       throw new NotFoundTokenException("Expired refresh Token");
     }
 
-    OrganizationInfoEntity organizationInfoEntity = organizationInfoRepository
+    ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
         .findByOrganizationId(request.getOrganizationId()).orElseThrow(NotFoundOrganizationException::new);
     ExternalTokenResponse externalTokenResponse = externalTokenService
-        .refreshToken(organizationInfoEntity.getOrganizationCode(), oauthTokenEntity.getRefreshToken());
+        .refreshToken(connectOrganizationEntity.getOrganizationCode(), oauthTokenEntity.getRefreshToken());
 
     oauthTokenEntity.updateFrom(externalTokenResponse);
     oauthTokenRepository.save(oauthTokenEntity);
@@ -99,21 +101,30 @@ public class OauthTokenServiceImpl implements OauthTokenService {
 
   @Override
   public void revokeToken(RevokeTokenRequest request) {
+    Long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+    OauthTokenEntity oauthTokenEntity = oauthTokenRepository
+        .findByBanksaladUserIdAndOrganizationIdAndIsExpired(banksaladUserId, request.getOrganizationId(), false)
+        .orElseThrow(NotFoundTokenException::new);
+    oauthTokenRepository.delete(oauthTokenEntity);
 
-    /**
-     * TODO
-     * 1. 토큰정보 DB에서 제거
-     * 2. 기관 인증페이지에 기관 정보 바탕으로 토큰폐기 요청 : webClient
-     */
+    ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
+        .findByOrganizationId(request.getOrganizationId()).orElseThrow(NotFoundOrganizationException::new);
+    externalTokenService.revokeToken(connectOrganizationEntity.getOrganizationCode(), oauthTokenEntity.getAccessToken());
   }
 
   @Override
   public void revokeAllTokens(RevokeAllTokensRequest request) {
-    /**
-     * TODO
-     * 1. 사용자의 연동되어 있는 모든 토큰정보 DB에서 제거
-     * 2. 기관 인증페이지에 기관 정보 바탕으로 토큰폐기 요청 : webClient
-     */
+    Long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+    List<OauthTokenEntity> oauthTokenEntities = oauthTokenRepository
+        .findAllByBanksaladUserIdAndIsExpired(banksaladUserId, false)
+        .orElseThrow(NotFoundTokenException::new);
+
+    for (OauthTokenEntity oauthTokenEntity : oauthTokenEntities) {
+      oauthTokenRepository.delete(oauthTokenEntity);
+      ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
+          .findByOrganizationId(oauthTokenEntity.getOrganizationId()).orElseThrow(NotFoundOrganizationException::new);
+      externalTokenService.revokeToken(connectOrganizationEntity.getOrganizationCode(), oauthTokenEntity.getAccessToken());
+    }
   }
 
   private OauthTokenEntity createOauthTokenEntity(Long banksaladUserId, String organizationId) {
