@@ -19,5 +19,4 @@ include ":bank",
 
 // etc
 include 'kafkaclient'
-
-
+include 'kafkamanager'

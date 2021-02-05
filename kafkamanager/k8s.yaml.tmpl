@@ -1,0 +1,96 @@
+{{ $service_name := "collectmydata-kafkamanager" }}
+
+{{ $env := .Env.ENV }}
+{{ $sub_env_id := .Env.SUB_ENV_ID }}
+
+{{ assert (ne .Env.IMAGE_TAG "") }}
+
+{{ $no_sub_env_id_envs := slice "production" "staging" }}
+{{ if has $no_sub_env_id_envs $env }}
+  {{ assert (eq $env $sub_env_id) }}
+{{ end }}
+
+{{ $namespace := $env }}
+
+{{ if ne $env $sub_env_id }}
+  {{ $namespace = join (slice $env $sub_env_id) "-" }}
+{{ end }}
+
+{{ $zk_cidr_a := "10.120.250.0/25" }}
+{{ $zk_cidr_b := "10.120.250.128/25" }}
+{{ $zk_cidr_c := "10.120.251.0/25" }}
+
+{{ if eq $env "production" }}
+  {{ $zk_cidr_a = "fixme" }}
+  {{ $zk_cidr_b = "fixme" }}
+  {{ $zk_cidr_c = "fixme" }}
+{{ end }}
+
+{{ $zk_hosts := "z-3.collectmydata.of5yls.c3.kafka.ap-northeast-2.amazonaws.com:2181,z-2.collectmydata.of5yls.c3.kafka.ap-northeast-2.amazonaws.com:2181,z-1.collectmydata.of5yls.c3.kafka.ap-northeast-2.amazonaws.com:2181" }}
+
+{{ if eq $env "production" }}
+  {{ $zk_hosts = "fixme" }}
+{{ end }}
+
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: {{ $service_name }}
+  namespace: {{ $namespace }}
+  labels:
+      app: {{ $service_name }}
+spec:
+  containers:
+    - name: cmak
+      image: hlebalbau/kafka-manager:stable
+      ports:
+      - name: http
+        containerPort: 9000
+        protocol: TCP
+      env:
+      - name: ZK_HOSTS
+        value: {{ $zk_hosts }}
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ $service_name }}
+  namespace: {{ $namespace }}
+  labels:
+      app: {{ $service_name }}
+spec:
+  ports:
+    - name: http-for-internal
+      port: 9000
+      targetPort: 9000
+  selector:
+    app: {{ $service_name }}
+  type: ClusterIP
+
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ $service_name }}
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ $service_name }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ $service_name }}
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - ipBlock:
+        cidr: {{ $zk_cidr_a }}
+    - ipBlock:
+        cidr: {{ $zk_cidr_b }}
+    - ipBlock:
+        cidr: {{ $zk_cidr_c }}
+    ports:
+    - protocol: TCP
+      port: 2181
