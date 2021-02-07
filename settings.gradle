@@ -4,7 +4,8 @@ rootProject.name = 'collectmydata'
 include ":common"
 
 // common service
-include ":connect",
+include ":collect",
+        ":connect",
         ":oauth",
         ":schedule",
         ":gateway"
@@ -18,5 +19,5 @@ include ":bank",
         ":invest"
 
 // etc
-include 'kafkaclient'
-include 'kafkamanager'
+include ":kafkaclient"
+include ":kafkamanager"

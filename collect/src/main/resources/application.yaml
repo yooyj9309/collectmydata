@@ -1,0 +1,35 @@
+spring:
+  profiles:
+    active: local
+  application:
+    name: collectmydata-collect
+
+server:
+  address: 127.0.0.1
+  port: 8080
+
+logging:
+  config: classpath:logback/logback-${spring.profiles.active}.xml
+  level:
+    com.zaxxer.hikari.HikariConfig: WARN
+    com.zaxxer.hikari: TRACE
+
+#management:
+#  metrics:
+#    export:
+#      statsd:
+#        enabled: true
+#        flavor: telegraf
+#        polling-frequency: 5s
+#        max-packet-length: 5000
+#        host: localhost
+#        port: 8126
+#        publish-unchanged-meters: true
+#    tags:
+#      application: ${spring.application.name}
+#      active: ${spring.profiles.active}
+
+uri:
+  user: dns:///user-headless:18081
+  cipher: dns:///cipher-headless:18081
+  connect: dns:///connect-headless:18081
