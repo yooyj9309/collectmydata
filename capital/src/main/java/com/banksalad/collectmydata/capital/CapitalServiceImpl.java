@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import com.banksalad.collectmydata.capital.account.AccountService;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.lease.service.LeaseService;
-import com.banksalad.collectmydata.capital.transaction.service.TransactionService;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.logging.CollectLogbackJsonLayout;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,6 @@ import org.slf4j.MDC;
 public class CapitalServiceImpl implements CapitalService {
 
   private final AccountService accountService;
-  private final TransactionService transactionService;
   private final LeaseService leaseService;
   private final CapitalPublishService capitalPublishService;
 
