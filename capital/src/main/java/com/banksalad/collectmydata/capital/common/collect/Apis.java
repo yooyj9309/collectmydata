@@ -41,7 +41,8 @@ public class Apis {
       Api.builder()
           .id("CP04")
           .name("대출상품계좌 거래내역 조회(6.7.4)")
-          .endpoint("/loans/transactions")
+          .endpoint("/loans/transactions?org_code={org_code}&account_num={account_num}&seqno={seqno}" +
+                  "&from_dtime={from_dtime}&to_dtime={to_dtime}&next_page={next_page}&limit={limit}")
           .method(HttpMethod.POST.name())
           .pagination(Pagination.builder()
               .nextPage("next_page")
