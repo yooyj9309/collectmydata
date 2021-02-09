@@ -15,8 +15,10 @@ import lombok.NoArgsConstructor;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class FinanceOrganizationTokenRequest {
 
+  @Builder.Default
   private String grantType = "client_credentials";
   private String clientId;
   private String clientSecret;
+  @Builder.Default
   private String scope = "manage";
 }

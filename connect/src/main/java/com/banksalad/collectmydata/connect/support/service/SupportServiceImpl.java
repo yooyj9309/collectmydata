@@ -8,20 +8,25 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.connect.common.collect.Apis;
 import com.banksalad.collectmydata.connect.common.collect.Executions;
+import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.OrganizationClientEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.OrganizationOauthTokenEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.SyncApiStatusEntity;
+import com.banksalad.collectmydata.connect.common.db.entity.mapper.ConnectOrganizationMapper;
+import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationClientRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationOauthTokenRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.SyncApiStatusRepository;
 import com.banksalad.collectmydata.connect.common.service.ExecutionService;
 import com.banksalad.collectmydata.connect.common.util.ExecutionUtil;
+import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationInfo;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationRequest;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationResponse;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationServiceResponse;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationTokenRequest;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationTokenResponse;
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -37,10 +42,11 @@ public class SupportServiceImpl implements SupportService {
   public static final String BANKSALAD_ORAGNIZATION_ID = "banksalad";
 
   private final ExecutionService executionService;
+  private final ConnectOrganizationRepository connectOrganizationRepository;
   private final SyncApiStatusRepository syncApiStatusRepository;
   private final OrganizationClientRepository organizationClientRepository;
   private final OrganizationOauthTokenRepository organizationOauthTokenRepository;
-
+  private final ConnectOrganizationMapper mapper = Mappers.getMapper(ConnectOrganizationMapper.class);
 
   public void syncAllOrganizationInfo() {
     syncOrganizationInfo();
@@ -53,21 +59,28 @@ public class SupportServiceImpl implements SupportService {
 
     String accessToken = getAccessToken(executionContext);
     Long timestamp = getTimeStamp(Apis.support_get_organization_info); // 7.1.2 timestamp 조회 fixme
-    // request 생성 fixme
+
+    Map<String, String> headers = Map.of(AUTHORIZATION, accessToken);
+    FinanceOrganizationRequest request = FinanceOrganizationRequest.builder().searchTimestamp(timestamp).build();
     // 7.1.2 기관 정보 조회 및 적재
 
-    ExecutionRequest<FinanceOrganizationRequest> executionRequest =
-        ExecutionRequest.<FinanceOrganizationRequest>builder()
-            .headers(Map.of(AUTHORIZATION, accessToken))
-            .request(FinanceOrganizationRequest.builder().searchTimestamp(timestamp).build())
-            .build();
+    ExecutionRequest<FinanceOrganizationRequest> executionRequest = ExecutionUtil
+        .executionRequestAssembler(headers, request);
 
-    // 7.1.2 기관 정보 조회 및 적재
     FinanceOrganizationResponse financeOrganizationResponse = (FinanceOrganizationResponse) executionService.execute(
         executionContext,
         Executions.support_get_organization_info,
         executionRequest
     );
+
+    // db 조회
+    for (FinanceOrganizationInfo orgInfo : financeOrganizationResponse.getOrgList()) {
+      ConnectOrganizationEntity entity = connectOrganizationRepository.findByOrganizationCode(orgInfo.getOrgCode())
+          .orElse(ConnectOrganizationEntity.builder().build());
+
+      mapper.merge(orgInfo, entity);
+      connectOrganizationRepository.save(entity);
+    }
   }
 
   @Override
@@ -81,13 +94,7 @@ public class SupportServiceImpl implements SupportService {
     FinanceOrganizationServiceResponse financeOrganizationServiceResponse = null;
 
   }
-
-
-  public void syncOrganizationServiceInfo(ExecutionContext executionContext, String accessToken,
-      Boolean requireRefreshToken) {
-
-  }
-
+  
   public String getAccessToken(ExecutionContext executionContext) {
     // banksalad 기관 clientId, clientSecret 조회
     OrganizationClientEntity organizationClientEntity = organizationClientRepository
@@ -142,7 +149,7 @@ public class SupportServiceImpl implements SupportService {
     //DB 조회
     SyncApiStatusEntity entity = syncApiStatusRepository.findByApiId(api.getId())
         .orElse(SyncApiStatusEntity.builder().build());
-    return Optional.of(entity.getOriginalSyncedAt()).orElse(0L);
+    return Optional.ofNullable(entity.getOriginalSyncedAt()).orElse(0L);
   }
 
   private ExecutionContext executionContextAssembler() {

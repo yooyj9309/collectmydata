@@ -3,7 +3,8 @@ package com.banksalad.collectmydata.common.enums;
 public enum MydataSector {
   FINANCE,
   PUBLIC,
-  HEALTHCARE;
+  HEALTHCARE,
+  UNKNOWN;
 
   public static MydataSector getSector(String eco) {
     for (MydataSector mydataSector : MydataSector.values()) {

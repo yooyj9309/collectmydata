@@ -1,7 +1,6 @@
 package com.banksalad.collectmydata.connect.support;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
@@ -44,7 +43,7 @@ public class SupportServiceImplTest {
   @Autowired
   private OrganizationOauthTokenRepository organizationOauthTokenRepository;
 
-  public static WireMockServer wiremock = new WireMockServer(WireMockSpring.options().port(9090));
+  public static WireMockServer wiremock = new WireMockServer(WireMockSpring.options().port(9091));
 
   @BeforeEach
   public void setupClass() {
@@ -61,9 +60,6 @@ public class SupportServiceImplTest {
     wiremock.shutdown();
   }
 
-  @Value("${organization.finance-portal-domain}")
-  private String financePortalDomain;
-
   @Test
   @Transactional
   @DisplayName("엑세스 토큰 발급 테스트")
@@ -71,7 +67,7 @@ public class SupportServiceImplTest {
     setupServer();
     ExecutionContext executionContext = ExecutionContext.builder()
         .accessToken("test")
-        .organizationHost(financePortalDomain)
+        .organizationHost("http://localhost:9091")
         .build();
 
     organizationClientRepository.save(
@@ -88,9 +84,8 @@ public class SupportServiceImplTest {
 
     assertThat(organizationOauthTokenRepository.findByOrganizationId("banksalad").orElse(null))
         .usingRecursiveComparison()
-        .ignoringFields("accessTokenExpiresAt")
+        .ignoringFields("accessTokenExpiresAt", "organizationOauthTokenId")
         .isEqualTo(OrganizationOauthTokenEntity.builder()
-            .organizationOauthTokenId(1L)
             .organizationId("banksalad")
             .accessToken("accessToken")
             .accessTokenExpiresIn(123456789)

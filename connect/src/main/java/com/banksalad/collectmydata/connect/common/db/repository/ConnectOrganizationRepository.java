@@ -11,4 +11,6 @@ public interface ConnectOrganizationRepository extends JpaRepository<ConnectOrga
   Optional<ConnectOrganizationEntity> findByOrganizationId(String organizationId);
 
   Optional<ConnectOrganizationEntity> findByOrganizationObjectid(String organizationObjectid);
+
+  Optional<ConnectOrganizationEntity> findByOrganizationCode(String organizationCode);
 }

@@ -42,13 +42,15 @@ ext {
 
     slf4jVersion = "1.7.30"
     logbackVersion = "1.2.3"
-    lombokVersion = "1.18.12"
+    lombokVersion = "1.18.16"
 
     micrometerVersion = "1.6.2"
     apacheCommonsVersion = "3.10"
     json_path_version = "2.4.0"
     awsSdkVersion = "2.14.21"
     springCloudVersion = "2020.0.0"
+    mapstructVersion = "1.4.2.Final"
+    lombokMapstructBindingVersion = "0.2.0"
 }
 
 dependencyManagement {
@@ -71,7 +73,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux:${springBootVersion}")
 
     // valid
-    implementation ("org.springframework.boot:spring-boot-starter-validation:${springBootVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-validation:${springBootVersion}")
 
     // armeria
     implementation platform("com.linecorp.armeria:armeria-bom:${armeriaVersion}")
@@ -92,10 +94,6 @@ dependencies {
 
     // httpclient
     implementation("org.apache.httpcomponents:httpclient:4.5.12")
-
-    // lombok
-    compileOnly("org.projectlombok:lombok:${lombokVersion}")
-    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
 
     // apache commons
     implementation("org.apache.commons:commons-lang3:${apacheCommonsVersion}")
@@ -118,6 +116,16 @@ dependencies {
     // application monitoring
     implementation("io.micrometer:micrometer-core:${micrometerVersion}")
     implementation("io.micrometer:micrometer-registry-statsd:${micrometerVersion}")
+
+    // mapstruct
+    implementation("org.mapstruct:mapstruct:${mapstructVersion}")
+    annotationProcessor("org.mapstruct:mapstruct-processor:${mapstructVersion}")
+
+    // lombok
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
+
+    compileOnly("org.projectlombok:lombok:${lombokVersion}")
+    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
 
     //test
     testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}") {
