@@ -10,6 +10,8 @@ spring:
     name: sa
     password:
 
-
 organization:
   finance-portal-domain: http://fixme.com
+
+banksalad:
+  oauth-callback-url: http://fixme.com

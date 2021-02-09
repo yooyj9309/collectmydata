@@ -70,8 +70,8 @@ public class OauthTokenEntity extends BaseTimeAndUserEntity{
     this.accessToken = response.getAccessToken();
     this.refreshToken = response.getRefreshToken();
     this.accessTokenExpiresAt = LocalDateTime.now()
-        .plusSeconds(response.getAccessTokenExpiresIn());
-    this.accessTokenExpiresIn = response.getAccessTokenExpiresIn();
+        .plusSeconds(response.getExpiresIn());
+    this.accessTokenExpiresIn = response.getExpiresIn();
     this.refreshTokenExpiresAt = LocalDateTime.now()
         .plusSeconds(response.getRefreshTokenExpiresIn());
     this.refreshTokenExpiresIn = response.getRefreshTokenExpiresIn();

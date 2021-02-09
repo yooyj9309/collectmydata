@@ -13,6 +13,7 @@ import com.banksalad.collectmydata.connect.common.db.entity.OauthTokenEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.OauthTokenRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;
+import com.banksalad.collectmydata.connect.organization.dto.Organization;
 import com.banksalad.collectmydata.connect.token.dto.ExternalTokenResponse;
 import com.banksalad.collectmydata.connect.token.dto.OauthToken;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenRequest;
@@ -33,10 +34,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-@ActiveProfiles("test")
 @SpringBootTest
-@DisplayName("OauthTokenService Test")
-class OauthTokenServiceTest {
+@DisplayName("OauthTokenServiceImplTest Test")
+class OauthTokenServiceImplTest {
 
   @Autowired
   private OauthTokenService oauthTokenService;
@@ -96,13 +96,14 @@ class OauthTokenServiceTest {
     ConnectOrganizationEntity connectOrganizationEntity = createConnectOrganizationEntity(
         oauthTokenEntity.getOrganizationId());
     connectOrganizationRepository.save(connectOrganizationEntity);
+    Organization organization = createOrganization(connectOrganizationEntity);
 
     GetAccessTokenRequest accessTokenRequest = buildAccessTokenRequest(oauthTokenEntity.getBanksaladUserId().toString(),
         oauthTokenEntity.getOrganizationId());
 
     ExternalTokenResponse externalTokenResponse = createExternalTokenResponse();
     when(externalTokenService
-        .refreshToken(connectOrganizationEntity.getOrganizationCode(), oauthTokenEntity.getRefreshToken()))
+        .refreshToken(organization, oauthTokenEntity.getRefreshToken()))
         .thenReturn(externalTokenResponse);
 
     // when
@@ -124,6 +125,7 @@ class OauthTokenServiceTest {
     ConnectOrganizationEntity connectOrganizationEntity = createConnectOrganizationEntity(
         oauthTokenEntity.getOrganizationId());
     connectOrganizationRepository.save(connectOrganizationEntity);
+    Organization organization = createOrganization(connectOrganizationEntity);
 
     IssueTokenRequest request = buildIssueTokenRequest(oauthTokenEntity.getBanksaladUserId().toString(),
         oauthTokenEntity.getOrganizationId(),
@@ -131,7 +133,7 @@ class OauthTokenServiceTest {
 
     ExternalTokenResponse externalTokenResponse = createExternalTokenResponse();
     when(externalTokenService
-        .issueToken(connectOrganizationEntity.getOrganizationCode(), request.getAuthorizationCode()))
+        .issueToken(organization, request.getAuthorizationCode()))
         .thenReturn(externalTokenResponse);
 
     // when
@@ -153,6 +155,7 @@ class OauthTokenServiceTest {
     ConnectOrganizationEntity connectOrganizationEntity = createConnectOrganizationEntity(
         oauthTokenEntity.getOrganizationId());
     connectOrganizationRepository.save(connectOrganizationEntity);
+    Organization organization = createOrganization(connectOrganizationEntity);
 
     IssueTokenRequest request = buildIssueTokenRequest(oauthTokenEntity.getBanksaladUserId().toString(),
         "non_exist_organizationId",
@@ -160,7 +163,7 @@ class OauthTokenServiceTest {
 
     ExternalTokenResponse externalTokenResponse = createExternalTokenResponse();
     when(externalTokenService
-        .issueToken(connectOrganizationEntity.getOrganizationCode(), request.getAuthorizationCode()))
+        .issueToken(organization, request.getAuthorizationCode()))
         .thenReturn(externalTokenResponse);
 
     // when, then
@@ -177,13 +180,14 @@ class OauthTokenServiceTest {
     ConnectOrganizationEntity connectOrganizationEntity = createConnectOrganizationEntity(
         oauthTokenEntity.getOrganizationId());
     connectOrganizationRepository.save(connectOrganizationEntity);
+    Organization organization = createOrganization(connectOrganizationEntity);
 
     RefreshTokenRequest request = buildRefreshTokenRequest(oauthTokenEntity.getBanksaladUserId().toString(),
         oauthTokenEntity.getOrganizationId());
 
     ExternalTokenResponse externalTokenResponse = createExternalTokenResponse();
     when(externalTokenService
-        .refreshToken(connectOrganizationEntity.getOrganizationCode(), oauthTokenEntity.getRefreshToken()))
+        .refreshToken(organization, oauthTokenEntity.getRefreshToken()))
         .thenReturn(externalTokenResponse);
 
     // when
@@ -205,13 +209,14 @@ class OauthTokenServiceTest {
     ConnectOrganizationEntity connectOrganizationEntity = createConnectOrganizationEntity(
         oauthTokenEntity.getOrganizationId());
     connectOrganizationRepository.save(connectOrganizationEntity);
+    Organization organization = createOrganization(connectOrganizationEntity);
 
     RefreshTokenRequest request = buildRefreshTokenRequest(oauthTokenEntity.getBanksaladUserId().toString(),
         oauthTokenEntity.getOrganizationId());
 
     ExternalTokenResponse externalTokenResponse = createExternalTokenResponse();
     when(externalTokenService
-        .refreshToken(connectOrganizationEntity.getOrganizationCode(), oauthTokenEntity.getRefreshToken()))
+        .refreshToken(organization, oauthTokenEntity.getRefreshToken()))
         .thenReturn(externalTokenResponse);
 
     // when, then
@@ -270,13 +275,14 @@ class OauthTokenServiceTest {
     ConnectOrganizationEntity connectOrganizationEntity = createConnectOrganizationEntity(
         oauthTokenEntity.getOrganizationId());
     connectOrganizationRepository.save(connectOrganizationEntity);
+    Organization organization = createOrganization(connectOrganizationEntity);
 
     RevokeTokenRequest request = buildRevokeTokenRequest(oauthTokenEntity.getBanksaladUserId().toString(),
         oauthTokenEntity.getOrganizationId());
 
     doThrow(new CollectMydataException())
         .when(externalTokenService)
-        .revokeToken(connectOrganizationEntity.getOrganizationCode(), oauthTokenEntity.getAccessToken());
+        .revokeToken(organization, oauthTokenEntity.getAccessToken());
 
     // when, then
     assertThat(oauthTokenRepository
@@ -354,15 +360,17 @@ class OauthTokenServiceTest {
 
     List<OauthTokenEntity> oauthTokenEntities = createOauthTokenEntities(TOTAL_ORGANIZATION_COUNT);
     List<ConnectOrganizationEntity> connectOrganizationEntities = createConnectOrganizationEntities(oauthTokenEntities);
+    List<Organization> organizations = new ArrayList<>();
     for (int i = 0; i < TOTAL_ORGANIZATION_COUNT; i++) {
       oauthTokenRepository.save(oauthTokenEntities.get(i));
       connectOrganizationRepository.save(connectOrganizationEntities.get(i));
+      organizations.add(createOrganization(connectOrganizationEntities.get(i)));
     }
 
     doThrow(new CollectMydataException())
         .when(externalTokenService)
         .revokeToken(
-            connectOrganizationEntities.get(ERROR_INDEX).getOrganizationCode(),
+            organizations.get(ERROR_INDEX),
             oauthTokenEntities.get(ERROR_INDEX).getAccessToken()
         );
 
@@ -519,10 +527,20 @@ class OauthTokenServiceTest {
     return ExternalTokenResponse.builder()
         .tokenType("Bearer")
         .accessToken("test_received_accessToken")
-        .accessTokenExpiresIn(90 * 3600)
+        .expiresIn(90 * 3600)
         .refreshToken("test_received_refreshToken")
         .refreshTokenExpiresIn(365 * 3600)
         .scope("received_scope1 received_scope2")
+        .build();
+  }
+
+  private Organization createOrganization(ConnectOrganizationEntity connectOrganizationEntity) {
+    return Organization.builder()
+        .sector(connectOrganizationEntity.getSector())
+        .industry(connectOrganizationEntity.getIndustry())
+        .organizationId(connectOrganizationEntity.getOrganizationId())
+        .organizationCode(connectOrganizationEntity.getRelayOrgCode())
+        .domain(connectOrganizationEntity.getDomain())
         .build();
   }
 

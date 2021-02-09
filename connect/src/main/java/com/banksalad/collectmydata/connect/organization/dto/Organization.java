@@ -1,10 +1,12 @@
 package com.banksalad.collectmydata.connect.organization.dto;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
 @Builder
+@EqualsAndHashCode
 public class Organization {
 
   private final String sector;

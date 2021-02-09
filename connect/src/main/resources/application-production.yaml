@@ -2,6 +2,8 @@ spring:
   profiles:
     active: production
 
-
 organization:
   finance-portal-domain: http://fixme.com
+
+banksalad:
+  oauth-callback-url: http://fixme.com

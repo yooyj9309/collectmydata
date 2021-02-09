@@ -32,4 +32,27 @@ public class Apis {
           .method(HttpMethod.POST.name())
           .build();
 
+  public static Api oauth_issue_token =
+      Api.builder()
+          .id("AU02")
+          .name("접근토큰 발급 요청(5.1.2)")
+          .endpoint("/oauth/2.0/token")
+          .method(HttpMethod.POST.name())
+          .build();
+
+  public static Api oauth_refresh_token =
+      Api.builder()
+          .id("AU02")
+          .name("접근토큰 갱신(5.1.3)")
+          .endpoint("/oauth/2.0/token")
+          .method(HttpMethod.GET.name())
+          .build();
+
+  public static Api oauth_revoke_token =
+      Api.builder()
+          .id("AU03")
+          .name("접근토큰 폐기(5.1.4)")
+          .endpoint("/oauth/2.0/revoke")
+          .method(HttpMethod.GET.name())
+          .build();
 }

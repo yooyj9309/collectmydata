@@ -1,78 +1,73 @@
 package com.banksalad.collectmydata.connect.token.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.banksalad.collectmydata.connect.token.dto.ExternalTokenRequest;
+import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
+import com.banksalad.collectmydata.common.exception.collectMydataException.NotFoundOrganizationException;
+import com.banksalad.collectmydata.connect.common.collect.Executions;
+import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
+import com.banksalad.collectmydata.connect.common.db.entity.OrganizationClientEntity;
+import com.banksalad.collectmydata.connect.common.db.repository.OrganizationClientRepository;
+import com.banksalad.collectmydata.connect.common.service.ExecutionService;
+import com.banksalad.collectmydata.connect.common.util.ExecutionUtil;
+import com.banksalad.collectmydata.connect.organization.dto.Organization;
+import com.banksalad.collectmydata.connect.token.dto.ExternalIssueTokenRequest;
 import com.banksalad.collectmydata.connect.token.dto.ExternalTokenResponse;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class ExternalTokenServiceImpl implements ExternalTokenService {
 
+  private final OrganizationClientRepository organizationClientRepository;
+  private final ExecutionService executionService;
+
+  @Value("${banksalad.oauth-callback-url}")
+  private String redirectUrl;
+
   @Override
-  public ExternalTokenResponse issueToken(String organizationCode, String authorizationCode) {
-    /**
-     * NOTE
-     * 기관 인증페이지에 authorization_code 및 기관정보 바탕으로 토큰발행 요청 -> 공통 라이브러리 사용하여 조회하도록 로직 추가
-     *
-     * ExternalTokenRequest
-     * - client_id, client_secret : 연동기관 클라이언트 DB 조회
-     * - redirect_url : 뱅크샐러드 고정 url로 보여짐(properties 조회)
-     *
-     * ExternalTokenResponse
-     * - 기관에 토큰발행 요청 후 응답값
-     */
-    ExternalTokenRequest externalTokenRequest = ExternalTokenRequest.builder()
-        .organizationCode(organizationCode)
-        .grantType("authorization_code")
-        .authorizationCode(authorizationCode)
-        .clientId("client_id_form_DB") // fixme
-        .clientSecret("client_secret_from_DB") // fixme
-        .redirectUrl("redirect_url_from_properties") // fixme
+  public ExternalTokenResponse issueToken(Organization organization, String authorizationCode) {
+    OrganizationClientEntity organizationClientEntity = getOrganizationClientEntity(organization);
+
+    ExternalIssueTokenRequest request = ExternalIssueTokenRequest.builder()
+        .orgCode(organization.getOrganizationCode())
+        .code(authorizationCode)
+        .clientId(organizationClientEntity.getClientId())
+        .clientSecret(organizationClientEntity.getClientSecret())
+        .redirectUri(redirectUrl)
         .build();
 
-    // TODO : issue token logic using collect library
+    ExecutionRequest<ExternalIssueTokenRequest> executionRequest = ExecutionUtil.executionRequestAssembler(request);
+    ExecutionContext executionContext = buildExecutionContext(organization);
 
-    return ExternalTokenResponse.builder()
-        .tokenType("Bearer")
-        .accessToken("received_access_token")
-        .accessTokenExpiresIn(90 * 3600)
-        .refreshToken("received_refresh_token")
-        .refreshTokenExpiresIn(365 * 3600)
-        .scope("received_scope1 received_scope2")
-        .build();
+    ExternalTokenResponse response = executionService
+        .execute(executionContext, Executions.oauth_issue_token, executionRequest);
+    return response;
   }
 
   @Override
-  public ExternalTokenResponse refreshToken(String organizationCode, String refreshToken) {
-    ExternalTokenRequest externalTokenRequest = ExternalTokenRequest.builder()
-        .organizationCode(organizationCode)
-        .grantType("refresh_token")
-        .refreshToken(refreshToken)
-        .clientId("client_id_form_DB") // fixme
-        .clientSecret("client_secret_from_DB") // fixme
-        .build();
-
-    // TODO : refresh token logic using collect library
-
-    return ExternalTokenResponse.builder()
-        .tokenType("Bearer")
-        .accessToken("received_access_token")
-        .accessTokenExpiresIn(90 * 3600)
-        .refreshToken("received_refresh_token")
-        .refreshTokenExpiresIn(365 * 3600)
-        .scope("received_scope1 received_scope2")
-        .build();
+  public ExternalTokenResponse refreshToken(Organization organization, String refreshToken) {
+    // TODO : refresh Token
+    return ExternalTokenResponse.builder().build();
   }
 
   @Override
-  public void revokeToken(String organizationCode, String accessToken) {
-    ExternalTokenRequest externalTokenRequest = ExternalTokenRequest.builder()
-        .organizationCode(organizationCode)
-        .accessToken(accessToken)
-        .clientId("client_id_form_DB") // fixme
-        .clientSecret("client_secret_from_DB") // fixme
-        .build();
+  public void revokeToken(Organization organization, String accessToken) {
+    // TODO : revoke Token
+  }
 
-    // TODO : revoke token logic using collect library
+  private OrganizationClientEntity getOrganizationClientEntity(Organization organization) {
+    return organizationClientRepository
+        .findByOrganizationId(organization.getOrganizationId())
+        .orElseThrow(NotFoundOrganizationException::new);
+  }
+
+  private ExecutionContext buildExecutionContext(Organization organization) {
+    return ExecutionContext.builder()
+        .organizationId(organization.getOrganizationId())
+        .organizationHost(organization.getDomain())
+        .build();
   }
 }

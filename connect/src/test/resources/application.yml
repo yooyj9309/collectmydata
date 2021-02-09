@@ -15,3 +15,6 @@ spring:
 
 organization:
   finance-portal-domain: http://localhost:9090
+
+banksalad:
+  oauth-callback-url: http://fixme.com

@@ -9,6 +9,7 @@ import com.banksalad.collectmydata.connect.common.db.entity.OauthTokenEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.OauthTokenRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;
+import com.banksalad.collectmydata.connect.organization.dto.Organization;
 import com.banksalad.collectmydata.connect.token.dto.ExternalTokenResponse;
 import com.banksalad.collectmydata.connect.token.dto.OauthToken;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenRequest;
@@ -35,8 +36,9 @@ public class OauthTokenServiceImpl implements OauthTokenService {
     ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
         .findByOrganizationId(request.getOrganizationId()).orElseThrow(NotFoundOrganizationException::new);
 
+    Organization organization = createOrganization(connectOrganizationEntity);
     ExternalTokenResponse externalTokenResponse = externalTokenService
-        .issueToken(connectOrganizationEntity.getOrganizationCode(), request.getAuthorizationCode());
+        .issueToken(organization, request.getAuthorizationCode());
 
     OauthTokenEntity oauthTokenEntity = oauthTokenRepository
         .findByBanksaladUserIdAndOrganizationIdAndIsExpired(banksaladUserId, request.getOrganizationId(), false)
@@ -87,8 +89,9 @@ public class OauthTokenServiceImpl implements OauthTokenService {
 
     ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
         .findByOrganizationId(request.getOrganizationId()).orElseThrow(NotFoundOrganizationException::new);
+    Organization organization = createOrganization(connectOrganizationEntity);
     ExternalTokenResponse externalTokenResponse = externalTokenService
-        .refreshToken(connectOrganizationEntity.getOrganizationCode(), oauthTokenEntity.getRefreshToken());
+        .refreshToken(organization, oauthTokenEntity.getRefreshToken());
 
     oauthTokenEntity.updateFrom(externalTokenResponse);
     oauthTokenRepository.save(oauthTokenEntity);
@@ -109,7 +112,8 @@ public class OauthTokenServiceImpl implements OauthTokenService {
 
     ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
         .findByOrganizationId(request.getOrganizationId()).orElseThrow(NotFoundOrganizationException::new);
-    externalTokenService.revokeToken(connectOrganizationEntity.getOrganizationCode(), oauthTokenEntity.getAccessToken());
+    Organization organization = createOrganization(connectOrganizationEntity);
+    externalTokenService.revokeToken(organization, oauthTokenEntity.getAccessToken());
   }
 
   @Override
@@ -123,7 +127,8 @@ public class OauthTokenServiceImpl implements OauthTokenService {
       oauthTokenRepository.delete(oauthTokenEntity);
       ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
           .findByOrganizationId(oauthTokenEntity.getOrganizationId()).orElseThrow(NotFoundOrganizationException::new);
-      externalTokenService.revokeToken(connectOrganizationEntity.getOrganizationCode(), oauthTokenEntity.getAccessToken());
+      Organization organization = createOrganization(connectOrganizationEntity);
+      externalTokenService.revokeToken(organization, oauthTokenEntity.getAccessToken());
     }
   }
 
@@ -131,6 +136,16 @@ public class OauthTokenServiceImpl implements OauthTokenService {
     return OauthTokenEntity.builder()
         .banksaladUserId(banksaladUserId)
         .organizationId(organizationId)
+        .build();
+  }
+
+  private Organization createOrganization(ConnectOrganizationEntity connectOrganizationEntity) {
+    return Organization.builder()
+        .sector(connectOrganizationEntity.getSector())
+        .industry(connectOrganizationEntity.getIndustry())
+        .organizationId(connectOrganizationEntity.getOrganizationId())
+        .organizationCode(connectOrganizationEntity.getRelayOrgCode())
+        .domain(connectOrganizationEntity.getDomain())
         .build();
   }
 }
