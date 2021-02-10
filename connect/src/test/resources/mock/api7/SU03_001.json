@@ -1,0 +1,21 @@
+{
+  "rsp_code": "000",
+  "rsp_msg": "rsp_msg",
+  "search_timestamp": 1000,
+  "org_cnt": 1,
+  "org_list": {
+    "org_code": "020",
+    "service_cnt": 1,
+    "service_list": {
+      "service_name": "service1",
+      "op_type": "I",
+      "client_id": "clientId",
+      "client_secret": "clientSecret",
+      "redirect_uri": "http://redirect.com",
+      "client_ip_cnt": 1,
+      "client_ip_list": {
+        "client_ip": "127.0.0.1"
+      }
+    }
+  }
+}

@@ -1,6 +1,5 @@
 package com.banksalad.collectmydata.connect.support;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -9,14 +8,21 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.banksalad.collectmydata.common.enums.Industry;
 import com.banksalad.collectmydata.common.enums.MydataSector;
 import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
+import com.banksalad.collectmydata.connect.common.db.entity.FinanceServiceClientIpEntity;
+import com.banksalad.collectmydata.connect.common.db.entity.FinanceServiceEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.OrganizationClientEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.OrganizationOauthTokenEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;
+import com.banksalad.collectmydata.connect.common.db.repository.FinanceServiceClientIpRepository;
+import com.banksalad.collectmydata.connect.common.db.repository.FinanceServiceRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationClientRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationOauthTokenRepository;
 import com.banksalad.collectmydata.connect.common.service.ExecutionService;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationInfo;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationResponse;
+import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationServiceInfo;
+import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationServiceIp;
+import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationServiceResponse;
 import com.banksalad.collectmydata.connect.support.service.SupportService;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
@@ -38,6 +44,9 @@ public class SupportServiceTest {
   @Autowired
   private SupportService supportService;
 
+  @MockBean
+  private ExecutionService executionService;
+
   @Autowired
   private OrganizationClientRepository organizationClientRepository;
 
@@ -47,8 +56,11 @@ public class SupportServiceTest {
   @Autowired
   private ConnectOrganizationRepository connectOrganizationRepository;
 
-  @MockBean
-  private ExecutionService executionService;
+  @Autowired
+  private FinanceServiceRepository financeServiceRepository;
+
+  @Autowired
+  private FinanceServiceClientIpRepository financeServiceClientIpRepository;
 
   @Test
   @Transactional
@@ -72,6 +84,7 @@ public class SupportServiceTest {
             .scope("scope")
             .build()
     );
+
     supportService.syncOrganizationInfo();
 
     ConnectOrganizationEntity entity = connectOrganizationRepository.findByOrganizationCode("020").get();
@@ -96,6 +109,71 @@ public class SupportServiceTest {
             .relayOrgCode("relay_org_code1")
             .build()
         );
+  }
+
+  @Test
+  @Transactional
+  @DisplayName("syncOrganizationServiceInfo 테스트 진행.")
+  public void syncOrganizationServiceInfo() {
+    mockingOrganizationServiceInfo();
+    organizationClientRepository.save(
+        OrganizationClientEntity.builder()
+            .clientId("clientId")
+            .clientSecret("clientSecret")
+            .organizationId("banksalad")
+            .build()
+    );
+
+    organizationOauthTokenRepository.save(
+        OrganizationOauthTokenEntity.builder()
+            .organizationId("banksalad")
+            .accessToken("accessToken")
+            .accessTokenExpiresAt(LocalDateTime.now().plusDays(5L))
+            .accessTokenExpiresIn(33)
+            .scope("scope")
+            .build()
+    );
+
+    connectOrganizationRepository.save(
+        ConnectOrganizationEntity.builder()
+            .sector("")
+            .industry("")
+            .organizationId("shinhancard")
+            .organizationObjectid("")
+            .organizationCode("020")
+            .orgType("")
+            .organizationStatus("")
+            .isRelayOrganization(false)
+            .build()
+    );
+    supportService.syncOrganizationServiceInfo();
+
+    FinanceServiceEntity serviceEntity = financeServiceRepository.findByOrganizationId("shinhancard").get();
+    assertThat(serviceEntity).usingRecursiveComparison()
+        .ignoringFields("accessTokenExpiresAt", "serviceId").isEqualTo(
+        FinanceServiceEntity.builder()
+            .organizationId("shinhancard")
+            .serviceName("service1")
+            .clientId("clientId")
+            .clientSecret("clientSecret")
+            .redirectUri("http://redirect.com")
+            .build()
+    );
+
+    assertThat(
+        financeServiceClientIpRepository.findByServiceIdAndClientIp(serviceEntity.getServiceId(), "127.0.0.1").get())
+        .usingRecursiveComparison()
+        .ignoringFields("serviceClientIpId").isEqualTo(
+        FinanceServiceClientIpEntity.builder()
+            .serviceId(serviceEntity.getServiceId())
+            .organizationId("shinhancard")
+            .serviceName("service1")
+            .clientIp("127.0.0.1")
+            .build()
+    );
+
+    // service 조회
+    // serviceIp 조회
   }
 
   public void mockingOrganizationInfoTest() {
@@ -129,6 +207,31 @@ public class SupportServiceTest {
                     .relayOrgCode("relay_org_code2")
                     .build()
             )).build()
+    );
+  }
+
+  public void mockingOrganizationServiceInfo() {
+    when(executionService.execute(any(), any(), any())).thenReturn(
+        FinanceOrganizationServiceResponse.builder()
+            .rspCode("000")
+            .rspMsg("rsp_msg")
+            .searchTimestamp(1000L)
+            .orgList(List.of(FinanceOrganizationInfo.builder()
+                .orgCode("020")
+                .serviceCnt(1)
+                .serviceList(List.of(FinanceOrganizationServiceInfo.builder()
+                    .serviceName("service1")
+                    .opType("I")
+                    .clientId("clientId")
+                    .clientSecret("clientSecret")
+                    .redirectUri("http://redirect.com")
+                    .clientIpCnt(1)
+                    .clientIpList(List.of(FinanceOrganizationServiceIp.builder()
+                        .clientIp("127.0.0.1")
+                        .build()))
+                    .build()))
+                .build()))
+            .build()
     );
   }
 }

@@ -31,5 +31,5 @@ public class FinanceOrganizationInfo {
 
   //7.1.3 사용 목록
   private int serviceCnt; // 서비스 목록
-  private List<FinanceOrganizationService> serviceList; // 서비스 목록
+  private List<FinanceOrganizationServiceInfo> serviceList; // 서비스 목록
 }

@@ -9,11 +9,17 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.connect.common.collect.Apis;
 import com.banksalad.collectmydata.connect.common.collect.Executions;
 import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
+import com.banksalad.collectmydata.connect.common.db.entity.FinanceServiceClientIpEntity;
+import com.banksalad.collectmydata.connect.common.db.entity.FinanceServiceEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.OrganizationClientEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.OrganizationOauthTokenEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.SyncApiStatusEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.mapper.ConnectOrganizationMapper;
+import com.banksalad.collectmydata.connect.common.db.entity.mapper.FinanceServiceClientIpMapper;
+import com.banksalad.collectmydata.connect.common.db.entity.mapper.FinanceServiceMapper;
 import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;
+import com.banksalad.collectmydata.connect.common.db.repository.FinanceServiceClientIpRepository;
+import com.banksalad.collectmydata.connect.common.db.repository.FinanceServiceRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationClientRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationOauthTokenRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.SyncApiStatusRepository;
@@ -22,9 +28,12 @@ import com.banksalad.collectmydata.connect.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationInfo;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationRequest;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationResponse;
+import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationServiceInfo;
+import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationServiceIp;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationServiceResponse;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationTokenRequest;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationTokenResponse;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
@@ -46,6 +55,12 @@ public class SupportServiceImpl implements SupportService {
   private final SyncApiStatusRepository syncApiStatusRepository;
   private final OrganizationClientRepository organizationClientRepository;
   private final OrganizationOauthTokenRepository organizationOauthTokenRepository;
+  private final FinanceServiceRepository financeServiceRepository;
+  private final FinanceServiceClientIpRepository financeServiceClientIpRepository;
+
+  private final FinanceServiceMapper serviceMapper = Mappers.getMapper(FinanceServiceMapper.class);
+  private final FinanceServiceClientIpMapper serviceClientIpMapper = Mappers
+      .getMapper(FinanceServiceClientIpMapper.class);
   private final ConnectOrganizationMapper mapper = Mappers.getMapper(ConnectOrganizationMapper.class);
 
   public void syncAllOrganizationInfo() {
@@ -84,17 +99,69 @@ public class SupportServiceImpl implements SupportService {
   }
 
   @Override
+  @Transactional
   public void syncOrganizationServiceInfo() {
     ExecutionContext executionContext = executionContextAssembler();
+
     String accessToken = getAccessToken(executionContext);
-
-    Long timestamp = getTimeStamp(Apis.support_get_organization_service_info); // 7.1.3 timestamp 조회 fixme
-    // request 생성 fixme
+    Long timestamp = getTimeStamp(Apis.support_get_organization_service_info); // 7.1.3 timestamp 조회
     // 7.1.3 기관 서비스 정보 조회 및 적재
-    FinanceOrganizationServiceResponse financeOrganizationServiceResponse = null;
+    Map<String, String> headers = Map.of(AUTHORIZATION, accessToken);
+    FinanceOrganizationRequest request = FinanceOrganizationRequest.builder().searchTimestamp(timestamp).build();
 
+    ExecutionRequest<FinanceOrganizationRequest> executionRequest = ExecutionUtil
+        .executionRequestAssembler(headers, request);
+
+    // 7.1.2 기관 정보 조회 및 적재
+    FinanceOrganizationServiceResponse executionResponse = (FinanceOrganizationServiceResponse) executionService
+        .execute(
+            executionContext,
+            Executions.support_get_organization_info,
+            executionRequest
+        );
+
+    // db 적재
+    // 기관 리스트 순회
+    // 추후 업데이트시 히스토리 이력이 필요하다면 객체비교로직 추가.
+    for (FinanceOrganizationInfo orgInfo : executionResponse.getOrgList()) {
+      ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
+          .findByOrganizationCode(orgInfo.getOrgCode())
+          .orElseThrow(RuntimeException::new); // fixme exception
+
+      String organizationId = connectOrganizationEntity.getOrganizationId();
+
+      // service 순회
+      for (FinanceOrganizationServiceInfo service : orgInfo.getServiceList()) {
+        // service db insert;
+        FinanceServiceEntity serviceEntity = financeServiceRepository.findByOrganizationId(organizationId)
+            .orElse(FinanceServiceEntity.builder().build());
+
+        serviceMapper.merge(service, serviceEntity);
+        serviceEntity.setOrganizationId(organizationId);
+        serviceEntity = financeServiceRepository.save(serviceEntity);
+
+        // serviceIp 순회
+        for (FinanceOrganizationServiceIp serviceIp : service.getClientIpList()) {
+          // service ip db insert
+          String serviceName = serviceEntity.getServiceName();
+          Long serviceId = serviceEntity.getServiceId();
+          String clientId = serviceIp.getClientIp();
+
+          FinanceServiceClientIpEntity serviceClientIpEntity = financeServiceClientIpRepository
+              .findByServiceIdAndClientIp(serviceId, clientId)
+              .orElse(FinanceServiceClientIpEntity.builder().build());
+
+          serviceClientIpMapper.merge(serviceIp, serviceClientIpEntity);
+          serviceClientIpEntity.setOrganizationId(organizationId);
+          serviceClientIpEntity.setServiceId(serviceId);
+          serviceClientIpEntity.setServiceName(serviceName);
+
+          financeServiceClientIpRepository.save(serviceClientIpEntity);
+        }
+      }
+    }
   }
-  
+
   public String getAccessToken(ExecutionContext executionContext) {
     // banksalad 기관 clientId, clientSecret 조회
     OrganizationClientEntity organizationClientEntity = organizationClientRepository
