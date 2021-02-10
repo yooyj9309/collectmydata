@@ -3,3 +3,7 @@ spring:
     active: local
   application:
     name: collectmydata-capital
+
+banksalad:
+  cipher.uri: dns:///cipher-headless:18081
+  collectmydata-connect.uri: dns:///connect:8080

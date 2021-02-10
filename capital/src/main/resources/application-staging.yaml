@@ -1,0 +1,5 @@
+spring:
+  profiles:
+    active: staging
+  application:
+    name: collectmydata-capital
