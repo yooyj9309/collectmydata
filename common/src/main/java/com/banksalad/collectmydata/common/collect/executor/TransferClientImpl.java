@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.common.collect.executor;
 
 import com.banksalad.collectmydata.common.collect.api.ApiResponseEntity;
+import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -10,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class TransferClientImpl implements TransferClient {
@@ -19,12 +21,17 @@ public class TransferClientImpl implements TransferClient {
       .codecs(configurer -> configurer.defaultCodecs()
           .maxInMemorySize(1024 * 1024 * 50))
       .build();
-  
+
   @Override
   public ApiResponseEntity execute(String baseUrl, String uri, String httpMethod,
       Map<String, String> headers, String body) {
 
-    return executeReactive(baseUrl, uri, httpMethod, headers, body).block();
+    try {
+      return executeReactive(baseUrl, uri, httpMethod, headers, body)
+          .toFuture().get();
+    } catch (InterruptedException | ExecutionException e) {
+      throw new CollectRuntimeException("Fail to transfer request", e);
+    }
   }
 
   @Override
@@ -36,6 +43,7 @@ public class TransferClientImpl implements TransferClient {
         .uri(uri)
         .accept(MediaType.APPLICATION_JSON)
         .headers(httpHeaders -> httpHeaders.setAll(headers))
+        .bodyValue(body)
         .exchangeToMono(response -> response.bodyToMono(String.class)
             .map(stringBody ->
                 ApiResponseEntity.builder()

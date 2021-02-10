@@ -9,4 +9,8 @@ import java.util.List;
 public interface AccountService {
 
   List<Account> getAccounts(ExecutionContext executionContext) throws CollectException;
+
+  void getAccountsDepositBasic(ExecutionContext executionContext, String accountNumber, int seqno, String currencyCode)
+      throws CollectException;
+
 }

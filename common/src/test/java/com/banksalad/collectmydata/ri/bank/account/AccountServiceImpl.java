@@ -6,6 +6,8 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectException;
 import com.banksalad.collectmydata.ri.bank.account.dto.Account;
+import com.banksalad.collectmydata.ri.bank.account.dto.AccountsDepositBasicRequest;
+import com.banksalad.collectmydata.ri.bank.account.dto.AccountsDepositBasicResponse;
 import com.banksalad.collectmydata.ri.bank.account.dto.AccountsRequest;
 import com.banksalad.collectmydata.ri.bank.account.dto.AccountsResponse;
 import com.banksalad.collectmydata.ri.bank.collect.Executions;
@@ -64,6 +66,29 @@ public class AccountServiceImpl implements AccountService {
     } while (executionResponse.getNextPage() != null);
 
     return accounts;
+  }
+
+  public void getAccountsDepositBasic(ExecutionContext executionContext, String accountNumber, int seqno,
+      String currencyCode) {
+
+    /* request header */
+    //Map<String, String> header = headerService.makeHeader(banksaladUserId, organizationId);
+    Map<String, String> header = Map.of("Authorization", executionContext.getAccessToken());
+
+    ExecutionRequest executionRequest = ExecutionRequest.<AccountsDepositBasicRequest>builder()
+        .headers(header)
+        .request(AccountsDepositBasicRequest.builder()
+            .orgCode(executionContext.getOrganizationId())
+            .accountNum(accountNumber)
+            .currencyCode(currencyCode)
+            .seqno(seqno)
+            .build())
+        .build();
+
+    ExecutionResponse<AccountsDepositBasicResponse> executionResponse =
+        collectExecutor.execute(executionContext, Executions.finance_bank_accounts_deposit_basic, executionRequest);
+
+
   }
 
   private List<Account> saveAccounts(AccountsResponse accountsResponse) {

@@ -35,6 +35,7 @@ import java.util.UUID;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 
 @Slf4j
@@ -109,6 +110,25 @@ public class AccountServiceImplTest {
     Assertions.assertThat(accounts.size()).isEqualTo(3);
   }
 
+  @Test
+  @DisplayName("수신계좌기본정보")
+  public void step_03_getAccountsDepositBasic_success() throws Exception {
+    /* transaction mock server */
+    setupServerAccountsDepositBasic();
+
+    /* execution context */
+    ExecutionContext executionContext = ExecutionContext.builder()
+        .banksaladUserId(BANKSALAD_USER_ID)
+        .organizationId(ORGANIZATION_ID)
+        .accessToken("test")
+        .organizationHost(ORGANIZATION_HOST)
+        .executionRequestId(UUID.randomUUID().toString())
+        .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+        .build();
+
+    accountService.getAccountsDepositBasic(executionContext, "accountNumber", 1, "KRW");
+  }
+
   private void setupServerAccountsSinglePage() throws Exception {
     // 계좌목록조회 page 01
     wiremock.stubFor(get(urlMatching("/accounts.*"))
@@ -162,6 +182,18 @@ public class AccountServiceImplTest {
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/BA01_001_single_page_03.json"))));
   }
+
+  private void setupServerAccountsDepositBasic() throws Exception {
+    // 계좌목록조회 page 01
+    wiremock.stubFor(post(urlMatching("/accounts/deposit/basic"))
+        .willReturn(
+            aResponse()
+                .withFixedDelay(1000)
+                .withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+                .withBody(readText("classpath:mock/bank/BA01_002_deposit_basic_01.json"))));
+  }
+
 
   private static String readText(String fileInClassPath) {
     try {
