@@ -7,11 +7,11 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.exception.collectMydataException.NotFoundOrganizationException;
 import com.banksalad.collectmydata.connect.common.collect.Executions;
-import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.OrganizationClientEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationClientRepository;
 import com.banksalad.collectmydata.connect.common.service.ExecutionService;
 import com.banksalad.collectmydata.connect.common.util.ExecutionUtil;
+import com.banksalad.collectmydata.connect.token.dto.ExternalRevokeTokenRequest;
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
 import com.banksalad.collectmydata.connect.token.dto.ExternalIssueTokenRequest;
 import com.banksalad.collectmydata.connect.token.dto.ExternalTokenResponse;
@@ -55,7 +55,19 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
 
   @Override
   public void revokeToken(Organization organization, String accessToken) {
-    // TODO : revoke Token
+    OrganizationClientEntity organizationClientEntity = getOrganizationClientEntity(organization);
+
+    ExternalRevokeTokenRequest request = ExternalRevokeTokenRequest.builder()
+        .orgCode(organization.getOrganizationCode())
+        .token(accessToken)
+        .clientId(organizationClientEntity.getClientId())
+        .clientSecret(organizationClientEntity.getClientSecret())
+        .build();
+
+    ExecutionRequest<ExternalRevokeTokenRequest> executionRequest = ExecutionUtil.executionRequestAssembler(request);
+    ExecutionContext executionContext = buildExecutionContext(organization);
+
+    executionService.execute(executionContext, Executions.oauth_revoke_token, executionRequest);
   }
 
   private OrganizationClientEntity getOrganizationClientEntity(Organization organization) {

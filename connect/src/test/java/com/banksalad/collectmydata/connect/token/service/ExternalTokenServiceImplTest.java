@@ -1,18 +1,16 @@
 package com.banksalad.collectmydata.connect.token.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.OrganizationClientEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationClientRepository;
-import com.banksalad.collectmydata.connect.common.service.ExecutionService;
+
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
 import com.banksalad.collectmydata.connect.token.dto.ExternalTokenResponse;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -94,6 +92,28 @@ class ExternalTokenServiceImplTest {
     assertThat(externalTokenResponse).usingRecursiveComparison().isEqualTo(response);
   }
 
+  @Test
+  @Transactional
+  @DisplayName("5.1.4 접근토큰 폐기를 성공하는 테스트")
+  public void revokeToken_success() {
+    // given
+    setupServerRevokeToken();
+
+    ConnectOrganizationEntity connectOrganizationEntity = createConnectOrganizationEntity("test_organizationId");
+    connectOrganizationRepository.save(connectOrganizationEntity);
+    organizationClientRepository.save(
+        OrganizationClientEntity.builder()
+            .clientId("clientId")
+            .clientSecret("clientSecret")
+            .organizationId(connectOrganizationEntity.getOrganizationId())
+            .build()
+    );
+    Organization organization = createOrganization(connectOrganizationEntity);
+
+    // when, then
+    externalTokenService.revokeToken(organization, "test_accessToken");
+  }
+
   private void setupServerIssueToken() {
     // 5.1.2 접근토큰 발급 요청
     wiremock.stubFor(post(urlMatching("/oauth/2.0/token"))
@@ -103,6 +123,17 @@ class ExternalTokenServiceImplTest {
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock.api5/AU02_001.json"))));
+  }
+
+  private void setupServerRevokeToken() {
+    // 5.1.4 접근토큰 폐기
+    wiremock.stubFor(get(urlMatching("/oauth/2.0/revoke"))
+        .willReturn(
+            aResponse()
+                .withFixedDelay(1000)
+                .withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+                .withBody(readText("classpath:mock.api5/AU03_001.json"))));
   }
 
   private ConnectOrganizationEntity createConnectOrganizationEntity(String organizationId) {

@@ -1,6 +1,5 @@
 package com.banksalad.collectmydata.connect.token.service;
 
-import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
 import com.banksalad.collectmydata.connect.token.dto.ExternalTokenResponse;
 
