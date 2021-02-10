@@ -14,6 +14,7 @@ import com.banksalad.collectmydata.connect.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.connect.token.dto.ExternalRevokeTokenRequest;
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
 import com.banksalad.collectmydata.connect.token.dto.ExternalIssueTokenRequest;
+import com.banksalad.collectmydata.connect.token.dto.ExternalRefreshTokenRequest;
 import com.banksalad.collectmydata.connect.token.dto.ExternalTokenResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -49,8 +50,21 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
 
   @Override
   public ExternalTokenResponse refreshToken(Organization organization, String refreshToken) {
-    // TODO : refresh Token
-    return ExternalTokenResponse.builder().build();
+    OrganizationClientEntity organizationClientEntity = getOrganizationClientEntity(organization);
+
+    ExternalRefreshTokenRequest request = ExternalRefreshTokenRequest.builder()
+        .orgCode(organization.getOrganizationCode())
+        .refreshToken(refreshToken)
+        .clientId(organizationClientEntity.getClientId())
+        .clientSecret(organizationClientEntity.getClientSecret())
+        .build();
+
+    ExecutionRequest<ExternalRefreshTokenRequest> executionRequest = ExecutionUtil.executionRequestAssembler(request);
+    ExecutionContext executionContext = buildExecutionContext(organization);
+
+    ExternalTokenResponse response = executionService
+        .execute(executionContext, Executions.oauth_refresh_token, executionRequest);
+    return response;
   }
 
   @Override

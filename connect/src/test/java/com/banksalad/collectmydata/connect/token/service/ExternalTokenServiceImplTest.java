@@ -17,21 +17,17 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static com.banksalad.collectmydata.connect.util.FileUtil.readText;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @DisplayName("ExternalTokenServiceImpl Test")
@@ -46,12 +42,10 @@ class ExternalTokenServiceImplTest {
   @Autowired
   private ExternalTokenService externalTokenService;
 
-  private static final String ORGANIZATION_HOST = "http://localhost:9090";
+  private static WireMockServer wiremock = new WireMockServer(WireMockSpring.options().dynamicPort());
 
-  public static WireMockServer wiremock = new WireMockServer(WireMockSpring.options().port(9090));
-
-  @BeforeEach
-  public void setupClass() {
+  @BeforeAll
+  public static void setupClass() {
     wiremock.start();
   }
 
@@ -68,20 +62,15 @@ class ExternalTokenServiceImplTest {
   @Test
   @Transactional
   @DisplayName("5.1.2 접근토큰 발급 요청을 성공하는 테스트")
-  public void issueToken_success() {
+  void issueToken_success() {
     // given
     setupServerIssueToken();
 
     ConnectOrganizationEntity connectOrganizationEntity = createConnectOrganizationEntity("test_organizationId");
     connectOrganizationRepository.save(connectOrganizationEntity);
-    organizationClientRepository.save(
-        OrganizationClientEntity.builder()
-            .clientId("clientId")
-            .clientSecret("clientSecret")
-            .organizationId(connectOrganizationEntity.getOrganizationId())
-            .build()
-    );
-    ExternalTokenResponse response = buildExternalTokenResponse();
+    OrganizationClientEntity organizationClientEntity = createOrganizationClientEntity(connectOrganizationEntity);
+    organizationClientRepository.save(organizationClientEntity);
+    ExternalTokenResponse response = createExternalTokenResponse();
     Organization organization = createOrganization(connectOrganizationEntity);
 
     // when
@@ -94,20 +83,37 @@ class ExternalTokenServiceImplTest {
 
   @Test
   @Transactional
+  @DisplayName("5.1.3 접근토큰 갱신을 성공하는 테스트")
+  void refreshToken_success() {
+    // given
+    setupServerRefreshToken();
+
+    ConnectOrganizationEntity connectOrganizationEntity = createConnectOrganizationEntity("test_organizationId");
+    connectOrganizationRepository.save(connectOrganizationEntity);
+    OrganizationClientEntity organizationClientEntity = createOrganizationClientEntity(connectOrganizationEntity);
+    organizationClientRepository.save(organizationClientEntity);
+    ExternalTokenResponse response = createExternalTokenResponse();
+    Organization organization = createOrganization(connectOrganizationEntity);
+
+    // when
+    ExternalTokenResponse externalTokenResponse = externalTokenService
+        .refreshToken(organization, "test_refreshToken");
+
+    // then
+    assertThat(externalTokenResponse).usingRecursiveComparison().isEqualTo(response);
+  }
+
+  @Test
+  @Transactional
   @DisplayName("5.1.4 접근토큰 폐기를 성공하는 테스트")
-  public void revokeToken_success() {
+  void revokeToken_success() {
     // given
     setupServerRevokeToken();
 
     ConnectOrganizationEntity connectOrganizationEntity = createConnectOrganizationEntity("test_organizationId");
     connectOrganizationRepository.save(connectOrganizationEntity);
-    organizationClientRepository.save(
-        OrganizationClientEntity.builder()
-            .clientId("clientId")
-            .clientSecret("clientSecret")
-            .organizationId(connectOrganizationEntity.getOrganizationId())
-            .build()
-    );
+    OrganizationClientEntity organizationClientEntity = createOrganizationClientEntity(connectOrganizationEntity);
+    organizationClientRepository.save(organizationClientEntity);
     Organization organization = createOrganization(connectOrganizationEntity);
 
     // when, then
@@ -117,6 +123,17 @@ class ExternalTokenServiceImplTest {
   private void setupServerIssueToken() {
     // 5.1.2 접근토큰 발급 요청
     wiremock.stubFor(post(urlMatching("/oauth/2.0/token"))
+        .willReturn(
+            aResponse()
+                .withFixedDelay(1000)
+                .withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+                .withBody(readText("classpath:mock.api5/AU02_001.json"))));
+  }
+
+  private void setupServerRefreshToken() {
+    // 5.1.3 접근토큰 갱신
+    wiremock.stubFor(get(urlMatching("/oauth/2.0/token"))
         .willReturn(
             aResponse()
                 .withFixedDelay(1000)
@@ -146,11 +163,11 @@ class ExternalTokenServiceImplTest {
         .orgType("test_orgType")
         .organizationStatus("test_organizationStatus")
         .isRelayOrganization(false)
-        .domain(ORGANIZATION_HOST)
+        .domain("http://localhost:" + wiremock.port())
         .build();
   }
 
-  private ExternalTokenResponse buildExternalTokenResponse() {
+  private ExternalTokenResponse createExternalTokenResponse() {
     return ExternalTokenResponse.builder()
         .tokenType("Bearer")
         .accessToken("accessToken")
@@ -168,6 +185,14 @@ class ExternalTokenServiceImplTest {
         .organizationId(connectOrganizationEntity.getOrganizationId())
         .organizationCode(connectOrganizationEntity.getRelayOrgCode())
         .domain(connectOrganizationEntity.getDomain())
+        .build();
+  }
+
+  private OrganizationClientEntity createOrganizationClientEntity(ConnectOrganizationEntity connectOrganizationEntity) {
+    return OrganizationClientEntity.builder()
+        .clientId("clientId")
+        .clientSecret("clientSecret")
+        .organizationId(connectOrganizationEntity.getOrganizationId())
         .build();
   }
 }

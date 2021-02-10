@@ -13,15 +13,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ExternalIssueTokenRequest {
+public class ExternalRefreshTokenRequest {
 
   private String orgCode;
 
   @Builder.Default
-  private final String grantType = "authorization_code";
-
-  private String code;
+  private final String grantType = "refresh_token";
+  
+  private String refreshToken;
   private String clientId;
   private String clientSecret;
-  private String redirectUri;
 }

@@ -53,7 +53,7 @@ class OauthTokenServiceImplTest {
   @Test
   @Transactional
   @DisplayName("access token 조회를 성공하는 테스트")
-  public void getAccessToken_success() {
+  void getAccessToken_success() {
     // given
     OauthTokenEntity oauthTokenEntity = createOauthTokenEntity();
     oauthTokenRepository.save(oauthTokenEntity);
@@ -73,7 +73,7 @@ class OauthTokenServiceImplTest {
   @Test
   @Transactional
   @DisplayName("access token 조회를 실패하는 테스트 - 없는 banksaladUserId 조회")
-  public void getAccessToken_fail() {
+  void getAccessToken_fail() {
     // given
     OauthTokenEntity oauthTokenEntity = createOauthTokenEntity();
     oauthTokenRepository.save(oauthTokenEntity);
@@ -89,7 +89,7 @@ class OauthTokenServiceImplTest {
   @Test
   @Transactional
   @DisplayName("access token 기한 만료로 토큰 갱신하는 테스트")
-  public void getAccessToken_refresh() {
+  void getAccessToken_refresh() {
     // given
     OauthTokenEntity oauthTokenEntity = createAccessTokenExpiredOauthTokenEntity();
     oauthTokenRepository.save(oauthTokenEntity);
@@ -118,7 +118,7 @@ class OauthTokenServiceImplTest {
   @Test
   @Transactional
   @DisplayName("access token 발급을 성공하는 테스트")
-  public void issueToken_success() {
+  void issueToken_success() {
     // given
     OauthTokenEntity oauthTokenEntity = createOauthTokenEntity();
     oauthTokenRepository.save(oauthTokenEntity);
@@ -148,7 +148,7 @@ class OauthTokenServiceImplTest {
   @Test
   @Transactional
   @DisplayName("access token 발급을 실패하는 테스트 - 없는 organizationId 조회")
-  public void issueToken_fail() {
+  void issueToken_fail() {
     // given
     OauthTokenEntity oauthTokenEntity = createOauthTokenEntity();
     oauthTokenRepository.save(oauthTokenEntity);
@@ -173,7 +173,7 @@ class OauthTokenServiceImplTest {
   @Test
   @Transactional
   @DisplayName("access token 갱신을 성공하는 테스트")
-  public void refreshToken_success() {
+  void refreshToken_success() {
     // given
     OauthTokenEntity oauthTokenEntity = createOauthTokenEntity();
     oauthTokenRepository.save(oauthTokenEntity);
@@ -202,7 +202,7 @@ class OauthTokenServiceImplTest {
   @Test
   @Transactional
   @DisplayName("access token 갱신을 실패하는 테스트 - 만료된 refresh token")
-  public void refreshToken_fail() {
+  void refreshToken_fail() {
     // given
     OauthTokenEntity oauthTokenEntity = createRefreshTokenExpiredOauthTokenEntity();
     oauthTokenRepository.save(oauthTokenEntity);
@@ -226,7 +226,7 @@ class OauthTokenServiceImplTest {
   @Test
   @Transactional
   @DisplayName("access token 폐기를 성공하는 테스트")
-  public void revokeToken_success() {
+  void revokeToken_success() {
     // given
     OauthTokenEntity oauthTokenEntity = createOauthTokenEntity();
     oauthTokenRepository.save(oauthTokenEntity);
@@ -250,7 +250,7 @@ class OauthTokenServiceImplTest {
   @Test
   @Transactional
   @DisplayName("access token 폐기를 실패하는 테스트 - 없는 organizationId 삭제")
-  public void revokeToken_fail() {
+  void revokeToken_fail() {
     // given
     OauthTokenEntity oauthTokenEntity = createOauthTokenEntity();
     oauthTokenRepository.save(oauthTokenEntity);
@@ -268,7 +268,7 @@ class OauthTokenServiceImplTest {
   @Test
   @Transactional
   @DisplayName("뱅크샐러드 DB에서 토큰 제거 후 기관에 폐기 요청하였으나 예외가 발생한 경우 - 뱅크샐러드 DB에는 토큰 폐기 상태를 유지")
-  public void revokeToken_transation_success_external_request_fail() {
+  void revokeToken_transation_success_external_request_fail() {
     // given
     OauthTokenEntity oauthTokenEntity = createOauthTokenEntity();
     oauthTokenRepository.save(oauthTokenEntity);
@@ -299,7 +299,7 @@ class OauthTokenServiceImplTest {
   @Test
   @Transactional
   @DisplayName("모든 access token 폐기를 성공하는 테스트 - 다른 유저의 토큰이 삭제되지 않은 것 포함하여 검증")
-  public void revokeAllTokens_success() {
+  void revokeAllTokens_success() {
     // given
     OauthTokenEntity oauthTokenEntity = createOauthTokenEntity();
     OauthTokenEntity oauthTokenEntityWithOtherBanksaladUserId = createOauthTokenEntityWithOtherBanksaladUserId();
@@ -334,7 +334,7 @@ class OauthTokenServiceImplTest {
   @Test
   @Transactional
   @DisplayName("모든 access token 폐기를 실패하는 테스트 - 없는 banksaladUserId의 토큰 삭제")
-  public void revokeAllTokens_fail() {
+  void revokeAllTokens_fail() {
     // given
     OauthTokenEntity oauthTokenEntity = createOauthTokenEntity();
     oauthTokenRepository.save(oauthTokenEntity);
@@ -353,7 +353,7 @@ class OauthTokenServiceImplTest {
   @Test
   @Transactional
   @DisplayName("유저의 모든 토큰 제거 과정 중간에 특정 기관에서 예외가 발생한 경우 - 해당 예외 발생 전까지의 과정은 정상 트랜잭션 진행 (진행된 뱅크샐러드 DB에는 토큰 폐기 상태를 유지)")
-  public void revokeAllTokens_transation_success_external_request_fail() {
+  void revokeAllTokens_transation_success_external_request_fail() {
     // given
     final int TOTAL_ORGANIZATION_COUNT = 5;
     final int ERROR_INDEX = 2; // must be less than TOTAL_ORGANIZATION_COUNT
