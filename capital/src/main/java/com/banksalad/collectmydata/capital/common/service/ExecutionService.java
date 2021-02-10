@@ -6,5 +6,5 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 
 public interface ExecutionService {
 
-  public <T, R> R execute(ExecutionContext executionContext, Execution execution, ExecutionRequest<T> executionRequest);
+  <T, R> R execute(ExecutionContext executionContext, Execution execution, ExecutionRequest<T> executionRequest);
 }
