@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import com.banksalad.collectmydata.capital.account.dto.Account;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailRequest;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
+import com.banksalad.collectmydata.capital.account.dto.AccountBasicRequest;
+import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountRequest;
 import com.banksalad.collectmydata.capital.account.dto.AccountResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
@@ -36,6 +38,23 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         .executionRequestAssembler(headers, accountRequest);
 
     return executionService.execute(executionContext, capital_get_accounts, executionRequest);
+  }
+
+  @Override
+  public AccountBasicResponse getAccountBasic(ExecutionContext executionContext, Organization organization,
+      Account account) {
+    Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
+    AccountBasicRequest request = AccountBasicRequest.builder()
+        .orgCode(organization.getOrganizationCode())
+        .accountNum(account.getAccountNum())
+        .seqno(account.getSeqno())
+        .searchTimestamp(0L) // TODO
+        .build();
+
+    ExecutionRequest<AccountRequest> executionRequest = ExecutionUtil
+        .executionRequestAssembler(headers, request);
+
+    return executionService.execute(executionContext, capital_get_account_basic, executionRequest);
   }
 
   @Override

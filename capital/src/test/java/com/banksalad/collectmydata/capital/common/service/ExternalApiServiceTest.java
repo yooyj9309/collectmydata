@@ -6,6 +6,7 @@ import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 
 import com.banksalad.collectmydata.capital.account.dto.Account;
+import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
@@ -40,7 +41,7 @@ class ExternalApiServiceTest {
   private static WireMockServer wireMockServer;
 
   @Autowired
-  private ExternalApiService externalApiServiceImpl;
+  private ExternalApiService externalApiService;
 
   @BeforeAll
   static void setup() {
@@ -63,7 +64,7 @@ class ExternalApiServiceTest {
     AccountResponse expectedAccountResponse = getAccountResponse();
 
     // When
-    AccountResponse actualAccountResponse = externalApiServiceImpl.getAccounts(executionContext, organization);
+    AccountResponse actualAccountResponse = externalApiService.getAccounts(executionContext, organization);
 
     // Then
     assertEquals(2, actualAccountResponse.getAccountCnt());
@@ -71,7 +72,35 @@ class ExternalApiServiceTest {
         .isEqualTo(expectedAccountResponse.getAccountList());
   }
 
-  // TODO : will be added - 6.7.2 대출상품계좌 기본정보 조회
+  @Test
+  @DisplayName("6.7.2 대출상품계좌 기본정보 조회")
+  public void givenExecutionContextAndOrganizationAndAccount_whenGetAccountBasic_thenEquals() {
+    // given
+    ExecutionContext executionContext = getExecutionContext();
+    Organization organization = getOrganization();
+    Account account = getAccount();
+
+    // when
+    AccountBasicResponse accountBasicResponse = externalApiService
+        .getAccountBasic(executionContext, organization, account);
+
+    // then
+    assertThat(accountBasicResponse).usingRecursiveComparison().isEqualTo(
+        AccountBasicResponse.builder()
+            .rspCode("000")
+            .rspMsg("rep_msg")
+            .searchTimestamp(1000)
+            .holderName("대출차주명")
+            .issueDate("20210210")
+            .expDate("20221231")
+            .lastOfferedRate(BigDecimal.valueOf(2.117))
+            .repayDate("03")
+            .repayMethod("01")
+            .repayOrgCode("B01")
+            .repayAccountNum("11022212345")
+            .build()
+    );
+  }
 
   @Test // TODO : execution HTTP POST method
   @DisplayName("6.7.3 대출 상품 계좌 추가 정보 조회")
@@ -84,7 +113,7 @@ class ExternalApiServiceTest {
     AccountDetailResponse expectedAccountDetailResponse = getAccountDetailResponse();
 
     // When
-    AccountDetailResponse actualAccountDetailResponse = externalApiServiceImpl
+    AccountDetailResponse actualAccountDetailResponse = externalApiService
         .getAccountDetail(executionContext, organization, account);
 
     // Then
@@ -172,7 +201,14 @@ class ExternalApiServiceTest {
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/CP01_001.json"))));
 
-    // TODO : will be added - 6.7.2 대출상품계좌 기본정보 조회
+    // 6.7.2 대출상품계좌 기본정보 조회
+    wireMockServer.stubFor(post(urlMatching("/loans/basic"))
+        .willReturn(
+            aResponse()
+                .withFixedDelay(1000)
+                .withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+                .withBody(readText("classpath:mock/CP02_001.json"))));
 
     // 6.7.3 대출상품계좌 추가정보 조회
     wireMockServer.stubFor(post(urlMatching("/loans/detail.*"))
