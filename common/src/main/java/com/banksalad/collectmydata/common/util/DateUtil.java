@@ -47,6 +47,10 @@ public class DateUtil {
     return dateFormatter.format(LocalDate.now(KST_ZONE_ID));
   }
 
+  public static String kstCurrentDatetime() {
+    return datetimeFormatter.format(LocalDateTime.now(KST_ZONE_ID));
+  }
+
   public static String localDateToDateString(LocalDate source) {
     if (source == null) {
       return null;

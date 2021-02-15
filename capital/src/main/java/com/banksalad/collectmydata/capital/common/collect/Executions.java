@@ -3,7 +3,7 @@ package com.banksalad.collectmydata.capital.common.collect;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountResponse;
-import com.banksalad.collectmydata.capital.account.dto.TransactionResponse;
+import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 
 public class Executions {
@@ -32,6 +32,6 @@ public class Executions {
   public static final Execution capital_get_account_transactions =
       Execution.create()
           .exchange(Apis.capital_get_account_transactions)
-          .as(TransactionResponse.class)
+          .as(AccountTransactionResponse.class)
           .build();
 }

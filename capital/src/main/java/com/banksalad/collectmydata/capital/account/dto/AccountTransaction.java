@@ -9,16 +9,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class Interest {
+public class AccountTransaction {
 
-  private String intStartDate;
-  private String intEndDate;
-  private BigDecimal intRate;
-  private String intType;
+  private String transDtime;
+  private String transNo;
+  private String transType;
+  private BigDecimal transAmt;
+  private BigDecimal balanceAmt;
+  private BigDecimal principalAmt;
+  private long intAmt;
+  private int intCnt;
+  private List<AccountTransactionInterest> intList;
 }

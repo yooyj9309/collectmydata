@@ -1,28 +1,34 @@
 package com.banksalad.collectmydata.capital.common.service;
 
+import com.banksalad.collectmydata.capital.account.dto.Account;
+import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
+import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
+import com.banksalad.collectmydata.capital.account.dto.AccountResponse;
+import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
+import com.banksalad.collectmydata.capital.account.dto.AccountTransactionInterest;
+import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
+import com.banksalad.collectmydata.capital.common.dto.Organization;
+import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+import com.banksalad.collectmydata.common.util.DateUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 
-import com.banksalad.collectmydata.capital.account.dto.Account;
-import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
-import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
-import com.banksalad.collectmydata.capital.account.dto.AccountResponse;
-import com.banksalad.collectmydata.capital.common.dto.Organization;
-import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 import static com.banksalad.collectmydata.capital.util.FileUtil.readText;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -38,6 +44,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @DisplayName("ExternalApiService Test")
 class ExternalApiServiceTest {
+
+  private static final String SECTOR = "finance";
+  private static final String INDUSTRY = "capital";
+  private static final String ORGANIZATION_ID = "X-loan";
+  private static final String ORGANIZATION_CODE = "10041004";
+  private static final String ORGANIZATION_HOST = "localhost";
+  private static final Long BANKSALAD_USER_ID = 1L;
+  private static final String ACCESS_TOKEN = "abc.def.ghi";
+  private static final String ACCOUNT_NUMBER = "1234567890";
+  private static final int SEQNO = 0;
+  private static final String ACCOUNT_TYPE = "3100";
+  private static final String ACCOUNT_STATUS = "01";
+  private static final String PRODUCT_NAME = "X-론 직장인 신용대출";
 
   private static WireMockServer wireMockServer;
 
@@ -120,33 +139,115 @@ class ExternalApiServiceTest {
     assertThat(actualAccountDetailResponse).usingRecursiveComparison().isEqualTo(expectedAccountDetailResponse);
   }
 
-  // TODO : will be added - 6.7.4 대출상품계좌 거래내역 조회
+  @Test
+  @DisplayName("6.7.4 대출상품계좌 거래내역 조회: 2개 페이지 결합하기 (seqno 없는 경우)")
+  public void givenExecutionContextAndRequest_whenGetTransactions_thenFirstPage() {
+    // Given
+    ExecutionContext executionContext = getExecutionContext();
+    Organization organization = getOrganization();
+    Account account = getAccount();
+    // When
+    AccountTransactionResponse response = externalApiService
+        .getAccountTransactions(executionContext, organization, account);
+    // Then
+    assertEquals(3, response.getTransCnt());
+    assertEquals(3, response.getTransList().size());
+    assertThat(response).usingRecursiveComparison().isEqualTo(
+        AccountTransactionResponse.builder()
+            .rspCode("00000")
+            .rspMsg("rsp_msg")
+            .transCnt(3)
+            .transList(List.of(
+                AccountTransaction.builder()
+                    .transDtime("20210121103000")
+                    .transNo("trans#2")
+                    .transType("03")
+                    .transAmt(BigDecimal.valueOf(1000.3))
+                    .balanceAmt(BigDecimal.valueOf(18000.7))
+                    .principalAmt(BigDecimal.valueOf(20000.0))
+                    .intAmt(100)
+                    .intCnt(2)
+                    .intList(List.of(
+                        AccountTransactionInterest.builder()
+                            .intStartDate("20201201")
+                            .intEndDate("20201231")
+                            .intRate(BigDecimal.valueOf(4.125))
+                            .intType("02")
+                            .build(),
+                        AccountTransactionInterest.builder()
+                            .intStartDate("20201201")
+                            .intEndDate("20201231")
+                            .intRate(BigDecimal.valueOf(3.025))
+                            .intType("01")
+                            .build()
+                    ))
+                    .build(),
+                AccountTransaction.builder()
+                    .transDtime("20210121093000")
+                    .transNo("trans#1")
+                    .transType("03")
+                    .transAmt(BigDecimal.valueOf(1000.3))
+                    .balanceAmt(BigDecimal.valueOf(18000.7))
+                    .principalAmt(BigDecimal.valueOf(20000.0))
+                    .intAmt(100)
+                    .intCnt(1)
+                    .intList(List.of(
+                        AccountTransactionInterest.builder()
+                            .intStartDate("20201201")
+                            .intEndDate("20201231")
+                            .intRate(BigDecimal.valueOf(3.025))
+                            .intType("99")
+                            .build()
+                    ))
+                    .build(),
+                AccountTransaction.builder()
+                    .transDtime("20210121221000")
+                    .transNo("trans#3")
+                    .transType("99")
+                    .transAmt(BigDecimal.valueOf(0.0))
+                    .balanceAmt(BigDecimal.valueOf(18000.7))
+                    .principalAmt(BigDecimal.valueOf(20000.0))
+                    .intAmt(0)
+                    .intCnt(0)
+                    .intList(List.of())
+                    .build()
+            ))
+            .build()
+    );
+  }
 
+  /*
+  Helper methods
+   */
   private ExecutionContext getExecutionContext() {
     return ExecutionContext.builder()
-        .accessToken("accessToken")
-        .organizationHost("http://localhost:" + wireMockServer.port())
+        .organizationHost("http://" + ORGANIZATION_HOST + ":" + wireMockServer.port())
+        .accessToken(ACCESS_TOKEN)
+        .banksaladUserId(BANKSALAD_USER_ID)
+        .organizationId(ORGANIZATION_ID)
+        .executionRequestId(UUID.randomUUID().toString())
+        .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
   }
 
   private Organization getOrganization() {
     return Organization.builder()
-        .sector("finance")
-        .industry("bank")
-        .organizationId("shinhanbank")
-        .organizationCode("020")
-        .domain("123")
+        .sector(SECTOR)
+        .industry(INDUSTRY)
+        .organizationId(ORGANIZATION_ID)
+        .organizationCode(ORGANIZATION_CODE)
+        .domain(ORGANIZATION_HOST)
         .build();
   }
 
   private Account getAccount() {
     return Account.builder()
-        .accountNum("1234")
+        .accountNum(ACCOUNT_NUMBER)
         .isConsent(TRUE)
         .seqno(1)
-        .prodName("대출도 재산 상품")
-        .accountType("1234")
-        .accountStatus("01")
+        .prodName(PRODUCT_NAME)
+        .accountType(ACCOUNT_TYPE)
+        .accountStatus(ACCOUNT_STATUS)
         .build();
   }
 
@@ -192,7 +293,7 @@ class ExternalApiServiceTest {
   private static void setupMockServer() {
     // 6.7.1 계좌목록 조회
     wireMockServer.stubFor(get(urlMatching("/loans.*"))
-        .withQueryParam("org_code", equalTo("020"))
+        .withQueryParam("org_code", equalTo(ORGANIZATION_CODE))
         .withQueryParam("search_timestamp", equalTo("0"))
         .willReturn(
             aResponse()
@@ -213,8 +314,8 @@ class ExternalApiServiceTest {
     // 6.7.3 대출상품계좌 추가정보 조회
     wireMockServer.stubFor(post(urlMatching("/loans/detail"))
         .withRequestBody(equalToJson(
-            "{\"org_code\" : \"020\"," +
-                "\"account_num\" : \"1234\"," +
+            "{\"org_code\" : \"10041004\"," +
+                "\"account_num\" : \"1234567890\"," +
                 "\"seqno\" : 1," +
                 "\"search_timestamp\" : 0}"))
         .willReturn(
@@ -224,52 +325,37 @@ class ExternalApiServiceTest {
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/CP03_001.json"))));
 
-    // 6.7.4 대출상품계좌 거래내역 조회: 빈 페이지 조회 AND seqno 없는 경우
-    wireMockServer.stubFor(post(urlMatching("/loans/transactions.*"))
-        .withQueryParam("org_code", equalTo("loanX"))
-        .withQueryParam("account_num", equalTo("10041004"))
-//            .withQueryParam("seqno", equalTo(""))
-        .withQueryParam("from_dtime", equalTo("20210121000000"))
-        .withQueryParam("to_dtime", equalTo("20210122000000"))
-//            .withQueryParam("next_page", equalTo(""))
-        .withQueryParam("limit", equalTo("500"))
-        .willReturn(
-            aResponse()
-                .withFixedDelay(500)
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/CP04_001.json"))));
-
-    // 6.7.4 대출상품계좌 거래내역 조회: 첫번째 페이지 조회 AND seqno 없는 경우
-    wireMockServer.stubFor(post(urlMatching("/loans/transactions.*"))
-        .withQueryParam("org_code", equalTo("loanX"))
-        .withQueryParam("account_num", equalTo("10041004"))
-//            .withQueryParam("seqno", equalTo(""))
-        .withQueryParam("from_dtime", equalTo("20210121000000"))
-        .withQueryParam("to_dtime", equalTo("20210122000000"))
-//            .withQueryParam("next_page", equalTo(""))
-        .withQueryParam("limit", equalTo("2"))
+    // 6.7.4 대출상품계좌 거래내역 조회: 첫번째 페이지 (next_page를 요청에 설정하지 않음)
+    wireMockServer.stubFor(post(urlMatching("/loans/transactions"))
+        .withRequestBody(equalToJson(
+            "{\"org_code\" : \"10041004\"," +
+                "\"account_num\" : \"1234567890\"," +
+                "\"seqno\" : 0," +
+                "\"from_dtime\" : \"20210121000000\"," +
+                "\"to_dtime\" : \"20210122000000\"," +
+                "\"limit\" : 2}"))
         .willReturn(
             aResponse()
                 .withFixedDelay(500)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/CP04_002.json"))));
-
-    // 6.7.4 대출상품계좌 거래내역 조회: 두번째 페이지 조회 AND seqno 없는 경우
-    wireMockServer.stubFor(post(urlMatching("/loans/transactions.*"))
-        .withQueryParam("org_code", equalTo("loanX"))
-        .withQueryParam("account_num", equalTo("10041004"))
-//            .withQueryParam("seqno", equalTo(""))
-        .withQueryParam("from_dtime", equalTo("20210121000000"))
-        .withQueryParam("to_dtime", equalTo("20210122000000"))
-        .withQueryParam("next_page", equalTo("2"))
-        .withQueryParam("limit", equalTo("2"))
+    // 6.7.4 대출상품계좌 거래내역 조회: 두번째 페이지 (응답에 next_page가 없음)
+    wireMockServer.stubFor(post(urlMatching("/loans/transactions"))
+        .withRequestBody(equalToJson(
+            "{\"org_code\" : \"10041004\"," +
+                "\"account_num\" : \"1234567890\"," +
+                "\"seqno\" : 0," +
+                "\"from_dtime\" : \"20210121000000\"," +
+                "\"to_dtime\" : \"20210122000000\"," +
+                "\"next_page\" : \"3\"," +
+                "\"limit\" : 2}"))
         .willReturn(
             aResponse()
-                .withFixedDelay(2)
+                .withFixedDelay(500)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/CP04_003.json"))));
+
   }
 }

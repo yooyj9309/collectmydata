@@ -1,22 +1,24 @@
 package com.banksalad.collectmydata.capital.account.dto;
 
-
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @ToString
-public class TransactionResponse {
-  private String rspCode;
-  private String rspMsg;
+public class AccountTransactionRequest {
+  private String orgCode;
+  private String accountNum;
+  private int seqno;
+  private String fromDtime;
+  private String toDtime;
   private String nextPage;
-  private int transCnt;
-  private List<Transaction> transList;
+  private int limit;
 }
