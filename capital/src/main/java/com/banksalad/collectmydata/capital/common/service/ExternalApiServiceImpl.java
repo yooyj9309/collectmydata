@@ -51,7 +51,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         .searchTimestamp(0L) // TODO
         .build();
 
-    ExecutionRequest<AccountRequest> executionRequest = ExecutionUtil
+    ExecutionRequest<AccountBasicRequest> executionRequest = ExecutionUtil
         .executionRequestAssembler(headers, request);
 
     return executionService.execute(executionContext, capital_get_account_basic, executionRequest);

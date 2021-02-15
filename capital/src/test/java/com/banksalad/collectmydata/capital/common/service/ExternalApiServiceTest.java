@@ -27,6 +27,7 @@ import java.util.List;
 import static com.banksalad.collectmydata.capital.util.FileUtil.readText;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
@@ -102,9 +103,8 @@ class ExternalApiServiceTest {
     );
   }
 
-  @Test // TODO : execution HTTP POST method
+  @Test
   @DisplayName("6.7.3 대출 상품 계좌 추가 정보 조회")
-  @Disabled
   void givenExecutionContextAndOrganizationAndAccount_whenGetAccountDetail_thenEquals() {
     // Given
     ExecutionContext executionContext = getExecutionContext();
@@ -211,11 +211,12 @@ class ExternalApiServiceTest {
                 .withBody(readText("classpath:mock/CP02_001.json"))));
 
     // 6.7.3 대출상품계좌 추가정보 조회
-    wireMockServer.stubFor(post(urlMatching("/loans/detail.*"))
-        .withQueryParam("org_code", equalTo("123"))
-        .withQueryParam("account_num", equalTo("1234"))
-        .withQueryParam("seqno", equalTo("1"))
-        .withQueryParam("search_timestamp", equalTo("0"))
+    wireMockServer.stubFor(post(urlMatching("/loans/detail"))
+        .withRequestBody(equalToJson(
+            "{\"org_code\" : \"020\"," +
+                "\"account_num\" : \"1234\"," +
+                "\"seqno\" : 1," +
+                "\"search_timestamp\" : 0}"))
         .willReturn(
             aResponse()
                 .withFixedDelay(1000)
