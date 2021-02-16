@@ -11,23 +11,21 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "operating_lease")
-public class OperatingLeaseEntity extends BaseTimeAndUserEntity {
+@Table(name = "operating_lease_history")
+public class OperatingLeaseHistoryEntity extends BaseTimeAndUserEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long operatingLeaseId;
+  private Long operatingLeaseHistoryId;
 
   @Column(nullable = false)
   private LocalDateTime syncedAt;

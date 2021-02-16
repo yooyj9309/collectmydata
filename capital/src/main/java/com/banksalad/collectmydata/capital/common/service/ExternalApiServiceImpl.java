@@ -1,5 +1,7 @@
 package com.banksalad.collectmydata.capital.common.service;
 
+import org.springframework.stereotype.Service;
+
 import com.banksalad.collectmydata.capital.account.dto.Account;
 import com.banksalad.collectmydata.capital.account.dto.AccountBasicRequest;
 import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
@@ -12,11 +14,9 @@ import com.banksalad.collectmydata.capital.account.dto.AccountTransactionRespons
 import com.banksalad.collectmydata.capital.common.collect.Executions;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.util.ExecutionUtil;
+import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
-
-import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -122,5 +122,11 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     } while (response.getNextPage() != null);
 
     return response;
+  }
+
+  @Override
+  public OperatingLeaseResponse getLeaseBasic(ExecutionContext executionContext, Organization organization,
+      Account account) {
+    return null;
   }
 }
