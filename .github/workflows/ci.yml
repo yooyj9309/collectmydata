@@ -12,12 +12,6 @@ jobs:
         with:
           java-version: '11'
 
-      # - name: Cache Gradle packages
-      #   uses: actions/cache@v1
-      #   with:
-      #     path: ~/.gradle/caches
-      #     key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -33,11 +27,6 @@ jobs:
           GH_DAAS_PACKAGES_TOKEN: ${{ secrets.GH_DAAS_PACKAGES_TOKEN }}
         run: ./gradlew -s test
 
-#      - name: Send to codecov
-#        uses: codecov/codecov-action@v1
-#        with:
-#          token: ${{ secrets.CODECOV_TOKEN }}
-
   build:
     name: Build
     runs-on: [self-hosted, jvm]
@@ -45,12 +34,6 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '11'
-
-      - name: Cache Gradle packages
-        uses: actions/cache@v1
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -75,21 +58,21 @@ jobs:
           GH_USERNAME: ${{ secrets.GH_USERNAME }}
           GH_DAAS_PACKAGES_TOKEN: ${{ secrets.GH_DAAS_PACKAGES_TOKEN }}
         run: ./gradlew clean build -x test
-      
+
       - name: bank docker push
         uses: docker/build-push-action@v2
         with:
           context: bank
           push: true
           tags: rainist/collectmydata-bank:${{ github.sha }}
-          
+
       - name: card docker push
         uses: docker/build-push-action@v2
         with:
           context: card
           push: true
           tags: rainist/collectmydata-card:${{ github.sha }}
-      
+
       - name: connect docker push
         uses: docker/build-push-action@v2
         with:
