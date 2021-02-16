@@ -40,7 +40,7 @@ public class CapitalServiceImpl implements CapitalService {
       MDC.put(CollectLogbackJsonLayout.JSON_KEY_ORGANIZATION_ID, organizationId);
       log.info("CapitalService.sync start");
 
-      accountService.syncAccounts(executionContext, organization);
+      accountService.syncAllAccounts(executionContext, organization);
       /**
        * (scope에서 OK인 경우에만.
        * 6.7.1 조회 -> 6.7.2, 6.7.3 조회 (계좌) 계좌정보  6.7.4, 6.7.5, 6.7.6 사용

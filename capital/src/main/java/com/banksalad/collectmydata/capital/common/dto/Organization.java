@@ -1,5 +1,7 @@
 package com.banksalad.collectmydata.capital.common.dto;
 
+import com.banksalad.collectmydata.common.enums.Industry;
+import com.banksalad.collectmydata.common.enums.MydataSector;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -7,8 +9,8 @@ import lombok.Getter;
 @Builder
 public class Organization {
 
-  private final String sector;
-  private final String industry;
+  private final MydataSector sector;
+  private final Industry industry;
   private final String organizationId;
   private final String organizationCode;
   private final String domain;

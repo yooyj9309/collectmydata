@@ -14,7 +14,7 @@ public class AccountServiceImpl implements AccountService {
   private final ExternalApiService externalApiService;
 
   @Override
-  public void syncAccounts(ExecutionContext executionContext, Organization organization) {
+  public void syncAllAccounts(ExecutionContext executionContext, Organization organization) {
     externalApiService.getAccounts(executionContext, organization);
 
     // TODO ...

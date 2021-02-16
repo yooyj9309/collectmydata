@@ -5,5 +5,5 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 
 public interface AccountService {
 
-  public void syncAccounts(ExecutionContext executionContext, Organization organization);
+  public void syncAllAccounts(ExecutionContext executionContext, Organization organization);
 }

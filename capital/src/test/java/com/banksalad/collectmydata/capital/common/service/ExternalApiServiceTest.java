@@ -1,5 +1,10 @@
 package com.banksalad.collectmydata.capital.common.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
 import com.banksalad.collectmydata.capital.account.dto.Account;
 import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
@@ -9,13 +14,9 @@ import com.banksalad.collectmydata.capital.account.dto.AccountTransactionInteres
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+import com.banksalad.collectmydata.common.enums.Industry;
+import com.banksalad.collectmydata.common.enums.MydataSector;
 import com.banksalad.collectmydata.common.util.DateUtil;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
@@ -45,8 +46,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DisplayName("ExternalApiService Test")
 class ExternalApiServiceTest {
 
-  private static final String SECTOR = "finance";
-  private static final String INDUSTRY = "capital";
+  private static final MydataSector SECTOR = MydataSector.FINANCE;
+  private static final Industry INDUSTRY = Industry.CAPITAL;
   private static final String ORGANIZATION_ID = "X-loan";
   private static final String ORGANIZATION_CODE = "10041004";
   private static final String ORGANIZATION_HOST = "localhost";
