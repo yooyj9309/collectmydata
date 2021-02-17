@@ -13,6 +13,7 @@ import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionInterest;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
+import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.enums.Industry;
 import com.banksalad.collectmydata.common.enums.MydataSector;
@@ -217,6 +218,23 @@ class ExternalApiServiceTest {
     );
   }
 
+  @Test
+  @DisplayName("6.7.5 운용 리스 기본 정보 조회")
+  void givenExecutionContextAndOrganizationAndAccount_whenGetLeaseBasic_thenEquals() {
+    // Given
+    ExecutionContext executionContext = getExecutionContext();
+    Organization organization = getOrganization();
+    Account account = getAccount();
+    OperatingLeaseBasicResponse expectedLeaseBasicResponse = getOperatingLeaseBasicResponse();
+
+    // When
+    OperatingLeaseBasicResponse actualLeaseBasicResponseResponse = externalApiService
+        .getOperatingLeaseBasic(executionContext, organization, account);
+
+    // Then
+    assertThat(actualLeaseBasicResponseResponse).usingRecursiveComparison().isEqualTo(expectedLeaseBasicResponse);
+  }
+
   /*
   Helper methods
    */
@@ -291,6 +309,22 @@ class ExternalApiServiceTest {
         .build();
   }
 
+  private OperatingLeaseBasicResponse getOperatingLeaseBasicResponse() {
+    return OperatingLeaseBasicResponse.builder()
+        .rspCode("000")
+        .rspMsg("rep_msg")
+        .searchTimestamp(0)
+        .holderName("김뱅셀")
+        .issueDate("20210210")
+        .expDate("20221231")
+        .repayDate("03")
+        .repayMethod("01")
+        .repayOrgCode("B01")
+        .repayAccountNum("11022212345")
+        .nextRepayDate("20211114")
+        .build();
+  }
+
   private static void setupMockServer() {
     // 6.7.1 계좌목록 조회
     wireMockServer.stubFor(get(urlMatching("/loans.*"))
@@ -358,5 +392,18 @@ class ExternalApiServiceTest {
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/CP04_003.json"))));
 
+    // 6.7.5 운용리스 기본정보 조회
+    wireMockServer.stubFor(post(urlMatching("/loans/oplease/basic"))
+        .withRequestBody(equalToJson(
+            "{\"org_code\" : \"10041004\"," +
+                "\"account_num\" : \"1234567890\"," +
+                "\"seqno\" : 1," +
+                "\"search_timestamp\" : 0}"))
+        .willReturn(
+            aResponse()
+                .withFixedDelay(1000)
+                .withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+                .withBody(readText("classpath:mock/CP05_001.json"))));
   }
 }

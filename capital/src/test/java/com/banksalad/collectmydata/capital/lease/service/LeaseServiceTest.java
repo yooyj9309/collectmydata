@@ -11,7 +11,7 @@ import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseHi
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseRepository;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
-import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseResponse;
+import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
@@ -63,9 +63,9 @@ public class LeaseServiceTest {
 
     List<Account> accountList = List.of(account);
 
-    when(externalApiService.getLeaseBasic(context, organization, account))
+    when(externalApiService.getOperatingLeaseBasic(context, organization, account))
         .thenReturn(
-            OperatingLeaseResponse.builder()
+            OperatingLeaseBasicResponse.builder()
                 .rspCode("0000")
                 .rspMsg("success")
                 .searchTimestamp(1000L)

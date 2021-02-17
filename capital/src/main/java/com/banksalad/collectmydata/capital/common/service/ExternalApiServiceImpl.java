@@ -14,7 +14,8 @@ import com.banksalad.collectmydata.capital.account.dto.AccountTransactionRespons
 import com.banksalad.collectmydata.capital.common.collect.Executions;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.util.ExecutionUtil;
-import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseResponse;
+import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseBasicRequest;
+import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import java.util.Map;
 
 import static com.banksalad.collectmydata.capital.common.collect.Executions.capital_get_account_detail;
 import static com.banksalad.collectmydata.capital.common.collect.Executions.capital_get_accounts;
+import static com.banksalad.collectmydata.capital.common.collect.Executions.capital_get_operating_lease_basic;
 
 @Service
 @RequiredArgsConstructor
@@ -125,8 +127,19 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   }
 
   @Override
-  public OperatingLeaseResponse getLeaseBasic(ExecutionContext executionContext, Organization organization,
-      Account account) {
-    return null;
+  public OperatingLeaseBasicResponse getOperatingLeaseBasic(ExecutionContext executionContext,
+      Organization organization, Account account) {
+    Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
+    OperatingLeaseBasicRequest request = OperatingLeaseBasicRequest.builder()
+        .orgCode(organization.getOrganizationCode())
+        .accountNum(account.getAccountNum())
+        .seqno(account.getSeqno())
+        .searchTimestamp(0L) // TODO
+        .build();
+
+    ExecutionRequest<OperatingLeaseBasicRequest> executionRequest = ExecutionUtil
+        .executionRequestAssembler(headers, request);
+
+    return executionService.execute(executionContext, capital_get_operating_lease_basic, executionRequest);
   }
 }

@@ -11,7 +11,7 @@ import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseHi
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseRepository;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
-import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseResponse;
+import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import lombok.RequiredArgsConstructor;
@@ -50,8 +50,8 @@ public class LeaseServiceImpl implements LeaseService {
 
     for (Account account : accountList) {
       long timestamp = 0L; //TODO 계좌목록 테이블에 운용리스 관련 테이블도 있어야하지않을까 합니다.
-      OperatingLeaseResponse response = externalApiService
-          .getLeaseBasic(executionContext, organization, account);
+      OperatingLeaseBasicResponse response = externalApiService
+          .getOperatingLeaseBasic(executionContext, organization, account);
 
       OperatingLeaseEntity entity = operatingLeaseRepository
           .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
@@ -61,7 +61,7 @@ public class LeaseServiceImpl implements LeaseService {
               account.getSeqno()
           ).orElse(OperatingLeaseEntity.builder().build());
 
-      OperatingLeaseResponse entityDto = operatingLeaseMapper.entityToOperatingLeaseResponse(entity);
+      OperatingLeaseBasicResponse entityDto = operatingLeaseMapper.entityToOperatingLeaseBasicResponse(entity);
 
       if (!ObjectComparator.isSame(entityDto, response, LEASE_RES_EXCLUDE_EQUALS_FIELD)) {
         // merge

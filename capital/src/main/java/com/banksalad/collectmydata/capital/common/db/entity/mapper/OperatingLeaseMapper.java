@@ -2,7 +2,7 @@ package com.banksalad.collectmydata.capital.common.db.entity.mapper;
 
 import com.banksalad.collectmydata.capital.account.dto.Account;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseEntity;
-import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseResponse;
+import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -30,7 +30,7 @@ public interface OperatingLeaseMapper {
           @Mapping(source = "response.nextRepayDate", target = "nextRepayDate", dateFormat = "yyyyMMdd"),
       }
   )
-  void merge(ExecutionContext context, Account account, OperatingLeaseResponse response,
+  void merge(ExecutionContext context, Account account, OperatingLeaseBasicResponse response,
       @MappingTarget OperatingLeaseEntity entity);
 
   @Mappings(
@@ -43,5 +43,5 @@ public interface OperatingLeaseMapper {
           @Mapping(target = "nextRepayDate", dateFormat = "yyyyMMdd"),
       }
   )
-  OperatingLeaseResponse entityToOperatingLeaseResponse(OperatingLeaseEntity entity);
+  OperatingLeaseBasicResponse entityToOperatingLeaseBasicResponse(OperatingLeaseEntity entity);
 }
