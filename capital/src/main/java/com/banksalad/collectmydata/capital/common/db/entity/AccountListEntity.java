@@ -21,17 +21,15 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "user_sync_status")
-public class UserSyncStatusEntity extends BaseTimeAndUserEntity {
+@Table(name = "account_list")
+public class AccountListEntity extends BaseTimeAndUserEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long userSyncStatusId;
+  private Long id;
 
   @Column(nullable = false)
   private LocalDateTime syncedAt;
-  
-  private Long searchTimestamp;
 
   @Column(nullable = false)
   private Long banksaladUserId;
@@ -39,9 +37,26 @@ public class UserSyncStatusEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false)
   private String organizationId;
 
-  @Column(nullable = false)
-  private String apiId;
+  @Column(nullable = false, name = "account_num_encrypted")
+  private String accountNum;
+
+  private Integer seqno;
 
   @Column(nullable = false)
-  private Boolean isDeleted;
+  private Boolean isConsent;
+
+  @Column(nullable = false)
+  private String prodName;
+
+  @Column(nullable = false)
+  private String accountType;
+
+  @Column(nullable = false)
+  private String accountStatus;
+
+  private Long basicSearchTimestamp;
+
+  private Long detailSearchTimestamp;
+
+  private Long operatingLeaseBasicSearchTimestamp;
 }

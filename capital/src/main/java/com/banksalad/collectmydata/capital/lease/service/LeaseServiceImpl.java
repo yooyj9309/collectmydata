@@ -2,7 +2,9 @@ package com.banksalad.collectmydata.capital.lease.service;
 
 import org.springframework.stereotype.Service;
 
+import com.banksalad.collectmydata.capital.account.AccountService;
 import com.banksalad.collectmydata.capital.account.dto.Account;
+import com.banksalad.collectmydata.capital.common.collect.Apis;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseHistoryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.OperatingLeaseHistoryMapper;
@@ -11,6 +13,7 @@ import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseHi
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseRepository;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
+import com.banksalad.collectmydata.capital.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
@@ -25,7 +28,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LeaseServiceImpl implements LeaseService {
 
+  private final AccountService accountService;
   private final ExternalApiService externalApiService;
+  private final UserSyncStatusService userSyncStatusService;
   private final OperatingLeaseRepository operatingLeaseRepository;
   private final OperatingLeaseHistoryRepository operatingLeaseHistoryRepository;
 
@@ -47,16 +52,17 @@ public class LeaseServiceImpl implements LeaseService {
   @Override
   public void syncLeaseBasic(ExecutionContext executionContext, Organization organization,
       List<Account> accountList) {
+    long banksaladUserId = executionContext.getBanksaladUserId();
+    String organizationId = executionContext.getOrganizationId();
 
     for (Account account : accountList) {
-      long timestamp = 0L; //TODO 계좌목록 테이블에 운용리스 관련 테이블도 있어야하지않을까 합니다.
       OperatingLeaseBasicResponse response = externalApiService
           .getOperatingLeaseBasic(executionContext, organization, account);
 
       OperatingLeaseEntity entity = operatingLeaseRepository
           .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
-              executionContext.getBanksaladUserId(),
-              executionContext.getOrganizationId(),
+              banksaladUserId,
+              organizationId,
               account.getAccountNum(),
               account.getSeqno()
           ).orElse(OperatingLeaseEntity.builder().build());
@@ -75,11 +81,21 @@ public class LeaseServiceImpl implements LeaseService {
         operatingLeaseHistoryRepository.save(historyEntity);
       }
 
-      // TODO account time update
-      // account.setOperatingLeaseSearchTimestamp(response.getSearchTimestamp());
-      // 여기서 account db update..?
+      // accountList timestamp update
+      account.setOperatingLeaseBasicSearchTimestamp(response.getSearchTimestamp());
+      accountService.updateSearchTimestampForAccount(banksaladUserId, organizationId, account);
     }
 
+    // userSyncStatus table update
+    userSyncStatusService
+        .updateUserSyncStatus(
+            banksaladUserId,
+            organizationId,
+            Apis.capital_get_operating_lease_basic.getId(),
+            executionContext.getSyncStartedAt(),
+            null,
+            true // TODO executionResponseValidateService 등을 통해 로직 수정.
+        );
   }
 
   @Override

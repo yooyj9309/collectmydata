@@ -134,7 +134,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         .orgCode(organization.getOrganizationCode())
         .accountNum(account.getAccountNum())
         .seqno(account.getSeqno())
-        .searchTimestamp(0L) // TODO
+        .searchTimestamp(account.getOperatingLeaseBasicSearchTimestamp())
         .build();
 
     ExecutionRequest<OperatingLeaseBasicRequest> executionRequest = ExecutionUtil

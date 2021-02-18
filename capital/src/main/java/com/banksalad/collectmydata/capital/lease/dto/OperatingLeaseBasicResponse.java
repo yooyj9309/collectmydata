@@ -2,17 +2,16 @@ package com.banksalad.collectmydata.capital.lease.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import static lombok.AccessLevel.*;
-
 @Getter
 @Builder
-@NoArgsConstructor(access = PROTECTED)
-@AllArgsConstructor(access = PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class OperatingLeaseBasicResponse {
 

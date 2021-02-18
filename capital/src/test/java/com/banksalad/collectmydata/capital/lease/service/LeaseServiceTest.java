@@ -5,8 +5,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.banksalad.collectmydata.capital.account.dto.Account;
+import com.banksalad.collectmydata.capital.common.db.entity.AccountListEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseHistoryEntity;
+import com.banksalad.collectmydata.capital.common.db.repository.AccountListRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseHistoryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseRepository;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
@@ -42,6 +44,13 @@ public class LeaseServiceTest {
   @Autowired
   private OperatingLeaseHistoryRepository operatingLeaseHistoryRepository;
 
+  @Autowired
+  private AccountListRepository accountListRepository;
+
+  private long banksaladUserId = 1L;
+  private String organizationId = "shinhancard";
+  private String accountNum = "1234567812345678";
+
   @Test
   @Transactional
   @DisplayName("운용리스 기본정보 조회 서비스 로직 성공케이스")
@@ -49,17 +58,31 @@ public class LeaseServiceTest {
 
     LocalDateTime now = LocalDateTime.now();
     ExecutionContext context = ExecutionContext.builder()
-        .organizationId("shinhancard")
-        .banksaladUserId(1L)
+        .organizationId(organizationId)
+        .banksaladUserId(banksaladUserId)
         .syncStartedAt(now)
         .build();
 
     Organization organization = Organization.builder().build();
 
     Account account = Account.builder()
-        .accountNum("1234567812345678")
+        .accountNum(accountNum)
         .seqno(1)
         .build();
+
+    accountListRepository.save(
+        AccountListEntity.builder()
+            .syncedAt(LocalDateTime.now())
+            .banksaladUserId(banksaladUserId)
+            .organizationId(organizationId)
+            .accountNum(accountNum)
+            .seqno(1)
+            .isConsent(true)
+            .prodName("prodName")
+            .accountType("")
+            .accountStatus("")
+            .build()
+    );
 
     List<Account> accountList = List.of(account);
 
@@ -91,7 +114,6 @@ public class LeaseServiceTest {
     operatingLeaseEntities = operatingLeaseRepository.findAll();
     operatingLeaseHistoryEntities = operatingLeaseHistoryRepository.findAll();
     validateEntities(now, operatingLeaseEntities, operatingLeaseHistoryEntities);
-
   }
 
   private void validateEntities(LocalDateTime now, List<OperatingLeaseEntity> operatingLeaseEntities,
@@ -102,9 +124,9 @@ public class LeaseServiceTest {
         .isEqualTo(
             OperatingLeaseEntity.builder()
                 .syncedAt(now)
-                .banksaladUserId(1L)
-                .organizationId("shinhancard")
-                .accountNum("1234567812345678")
+                .banksaladUserId(banksaladUserId)
+                .organizationId(organizationId)
+                .accountNum(accountNum)
                 .seqno(1)
                 .holderName("holderName")
                 .issueDate(LocalDate.parse("20210214", DateTimeFormatter.ofPattern("yyyyMMdd")))
@@ -123,9 +145,9 @@ public class LeaseServiceTest {
         .isEqualTo(
             OperatingLeaseHistoryEntity.builder()
                 .syncedAt(now)
-                .banksaladUserId(1L)
-                .organizationId("shinhancard")
-                .accountNum("1234567812345678")
+                .banksaladUserId(banksaladUserId)
+                .organizationId(organizationId)
+                .accountNum(accountNum)
                 .seqno(1)
                 .holderName("holderName")
                 .issueDate(LocalDate.parse("20210214", DateTimeFormatter.ofPattern("yyyyMMdd")))
