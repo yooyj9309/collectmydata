@@ -1,0 +1,18 @@
+{
+  "request": {
+    "urlPattern": "/accounts.*",
+    "method": "GET",
+    "queryParameters": {
+      "org_code": {"equalTo": "020"},
+      "search_timestamp": {"equalTo": "0"},
+      "limit": {"equalTo": "500"}
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "finance/bank/BA01_002_multi_page_01.json"
+  }
+}

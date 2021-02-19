@@ -19,5 +19,6 @@ include ":bank",
         ":invest"
 
 // etc
-include ":kafkaclient"
-include ":kafkamanager"
+include ":kafkaclient",
+        ":kafkamanager",
+        ":mock"

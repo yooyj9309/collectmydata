@@ -1,0 +1,5 @@
+wiremock:
+  server:
+    files: classpath:/files
+    stubs: classpath:/mappings
+
