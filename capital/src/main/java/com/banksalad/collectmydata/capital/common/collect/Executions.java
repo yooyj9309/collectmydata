@@ -5,6 +5,7 @@ import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountResponse;
 import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
+import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseTransactionResponse;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 
 public class Executions {
@@ -42,5 +43,12 @@ public class Executions {
       Execution.create()
           .exchange(Apis.capital_get_operating_lease_basic)
           .as(OperatingLeaseBasicResponse.class)
+          .build();
+
+  // 6.7.6 운용리스 거래내역 조회
+  public static final Execution capital_get_operating_lease_transactions =
+      Execution.create()
+          .exchange(Apis.capital_get_operating_lease_transactions)
+          .as(OperatingLeaseTransactionResponse.class)
           .build();
 }

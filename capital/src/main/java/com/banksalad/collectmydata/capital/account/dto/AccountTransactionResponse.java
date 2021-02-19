@@ -15,6 +15,7 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @ToString
 public class AccountTransactionResponse {
+
   private String rspCode;
   private String rspMsg;
   private String nextPage;

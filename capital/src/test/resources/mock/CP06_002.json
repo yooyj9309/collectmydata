@@ -1,0 +1,14 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "rsp_msg",
+  "next_page": null,
+  "trans_cnt": 1,
+  "trans_list": [
+    {
+      "trans_dtime": "20210217093000",
+      "trans_no": "trans#3",
+      "trans_type": "02",
+      "trans_amt": 999.1
+    }
+  ]
+}

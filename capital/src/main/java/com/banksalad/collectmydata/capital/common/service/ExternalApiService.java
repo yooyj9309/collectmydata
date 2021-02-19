@@ -7,6 +7,7 @@ import com.banksalad.collectmydata.capital.account.dto.AccountResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseBasicResponse;
+import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseTransactionResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 
 public interface ExternalApiService {
@@ -28,5 +29,7 @@ public interface ExternalApiService {
   OperatingLeaseBasicResponse getOperatingLeaseBasic(ExecutionContext executionContext, Organization organization,
       Account account);
 
-  // 6.7.6 TODO
+  // 6.7.6
+  OperatingLeaseTransactionResponse getOperatingLeaseTransactions(ExecutionContext executionContext,
+      Organization organization, Account account);
 }

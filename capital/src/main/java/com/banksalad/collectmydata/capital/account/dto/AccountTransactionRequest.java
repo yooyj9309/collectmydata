@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @ToString
 public class AccountTransactionRequest {
+
   private String orgCode;
   private String accountNum;
   private int seqno;

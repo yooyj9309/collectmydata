@@ -16,16 +16,20 @@ import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseBasicRequest;
 import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseBasicResponse;
+import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseTransactionRequest;
+import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseTransactionResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.banksalad.collectmydata.capital.common.collect.Executions.capital_get_account_detail;
 import static com.banksalad.collectmydata.capital.common.collect.Executions.capital_get_accounts;
 import static com.banksalad.collectmydata.capital.common.collect.Executions.capital_get_operating_lease_basic;
+import static com.banksalad.collectmydata.capital.common.collect.Executions.capital_get_operating_lease_transactions;
 
 @Service
 @RequiredArgsConstructor
@@ -89,17 +93,11 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   public AccountTransactionResponse getAccountTransactions(ExecutionContext executionContext, Organization organization,
       Account account) {
     Map<String, String> header = Map.of("Authorization", executionContext.getAccessToken());
-
-    //FIXME
-    //  fromDate = user_sync_stat.synced_at
-    //  toDate = kstCurrentDatetime(); // a new method of util.DateUtil
-    String fromDate = "20210121000000";
-    String toDate = "20210122000000";
     AccountTransactionRequest request = AccountTransactionRequest.builder()
         .orgCode(organization.getOrganizationCode())
         .accountNum(account.getAccountNum())
-        .fromDtime(fromDate)
-        .toDtime(toDate)
+        .fromDtime("20210121000000") // fixme : user_sync_stat.synced_at
+        .toDtime("20210122000000") // fixme : kstCurrentDatetime(); // a new method of util.DateUtil
         .limit(MAX_LIMIT)
         .build();
     ExecutionRequest<AccountTransactionRequest> executionRequest = ExecutionUtil
@@ -141,5 +139,32 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         .executionRequestAssembler(headers, request);
 
     return executionService.execute(executionContext, capital_get_operating_lease_basic, executionRequest);
+  }
+
+  @Override
+  public OperatingLeaseTransactionResponse getOperatingLeaseTransactions(ExecutionContext executionContext,
+      Organization organization, Account account) {
+    Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
+
+    OperatingLeaseTransactionResponse response = OperatingLeaseTransactionResponse.builder().build();
+    OperatingLeaseTransactionRequest request = OperatingLeaseTransactionRequest.builder()
+        .orgCode(organization.getOrganizationCode())
+        .accountNum(account.getAccountNum())
+        .seqno(account.getSeqno())
+        .fromDtime("20210121000000") // fixme : user_sync_stat.synced_at
+        .toDtime("20210122000000") // fixme : kstCurrentDatetime
+        .limit(MAX_LIMIT)
+        .build();
+    do {
+      ExecutionRequest<OperatingLeaseTransactionRequest> executionRequest = ExecutionUtil
+          .executionRequestAssembler(headers, request);
+      OperatingLeaseTransactionResponse pageResponse = executionService
+          .execute(executionContext, capital_get_operating_lease_transactions, executionRequest);
+
+      response.updateFrom(pageResponse);
+      request.updateNextPage(pageResponse.getNextPage());
+    } while (Objects.nonNull(response.getNextPage()));
+
+    return response;
   }
 }
