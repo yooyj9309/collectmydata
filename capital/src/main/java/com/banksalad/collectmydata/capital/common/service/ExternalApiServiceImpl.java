@@ -43,6 +43,9 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
   @Override
   public AccountResponse getAccounts(ExecutionContext executionContext, Organization organization) {
+    // executionId 생성.
+    executionContext.generateAndsUpdateExecutionRequestId();
+
     Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
     AccountRequest accountRequest = AccountRequest.builder()
         .searchTimestamp(0L) // TODO
@@ -58,6 +61,9 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   @Override
   public AccountBasicResponse getAccountBasic(ExecutionContext executionContext, Organization organization,
       Account account) {
+    // executionId 생성.
+    executionContext.generateAndsUpdateExecutionRequestId();
+
     Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
     AccountBasicRequest request = AccountBasicRequest.builder()
         .orgCode(organization.getOrganizationCode())
@@ -75,6 +81,9 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   @Override
   public AccountDetailResponse getAccountDetail(ExecutionContext executionContext, Organization organization,
       Account account) {
+    // executionId 생성.
+    executionContext.generateAndsUpdateExecutionRequestId();
+
     Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
     AccountDetailRequest accountDetailRequest = AccountDetailRequest.builder()
         .orgCode(organization.getOrganizationCode())
@@ -92,6 +101,9 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   @Override
   public AccountTransactionResponse getAccountTransactions(ExecutionContext executionContext, Organization organization,
       Account account) {
+    // executionId 생성.
+    executionContext.generateAndsUpdateExecutionRequestId();
+
     Map<String, String> header = Map.of("Authorization", executionContext.getAccessToken());
     AccountTransactionRequest request = AccountTransactionRequest.builder()
         .orgCode(organization.getOrganizationCode())
@@ -127,6 +139,9 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   @Override
   public OperatingLeaseBasicResponse getOperatingLeaseBasic(ExecutionContext executionContext,
       Organization organization, Account account) {
+    // executionId 생성.
+    executionContext.generateAndsUpdateExecutionRequestId();
+
     Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
     OperatingLeaseBasicRequest request = OperatingLeaseBasicRequest.builder()
         .orgCode(organization.getOrganizationCode())
@@ -144,6 +159,9 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   @Override
   public OperatingLeaseTransactionResponse getOperatingLeaseTransactions(ExecutionContext executionContext,
       Organization organization, Account account) {
+    // executionId 생성.
+    executionContext.generateAndsUpdateExecutionRequestId();
+
     Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
 
     OperatingLeaseTransactionResponse response = OperatingLeaseTransactionResponse.builder().build();

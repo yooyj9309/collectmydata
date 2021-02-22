@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,9 @@ public class DateUtil {
 
   public static final ZoneId KST_ZONE_ID = ZoneId.of("Asia/Seoul");
   public static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
+
+  public static final String ASIA_SEOUL_ZONEOFFSET = "+09:00";
+
 
   private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
   private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmmss");
@@ -41,6 +45,14 @@ public class DateUtil {
     }
 
     return toDatetimeEpochMilli(dateSource + timeSource);
+  }
+  
+  public static long kstLocalDateTimeToEpochMilliSecond(LocalDateTime localDateTime) {
+    return localDateTime.toInstant(ZoneOffset.of(ASIA_SEOUL_ZONEOFFSET)).toEpochMilli();
+  }
+
+  public static long utcLocalDateTimeToEpochMilliSecond(LocalDateTime localDateTime) {
+    return localDateTime.toInstant(ZoneOffset.UTC).toEpochMilli();
   }
 
   public static String kstCurrentDate() {

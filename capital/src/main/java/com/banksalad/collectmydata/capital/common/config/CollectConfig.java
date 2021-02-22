@@ -12,13 +12,13 @@ import com.banksalad.collectmydata.common.collect.executor.TransferClientImpl;
 
 @Configuration
 
-public class CollectConfiguration {
+public class CollectConfig {
 
   private final TransferClient transferClient;
   private final IdGenerator idGenerator;
   private final ApiLogger apiLogger;
 
-  public CollectConfiguration(IdGenerator idGenerator, ApiLogger apiLogger) {
+  public CollectConfig(IdGenerator idGenerator, ApiLogger apiLogger) {
     //TODO 명시적으로 ThreadPool 적용해야하는지 확인 후 로직 추가.
     this.transferClient = new TransferClientImpl();
     this.idGenerator = idGenerator;

@@ -120,7 +120,7 @@ public class LeaseServiceTest {
       List<OperatingLeaseHistoryEntity> operatingLeaseHistoryEntities) {
     assertEquals(1, operatingLeaseEntities.size());
     assertThat(operatingLeaseEntities.get(0)).usingRecursiveComparison()
-        .ignoringFields("operatingLeaseId")
+        .ignoringFields("operatingLeaseId", "createdAt", "updatedAt")
         .isEqualTo(
             OperatingLeaseEntity.builder()
                 .syncedAt(now)
@@ -141,7 +141,7 @@ public class LeaseServiceTest {
 
     assertEquals(1, operatingLeaseHistoryEntities.size());
     assertThat(operatingLeaseHistoryEntities.get(0)).usingRecursiveComparison()
-        .ignoringFields("operatingLeaseHistoryId")
+        .ignoringFields("operatingLeaseHistoryId", "createdAt", "updatedAt")
         .isEqualTo(
             OperatingLeaseHistoryEntity.builder()
                 .syncedAt(now)

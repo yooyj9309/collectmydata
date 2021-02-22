@@ -52,6 +52,7 @@ public class LeaseServiceImpl implements LeaseService {
   @Override
   public void syncLeaseBasic(ExecutionContext executionContext, Organization organization,
       List<Account> accountList) {
+
     long banksaladUserId = executionContext.getBanksaladUserId();
     String organizationId = executionContext.getOrganizationId();
 

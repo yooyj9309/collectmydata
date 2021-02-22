@@ -10,7 +10,7 @@ import com.linecorp.armeria.server.logging.LoggingService;
 import com.linecorp.armeria.spring.ArmeriaServerConfigurator;
 
 @Configuration
-public class ArmeriaConfiguration {
+public class ArmeriaConfig {
 
   @Bean
   public ArmeriaServerConfigurator armeriaServerConfigurator() {

@@ -117,6 +117,9 @@ dependencies {
     implementation("ch.qos.logback.contrib:logback-json-classic:0.1.5")
     implementation("ch.qos.logback.contrib:logback-jackson:0.1.5")
 
+    // jsonpath
+    implementation("com.jayway.jsonpath:json-path:${json_path_version}")
+
     // application monitoring
     implementation("io.micrometer:micrometer-core:${micrometerVersion}")
     implementation("io.micrometer:micrometer-registry-statsd:${micrometerVersion}")

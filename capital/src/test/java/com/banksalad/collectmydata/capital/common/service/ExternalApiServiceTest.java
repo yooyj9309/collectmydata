@@ -21,6 +21,7 @@ import com.banksalad.collectmydata.common.enums.Industry;
 import com.banksalad.collectmydata.common.enums.MydataSector;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -46,6 +47,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
+@Transactional
 @DisplayName("ExternalApiService Test")
 class ExternalApiServiceTest {
 
