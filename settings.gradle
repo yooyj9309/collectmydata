@@ -22,3 +22,5 @@ include ":bank",
 include ":kafkaclient",
         ":kafkamanager",
         ":mock"
+
+include ":referencebank"

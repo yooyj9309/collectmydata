@@ -14,6 +14,7 @@ public class CollectLogbackJsonLayout extends JsonLayout {
 
   public static final String JSON_KEY_BANKSALAD_USER_ID = "banksaladUserId";
   public static final String JSON_KEY_ORGANIZATION_ID = "organizationId";
+  public static final String JSON_KEY_SYNC_REQUEST_ID = "syncRequestId";
 
   private static final String JSON_KEY_LINE = "line";
   private static final String JSON_KEY_CLASS = "class";

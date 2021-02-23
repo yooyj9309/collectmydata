@@ -1,0 +1,22 @@
+spring:
+  profiles:
+    active: local
+  application:
+    name: collectmydata-referencebank
+  main:
+    web-application-type: none
+
+server:
+  address: 127.0.0.1
+  port: 8081
+
+logging:
+  config: classpath:logback/logback-${spring.profiles.active}.xml
+  level:
+    com.zaxxer.hikari.HikariConfig: WARN
+    com.zaxxer.hikari: TRACE
+
+uri:
+  user: dns:///user-headless:18081
+  cipher: dns:///cipher-headless:18081
+  connect: dns:///connect-headless:18081

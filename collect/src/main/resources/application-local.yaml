@@ -1,3 +1,14 @@
 spring:
   profiles:
     active: local
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    lettuce:
+      pool:
+        max-active: 1000
+        max-idle: 100
+        min-idle: 100
+
+kafka:
+  bootstrap-servers: localhost:9092

@@ -1,0 +1,137 @@
+plugins {
+    id 'org.springframework.boot' version '2.4.1'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'java'
+    id 'jacoco'
+}
+
+group = 'com.banksalad.collectmydata'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/banksalad/**")
+        credentials {
+            username = System.getenv("GH_USERNAME")
+            password = System.getenv("GH_DAAS_PACKAGES_TOKEN")
+        }
+    }
+
+    maven {
+        url = uri("https://repo.spring.io/release")
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "software.amazon.awssdk:bom:${awsSdkVersion}"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+dependencies {
+    implementation project(":common")
+
+    // idl
+    implementation("com.banksalad:idl:${idlVersion}")
+
+    // spring
+    implementation("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-webflux:${springBootVersion}")
+
+    // kafka
+    implementation("org.springframework.kafka:spring-kafka:${springKafkaVersion}")
+
+    // armeria
+    implementation platform("com.linecorp.armeria:armeria-bom:${armeriaVersion}")
+    implementation platform('io.netty:netty-bom:4.1.54.Final')
+
+    implementation("com.linecorp.armeria:armeria-spring-boot2-webflux-starter:${armeriaVersion}")
+    implementation("com.linecorp.armeria:armeria-grpc:${armeriaVersion}")
+
+
+    // grpc
+    implementation("io.grpc:grpc-context:${grpcVersion}")
+    implementation("io.grpc:grpc-api:${grpcVersion}")
+    implementation("io.grpc:grpc-netty:${grpcVersion}")
+    implementation("io.grpc:grpc-stub:${grpcVersion}")
+    implementation("io.grpc:grpc-protobuf:${grpcVersion}")
+
+    implementation("io.github.lognet:grpc-spring-boot-starter:${grpcSpringBootVersion}")
+    testImplementation("io.grpc:grpc-testing:1.30.0")
+
+    // httpclient
+    implementation("org.apache.httpcomponents:httpclient:4.5.12")
+
+    // lombok
+    compileOnly("org.projectlombok:lombok:${lombokVersion}")
+    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+
+    // apache commons
+    implementation("org.apache.commons:commons-lang3:${apacheCommonsVersion}")
+
+    // DB
+    implementation("org.mariadb.jdbc:mariadb-java-client:2.6.0")
+
+    // AWS
+    implementation("software.amazon.awssdk:kms:2.14.21")
+
+    // log
+    implementation("org.slf4j:slf4j-api:${slf4jVersion}")
+    implementation("org.slf4j:jcl-over-slf4j:${slf4jVersion}")
+    implementation("ch.qos.logback:logback-classic:${logbackVersion}")
+
+    // logback json
+    implementation("ch.qos.logback.contrib:logback-json-classic:0.1.5")
+    implementation("ch.qos.logback.contrib:logback-jackson:0.1.5")
+
+    // application monitoring
+    implementation("io.micrometer:micrometer-core:${micrometerVersion}")
+    implementation("io.micrometer:micrometer-registry-statsd:${micrometerVersion}")
+
+    //test
+    testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}") {
+        exclude group: "org.junit.vintage", module: "junit-vintage-engine"
+    }
+
+    testImplementation("org.springframework.cloud:spring-cloud-starter-contract-stub-runner")
+
+    testImplementation("commons-io:commons-io:2.6")
+    testImplementation("com.h2database:h2")
+    testImplementation("org.mockito:mockito-inline:3.1.0")
+    testImplementation("com.google.protobuf:protobuf-java-util:3.11.0")
+
+    testImplementation("org.projectlombok:lombok:${lombokVersion}")
+    testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+
+    testImplementation("io.projectreactor:reactor-test:3.4.2")
+
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jacoco {
+    toolVersion = "0.8.5"
+}
+
+jacocoTestReport {
+    // tests are required to run before generating the report
+    dependsOn test
+    reports {
+        html.enabled true
+        xml.enabled true
+        csv.enabled true
+    }
+}

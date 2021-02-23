@@ -1,5 +1,7 @@
 package com.banksalad.collectmydata.collect.grpc.handler;
 
+import com.banksalad.collectmydata.collect.sync.CollectSyncService;
+
 import org.springframework.stereotype.Service;
 
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataGrpc;
@@ -28,9 +30,17 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class CollectmydataCollectGrpcService extends CollectmydataGrpc.CollectmydataImplBase {
 
+  private final CollectSyncService collectSyncService;
+
+  public CollectmydataCollectGrpcService(CollectSyncService collectSyncService) {
+    this.collectSyncService = collectSyncService;
+  }
+
   @Override
   public void syncFinanceBank(SyncFinanceBankRequest request, StreamObserver<SyncFinanceBankResponse> responseObserver) {
 
+//    collectSyncService.syncFinanceBank(request);
+//    responseObserver.onCompleted();
   }
 
   @Override

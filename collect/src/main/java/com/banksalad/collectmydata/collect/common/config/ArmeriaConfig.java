@@ -16,11 +16,11 @@ import com.linecorp.armeria.spring.ArmeriaServerConfigurator;
 @Configuration
 public class ArmeriaConfig {
 
+  private final CollectmydataCollectGrpcService collectmydataCollectGrpcService;
+
   public ArmeriaConfig(CollectmydataCollectGrpcService collectmydataCollectGrpcService) {
     this.collectmydataCollectGrpcService = collectmydataCollectGrpcService;
   }
-
-  private final CollectmydataCollectGrpcService collectmydataCollectGrpcService;
 
   @Bean
   public ArmeriaServerConfigurator armeriaServerConfigurator() {
