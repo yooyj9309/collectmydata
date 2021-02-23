@@ -2,23 +2,24 @@ package com.banksalad.collectmydata.connect.grpc.handler;
 
 import org.springframework.stereotype.Service;
 
+import com.banksalad.collectmydata.common.exception.GrpcException;
+import com.banksalad.collectmydata.connect.common.service.ValidatorService;
+import com.banksalad.collectmydata.connect.grpc.validator.GetAccessTokenRequestValidator;
+import com.banksalad.collectmydata.connect.grpc.validator.GetOrganizationRequestValidator;
+import com.banksalad.collectmydata.connect.grpc.validator.IssueTokenRequestValidator;
+import com.banksalad.collectmydata.connect.grpc.validator.RefreshTokenRequestValidator;
+import com.banksalad.collectmydata.connect.grpc.validator.RevokeAllTokensRequestValidator;
+import com.banksalad.collectmydata.connect.grpc.validator.RevokeTokenRequestValidator;
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
 import com.banksalad.collectmydata.connect.organization.dto.OrganizationResponse;
 import com.banksalad.collectmydata.connect.organization.service.OrganizationService;
 import com.banksalad.collectmydata.connect.token.dto.OauthToken;
 import com.banksalad.collectmydata.connect.token.dto.TokenResponse;
 import com.banksalad.collectmydata.connect.token.service.OauthTokenService;
-import com.banksalad.collectmydata.connect.common.service.ValidatorService;
-import com.banksalad.collectmydata.connect.token.validator.GetAccessTokenRequestValidator;
-import com.banksalad.collectmydata.connect.organization.validator.GetOrganizationRequestValidator;
-import com.banksalad.collectmydata.connect.token.validator.IssueTokenRequestValidator;
-import com.banksalad.collectmydata.connect.token.validator.RefreshTokenRequestValidator;
-import com.banksalad.collectmydata.connect.token.validator.RevokeAllTokensRequestValidator;
-import com.banksalad.collectmydata.connect.token.validator.RevokeTokenRequestValidator;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataGrpc;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenResponse;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationRequest;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationObjectidRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.HealthCheckRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.HealthCheckResponse;
@@ -32,9 +33,9 @@ import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeT
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeTokenResponse;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-import static com.banksalad.collectmydata.common.exception.ExceptionHandler.*;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase {
@@ -48,8 +49,11 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
     try {
       responseObserver.onNext(HealthCheckResponse.getDefaultInstance());
       responseObserver.onCompleted();
+    } catch (GrpcException e) {
+      responseObserver.onError(e.handle());
     } catch (Exception e) {
-      responseObserver.onError(handle(e));
+      log.error("healthCheck error message,{}", e.getMessage(), e);
+      responseObserver.onError(new GrpcException().handle());
     }
   }
 
@@ -66,8 +70,11 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
 
       responseObserver.onNext(tokenResponse.toIssueTokenResponseProto());
       responseObserver.onCompleted();
+    } catch (GrpcException e) {
+      responseObserver.onError(e.handle());
     } catch (Exception e) {
-      responseObserver.onError(handle(e));
+      log.error("issueToken error message,{}", e.getMessage(), e);
+      responseObserver.onError(new GrpcException().handle());
     }
   }
 
@@ -84,8 +91,11 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
 
       responseObserver.onNext(tokenResponse.toGetAccessTokenResponseProto());
       responseObserver.onCompleted();
+    } catch (GrpcException e) {
+      responseObserver.onError(e.handle());
     } catch (Exception e) {
-      responseObserver.onError(handle(e));
+      log.error("getAccessToken error message,{}", e.getMessage(), e);
+      responseObserver.onError(new GrpcException().handle());
     }
   }
 
@@ -102,8 +112,11 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
 
       responseObserver.onNext(tokenResponse.toRefreshTokenResponseProto());
       responseObserver.onCompleted();
+    } catch (GrpcException e) {
+      responseObserver.onError(e.handle());
     } catch (Exception e) {
-      responseObserver.onError(handle(e));
+      log.error("refreshToken error message,{}", e.getMessage(), e);
+      responseObserver.onError(new GrpcException().handle());
     }
   }
 
@@ -117,13 +130,17 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
 
       responseObserver.onNext(RevokeTokenResponse.getDefaultInstance());
       responseObserver.onCompleted();
+    } catch (GrpcException e) {
+      responseObserver.onError(e.handle());
     } catch (Exception e) {
-      responseObserver.onError(handle(e));
+      log.error("revokeToken error message,{}", e.getMessage(), e);
+      responseObserver.onError(new GrpcException().handle());
     }
   }
 
   @Override
-  public void revokeAllTokens(RevokeAllTokensRequest request, StreamObserver<RevokeAllTokensResponse> responseObserver) {
+  public void revokeAllTokens(RevokeAllTokensRequest request,
+      StreamObserver<RevokeAllTokensResponse> responseObserver) {
     try {
       RevokeAllTokensRequestValidator validator = RevokeAllTokensRequestValidator.of(request);
       validatorService.validate(validator);
@@ -132,13 +149,17 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
 
       responseObserver.onNext(RevokeAllTokensResponse.getDefaultInstance());
       responseObserver.onCompleted();
+    } catch (GrpcException e) {
+      responseObserver.onError(e.handle());
     } catch (Exception e) {
-      responseObserver.onError(handle(e));
+      log.error("revokeAllTokens error message,{}", e.getMessage(), e);
+      responseObserver.onError(new GrpcException().handle());
     }
   }
 
   @Override
-  public void getOrganization(GetOrganizationRequest request, StreamObserver<GetOrganizationResponse> responseObserver) {
+  public void getOrganizationByOrganizationObjectid(GetOrganizationByOrganizationObjectidRequest request,
+      StreamObserver<GetOrganizationResponse> responseObserver) {
     try {
       GetOrganizationRequestValidator validator = GetOrganizationRequestValidator.of(request);
       validatorService.validate(validator);
@@ -150,8 +171,11 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
 
       responseObserver.onNext(organizationResponse.toGetOrganizationProto());
       responseObserver.onCompleted();
+    } catch (GrpcException e) {
+      responseObserver.onError(e.handle());
     } catch (Exception e) {
-      responseObserver.onError(handle(e));
+      log.error("getOrganizationByOrganizationObjectid error message,{}", e.getMessage(), e);
+      responseObserver.onError(new GrpcException().handle());
     }
   }
 }

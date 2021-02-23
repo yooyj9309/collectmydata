@@ -3,35 +3,38 @@ package com.banksalad.collectmydata.connect.common.service;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.banksalad.collectmydata.connect.token.validator.GetAccessTokenRequestValidator;
-import com.banksalad.collectmydata.connect.organization.validator.GetOrganizationRequestValidator;
-import com.banksalad.collectmydata.connect.token.validator.IssueTokenRequestValidator;
-import com.banksalad.collectmydata.connect.token.validator.RefreshTokenRequestValidator;
-import com.banksalad.collectmydata.connect.token.validator.RevokeAllTokensRequestValidator;
-import com.banksalad.collectmydata.connect.token.validator.RevokeTokenRequestValidator;
-import javax.validation.Valid;
+import com.banksalad.collectmydata.connect.common.Exception.ConnectException;
+import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
+import javax.annotation.PostConstruct;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+
+import java.util.Set;
 
 @Validated
 @Service
 public class ValidatorService {
 
-  public void validate(@Valid IssueTokenRequestValidator validator) {
+  private Validator validator;
+
+  @PostConstruct
+  public void init() {
+    validator = Validation.buildDefaultValidatorFactory().getValidator();
   }
 
-  public void validate(@Valid GetAccessTokenRequestValidator validator) {
-  }
+  public void validate(Object obj) {
+    Set<ConstraintViolation<Object>> violations = validator.validate(obj);
+    if (violations == null || violations.size() == 0) {
+      return;
+    }
 
-  public void validate(@Valid RefreshTokenRequestValidator validator) {
-  }
+    StringBuilder resultMessage = new StringBuilder();
+    for (ConstraintViolation<Object> violation : violations) {
+      resultMessage.append(violation.getMessage() + "\n");
+    }
 
-  public void validate(@Valid RevokeTokenRequestValidator validator) {
-  }
-
-  public void validate(@Valid RevokeAllTokensRequestValidator validator) {
-  }
-
-  public void validate(@Valid GetOrganizationRequestValidator validator) {
+    // parameter Exception 처리 
+    throw new ConnectException(ConnectErrorType.INVALID_PARAMETER, resultMessage.toString());
   }
 }
-
-

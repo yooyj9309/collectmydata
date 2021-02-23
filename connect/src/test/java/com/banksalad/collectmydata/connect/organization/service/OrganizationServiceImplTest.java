@@ -4,15 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.banksalad.collectmydata.common.exception.collectMydataException.NotFoundOrganizationException;
+import com.banksalad.collectmydata.connect.common.Exception.ConnectException;
 import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;
+import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationRequest;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationObjectidRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
@@ -34,7 +36,8 @@ class OrganizationServiceImplTest {
     Organization builtOrganization = buildOrganizationFrom(connectOrganizationEntity);
     connectOrganizationRepository.save(connectOrganizationEntity);
 
-    GetOrganizationRequest request = buildGetOrganizationRequest(connectOrganizationEntity.getOrganizationObjectid());
+    GetOrganizationByOrganizationObjectidRequest request = buildGetOrganizationRequest(
+        connectOrganizationEntity.getOrganizationObjectid());
 
     // when
     Organization organization = organizationService.getOrganization(request);
@@ -51,10 +54,13 @@ class OrganizationServiceImplTest {
     ConnectOrganizationEntity connectOrganizationEntity = createConnectOrganizationEntity();
     connectOrganizationRepository.save(connectOrganizationEntity);
 
-    GetOrganizationRequest request = buildGetOrganizationRequest("non-exist-organizationObjectid");
+    GetOrganizationByOrganizationObjectidRequest request = buildGetOrganizationRequest(
+        "non-exist-organizationObjectid");
 
     // when, then
-    assertThrows(NotFoundOrganizationException.class, () -> organizationService.getOrganization(request));
+    Exception responseException = assertThrows(Exception.class, () -> organizationService.getOrganization(request));
+    assertThat(responseException).isInstanceOf(ConnectException.class);
+    assertEquals(ConnectErrorType.NOT_FOUND_ORGANIZATION.getMessage(), responseException.getMessage());
   }
 
   private ConnectOrganizationEntity createConnectOrganizationEntity() {
@@ -81,8 +87,8 @@ class OrganizationServiceImplTest {
         .build();
   }
 
-  private GetOrganizationRequest buildGetOrganizationRequest(String organizationObjectid) {
-    return GetOrganizationRequest.newBuilder()
+  private GetOrganizationByOrganizationObjectidRequest buildGetOrganizationRequest(String organizationObjectid) {
+    return GetOrganizationByOrganizationObjectidRequest.newBuilder()
         .setOrganizationObjectid(organizationObjectid)
         .build();
   }

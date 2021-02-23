@@ -3,12 +3,12 @@ package com.banksalad.collectmydata.connect.token.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.banksalad.collectmydata.common.exception.collectMydataException.NotFoundOrganizationException;
-import com.banksalad.collectmydata.common.exception.collectMydataException.NotFoundTokenException;
-import com.banksalad.collectmydata.connect.common.db.entity.OauthTokenEntity;
+import com.banksalad.collectmydata.connect.common.Exception.ConnectException;
 import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
-import com.banksalad.collectmydata.connect.common.db.repository.OauthTokenRepository;
+import com.banksalad.collectmydata.connect.common.db.entity.OauthTokenEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;
+import com.banksalad.collectmydata.connect.common.db.repository.OauthTokenRepository;
+import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
 import com.banksalad.collectmydata.connect.token.dto.ExternalTokenResponse;
 import com.banksalad.collectmydata.connect.token.dto.OauthToken;
@@ -34,7 +34,8 @@ public class OauthTokenServiceImpl implements OauthTokenService {
   public OauthToken issueToken(IssueTokenRequest request) {
     Long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
     ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
-        .findByOrganizationId(request.getOrganizationId()).orElseThrow(NotFoundOrganizationException::new);
+        .findByOrganizationId(request.getOrganizationId())
+        .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_ORGANIZATION));
 
     Organization organization = createOrganization(connectOrganizationEntity);
     ExternalTokenResponse externalTokenResponse = externalTokenService
@@ -59,7 +60,7 @@ public class OauthTokenServiceImpl implements OauthTokenService {
     Long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
     OauthTokenEntity oauthTokenEntity = oauthTokenRepository
         .findByBanksaladUserIdAndOrganizationIdAndIsExpired(banksaladUserId, request.getOrganizationId(), false)
-        .orElseThrow(NotFoundTokenException::new);
+        .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_TOKEN));
 
     if (oauthTokenEntity.isAccessTokenExpired()) {
       RefreshTokenRequest refreshTokenRequest = RefreshTokenRequest.newBuilder()
@@ -81,14 +82,16 @@ public class OauthTokenServiceImpl implements OauthTokenService {
     Long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
     OauthTokenEntity oauthTokenEntity = oauthTokenRepository
         .findByBanksaladUserIdAndOrganizationIdAndIsExpired(banksaladUserId, request.getOrganizationId(), false)
-        .orElseThrow(NotFoundTokenException::new);
+        .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_TOKEN));
 
     if (oauthTokenEntity.isRefreshTokenExpired()) {
-      throw new NotFoundTokenException("Expired refresh Token");
+      throw new ConnectException(ConnectErrorType.EXPIRED_TOKEN);
     }
 
     ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
-        .findByOrganizationId(request.getOrganizationId()).orElseThrow(NotFoundOrganizationException::new);
+        .findByOrganizationId(request.getOrganizationId())
+        .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_ORGANIZATION));
+
     Organization organization = createOrganization(connectOrganizationEntity);
     ExternalTokenResponse externalTokenResponse = externalTokenService
         .refreshToken(organization, oauthTokenEntity.getRefreshToken());
@@ -107,11 +110,13 @@ public class OauthTokenServiceImpl implements OauthTokenService {
     Long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
     OauthTokenEntity oauthTokenEntity = oauthTokenRepository
         .findByBanksaladUserIdAndOrganizationIdAndIsExpired(banksaladUserId, request.getOrganizationId(), false)
-        .orElseThrow(NotFoundTokenException::new);
+        .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_TOKEN));
     oauthTokenRepository.delete(oauthTokenEntity);
 
     ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
-        .findByOrganizationId(request.getOrganizationId()).orElseThrow(NotFoundOrganizationException::new);
+        .findByOrganizationId(request.getOrganizationId())
+        .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_ORGANIZATION));
+
     Organization organization = createOrganization(connectOrganizationEntity);
     externalTokenService.revokeToken(organization, oauthTokenEntity.getAccessToken());
   }
@@ -121,12 +126,14 @@ public class OauthTokenServiceImpl implements OauthTokenService {
     Long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
     List<OauthTokenEntity> oauthTokenEntities = oauthTokenRepository
         .findAllByBanksaladUserIdAndIsExpired(banksaladUserId, false)
-        .orElseThrow(NotFoundTokenException::new);
+        .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_TOKEN));
 
     for (OauthTokenEntity oauthTokenEntity : oauthTokenEntities) {
       oauthTokenRepository.delete(oauthTokenEntity);
       ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
-          .findByOrganizationId(oauthTokenEntity.getOrganizationId()).orElseThrow(NotFoundOrganizationException::new);
+          .findByOrganizationId(oauthTokenEntity.getOrganizationId())
+          .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_ORGANIZATION));
+
       Organization organization = createOrganization(connectOrganizationEntity);
       externalTokenService.revokeToken(organization, oauthTokenEntity.getAccessToken());
     }

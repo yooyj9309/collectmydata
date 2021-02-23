@@ -28,7 +28,7 @@ repositories {
 }
 
 ext {
-    idlVersion = "20210122.7e9d732.RELEASE"
+    idlVersion = "20210222.bb47fc9.RELEASE"
 
     springBootVersion = "2.4.1"
     springCloudVersion = "2020.0.0"

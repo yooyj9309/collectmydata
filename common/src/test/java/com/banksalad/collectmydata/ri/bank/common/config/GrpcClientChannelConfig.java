@@ -3,10 +3,10 @@ package com.banksalad.collectmydata.ri.bank.common.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 
-import com.github.banksalad.idl.apis.external.v1.user.UserGrpc;
-import com.github.banksalad.idl.apis.external.v1.user.UserGrpc.UserBlockingStub;
 import com.github.banksalad.idl.apis.v1.cipher.CipherGrpc;
 import com.github.banksalad.idl.apis.v1.cipher.CipherGrpc.CipherBlockingStub;
+import com.github.banksalad.idl.apis.v1.user.UserGrpc;
+import com.github.banksalad.idl.apis.v1.user.UserGrpc.UserBlockingStub;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;

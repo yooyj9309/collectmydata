@@ -3,16 +3,15 @@ package com.banksalad.collectmydata.connect.token.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.banksalad.collectmydata.common.exception.collectMydataException.CollectMydataException;
-import com.banksalad.collectmydata.common.exception.collectMydataException.NotFoundOrganizationException;
-import com.banksalad.collectmydata.common.exception.collectMydataException.NotFoundTokenException;
-import com.banksalad.collectmydata.connect.common.db.entity.OauthTokenEntity;
+import com.banksalad.collectmydata.common.exception.GrpcException;
+import com.banksalad.collectmydata.connect.common.Exception.ConnectException;
 import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
-import com.banksalad.collectmydata.connect.common.db.repository.OauthTokenRepository;
+import com.banksalad.collectmydata.connect.common.db.entity.OauthTokenEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;
+import com.banksalad.collectmydata.connect.common.db.repository.OauthTokenRepository;
+import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
 import com.banksalad.collectmydata.connect.token.dto.ExternalTokenResponse;
 import com.banksalad.collectmydata.connect.token.dto.OauthToken;
@@ -29,8 +28,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -83,7 +84,9 @@ class OauthTokenServiceImplTest {
         oauthTokenEntity.getOrganizationId());
 
     // when, then
-    assertThrows(NotFoundTokenException.class, () -> oauthTokenService.getAccessToken(request));
+    Exception responseException = assertThrows(Exception.class, () -> oauthTokenService.getAccessToken(request));
+    assertThat(responseException).isInstanceOf(ConnectException.class);
+    assertEquals(ConnectErrorType.NOT_FOUND_TOKEN.getMessage(), responseException.getMessage());
   }
 
   @Test
@@ -167,7 +170,9 @@ class OauthTokenServiceImplTest {
         .thenReturn(externalTokenResponse);
 
     // when, then
-    assertThrows(NotFoundOrganizationException.class, () -> oauthTokenService.issueToken(request));
+    Exception responseException = assertThrows(Exception.class, () -> oauthTokenService.issueToken(request));
+    assertThat(responseException).isInstanceOf(ConnectException.class);
+    assertEquals(ConnectErrorType.NOT_FOUND_ORGANIZATION.getMessage(), responseException.getMessage());
   }
 
   @Test
@@ -220,7 +225,9 @@ class OauthTokenServiceImplTest {
         .thenReturn(externalTokenResponse);
 
     // when, then
-    assertThrows(NotFoundTokenException.class, () -> oauthTokenService.refreshToken(request));
+    Exception responseException = assertThrows(Exception.class, () -> oauthTokenService.refreshToken(request));
+    assertThat(responseException).isInstanceOf(ConnectException.class);
+    assertEquals(ConnectErrorType.EXPIRED_TOKEN.getMessage(), responseException.getMessage());
   }
 
   @Test
@@ -241,10 +248,10 @@ class OauthTokenServiceImplTest {
     oauthTokenService.revokeToken(request);
 
     // then
-    assertThrows(NotFoundTokenException.class, () -> oauthTokenRepository
+    assertThrows(GrpcException.class, () -> oauthTokenRepository
         .findByBanksaladUserIdAndOrganizationIdAndIsExpired(oauthTokenEntity.getBanksaladUserId(),
             request.getOrganizationId(), false)
-        .orElseThrow(NotFoundTokenException::new));
+        .orElseThrow(GrpcException::new));
   }
 
   @Test
@@ -262,7 +269,9 @@ class OauthTokenServiceImplTest {
         "non-exist-organizationId");
 
     // when, then
-    assertThrows(NotFoundTokenException.class, () -> oauthTokenService.revokeToken(request));
+    Exception responseException = assertThrows(Exception.class, () -> oauthTokenService.revokeToken(request));
+    assertThat(responseException).isInstanceOf(ConnectException.class);
+    assertEquals(ConnectErrorType.NOT_FOUND_TOKEN.getMessage(), responseException.getMessage());
   }
 
   @Test
@@ -280,7 +289,7 @@ class OauthTokenServiceImplTest {
     RevokeTokenRequest request = buildRevokeTokenRequest(oauthTokenEntity.getBanksaladUserId().toString(),
         oauthTokenEntity.getOrganizationId());
 
-    doThrow(new CollectMydataException())
+    doThrow(new GrpcException())
         .when(externalTokenService)
         .revokeToken(organization, oauthTokenEntity.getAccessToken());
 
@@ -289,7 +298,7 @@ class OauthTokenServiceImplTest {
         .findByBanksaladUserIdAndOrganizationIdAndIsExpired(oauthTokenEntity.getBanksaladUserId(),
             connectOrganizationEntity.getOrganizationId(), false))
         .isNotEmpty();
-    assertThrows(CollectMydataException.class, () -> oauthTokenService.revokeToken(request));
+    assertThrows(GrpcException.class, () -> oauthTokenService.revokeToken(request));
     assertThat(oauthTokenRepository
         .findByBanksaladUserIdAndOrganizationIdAndIsExpired(oauthTokenEntity.getBanksaladUserId(),
             connectOrganizationEntity.getOrganizationId(), false))
@@ -314,7 +323,7 @@ class OauthTokenServiceImplTest {
 
     List<OauthTokenEntity> BeforeOauthTokenEntitiesWithOtherBanksaladUserId = oauthTokenRepository
         .findAllByBanksaladUserIdAndIsExpired(oauthTokenEntityWithOtherBanksaladUserId.getBanksaladUserId(), false)
-        .orElseThrow(NotFoundTokenException::new);
+        .orElseThrow(GrpcException::new);
 
     // when
     oauthTokenService.revokeAllTokens(request);
@@ -322,11 +331,11 @@ class OauthTokenServiceImplTest {
     // then
     List<OauthTokenEntity> AfterOauthTokenEntitiesWithOtherBanksaladUserId = oauthTokenRepository
         .findAllByBanksaladUserIdAndIsExpired(oauthTokenEntityWithOtherBanksaladUserId.getBanksaladUserId(), false)
-        .orElseThrow(NotFoundTokenException::new);
+        .orElseThrow(GrpcException::new);
 
-    assertThrows(NotFoundTokenException.class, () -> oauthTokenRepository
+    assertThrows(GrpcException.class, () -> oauthTokenRepository
         .findAllByBanksaladUserIdAndIsExpired(oauthTokenEntity.getBanksaladUserId(), false)
-        .orElseThrow(NotFoundTokenException::new));
+        .orElseThrow(GrpcException::new));
     assertEquals(BeforeOauthTokenEntitiesWithOtherBanksaladUserId.size(),
         AfterOauthTokenEntitiesWithOtherBanksaladUserId.size());
   }
@@ -347,7 +356,9 @@ class OauthTokenServiceImplTest {
         oauthTokenEntityWithDifferentBanksaladUserId.getBanksaladUserId().toString());
 
     // when, then
-    assertThrows(NotFoundTokenException.class, () -> oauthTokenService.revokeAllTokens(request));
+    Exception responseException = assertThrows(Exception.class, () -> oauthTokenService.revokeAllTokens(request));
+    assertThat(responseException).isInstanceOf(ConnectException.class);
+    assertEquals(ConnectErrorType.NOT_FOUND_TOKEN.getMessage(), responseException.getMessage());
   }
 
   @Test
@@ -359,7 +370,8 @@ class OauthTokenServiceImplTest {
     final int ERROR_INDEX = 2; // must be less than TOTAL_ORGANIZATION_COUNT
 
     List<OauthTokenEntity> oauthTokenEntities = createOauthTokenEntities(TOTAL_ORGANIZATION_COUNT);
-    List<ConnectOrganizationEntity> connectOrganizationEntities = createConnectOrganizationEntities(oauthTokenEntities);
+    List<ConnectOrganizationEntity> connectOrganizationEntities = createConnectOrganizationEntities(
+        oauthTokenEntities);
     List<Organization> organizations = new ArrayList<>();
     for (int i = 0; i < TOTAL_ORGANIZATION_COUNT; i++) {
       oauthTokenRepository.save(oauthTokenEntities.get(i));
@@ -367,7 +379,7 @@ class OauthTokenServiceImplTest {
       organizations.add(createOrganization(connectOrganizationEntities.get(i)));
     }
 
-    doThrow(new CollectMydataException())
+    doThrow(new GrpcException())
         .when(externalTokenService)
         .revokeToken(
             organizations.get(ERROR_INDEX),
@@ -384,7 +396,7 @@ class OauthTokenServiceImplTest {
           .findByBanksaladUserIdAndOrganizationIdAndIsExpired(banksaladUserId, errorOrganizationId, false))
           .isNotEmpty();
     }
-    assertThrows(CollectMydataException.class, () -> oauthTokenService.revokeAllTokens(request));
+    assertThrows(GrpcException.class, () -> oauthTokenService.revokeAllTokens(request));
 
     for (int i = 0; i <= ERROR_INDEX; i++) {
       String errorOrganizationId = connectOrganizationEntities.get(i).getOrganizationId();
@@ -504,7 +516,8 @@ class OauthTokenServiceImplTest {
         .build();
   }
 
-  private List<ConnectOrganizationEntity> createConnectOrganizationEntities(List<OauthTokenEntity> oauthTokenEntities) {
+  private List<ConnectOrganizationEntity> createConnectOrganizationEntities
+      (List<OauthTokenEntity> oauthTokenEntities) {
     List<ConnectOrganizationEntity> connectOrganizationEntities = new ArrayList<>();
     for (int i = 0; i < oauthTokenEntities.size(); i++) {
       ConnectOrganizationEntity connectOrganizationEntity = ConnectOrganizationEntity.builder()

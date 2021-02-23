@@ -1,12 +1,12 @@
-package com.banksalad.collectmydata.connect.token.validator;
+package com.banksalad.collectmydata.connect.grpc.validator;
 
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RefreshTokenRequest;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeTokenRequest;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 import lombok.Builder;
 
 @Builder
-public class RefreshTokenRequestValidator {
+public class RevokeTokenRequestValidator {
 
   @Positive(message = "banksaladId should be positive number")
   @NotEmpty(message = "banksaladId should be exist")
@@ -15,13 +15,13 @@ public class RefreshTokenRequestValidator {
   @NotEmpty(message = "organizationId should be exist")
   private String organizationId;
 
-  private RefreshTokenRequestValidator(String banksaladId, String organizationId) {
+  private RevokeTokenRequestValidator(String banksaladId, String organizationId) {
     this.banksaladId = banksaladId;
     this.organizationId = organizationId;
   }
 
-  public static RefreshTokenRequestValidator of(RefreshTokenRequest request) {
-    return RefreshTokenRequestValidator.builder()
+  public static RevokeTokenRequestValidator of(RevokeTokenRequest request) {
+    return RevokeTokenRequestValidator.builder()
         .banksaladId(request.getBanksaladUserId())
         .organizationId(request.getOrganizationId())
         .build();

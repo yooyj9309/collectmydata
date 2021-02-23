@@ -3,11 +3,12 @@ package com.banksalad.collectmydata.connect.organization.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.banksalad.collectmydata.common.exception.collectMydataException.NotFoundOrganizationException;
+import com.banksalad.collectmydata.connect.common.Exception.ConnectException;
 import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;
+import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationRequest;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationObjectidRequest;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -18,9 +19,10 @@ public class OrganizationServiceImpl implements OrganizationService {
 
   @Override
   @Transactional(readOnly = true)
-  public Organization getOrganization(GetOrganizationRequest request) {
+  public Organization getOrganization(GetOrganizationByOrganizationObjectidRequest request) {
     ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
-        .findByOrganizationObjectid(request.getOrganizationObjectid()).orElseThrow(NotFoundOrganizationException::new);
+        .findByOrganizationObjectid(request.getOrganizationObjectid())
+        .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_ORGANIZATION));
 
     return Organization.builder()
         .sector(connectOrganizationEntity.getSector())

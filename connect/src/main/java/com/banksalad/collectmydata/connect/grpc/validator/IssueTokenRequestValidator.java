@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.connect.token.validator;
+package com.banksalad.collectmydata.connect.grpc.validator;
 
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.IssueTokenRequest;
 import javax.validation.constraints.NotEmpty;

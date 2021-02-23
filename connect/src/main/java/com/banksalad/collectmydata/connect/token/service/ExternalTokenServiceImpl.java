@@ -5,16 +5,17 @@ import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
-import com.banksalad.collectmydata.common.exception.collectMydataException.NotFoundOrganizationException;
+import com.banksalad.collectmydata.connect.common.Exception.ConnectException;
 import com.banksalad.collectmydata.connect.common.collect.Executions;
 import com.banksalad.collectmydata.connect.common.db.entity.OrganizationClientEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationClientRepository;
+import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
 import com.banksalad.collectmydata.connect.common.service.ExecutionService;
 import com.banksalad.collectmydata.connect.common.util.ExecutionUtil;
-import com.banksalad.collectmydata.connect.token.dto.ExternalRevokeTokenRequest;
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
 import com.banksalad.collectmydata.connect.token.dto.ExternalIssueTokenRequest;
 import com.banksalad.collectmydata.connect.token.dto.ExternalRefreshTokenRequest;
+import com.banksalad.collectmydata.connect.token.dto.ExternalRevokeTokenRequest;
 import com.banksalad.collectmydata.connect.token.dto.ExternalTokenResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -87,7 +88,7 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
   private OrganizationClientEntity getOrganizationClientEntity(Organization organization) {
     return organizationClientRepository
         .findByOrganizationId(organization.getOrganizationId())
-        .orElseThrow(NotFoundOrganizationException::new);
+        .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_ORGANIZATION));
   }
 
   private ExecutionContext buildExecutionContext(Organization organization) {
