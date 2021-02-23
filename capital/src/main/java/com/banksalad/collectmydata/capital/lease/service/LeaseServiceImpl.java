@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.capital.lease.service;
 
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.capital.account.AccountService;
@@ -14,7 +15,9 @@ import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseRe
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
 import com.banksalad.collectmydata.capital.common.service.UserSyncStatusService;
+import com.banksalad.collectmydata.capital.lease.dto.OperatingLease;
 import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseBasicResponse;
+import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseTransaction;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -33,6 +39,7 @@ public class LeaseServiceImpl implements LeaseService {
   private final UserSyncStatusService userSyncStatusService;
   private final OperatingLeaseRepository operatingLeaseRepository;
   private final OperatingLeaseHistoryRepository operatingLeaseHistoryRepository;
+  private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
   private final OperatingLeaseMapper operatingLeaseMapper = Mappers.getMapper(OperatingLeaseMapper.class);
   private final OperatingLeaseHistoryMapper operatingLeaseHistoryMapper = Mappers
@@ -42,50 +49,21 @@ public class LeaseServiceImpl implements LeaseService {
   private static final String[] LEASE_RES_EXCLUDE_EQUALS_FIELD = {"rspCode", "rspMsg", "searchTimestamp"};
 
   @Override
-  public void syncAllLeaseInfo(ExecutionContext executionContext, Organization organization,
-      List<Account> accountList) {
-    // TODO testCode와 함께 보충
-//    syncAllLeaseBasic(executionContext, organization, accountList);
-//    syncLeaseTransaction(executionContext, organization, accountList);
-  }
-
-  @Override
-  public void syncLeaseBasic(ExecutionContext executionContext, Organization organization,
+  public List<OperatingLease> syncLeaseBasic(ExecutionContext executionContext, Organization organization,
       List<Account> accountList) {
 
     long banksaladUserId = executionContext.getBanksaladUserId();
     String organizationId = executionContext.getOrganizationId();
 
-    for (Account account : accountList) {
-      OperatingLeaseBasicResponse response = externalApiService
-          .getOperatingLeaseBasic(executionContext, organization, account);
-
-      OperatingLeaseEntity entity = operatingLeaseRepository
-          .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
-              banksaladUserId,
-              organizationId,
-              account.getAccountNum(),
-              account.getSeqno()
-          ).orElse(OperatingLeaseEntity.builder().build());
-
-      OperatingLeaseBasicResponse entityDto = operatingLeaseMapper.entityToOperatingLeaseBasicResponse(entity);
-
-      if (!ObjectComparator.isSame(entityDto, response, LEASE_RES_EXCLUDE_EQUALS_FIELD)) {
-        // merge
-        operatingLeaseMapper.merge(executionContext, account, response, entity);
-
-        // make history
-        OperatingLeaseHistoryEntity historyEntity = operatingLeaseHistoryMapper.toOperatingLeaseHistoryEntity(entity);
-
-        // 운용리스 및 history save;
-        operatingLeaseRepository.save(entity);
-        operatingLeaseHistoryRepository.save(historyEntity);
-      }
-
-      // accountList timestamp update
-      account.setOperatingLeaseBasicSearchTimestamp(response.getSearchTimestamp());
-      accountService.updateSearchTimestampForAccount(banksaladUserId, organizationId, account);
-    }
+    List<OperatingLease> operatingLeases = accountList.stream()
+        .map(account -> CompletableFuture
+            .supplyAsync(
+                () -> operatingLeaseProcess(executionContext, organization, account, banksaladUserId, organizationId),
+                threadPoolTaskExecutor
+            ))
+        .map(CompletableFuture::join)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
 
     // userSyncStatus table update
     userSyncStatusService
@@ -97,11 +75,51 @@ public class LeaseServiceImpl implements LeaseService {
             null,
             true // TODO executionResponseValidateService 등을 통해 로직 수정.
         );
+
+    return operatingLeases;
+  }
+
+  public OperatingLease operatingLeaseProcess(ExecutionContext context, Organization organization, Account account,
+      long banksaladUserId, String organizationId) {
+    OperatingLeaseBasicResponse response = externalApiService
+        .getOperatingLeaseBasic(context, organization, account);
+
+    OperatingLeaseEntity entity = operatingLeaseRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            banksaladUserId,
+            organizationId,
+            account.getAccountNum(),
+            account.getSeqno()
+        ).orElse(OperatingLeaseEntity.builder().build());
+
+    OperatingLeaseBasicResponse entityDto = operatingLeaseMapper
+        .entityToOperatingLeaseBasicResponse(entity);
+
+    if (!ObjectComparator.isSame(entityDto, response, LEASE_RES_EXCLUDE_EQUALS_FIELD)) {
+      // merge
+      operatingLeaseMapper.merge(context, account, response, entity);
+
+      // make history
+      OperatingLeaseHistoryEntity historyEntity = operatingLeaseHistoryMapper
+          .toOperatingLeaseHistoryEntity(entity);
+
+      // 운용리스 및 history save;
+      operatingLeaseRepository.save(entity);
+      operatingLeaseHistoryRepository.save(historyEntity);
+    }
+
+    // accountList timestamp update
+    account.setOperatingLeaseBasicSearchTimestamp(response.getSearchTimestamp());
+    accountService.updateSearchTimestampForAccount(banksaladUserId, organizationId, account);
+
+    return operatingLeaseMapper.operatingLeaseAssembler(response, account);
   }
 
   @Override
-  public void syncLeaseTransaction(ExecutionContext executionContext, Organization organizatio,
+  public List<OperatingLeaseTransaction> syncLeaseTransaction(ExecutionContext executionContext,
+      Organization organizatio,
       List<Account> accountList) {
 
+    return null;
   }
 }

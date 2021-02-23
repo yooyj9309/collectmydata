@@ -2,6 +2,7 @@ package com.banksalad.collectmydata.capital.common.db.entity.mapper;
 
 import com.banksalad.collectmydata.capital.account.dto.Account;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseEntity;
+import com.banksalad.collectmydata.capital.lease.dto.OperatingLease;
 import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import org.mapstruct.Mapper;
@@ -44,4 +45,7 @@ public interface OperatingLeaseMapper {
       }
   )
   OperatingLeaseBasicResponse entityToOperatingLeaseBasicResponse(OperatingLeaseEntity entity);
+
+
+  OperatingLease operatingLeaseAssembler(OperatingLeaseBasicResponse response, Account account);
 }

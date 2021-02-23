@@ -13,9 +13,10 @@ import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseHi
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseRepository;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
+import com.banksalad.collectmydata.capital.lease.dto.OperatingLease;
 import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import javax.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -51,8 +52,15 @@ public class LeaseServiceTest {
   private String organizationId = "shinhancard";
   private String accountNum = "1234567812345678";
 
+  @AfterEach
+  private void after() {
+    operatingLeaseRepository.deleteAll();
+    operatingLeaseHistoryRepository.deleteAll();
+    accountListRepository.deleteAll();
+
+  }
+
   @Test
-  @Transactional
   @DisplayName("운용리스 기본정보 조회 서비스 로직 성공케이스")
   public void getOperatingLeaseBasic_firstInflow() {
 
@@ -84,6 +92,8 @@ public class LeaseServiceTest {
             .build()
     );
 
+    accountListRepository.flush();
+
     List<Account> accountList = List.of(account);
 
     when(externalApiService.getOperatingLeaseBasic(context, organization, account))
@@ -102,22 +112,22 @@ public class LeaseServiceTest {
                 .nextRepayDate("20210414")
                 .build()
         );
-    leaseService.syncLeaseBasic(context, organization, accountList);
+    List<OperatingLease> operatingLeases = leaseService.syncLeaseBasic(context, organization, accountList);
 
     List<OperatingLeaseEntity> operatingLeaseEntities = operatingLeaseRepository.findAll();
     List<OperatingLeaseHistoryEntity> operatingLeaseHistoryEntities = operatingLeaseHistoryRepository.findAll();
-    validateEntities(now, operatingLeaseEntities, operatingLeaseHistoryEntities);
+    validateResult(now, operatingLeaseEntities, operatingLeaseHistoryEntities, operatingLeases);
 
     // 재조회시 히스토리 중첩여부 테스트
-    leaseService.syncLeaseBasic(context, organization, accountList);
+    operatingLeases = leaseService.syncLeaseBasic(context, organization, accountList);
 
     operatingLeaseEntities = operatingLeaseRepository.findAll();
     operatingLeaseHistoryEntities = operatingLeaseHistoryRepository.findAll();
-    validateEntities(now, operatingLeaseEntities, operatingLeaseHistoryEntities);
+    validateResult(now, operatingLeaseEntities, operatingLeaseHistoryEntities, operatingLeases);
   }
 
-  private void validateEntities(LocalDateTime now, List<OperatingLeaseEntity> operatingLeaseEntities,
-      List<OperatingLeaseHistoryEntity> operatingLeaseHistoryEntities) {
+  private void validateResult(LocalDateTime now, List<OperatingLeaseEntity> operatingLeaseEntities,
+      List<OperatingLeaseHistoryEntity> operatingLeaseHistoryEntities, List<OperatingLease> operatingLeases) {
     assertEquals(1, operatingLeaseEntities.size());
     assertThat(operatingLeaseEntities.get(0)).usingRecursiveComparison()
         .ignoringFields("operatingLeaseId", "createdAt", "updatedAt")
@@ -159,5 +169,23 @@ public class LeaseServiceTest {
                 .nextRepayDate(LocalDate.parse("20210414", DateTimeFormatter.ofPattern("yyyyMMdd")))
                 .build()
         );
+
+    assertEquals(1, operatingLeases.size());
+    assertThat(operatingLeases.get(0)).usingRecursiveComparison()
+        .isEqualTo(
+            OperatingLease.builder()
+                .accountNum(accountNum)
+                .seqno(1)
+                .holderName("holderName")
+                .issueDate("20210214")
+                .expDate("20210314")
+                .repayDate(14)
+                .repayMethod("04")
+                .repayOrgCode("020")
+                .repayAccountNum("1234567812345678")
+                .nextRepayDate("20210414")
+                .build()
+        );
+
   }
 }
