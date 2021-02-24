@@ -9,6 +9,7 @@ import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationE
 import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;
 import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationIdRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationObjectidRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @DisplayName("OrganizationService Test")
-class OrganizationServiceImplTest {
+class OrganizationServiceTest {
 
   @Autowired
   private OrganizationService organizationService;
@@ -30,13 +31,13 @@ class OrganizationServiceImplTest {
   @Test
   @Transactional
   @DisplayName("organization 정보 조회를 성공하는 테스트")
-  public void getOrganization_success() {
+  public void getOrganizationByObjectIid_success() {
     // given
     ConnectOrganizationEntity connectOrganizationEntity = createConnectOrganizationEntity();
     Organization builtOrganization = buildOrganizationFrom(connectOrganizationEntity);
     connectOrganizationRepository.save(connectOrganizationEntity);
 
-    GetOrganizationByOrganizationObjectidRequest request = buildGetOrganizationRequest(
+    GetOrganizationByOrganizationObjectidRequest request = buildGetOrganizationByOrganizationObjectidRequest(
         connectOrganizationEntity.getOrganizationObjectid());
 
     // when
@@ -49,12 +50,12 @@ class OrganizationServiceImplTest {
   @Test
   @Transactional
   @DisplayName("organization 정보 조회를 실패하는 테스트 - 존재하지 않는 organizationObjectid로 조회")
-  public void getOrganization_fail() {
+  public void getOrganizationByObjectid_fail() {
     // given
     ConnectOrganizationEntity connectOrganizationEntity = createConnectOrganizationEntity();
     connectOrganizationRepository.save(connectOrganizationEntity);
 
-    GetOrganizationByOrganizationObjectidRequest request = buildGetOrganizationRequest(
+    GetOrganizationByOrganizationObjectidRequest request = buildGetOrganizationByOrganizationObjectidRequest(
         "non-exist-organizationObjectid");
 
     // when, then
@@ -62,6 +63,43 @@ class OrganizationServiceImplTest {
     assertThat(responseException).isInstanceOf(ConnectException.class);
     assertEquals(ConnectErrorType.NOT_FOUND_ORGANIZATION.getMessage(), responseException.getMessage());
   }
+
+  @Test
+  @Transactional
+  @DisplayName("organization 정보 조회를 성공하는 테스트 : OrganizationId 이용")
+  public void getOrganizationByOrganizationId_success() {
+    // given
+    ConnectOrganizationEntity connectOrganizationEntity = createConnectOrganizationEntity();
+    Organization builtOrganization = buildOrganizationFrom(connectOrganizationEntity);
+    connectOrganizationRepository.save(connectOrganizationEntity);
+
+    GetOrganizationByOrganizationIdRequest request = buildGetOrganizationByOrganizationIdRequest(
+        connectOrganizationEntity.getOrganizationId());
+
+    // when
+    Organization organization = organizationService.getOrganization(request);
+
+    // then
+    assertThat(organization).usingRecursiveComparison().isEqualTo(builtOrganization);
+  }
+
+  @Test
+  @Transactional
+  @DisplayName("organization 정보 조회를 실패하는 테스트 - 존재하지 않는 OrganizationId로 조회")
+  public void getOrganizationByOrganizationId_fail() {
+    // given
+    ConnectOrganizationEntity connectOrganizationEntity = createConnectOrganizationEntity();
+    connectOrganizationRepository.save(connectOrganizationEntity);
+
+    GetOrganizationByOrganizationIdRequest request = buildGetOrganizationByOrganizationIdRequest(
+        "non-exist-organizationObjectid");
+
+    // when, then
+    Exception responseException = assertThrows(Exception.class, () -> organizationService.getOrganization(request));
+    assertThat(responseException).isInstanceOf(ConnectException.class);
+    assertEquals(ConnectErrorType.NOT_FOUND_ORGANIZATION.getMessage(), responseException.getMessage());
+  }
+
 
   private ConnectOrganizationEntity createConnectOrganizationEntity() {
     return ConnectOrganizationEntity.builder()
@@ -87,9 +125,17 @@ class OrganizationServiceImplTest {
         .build();
   }
 
-  private GetOrganizationByOrganizationObjectidRequest buildGetOrganizationRequest(String organizationObjectid) {
+  private GetOrganizationByOrganizationObjectidRequest buildGetOrganizationByOrganizationObjectidRequest(
+      String organizationObjectid) {
     return GetOrganizationByOrganizationObjectidRequest.newBuilder()
         .setOrganizationObjectid(organizationObjectid)
         .build();
   }
+
+  private GetOrganizationByOrganizationIdRequest buildGetOrganizationByOrganizationIdRequest(String organizationId) {
+    return GetOrganizationByOrganizationIdRequest.newBuilder()
+        .setOrganizationId(organizationId)
+        .build();
+  }
+
 }

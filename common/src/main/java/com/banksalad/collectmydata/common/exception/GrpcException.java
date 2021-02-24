@@ -23,7 +23,7 @@ public class GrpcException extends CollectRuntimeException {
   }
 
   public GrpcException(Code code, String message, ErrorResult errorResult) {
-    super(message);
+    super(errorResult.getDescription());
     this.code = code;
     this.message = message;
     this.errorResult = errorResult;

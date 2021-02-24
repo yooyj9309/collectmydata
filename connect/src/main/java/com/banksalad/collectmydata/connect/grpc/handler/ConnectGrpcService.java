@@ -19,6 +19,7 @@ import com.banksalad.collectmydata.connect.token.service.OauthTokenService;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataGrpc;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenResponse;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationIdRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationObjectidRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.HealthCheckRequest;
@@ -175,6 +176,28 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
       responseObserver.onError(e.handle());
     } catch (Exception e) {
       log.error("getOrganizationByOrganizationObjectid error message,{}", e.getMessage(), e);
+      responseObserver.onError(new GrpcException().handle());
+    }
+  }
+
+  @Override
+  public void getOrganizationByOrganizationId(GetOrganizationByOrganizationIdRequest request,
+      StreamObserver<GetOrganizationResponse> responseObserver) {
+    try {
+      GetOrganizationRequestValidator validator = GetOrganizationRequestValidator.of(request);
+      validatorService.validate(validator);
+
+      Organization organization = organizationService.getOrganization(request);
+      OrganizationResponse organizationResponse = OrganizationResponse.builder()
+          .organization(organization)
+          .build();
+
+      responseObserver.onNext(organizationResponse.toGetOrganizationProto());
+      responseObserver.onCompleted();
+    } catch (GrpcException e) {
+      responseObserver.onError(e.handle());
+    } catch (Exception e) {
+      log.error("getOrganizationByOrganizationId error message,{}", e.getMessage(), e);
       responseObserver.onError(new GrpcException().handle());
     }
   }
