@@ -28,24 +28,6 @@ repositories {
     }
 }
 
-ext {
-    idlVersion = "20210125.fd715c5.RELEASE"
-
-    springBootVersion = "2.4.1"
-    armeriaVersion = "1.3.0"
-
-    grpcVersion = "1.33.1"
-    grpcSpringBootVersion = "3.5.5"
-
-    slf4jVersion = "1.7.30"
-    logbackVersion = "1.2.3"
-    lombokVersion = "1.18.12"
-
-    micrometerVersion = "1.6.2"
-    apacheCommonsVersion = "3.10"
-    json_path_version = "2.4.0"
-}
-
 dependencies {
     implementation project(":common")
 

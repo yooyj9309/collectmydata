@@ -3,22 +3,25 @@ version '1.0-SNAPSHOT'
 
 
 ext {
-    idlVersion = "20210206.d531df2.RELEASE"
+    idlVersion = "20210223.c598ae6.RELEASE"
 
     springBootVersion = "2.4.1"
     armeriaVersion = "1.3.0"
     springKafkaVersion = "2.6.5"
 
-    grpcVersion = "1.30.2"
+    grpcVersion = "1.35.0"
     grpcSpringBootVersion = "3.5.5"
 
     slf4jVersion = "1.7.30"
     logbackVersion = "1.2.3"
-    lombokVersion = "1.18.12"
+    lombokVersion = "1.18.18"
 
     micrometerVersion = "1.6.2"
     apacheCommonsVersion = "3.10"
     json_path_version = "2.4.0"
     awsSdkVersion = "2.14.21"
     springCloudVersion = "2020.0.0"
+
+    mapstructVersion = "1.4.2.Final"
+    lombokMapstructBindingVersion = "0.2.0"
 }

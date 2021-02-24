@@ -28,22 +28,9 @@ repositories {
 }
 
 ext {
-    idlVersion = "20210222.bb47fc9.RELEASE"
-
-    springBootVersion = "2.4.1"
-    springCloudVersion = "2020.0.0"
-    grpcVersion = "1.30.2"
-    apacheCommonsVersion = "3.10"
-    slf4jVersion = "1.7.30"
-    logbackVersion = "1.2.3"
-    lombokVersion = "1.18.12"
-
     jacksonVersion = '2.11.0'
     jsonPathVersion = '2.4.0'
     camelVersion = '3.2.0'
-    slf4jVersion = '1.7.30'
-    logbackVersion = '1.2.3'
-    reactorVersion = '3.4.2'
 }
 
 dependencyManagement {
@@ -51,7 +38,6 @@ dependencyManagement {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
-
 
 dependencies {
     // idl

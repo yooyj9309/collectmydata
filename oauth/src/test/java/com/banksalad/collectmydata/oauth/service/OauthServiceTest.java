@@ -153,7 +153,7 @@ public class OauthServiceTest {
   private void ready_mockSetting(MydataSector mydataSector) {
     when(authService.getUserAuthInfo(OauthTestUtil.organizationId, headers))
         .thenReturn(OauthTestUtil.generateUserAuthInfo());
-    when(connectmydataBlockingStub.getOrganization(any()))
+    when(connectmydataBlockingStub.getOrganizationByOrganizationId(any()))
         .thenReturn(OauthTestUtil.getOrganizationResponseAssembler(mydataSector));
     when(userRedisRepository.setUserInfo(any(), any())).thenReturn(true);
   }

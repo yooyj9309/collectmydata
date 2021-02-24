@@ -6,7 +6,7 @@ import com.banksalad.collectmydata.oauth.common.exception.OauthException;
 import org.springframework.stereotype.Service;
 
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataGrpc.ConnectmydataBlockingStub;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationRequest;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationIdRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.IssueTokenRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.IssueTokenResponse;
@@ -18,15 +18,15 @@ public class ConnectClient {
 
   private final ConnectmydataBlockingStub connectmydataBlockingStub;
 
-  public GetOrganizationResponse getOrganization(String organizationObjectId) {
-    GetOrganizationRequest request = GetOrganizationRequest.newBuilder()
-        .setOrganizationObjectid(organizationObjectId)
+  public GetOrganizationResponse getOrganization(String organizationId) {
+    GetOrganizationByOrganizationIdRequest request = GetOrganizationByOrganizationIdRequest.newBuilder()
+        .setOrganizationId(organizationId)
         .build();
 
     try {
-      return connectmydataBlockingStub.getOrganization(request);
+      return connectmydataBlockingStub.getOrganizationByOrganizationId(request);
     } catch (Exception e) {
-      throw new OauthException(OauthErrorType.FAILED_CONNECT_ORGANIZATION_RPC, organizationObjectId);
+      throw new OauthException(OauthErrorType.FAILED_CONNECT_ORGANIZATION_RPC, organizationId);
     }
   }
 
