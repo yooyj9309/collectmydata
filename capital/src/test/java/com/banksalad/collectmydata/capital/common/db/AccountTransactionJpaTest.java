@@ -26,7 +26,7 @@ public class AccountTransactionJpaTest {
   private final long BANKSALAD_USER_ID = 1L;
   private final String ORGANIZATION_ID = "X-loan";
   private final String ACCOUNT_NUM_ENCRYPTED = "a1b2c3d4!";
-  private final int SEQNO = 0;
+  private final Integer SEQNO = 0;
   private final String UNIQUE_TRANS_NO = "1_2-3/4+";
   private final LocalDateTime TRANS_DTIME = DateUtil.toLocalDateTime("20200201", "101010");
   private final String TRANS_NO = "1";

@@ -10,10 +10,7 @@ import java.util.Optional;
 public interface ApiLogRepository extends JpaRepository<ApiLogEntity, Long> {
 
   Optional<ApiLogEntity> findBySyncRequestIdAndExecutionRequestIdAndApiRequestIdAndCreatedAtBetween(
-      String syncRequestId,
-      String executionRequestId,
-      String apiRequestId,
-      LocalDateTime minusDays,
+      String syncRequestId, String executionRequestId, String apiRequestId, LocalDateTime minusDays,
       LocalDateTime plusDays
   );
 }

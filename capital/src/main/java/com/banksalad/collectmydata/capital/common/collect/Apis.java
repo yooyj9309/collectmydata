@@ -68,5 +68,4 @@ public class Apis {
               .nextPage("next_page")
               .build())
           .build();
-
 }

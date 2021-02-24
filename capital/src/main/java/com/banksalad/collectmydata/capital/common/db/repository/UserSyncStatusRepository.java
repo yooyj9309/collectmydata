@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface UserSyncStatusRepository extends JpaRepository<UserSyncStatusEntity, Long> {
 
-  public Optional<UserSyncStatusEntity> findByBanksaladUserIdAndOrganizationIdAndApiIdAndIsDeleted(
+  Optional<UserSyncStatusEntity> findByBanksaladUserIdAndOrganizationIdAndApiIdAndIsDeleted(
       Long banksaladUserId, String organizationId, String apiId, Boolean isDeleted);
 }

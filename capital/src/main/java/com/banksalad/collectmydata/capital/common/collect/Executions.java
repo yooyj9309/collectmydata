@@ -1,11 +1,11 @@
 package com.banksalad.collectmydata.capital.common.collect;
 
-import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
-import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
-import com.banksalad.collectmydata.capital.account.dto.AccountResponse;
-import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseBasicResponse;
-import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
-import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseTransactionResponse;
+import com.banksalad.collectmydata.capital.loan.dto.LoanAccountDetailResponse;
+import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicResponse;
+import com.banksalad.collectmydata.capital.common.dto.AccountResponse;
+import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
+import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
+import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 
 public class Executions {
@@ -21,21 +21,21 @@ public class Executions {
   public static final Execution capital_get_account_basic =
       Execution.create()
           .exchange(Apis.capital_get_account_basic)
-          .as(AccountBasicResponse.class)
+          .as(LoanAccountBasicResponse.class)
           .build();
 
   // 6.7.3 대출상품계좌 추가정보 조회
   public static final Execution capital_get_account_detail =
       Execution.create()
           .exchange(Apis.capital_get_account_detail)
-          .as(AccountDetailResponse.class)
+          .as(LoanAccountDetailResponse.class)
           .build();
 
   // 6.7.4 대출상품계좌 거래내역 조회
   public static final Execution capital_get_account_transactions =
       Execution.create()
           .exchange(Apis.capital_get_account_transactions)
-          .as(AccountTransactionResponse.class)
+          .as(LoanAccountTransactionResponse.class)
           .build();
 
   // 6.7.5 운용리스 기본정보 조회

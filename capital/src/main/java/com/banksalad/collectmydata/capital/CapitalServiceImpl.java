@@ -2,11 +2,12 @@ package com.banksalad.collectmydata.capital;
 
 import org.springframework.stereotype.Service;
 
-import com.banksalad.collectmydata.capital.account.AccountService;
-import com.banksalad.collectmydata.capital.account.dto.Account;
+import com.banksalad.collectmydata.capital.common.service.AccountService;
+import com.banksalad.collectmydata.capital.loan.LoanAccountService;
+import com.banksalad.collectmydata.capital.common.dto.Account;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.grpc.client.CollectmydataConnectClientService;
-import com.banksalad.collectmydata.capital.lease.service.LeaseService;
+import com.banksalad.collectmydata.capital.oplease.OperatingLeaseService;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.logging.CollectLogbackJsonLayout;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +24,9 @@ import java.util.stream.Collectors;
 public class CapitalServiceImpl implements CapitalService {
 
   private final AccountService accountService;
+  private final LoanAccountService loanAccountService;
   private final CollectmydataConnectClientService collectmydataConnectClientService;
-  private final LeaseService leaseService;
+  private final OperatingLeaseService operatingLeaseService;
   private final CapitalPublishService capitalPublishService;
 
   private static final String OPERATING_LEASE_TYPE = "3710";
@@ -66,14 +68,14 @@ public class CapitalServiceImpl implements CapitalService {
       List<Account> operatingLeaseAccounts = accounts.stream()
           .filter(account -> account.getAccountType().equals(OPERATING_LEASE_TYPE))
           .collect(Collectors.toList());
-      leaseService.syncLeaseBasic(executionContext, organization, operatingLeaseAccounts);
-      leaseService.syncLeaseTransaction(executionContext, organization, operatingLeaseAccounts);
+      operatingLeaseService.listOperatingLeases(executionContext, organization, operatingLeaseAccounts);
+      operatingLeaseService.listOperatingLeaseTransactions(executionContext, organization, operatingLeaseAccounts);
 
       List<Account> anotherAccounts = accounts.stream()
           .filter(account -> !account.getAccountType().equals(OPERATING_LEASE_TYPE))
           .collect(Collectors.toList());
-      accountService.listAccountInfo(executionContext, organization, anotherAccounts);
-      accountService.listAccountTransaction(executionContext, organization, anotherAccounts);
+      loanAccountService.listLoanAccounts(executionContext, organization, anotherAccounts);
+      loanAccountService.listAccountTransactions(executionContext, organization, anotherAccounts);
 
       // publish 서비스
       // client 리턴 -> 이부분 갑자기 기억이 안나네요, collect에 주기위해 다시 producer 하는게 맞는지..?

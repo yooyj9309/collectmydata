@@ -10,5 +10,4 @@ public interface AccountListRepository extends JpaRepository<AccountListEntity, 
 
   Optional<AccountListEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(Long banksaladUserId,
       String organizationId, String accountNum, Integer seqno);
-
 }

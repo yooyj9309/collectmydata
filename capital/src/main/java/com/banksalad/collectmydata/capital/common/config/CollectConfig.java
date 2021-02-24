@@ -11,7 +11,6 @@ import com.banksalad.collectmydata.common.collect.executor.TransferClient;
 import com.banksalad.collectmydata.common.collect.executor.TransferClientImpl;
 
 @Configuration
-
 public class CollectConfig {
 
   private final TransferClient transferClient;

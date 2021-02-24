@@ -5,17 +5,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 
-import com.banksalad.collectmydata.capital.account.dto.Account;
-import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
-import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
-import com.banksalad.collectmydata.capital.account.dto.AccountResponse;
-import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
-import com.banksalad.collectmydata.capital.account.dto.AccountTransactionInterest;
-import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
+import com.banksalad.collectmydata.capital.common.dto.Account;
+import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicResponse;
+import com.banksalad.collectmydata.capital.loan.dto.LoanAccountDetailResponse;
+import com.banksalad.collectmydata.capital.common.dto.AccountResponse;
+import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
+import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionInterest;
+import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
-import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseBasicResponse;
-import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseTransaction;
-import com.banksalad.collectmydata.capital.lease.dto.OperatingLeaseTransactionResponse;
+import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
+import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
+import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.enums.Industry;
 import com.banksalad.collectmydata.common.enums.MydataSector;
@@ -59,7 +59,7 @@ class ExternalApiServiceTest {
   private static final Long BANKSALAD_USER_ID = 1L;
   private static final String ACCESS_TOKEN = "abc.def.ghi";
   private static final String ACCOUNT_NUMBER = "1234567890";
-  private static final int SEQNO = 1;
+  private static final Integer SEQNO = 1;
   private static final String ACCOUNT_TYPE = "3100";
   private static final String ACCOUNT_STATUS = "01";
   private static final String PRODUCT_NAME = "X-론 직장인 신용대출";
@@ -107,12 +107,12 @@ class ExternalApiServiceTest {
     Account account = getAccount();
 
     // when
-    AccountBasicResponse accountBasicResponse = externalApiService
+    LoanAccountBasicResponse loanAccountBasicResponse = externalApiService
         .getAccountBasic(executionContext, organization, account);
 
     // then
-    assertThat(accountBasicResponse).usingRecursiveComparison().isEqualTo(
-        AccountBasicResponse.builder()
+    assertThat(loanAccountBasicResponse).usingRecursiveComparison().isEqualTo(
+        LoanAccountBasicResponse.builder()
             .rspCode("000")
             .rspMsg("rep_msg")
             .searchTimestamp(1000)
@@ -135,14 +135,14 @@ class ExternalApiServiceTest {
     ExecutionContext executionContext = getExecutionContext();
     Organization organization = getOrganization();
     Account account = getAccount();
-    AccountDetailResponse expectedAccountDetailResponse = getAccountDetailResponse();
+    LoanAccountDetailResponse expectedLoanAccountDetailResponse = getAccountDetailResponse();
 
     // When
-    AccountDetailResponse actualAccountDetailResponse = externalApiService
+    LoanAccountDetailResponse actualLoanAccountDetailResponse = externalApiService
         .getAccountDetail(executionContext, organization, account);
 
     // Then
-    assertThat(actualAccountDetailResponse).usingRecursiveComparison().isEqualTo(expectedAccountDetailResponse);
+    assertThat(actualLoanAccountDetailResponse).usingRecursiveComparison().isEqualTo(expectedLoanAccountDetailResponse);
   }
 
   @Test
@@ -154,19 +154,19 @@ class ExternalApiServiceTest {
     Account account = getAccount();
 
     // When
-    AccountTransactionResponse response = externalApiService
+    LoanAccountTransactionResponse response = externalApiService
         .getAccountTransactions(executionContext, organization, account);
 
     // Then
     assertEquals(3, response.getTransCnt());
     assertEquals(3, response.getTransList().size());
     assertThat(response).usingRecursiveComparison().isEqualTo(
-        AccountTransactionResponse.builder()
+        LoanAccountTransactionResponse.builder()
             .rspCode("00000")
             .rspMsg("rsp_msg")
             .transCnt(3)
             .transList(List.of(
-                AccountTransaction.builder()
+                LoanAccountTransaction.builder()
                     .transDtime("20210121103000")
                     .transNo("trans#2")
                     .transType("03")
@@ -176,13 +176,13 @@ class ExternalApiServiceTest {
                     .intAmt(100)
                     .intCnt(2)
                     .intList(List.of(
-                        AccountTransactionInterest.builder()
+                        LoanAccountTransactionInterest.builder()
                             .intStartDate("20201201")
                             .intEndDate("20201231")
                             .intRate(BigDecimal.valueOf(4.125))
                             .intType("02")
                             .build(),
-                        AccountTransactionInterest.builder()
+                        LoanAccountTransactionInterest.builder()
                             .intStartDate("20201201")
                             .intEndDate("20201231")
                             .intRate(BigDecimal.valueOf(3.025))
@@ -190,7 +190,7 @@ class ExternalApiServiceTest {
                             .build()
                     ))
                     .build(),
-                AccountTransaction.builder()
+                LoanAccountTransaction.builder()
                     .transDtime("20210121093000")
                     .transNo("trans#1")
                     .transType("03")
@@ -200,7 +200,7 @@ class ExternalApiServiceTest {
                     .intAmt(100)
                     .intCnt(1)
                     .intList(List.of(
-                        AccountTransactionInterest.builder()
+                        LoanAccountTransactionInterest.builder()
                             .intStartDate("20201201")
                             .intEndDate("20201231")
                             .intRate(BigDecimal.valueOf(3.025))
@@ -208,7 +208,7 @@ class ExternalApiServiceTest {
                             .build()
                     ))
                     .build(),
-                AccountTransaction.builder()
+                LoanAccountTransaction.builder()
                     .transDtime("20210121221000")
                     .transNo("trans#3")
                     .transType("99")
@@ -347,8 +347,8 @@ class ExternalApiServiceTest {
         .build();
   }
 
-  private AccountDetailResponse getAccountDetailResponse() {
-    return AccountDetailResponse.builder()
+  private LoanAccountDetailResponse getAccountDetailResponse() {
+    return LoanAccountDetailResponse.builder()
         .rspCode("000")
         .rspMsg("rsp_msg")
         .searchTimestamp(0L)
@@ -384,7 +384,7 @@ class ExternalApiServiceTest {
                 .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/CP01_001.json"))));
+                .withBody(readText("classpath:mock/response/CP01_001.json"))));
 
     // 6.7.2 대출상품계좌 기본정보 조회
     wireMockServer.stubFor(post(urlMatching("/loans/basic"))
@@ -393,100 +393,72 @@ class ExternalApiServiceTest {
                 .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/CP02_001.json"))));
+                .withBody(readText("classpath:mock/response/CP02_001.json"))));
 
     // 6.7.3 대출상품계좌 추가정보 조회
     wireMockServer.stubFor(post(urlMatching("/loans/detail"))
-        .withRequestBody(equalToJson(
-            "{\"org_code\" : \"10041004\"," +
-                "\"account_num\" : \"1234567890\"," +
-                "\"seqno\" : 1," +
-                "\"search_timestamp\" : 0}"))
+        .withRequestBody(
+            equalToJson(readText("classpath:mock/request/CP03_001.json")))
         .willReturn(
             aResponse()
                 .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/CP03_001.json"))));
+                .withBody(readText("classpath:mock/response/CP03_001.json"))));
 
     // 6.7.4 대출상품계좌 거래내역 조회: 첫번째 페이지 (next_page를 요청에 설정하지 않음)
     wireMockServer.stubFor(post(urlMatching("/loans/transactions"))
-        .withRequestBody(equalToJson(
-            "{\"org_code\" : \"10041004\"," +
-                "\"account_num\" : \"1234567890\"," +
-                "\"seqno\" : 0," +
-                "\"from_dtime\" : \"20210121000000\"," +
-                "\"to_dtime\" : \"20210122000000\"," +
-                "\"limit\" : 2}"))
+        .withRequestBody(
+            equalToJson(readText("classpath:mock/request/CP04_001.json")))
         .willReturn(
             aResponse()
                 .withFixedDelay(500)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/CP04_002.json"))));
+                .withBody(readText("classpath:mock/response/CP04_002.json"))));
 
     // 6.7.4 대출상품계좌 거래내역 조회: 두번째 페이지 (응답에 next_page가 없음)
     wireMockServer.stubFor(post(urlMatching("/loans/transactions"))
-        .withRequestBody(equalToJson(
-            "{\"org_code\" : \"10041004\"," +
-                "\"account_num\" : \"1234567890\"," +
-                "\"seqno\" : 0," +
-                "\"from_dtime\" : \"20210121000000\"," +
-                "\"to_dtime\" : \"20210122000000\"," +
-                "\"next_page\" : \"3\"," +
-                "\"limit\" : 2}"))
+        .withRequestBody(
+            equalToJson(readText("classpath:mock/request/CP04_002.json")))
         .willReturn(
             aResponse()
                 .withFixedDelay(500)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/CP04_003.json"))));
+                .withBody(readText("classpath:mock/response/CP04_003.json"))));
 
     // 6.7.5 운용리스 기본정보 조회
     wireMockServer.stubFor(post(urlMatching("/loans/oplease/basic"))
-        .withRequestBody(equalToJson(
-            "{\"org_code\" : \"10041004\"," +
-                "\"account_num\" : \"1234567890\"," +
-                "\"seqno\" : 1," +
-                "\"search_timestamp\" : 0}"))
+        .withRequestBody(
+            equalToJson(readText("classpath:mock/request/CP05_001.json")))
         .willReturn(
             aResponse()
                 .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/CP05_001.json"))));
+                .withBody(readText("classpath:mock/response/CP05_001.json"))));
 
     // 6.7.6 운용리스 거래내역 조회 : 응답 페이지가 둘인 경우 - 첫번째 페이지(1/2) (요청 next_page : null, 응답 next_page : 2)
     wireMockServer.stubFor(post(urlMatching("/loans/oplease/transactions"))
-        .withRequestBody(equalToJson(
-            "{\"org_code\" : \"10041004\"," +
-                "\"account_num\" : \"1234567890\"," +
-                "\"seqno\" : 1," +
-                "\"from_dtime\" : \"20210121000000\"," +
-                "\"to_dtime\" : \"20210122000000\"," +
-                "\"limit\" : 2}"))
+        .withRequestBody(
+            equalToJson(readText("classpath:mock/request/CP06_001.json")))
         .willReturn(
             aResponse()
                 .withFixedDelay(500)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/CP06_001.json"))));
+                .withBody(readText("classpath:mock/response/CP06_001.json"))));
 
     // 6.7.6 운용리스 거래내역 조회 : 응답 페이지가 둘인 경우 - 두번째 페이지(2/2) (요청 next_page : 2, 응답 next_page : null)
     wireMockServer.stubFor(post(urlMatching("/loans/oplease/transactions"))
-        .withRequestBody(equalToJson(
-            "{\"org_code\" : \"10041004\"," +
-                "\"account_num\" : \"1234567890\"," +
-                "\"seqno\" : 1," +
-                "\"from_dtime\" : \"20210121000000\"," +
-                "\"to_dtime\" : \"20210122000000\"," +
-                "\"next_page\" : \"2\"," +
-                "\"limit\" : 2}"))
+        .withRequestBody(
+            equalToJson(readText("classpath:mock/request/CP06_002.json")))
         .willReturn(
             aResponse()
                 .withFixedDelay(500)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/CP06_002.json"))));
+                .withBody(readText("classpath:mock/response/CP06_002.json"))));
   }
 }

@@ -9,10 +9,10 @@ import java.util.List;
 public interface AccountTransactionRepository extends JpaRepository<AccountTransactionEntity, Long> {
 
   List<AccountTransactionEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransactionYearMonthAndUniqueTransNoNotIn(
-      long banksaladUserId, String organizationId, String accountNum, Integer seqno,
-      Integer transactionYearMonth, List<String> uniqueTransNo);
+      long banksaladUserId, String organizationId, String accountNum, Integer seqno, Integer transactionYearMonth,
+      List<String> uniqueTransNo);
 
   List<AccountTransactionEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransactionYearMonthAndUniqueTransNoIn(
-      long banksaladUserId, String organizationId, String accountNum, Integer seqno,
-      Integer transactionYearMonth, List<String> uniqueTransNo);
+      long banksaladUserId, String organizationId, String accountNum, Integer seqno, Integer transactionYearMonth,
+      List<String> uniqueTransNo);
 }
