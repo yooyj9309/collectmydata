@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.capital.common.db.entity.UserSyncStatusEntity;
 import com.banksalad.collectmydata.capital.common.db.repository.UserSyncStatusRepository;
+import com.banksalad.collectmydata.common.collect.api.Api;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 public class UserSyncStatusServiceImpl implements UserSyncStatusService {
 
   private final UserSyncStatusRepository userSyncStatusRepository;
+  private static final long DEFAULT_SEARCH_TIMESTAMP = 0L;
 
   @Transactional
   @Override
@@ -41,5 +43,12 @@ public class UserSyncStatusServiceImpl implements UserSyncStatusService {
       userSyncStatusEntity.setSearchTimestamp(searchTimestamp);
       userSyncStatusRepository.save(userSyncStatusEntity);
     }
+  }
+
+  @Override
+  public long getSearchTimestamp(long banksaladUserId, String organizationId, Api api) {
+    return userSyncStatusRepository.findByBanksaladUserIdAndOrganizationIdAndApiIdAndIsDeleted(
+        banksaladUserId, organizationId, api.getId(), false
+    ).map(UserSyncStatusEntity::getSearchTimestamp).orElse(DEFAULT_SEARCH_TIMESTAMP);
   }
 }

@@ -2,18 +2,18 @@ package com.banksalad.collectmydata.capital.common.service;
 
 import org.springframework.stereotype.Service;
 
+import com.banksalad.collectmydata.capital.common.collect.Executions;
 import com.banksalad.collectmydata.capital.common.dto.Account;
+import com.banksalad.collectmydata.capital.common.dto.AccountRequest;
+import com.banksalad.collectmydata.capital.common.dto.AccountResponse;
+import com.banksalad.collectmydata.capital.common.dto.Organization;
+import com.banksalad.collectmydata.capital.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicRequest;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicResponse;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountDetailRequest;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountDetailResponse;
-import com.banksalad.collectmydata.capital.common.dto.AccountRequest;
-import com.banksalad.collectmydata.capital.common.dto.AccountResponse;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionRequest;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
-import com.banksalad.collectmydata.capital.common.collect.Executions;
-import com.banksalad.collectmydata.capital.common.dto.Organization;
-import com.banksalad.collectmydata.capital.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicRequest;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionRequest;
@@ -42,14 +42,14 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   private static final int MAX_LIMIT = 2;
 
   @Override
-  public AccountResponse getAccounts(ExecutionContext executionContext, Organization organization) {
+  public AccountResponse getAccounts(ExecutionContext executionContext, String orgCode, long searchTimeStamp) {
     // executionId 생성.
     executionContext.generateAndsUpdateExecutionRequestId();
 
     Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
     AccountRequest accountRequest = AccountRequest.builder()
-        .searchTimestamp(0L) // TODO
-        .orgCode(organization.getOrganizationCode())
+        .searchTimestamp(searchTimeStamp)
+        .orgCode(orgCode)
         .build();
 
     ExecutionRequest<AccountRequest> executionRequest = ExecutionUtil
@@ -99,7 +99,8 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   }
 
   @Override
-  public LoanAccountTransactionResponse getAccountTransactions(ExecutionContext executionContext, Organization organization,
+  public LoanAccountTransactionResponse getAccountTransactions(ExecutionContext executionContext,
+      Organization organization,
       Account account) {
     // executionId 생성.
     executionContext.generateAndsUpdateExecutionRequestId();

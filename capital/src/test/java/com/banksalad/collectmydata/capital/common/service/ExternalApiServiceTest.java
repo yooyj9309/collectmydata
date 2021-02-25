@@ -90,7 +90,8 @@ class ExternalApiServiceTest {
     AccountResponse expectedAccountResponse = getAccountResponse();
 
     // When
-    AccountResponse actualAccountResponse = externalApiService.getAccounts(executionContext, organization);
+    AccountResponse actualAccountResponse = externalApiService
+        .getAccounts(executionContext, organization.getOrganizationCode(), 0l);
 
     // Then
     assertEquals(2, actualAccountResponse.getAccountCnt());

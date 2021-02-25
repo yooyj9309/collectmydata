@@ -1,11 +1,11 @@
 package com.banksalad.collectmydata.capital.common.service;
 
 import com.banksalad.collectmydata.capital.common.dto.Account;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountDetailResponse;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicResponse;
 import com.banksalad.collectmydata.capital.common.dto.AccountResponse;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
+import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicResponse;
+import com.banksalad.collectmydata.capital.loan.dto.LoanAccountDetailResponse;
+import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
@@ -13,13 +13,15 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 public interface ExternalApiService {
 
   // 6.7.1
-  AccountResponse getAccounts(ExecutionContext executionContext, Organization organization);
+  AccountResponse getAccounts(ExecutionContext executionContext, String orgCode, long searchTimeStamp);
 
   // 6.7.2
-  LoanAccountBasicResponse getAccountBasic(ExecutionContext executionContext, Organization organization, Account account);
+  LoanAccountBasicResponse getAccountBasic(ExecutionContext executionContext, Organization organization,
+      Account account);
 
   // 6.7.3
-  LoanAccountDetailResponse getAccountDetail(ExecutionContext executionContext, Organization organization, Account account);
+  LoanAccountDetailResponse getAccountDetail(ExecutionContext executionContext, Organization organization,
+      Account account);
 
   // 6.7.4
   LoanAccountTransactionResponse getAccountTransactions(ExecutionContext executionContext, Organization organization,
