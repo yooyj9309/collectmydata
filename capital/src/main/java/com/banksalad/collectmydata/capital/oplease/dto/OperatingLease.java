@@ -22,7 +22,7 @@ public class OperatingLease {
   private String holderName;
   private String issueDate;
   private String expDate;
-  private Integer repayDate;
+  private String repayDate;
   private String repayMethod;
   private String repayOrgCode;
   private String repayAccountNum;

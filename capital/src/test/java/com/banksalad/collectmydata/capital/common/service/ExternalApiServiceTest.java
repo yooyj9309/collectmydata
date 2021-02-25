@@ -6,13 +6,13 @@ import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 
 import com.banksalad.collectmydata.capital.common.dto.Account;
+import com.banksalad.collectmydata.capital.common.dto.AccountResponse;
+import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicResponse;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountDetailResponse;
-import com.banksalad.collectmydata.capital.common.dto.AccountResponse;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionInterest;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
-import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
@@ -279,7 +279,7 @@ class ExternalApiServiceTest {
                     .transType("02")
                     .transAmt(BigDecimal.valueOf(999.1))
                     .build()
-                ))
+            ))
             .build()
     );
   }
@@ -360,9 +360,9 @@ class ExternalApiServiceTest {
 
   private OperatingLeaseBasicResponse getOperatingLeaseBasicResponse() {
     return OperatingLeaseBasicResponse.builder()
-        .rspCode("000")
+        .rspCode("00000")
         .rspMsg("rep_msg")
-        .searchTimestamp(0)
+        .searchTimestamp(1000L)
         .holderName("김뱅셀")
         .issueDate("20210210")
         .expDate("20221231")

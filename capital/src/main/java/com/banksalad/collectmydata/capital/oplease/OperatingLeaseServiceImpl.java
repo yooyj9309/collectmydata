@@ -3,8 +3,6 @@ package com.banksalad.collectmydata.capital.oplease;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
-import com.banksalad.collectmydata.capital.loan.LoanAccountService;
-import com.banksalad.collectmydata.capital.common.dto.Account;
 import com.banksalad.collectmydata.capital.common.collect.Apis;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseHistoryEntity;
@@ -12,9 +10,12 @@ import com.banksalad.collectmydata.capital.common.db.entity.mapper.OperatingLeas
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.OperatingLeaseMapper;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseHistoryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseRepository;
+import com.banksalad.collectmydata.capital.common.dto.Account;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
+import com.banksalad.collectmydata.capital.common.service.ExecutionResponseValidateService;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
 import com.banksalad.collectmydata.capital.common.service.UserSyncStatusService;
+import com.banksalad.collectmydata.capital.loan.LoanAccountService;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLease;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
@@ -27,6 +28,7 @@ import org.mapstruct.factory.Mappers;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -37,6 +39,7 @@ public class OperatingLeaseServiceImpl implements OperatingLeaseService {
   private final LoanAccountService loanAccountService;
   private final ExternalApiService externalApiService;
   private final UserSyncStatusService userSyncStatusService;
+  private final ExecutionResponseValidateService executionResponseValidateService;
   private final OperatingLeaseRepository operatingLeaseRepository;
   private final OperatingLeaseHistoryRepository operatingLeaseHistoryRepository;
   private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
@@ -54,13 +57,18 @@ public class OperatingLeaseServiceImpl implements OperatingLeaseService {
 
     long banksaladUserId = executionContext.getBanksaladUserId();
     String organizationId = executionContext.getOrganizationId();
+    AtomicReference<Boolean> isExceptionOccurred = new AtomicReference<>(false);
 
     List<OperatingLease> operatingLeases = accounts.stream()
         .map(account -> CompletableFuture
             .supplyAsync(
                 () -> operatingLeaseProcess(executionContext, organization, account, banksaladUserId, organizationId),
                 threadPoolTaskExecutor
-            ))
+            ).exceptionally(e -> {
+              log.error("6.7.5 listOperatingLeases exception {}", e.getMessage());
+              isExceptionOccurred.set(true);
+              return null;
+            }))
         .map(CompletableFuture::join)
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
@@ -73,7 +81,7 @@ public class OperatingLeaseServiceImpl implements OperatingLeaseService {
             Apis.capital_get_operating_lease_basic.getId(),
             executionContext.getSyncStartedAt(),
             null,
-            true // TODO executionResponseValidateService 등을 통해 로직 수정.
+            executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred.get())
         );
 
     return operatingLeases;

@@ -51,7 +51,7 @@ public class OperatingLeaseHistoryEntity extends BaseTimeAndUserEntity {
   private LocalDate expDate;
 
   @Column(nullable = false)
-  private Integer repayDate;
+  private String repayDate;
 
   @Column(nullable = false)
   private String repayMethod;

@@ -30,6 +30,9 @@ public class ExecutionServiceImpl implements ExecutionService {
       // throw
     }
 
+    if (executionResponse.getResponse() == null) {
+      throw new RuntimeException("execution Statue is not OK");
+    }
     return executionResponse.getResponse();
   }
 }

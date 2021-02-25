@@ -52,16 +52,16 @@ public class ApiLogEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false)
   private String httpMethod;
 
-  @Column(name = "request_header_encrypted")
+  @Column(name = "request_header_encrypted", columnDefinition = "MEDIUMTEXT")
   private String requestHeader;
 
-  @Column(name = "request_body_encrypted")
+  @Column(name = "request_body_encrypted", columnDefinition = "MEDIUMTEXT")
   private String requestBody;
 
-  @Column(name = "transformed_request_header_encrypted")
+  @Column(name = "transformed_request_header_encrypted", columnDefinition = "MEDIUMTEXT")
   private String transformedRequestHeader;
 
-  @Column(name = "transformed_request_body_encrypted")
+  @Column(name = "transformed_request_body_encrypted", columnDefinition = "MEDIUMTEXT")
   private String transformedRequestBody;
 
   private String resultCode;
@@ -70,16 +70,16 @@ public class ApiLogEntity extends BaseTimeAndUserEntity {
 
   private String responseCode;
 
-  @Column(name = "response_header_encrypted")
+  @Column(name = "response_header_encrypted", columnDefinition = "MEDIUMTEXT")
   private String responseHeader;
 
-  @Column(name = "response_body_encrypted")
+  @Column(name = "response_body_encrypted", columnDefinition = "MEDIUMTEXT")
   private String responseBody;
 
-  @Column(name = "transformed_response_header_encrypted")
+  @Column(name = "transformed_response_header_encrypted", columnDefinition = "MEDIUMTEXT")
   private String transformedResponseHeader;
 
-  @Column(name = "transformed_response_body_encrypted")
+  @Column(name = "transformed_response_body_encrypted", columnDefinition = "MEDIUMTEXT")
   private String transformedResponseBody;
 
   @Column(nullable = false)
