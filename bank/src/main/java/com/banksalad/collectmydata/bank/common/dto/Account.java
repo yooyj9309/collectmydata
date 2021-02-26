@@ -1,5 +1,6 @@
-package com.banksalad.collectmydata.bank.account.dto;
+package com.banksalad.collectmydata.bank.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
@@ -19,10 +20,12 @@ public class Account {
 
   private String accountNum;
   private String isConsent;
-  private int seqno;
-  private String currencyCode;
+  private String seqno;
+  @JsonProperty("is_foreign_deposit")
+  private boolean foreignDeposit;
   private String prodName;
   private String accountType;
   private String accountStatus;
 
+  // TODO jayden-lee basicSearchTimestamp, detailSearchTimestamp, transactionFromDate 프로퍼티 추가
 }

@@ -1,12 +1,11 @@
 package com.banksalad.collectmydata.bank.grpc.handler;
 
+import org.springframework.stereotype.Service;
+
 import com.banksalad.collectmydata.bank.common.dto.UserSyncStatus;
 import com.banksalad.collectmydata.bank.common.dto.UserSyncStatusResponse;
 import com.banksalad.collectmydata.bank.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.common.logging.CollectLogbackJsonLayout;
-
-import org.springframework.stereotype.Service;
-
 import com.github.banksalad.idl.daas.v1.collect.bank.BankGrpc;
 import com.github.banksalad.idl.daas.v1.collect.bank.BankProto.DeleteAllSyncStatusRequest;
 import com.github.banksalad.idl.daas.v1.collect.bank.BankProto.DeleteAllSyncStatusResponse;
@@ -64,18 +63,17 @@ public class CollectmydataBankGrpcService extends BankGrpc.BankImplBase {
       MDC.put(CollectLogbackJsonLayout.JSON_KEY_BANKSALAD_USER_ID, String.valueOf(banksaladUserId));
       MDC.put(CollectLogbackJsonLayout.JSON_KEY_ORGANIZATION_ID, organizationId);
 
-      Mono<UserSyncStatus> userSyncStatusMono = userSyncStatusService
-          .getUserSyncStatus(banksaladUserId, "organizationId");
+      UserSyncStatus userSyncStatus = userSyncStatusService
+          .getUserSyncStatus(banksaladUserId, "organizationId", "api_id");
 
-      userSyncStatusMono
-          .map(userSyncStatus -> UserSyncStatusResponse.builder()
-              .userSyncStatuses(List.of(userSyncStatus))
-              .build())
-          .subscribe(
-              userSyncStatusResponse -> responseObserver.onNext(userSyncStatusResponse.toSyncStatusResponseProto()),
-              cause -> responseObserver.onError(cause),
-              () -> responseObserver.onCompleted()
-          );
+      UserSyncStatusResponse userSyncStatusResponse = UserSyncStatusResponse.builder()
+          .userSyncStatuses(List.of(userSyncStatus))
+          .build();
+
+      responseObserver.onNext(userSyncStatusResponse.toSyncStatusResponseProto());
+      responseObserver.onCompleted();
+    } catch (Exception e) {
+      responseObserver.onError(e);
     } finally {
       MDC.clear();
     }

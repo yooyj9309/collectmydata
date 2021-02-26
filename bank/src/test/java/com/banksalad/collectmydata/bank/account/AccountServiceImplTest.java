@@ -1,15 +1,16 @@
 package com.banksalad.collectmydata.bank.account;
 
-import com.banksalad.collectmydata.bank.account.dto.Account;
-import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.common.util.DateUtil;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.banksalad.collectmydata.bank.common.dto.Account;
+import com.banksalad.collectmydata.bank.common.service.AccountService;
+import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+import com.banksalad.collectmydata.common.util.DateUtil;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
@@ -32,7 +33,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DisplayName("계좌목록조회 테스트")
+@DisplayName("계좌 목록 조회 테스트")
+@Transactional
 public class AccountServiceImplTest {
 
   private static final Long BANKSALAD_USER_ID = 1L;
@@ -61,7 +63,7 @@ public class AccountServiceImplTest {
 
   @Test
   @DisplayName("계좌목록조회: 단일페이지")
-  public void step_01_getAccounts_singla_page_success() throws Exception {
+  public void step_01_getAccounts_single_page_success() throws Exception {
 
     /* transaction mock server */
     setupServerAccountsSinglePage();
@@ -73,10 +75,10 @@ public class AccountServiceImplTest {
         .accessToken("test")
         .organizationHost(ORGANIZATION_HOST)
         .executionRequestId(UUID.randomUUID().toString())
-        .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+        .syncStartedAt(LocalDateTime.now(DateUtil.KST_ZONE_ID))
         .build();
 
-    List<Account> accounts = accountService.getAccounts(executionContext);
+    List<Account> accounts = accountService.listAccounts(executionContext);
     Assertions.assertThat(accounts.size()).isEqualTo(1);
   }
 
@@ -94,11 +96,11 @@ public class AccountServiceImplTest {
         .accessToken("test")
         .organizationHost(ORGANIZATION_HOST)
         .executionRequestId(UUID.randomUUID().toString())
-        .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+        .syncStartedAt(LocalDateTime.now(DateUtil.KST_ZONE_ID))
         .build();
 
-    List<Account> accounts = accountService.getAccounts(executionContext);
-    Assertions.assertThat(accounts.size()).isEqualTo(3);
+    List<Account> accounts = accountService.listAccounts(executionContext);
+    Assertions.assertThat(accounts.size()).isEqualTo(4);
   }
 
   private void setupServerAccountsSinglePage() throws Exception {

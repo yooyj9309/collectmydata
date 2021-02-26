@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -40,12 +41,12 @@ public class AccountListEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false, name = "account_num_encrypted")
   private String accountNum;
 
-  private Integer seqno;
-
-  private String currencyCode;
-
   @Column(nullable = false)
   private Boolean isConsent;
+
+  private String seqno;
+
+  private Boolean isForeignDeposit;
 
   @Column(nullable = false)
   private String prodName;
@@ -59,4 +60,6 @@ public class AccountListEntity extends BaseTimeAndUserEntity {
   private Long basicSearchTimestamp;
 
   private Long detailSearchTimestamp;
+
+  private LocalDate transactionFromDate;
 }

@@ -1,9 +1,6 @@
 package com.banksalad.collectmydata.bank.common.db.entity;
 
-import com.banksalad.collectmydata.bank.common.service.converter.ApiLogEncryptConverter;
-
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -55,19 +52,15 @@ public class ApiLogEntity extends BaseTimeEntity {
   @Column(nullable = false)
   private String httpMethod;
 
-  @Convert(converter = ApiLogEncryptConverter.class)
   @Column(columnDefinition = "MEDIUMTEXT")
   private String requestHeaderEncrypted;
 
-  @Convert(converter = ApiLogEncryptConverter.class)
   @Column(columnDefinition = "MEDIUMTEXT")
   private String requestBodyEncrypted;
 
-  @Convert(converter = ApiLogEncryptConverter.class)
   @Column(columnDefinition = "MEDIUMTEXT")
   private String transformedRequestHeaderEncrypted;
 
-  @Convert(converter = ApiLogEncryptConverter.class)
   @Column(columnDefinition = "MEDIUMTEXT")
   private String transformedRequestBodyEncrypted;
 
@@ -77,19 +70,15 @@ public class ApiLogEntity extends BaseTimeEntity {
 
   private String responseCode;
 
-  @Convert(converter = ApiLogEncryptConverter.class)
   @Column(columnDefinition = "MEDIUMTEXT")
   private String responseHeaderEncrypted;
 
-  @Convert(converter = ApiLogEncryptConverter.class)
   @Column(columnDefinition = "MEDIUMTEXT")
   private String responseBodyEncrypted;
 
-  @Convert(converter = ApiLogEncryptConverter.class)
   @Column(columnDefinition = "MEDIUMTEXT")
   private String transformedResponseHeaderEncrypted;
 
-  @Convert(converter = ApiLogEncryptConverter.class)
   @Column(columnDefinition = "MEDIUMTEXT")
   private String transformedResponseBodyEncrypted;
 

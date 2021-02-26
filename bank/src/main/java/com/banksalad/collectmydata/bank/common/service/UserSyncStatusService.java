@@ -1,7 +1,6 @@
 package com.banksalad.collectmydata.bank.common.service;
 
 import com.banksalad.collectmydata.bank.common.dto.UserSyncStatus;
-
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -12,7 +11,7 @@ public interface UserSyncStatusService {
   void updateUserSyncStatus(Long banksaladUserId, String organizationId, String transactionId,
       LocalDateTime lastSyncedAt, boolean isAllResponseResultOk);
 
-  Mono<UserSyncStatus> getUserSyncStatus(long banksaladUserId, String organizationId);
+  UserSyncStatus getUserSyncStatus(long banksaladUserId, String organizationId, String apiId);
 
   Mono<List<UserSyncStatus>> getUserSyncStatus(long banksaladUserId);
 

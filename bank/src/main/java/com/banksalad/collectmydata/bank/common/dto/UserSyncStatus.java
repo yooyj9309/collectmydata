@@ -3,12 +3,15 @@ package com.banksalad.collectmydata.bank.common.dto;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Builder
 @Getter
 public class UserSyncStatus {
 
+  private final LocalDateTime syncedAt;
+  private final long searchTimestamp;
   private final long banksaladUserId;
   private final String organizationId;
-  private final String organizationCompanyType;
-  private final long lastCheckAt;
+  private final String apiId;
 }

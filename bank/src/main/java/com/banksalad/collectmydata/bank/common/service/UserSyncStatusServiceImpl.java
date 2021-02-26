@@ -1,9 +1,9 @@
 package com.banksalad.collectmydata.bank.common.service;
 
-import com.banksalad.collectmydata.bank.common.dto.UserSyncStatus;
-
 import org.springframework.stereotype.Service;
 
+import com.banksalad.collectmydata.bank.common.dto.UserSyncStatus;
+import com.banksalad.collectmydata.common.util.DateUtil;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -19,14 +19,15 @@ public class UserSyncStatusServiceImpl implements UserSyncStatusService {
   }
 
   @Override
-  public Mono<UserSyncStatus> getUserSyncStatus(long banksaladUserId, String organizationId) {
-
-    return Mono.just(
-        UserSyncStatus.builder()
-            .banksaladUserId(banksaladUserId)
-            .organizationCompanyType("bank")
-            .organizationId(organizationId)
-            .build());
+  public UserSyncStatus getUserSyncStatus(long banksaladUserId, String organizationId, String apiId) {
+    // TODO jayden-lee db 조회로 변경 예정
+    return UserSyncStatus.builder()
+        .banksaladUserId(banksaladUserId)
+        .organizationId(organizationId)
+        .apiId(apiId)
+        .searchTimestamp(0L)
+        .syncedAt(LocalDateTime.now(DateUtil.KST_ZONE_ID))
+        .build();
   }
 
   @Override
@@ -35,7 +36,6 @@ public class UserSyncStatusServiceImpl implements UserSyncStatusService {
     return Mono.just(
         List.of(UserSyncStatus.builder()
             .banksaladUserId(banksaladUserId)
-            .organizationCompanyType("bank")
             .organizationId("organizationId")
             .build()));
   }
