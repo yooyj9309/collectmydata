@@ -3,10 +3,8 @@ spring:
     active: local
   application:
     name: collectmydata-bank
-
-server:
-  address: 127.0.0.1
-  port: 8080
+  main:
+    web-application-type: none
 
 logging:
   config: classpath:logback/logback-${spring.profiles.active}.xml

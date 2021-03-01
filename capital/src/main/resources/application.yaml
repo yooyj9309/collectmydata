@@ -3,6 +3,8 @@ spring:
     active: local
   application:
     name: collectmydata-capital
+  main:
+    web-application-type: none
 
 banksalad:
   cipher.uri: dns:///cipher-headless:18081
