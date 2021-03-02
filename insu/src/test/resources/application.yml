@@ -1,4 +1,13 @@
 spring:
+  profiles:
+    active: test
+  application:
+    name: collectmydata-insu
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem://localhost/~/capital
+    name: sa
+    password:
   kafka:
     bootstrap-servers: ${spring.embedded.kafka.brokers}
     listener:
@@ -8,3 +17,9 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       group-id: collect-mydata-insurance
+
+
+banksalad:
+  cipher.uri: localhost:9999
+  collectmydata-connect.uri: localhost:9998
+

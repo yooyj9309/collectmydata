@@ -5,3 +5,15 @@ spring:
     name: collectmydata-insu
   main:
     web-application-type: none
+    
+banksalad:
+  cipher.uri: dns:///cipher-headless:18081
+  collectmydata-connect.uri: dns:///connect:8080
+
+logging:
+  config: classpath:logback/logback-${spring.profiles.active}.xml
+  level:
+    com.zaxxer.hikari.HikariConfig: INFO
+    com.zaxxer.hikari: INFO
+    org.hibernate.SQL: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: INFO
