@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.bank.common.collect.Executions;
-import com.banksalad.collectmydata.bank.common.dto.AccountsRequest;
+import com.banksalad.collectmydata.bank.common.dto.ListAccountsRequest;
 import com.banksalad.collectmydata.bank.common.dto.ListAccountsResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
@@ -30,10 +30,10 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
     executionContext.generateAndsUpdateExecutionRequestId();
 
-    ExecutionRequest<AccountsRequest> pagingExecutionRequest = ExecutionRequest.<AccountsRequest>builder()
+    ExecutionRequest<ListAccountsRequest> pagingExecutionRequest = ExecutionRequest.<ListAccountsRequest>builder()
         .headers(Map.of("Authorization", executionContext.getAccessToken()))
         .request(
-            AccountsRequest.builder()
+            ListAccountsRequest.builder()
                 .orgCode(orgCode)
                 .searchTimestamp(searchTimeStamp)
                 .limit(PAGING_MAXIMUM_LIMIT)
