@@ -20,4 +20,13 @@ public class Apis {
               .nextPage("next_page")
               .build())
           .build();
+
+  //6.2.5 투자상품 계좌 기본 정보 조회
+  public static Api finance_bank_invest_account_basic =
+      Api.builder()
+          .id("BA05")
+          .name("투자 상품 계좌 기본 정보 조회")
+          .endpoint("/accounts/invest/basic")
+          .method(HttpMethod.POST.name())
+          .build();
 }
