@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
-import com.banksalad.collectmydata.connect.common.Exception.ConnectException;
+import com.banksalad.collectmydata.connect.common.exception.ConnectException;
 import com.banksalad.collectmydata.connect.common.collect.Executions;
 import com.banksalad.collectmydata.connect.common.db.entity.OrganizationClientEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationClientRepository;

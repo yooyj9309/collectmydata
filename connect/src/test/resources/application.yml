@@ -12,6 +12,11 @@ spring:
     name: sa
     password:
 
+management:
+  metrics:
+    export:
+      statsd:
+        enabled: true
 
 organization:
   finance-portal-domain: http://localhost:9090

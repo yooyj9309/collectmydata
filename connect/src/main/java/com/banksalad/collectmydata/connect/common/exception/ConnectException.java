@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.connect.common.Exception;
+package com.banksalad.collectmydata.connect.common.exception;
 
 import com.banksalad.collectmydata.common.exception.GrpcException;
 import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;

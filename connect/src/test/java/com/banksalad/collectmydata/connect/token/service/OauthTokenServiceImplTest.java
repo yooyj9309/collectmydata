@@ -6,7 +6,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.common.exception.GrpcException;
-import com.banksalad.collectmydata.connect.common.Exception.ConnectException;
+import com.banksalad.collectmydata.connect.common.exception.ConnectException;
 import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.OauthTokenEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;

@@ -3,7 +3,7 @@ package com.banksalad.collectmydata.connect.common.service;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.banksalad.collectmydata.connect.common.Exception.ConnectException;
+import com.banksalad.collectmydata.connect.common.exception.ConnectException;
 import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
 import javax.annotation.PostConstruct;
 import javax.validation.ConstraintViolation;

@@ -11,3 +11,15 @@ logging:
     com.zaxxer.hikari: INFO
     org.hibernate.SQL: INFO
     org.hibernate.type.descriptor.sql.BasicBinder: INFO
+
+management:
+  metrics:
+    export:
+      statsd:
+        enabled: true
+        flavor: telegraf
+        polling-frequency: 5s
+        max-packet-length: 5000
+        host: localhost
+        port: 8126
+        publish-unchanged-meters: true
