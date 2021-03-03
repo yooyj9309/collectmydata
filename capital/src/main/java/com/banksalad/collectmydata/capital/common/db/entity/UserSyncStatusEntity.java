@@ -30,7 +30,7 @@ public class UserSyncStatusEntity extends BaseTimeAndUserEntity {
 
   @Column(nullable = false)
   private LocalDateTime syncedAt;
-  
+
   private Long searchTimestamp;
 
   @Column(nullable = false)

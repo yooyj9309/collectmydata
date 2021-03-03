@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,8 +22,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "user_sync_status")
-public class UserSyncStatusEntity extends BaseTimeAndUserEntity {
+@Table(name = "organization_user")
+public class OrganizationUserEntity extends BaseTimeAndUserEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +32,6 @@ public class UserSyncStatusEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false)
   private LocalDateTime syncedAt;
 
-  private Long searchTimestamp;
-
   @Column(nullable = false)
   private Long banksaladUserId;
 
@@ -40,5 +39,5 @@ public class UserSyncStatusEntity extends BaseTimeAndUserEntity {
   private String organizationId;
 
   @Column(nullable = false)
-  private String apiId;
+  private LocalDate regDate;
 }

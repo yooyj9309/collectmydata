@@ -22,11 +22,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "api_log")
-public class ApiLogEntity extends BaseTimeEntity {
+public class ApiLogEntity extends BaseTimeAndUserEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long apiLogId;
+  private Long id;
 
   private String syncRequestId;
 
@@ -52,17 +52,17 @@ public class ApiLogEntity extends BaseTimeEntity {
   @Column(nullable = false)
   private String httpMethod;
 
-  @Column(columnDefinition = "MEDIUMTEXT")
-  private String requestHeaderEncrypted;
+  @Column(name = "request_header_encrypted", columnDefinition = "MEDIUMTEXT")
+  private String requestHeader;
 
-  @Column(columnDefinition = "MEDIUMTEXT")
-  private String requestBodyEncrypted;
+  @Column(name = "request_body_encrypted", columnDefinition = "MEDIUMTEXT")
+  private String requestBody;
 
-  @Column(columnDefinition = "MEDIUMTEXT")
-  private String transformedRequestHeaderEncrypted;
+  @Column(name = "transformed_request_header_encrypted", columnDefinition = "MEDIUMTEXT")
+  private String transformedRequestHeader;
 
-  @Column(columnDefinition = "MEDIUMTEXT")
-  private String transformedRequestBodyEncrypted;
+  @Column(name = "transformed_request_body_encrypted", columnDefinition = "MEDIUMTEXT")
+  private String transformedRequestBody;
 
   private String resultCode;
 
@@ -70,20 +70,22 @@ public class ApiLogEntity extends BaseTimeEntity {
 
   private String responseCode;
 
-  @Column(columnDefinition = "MEDIUMTEXT")
-  private String responseHeaderEncrypted;
+  @Column(name = "response_header_encrypted", columnDefinition = "MEDIUMTEXT")
+  private String responseHeader;
 
-  @Column(columnDefinition = "MEDIUMTEXT")
-  private String responseBodyEncrypted;
+  @Column(name = "response_body_encrypted", columnDefinition = "MEDIUMTEXT")
+  private String responseBody;
 
-  @Column(columnDefinition = "MEDIUMTEXT")
-  private String transformedResponseHeaderEncrypted;
+  @Column(name = "transformed_response_header_encrypted", columnDefinition = "MEDIUMTEXT")
+  private String transformedResponseHeader;
 
-  @Column(columnDefinition = "MEDIUMTEXT")
-  private String transformedResponseBodyEncrypted;
+  @Column(name = "transformed_response_body_encrypted", columnDefinition = "MEDIUMTEXT")
+  private String transformedResponseBody;
 
   @Column(nullable = false)
-  private LocalDateTime requestDatetime;
+  private LocalDateTime requestDtime;
 
-  private LocalDateTime responseDatetime;
+  private LocalDateTime responseDtime;
+
+  private Long elapsedTime;
 }
