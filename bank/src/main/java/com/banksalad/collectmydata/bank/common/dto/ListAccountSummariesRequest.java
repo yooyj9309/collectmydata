@@ -9,24 +9,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ListAccountsResponse {
+public class ListAccountSummariesRequest {
 
-  private String rspCode;
-  private String rspMsg;
-  private String searchTimestamp;
-  private String regDate;
+  private String orgCode;
+  private long searchTimestamp;
   private String nextPage;
-
-  private int accountCnt;
-  @Builder.Default
-  private List<Account> accountList = new ArrayList<>();
+  private int limit;
 }

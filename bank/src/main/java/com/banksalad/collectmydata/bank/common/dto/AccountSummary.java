@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.bank.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
@@ -15,10 +16,16 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ListAccountsRequest {
+public class AccountSummary {
 
-  private String orgCode;
-  private long searchTimestamp;
-  private String nextPage;
-  private int limit;
+  private String accountNum;
+  private String isConsent;
+  private String seqno;
+  @JsonProperty("is_foreign_deposit")
+  private boolean foreignDeposit;
+  private String prodName;
+  private String accountType;
+  private String accountStatus;
+
+  // TODO jayden-lee basicSearchTimestamp, detailSearchTimestamp, transactionFromDate 프로퍼티 추가
 }

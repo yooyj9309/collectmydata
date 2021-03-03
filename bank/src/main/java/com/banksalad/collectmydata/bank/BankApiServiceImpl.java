@@ -2,9 +2,9 @@ package com.banksalad.collectmydata.bank;
 
 import org.springframework.stereotype.Service;
 
-import com.banksalad.collectmydata.bank.common.dto.Account;
+import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.common.dto.BankApiResponse;
-import com.banksalad.collectmydata.bank.common.service.AccountService;
+import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.enums.SyncRequestType;
 import com.banksalad.collectmydata.common.exception.CollectException;
@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public class BankApiServiceImpl implements BankApiService {
 
-  private final AccountService accountService;
+  private final AccountSummaryService accountSummaryService;
 
   @Override
   public BankApiResponse requestApi(long banksaladUserId, String organizationId, String syncRequestId,
@@ -42,7 +42,7 @@ public class BankApiServiceImpl implements BankApiService {
         .syncStartedAt(LocalDateTime.now(DateUtil.KST_ZONE_ID))
         .build();
 
-    List<Account> accounts = accountService.listAccounts(executionContext);
+    List<AccountSummary> accountSummaries = accountSummaryService.listAccountSummaries(executionContext);
 
     AtomicReference<BankApiResponse> bankApiResponseAtomicReference = new AtomicReference<>();
     bankApiResponseAtomicReference.set(BankApiResponse.builder().build());

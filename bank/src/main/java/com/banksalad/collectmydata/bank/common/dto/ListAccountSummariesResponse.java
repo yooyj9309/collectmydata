@@ -10,22 +10,26 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class Account {
+public class ListAccountSummariesResponse {
 
-  private String accountNum;
-  private String isConsent;
-  private String seqno;
-  @JsonProperty("is_foreign_deposit")
-  private boolean foreignDeposit;
-  private String prodName;
-  private String accountType;
-  private String accountStatus;
+  private String rspCode;
+  private String rspMsg;
+  private String searchTimestamp;
+  private String regDate;
+  private String nextPage;
 
-  // TODO jayden-lee basicSearchTimestamp, detailSearchTimestamp, transactionFromDate 프로퍼티 추가
+  private int accountCnt;
+
+  @JsonProperty(value = "account_list")
+  @Builder.Default
+  private List<AccountSummary> accountSummaries = new ArrayList<>();
 }

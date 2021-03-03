@@ -22,8 +22,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "account_list")
-public class AccountListEntity extends BaseTimeAndUserEntity {
+@Table(name = "account_summary")
+public class AccountSummaryEntity extends BaseTimeAndUserEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

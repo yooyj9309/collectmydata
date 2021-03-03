@@ -7,8 +7,8 @@ import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.banksalad.collectmydata.bank.common.dto.Account;
-import com.banksalad.collectmydata.bank.common.service.AccountService;
+import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
+import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -35,14 +35,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayName("계좌 목록 조회 테스트")
 @Transactional
-public class AccountServiceImplTest {
+public class AccountSummaryServiceImplTest {
 
   private static final Long BANKSALAD_USER_ID = 1L;
   private static final String ORGANIZATION_ID = "woori_bank";
   private static final String ORGANIZATION_HOST = "http://localhost:9090";
 
   @Autowired
-  private AccountService accountService;
+  private AccountSummaryService accountSummaryService;
 
   public static WireMockServer wiremock = new WireMockServer(WireMockSpring.options().port(9090));
 
@@ -78,8 +78,8 @@ public class AccountServiceImplTest {
         .syncStartedAt(LocalDateTime.now(DateUtil.KST_ZONE_ID))
         .build();
 
-    List<Account> accounts = accountService.listAccounts(executionContext);
-    Assertions.assertThat(accounts.size()).isEqualTo(1);
+    List<AccountSummary> accountSummaries = accountSummaryService.listAccountSummaries(executionContext);
+    Assertions.assertThat(accountSummaries.size()).isEqualTo(1);
   }
 
   @Test
@@ -99,8 +99,8 @@ public class AccountServiceImplTest {
         .syncStartedAt(LocalDateTime.now(DateUtil.KST_ZONE_ID))
         .build();
 
-    List<Account> accounts = accountService.listAccounts(executionContext);
-    Assertions.assertThat(accounts.size()).isEqualTo(4);
+    List<AccountSummary> accountSummaries = accountSummaryService.listAccountSummaries(executionContext);
+    Assertions.assertThat(accountSummaries.size()).isEqualTo(4);
   }
 
   private void setupServerAccountsSinglePage() throws Exception {
