@@ -1,5 +1,5 @@
 package com.banksalad.collectmydata.insu.common.dto;
 
-public class ListInsuranceSummaryResposse {
+public class ListInsuranceSummariesRequest {
 
 }

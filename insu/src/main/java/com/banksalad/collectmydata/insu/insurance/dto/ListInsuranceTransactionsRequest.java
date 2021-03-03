@@ -1,5 +1,5 @@
 package com.banksalad.collectmydata.insu.insurance.dto;
 
-public class ListInsuranceTransactionResponse {
+public class ListInsuranceTransactionsRequest {
 
 }
