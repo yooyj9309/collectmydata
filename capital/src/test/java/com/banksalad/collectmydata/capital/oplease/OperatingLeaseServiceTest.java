@@ -13,7 +13,7 @@ import com.banksalad.collectmydata.capital.common.db.repository.AccountListRepos
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseHistoryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.UserSyncStatusRepository;
-import com.banksalad.collectmydata.capital.common.dto.Account;
+import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLease;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
@@ -87,7 +87,7 @@ public class OperatingLeaseServiceTest {
     Organization organization = Organization.builder()
         .organizationCode("10041004").build();
 
-    Account account = Account.builder()
+    AccountSummary accountSummary = AccountSummary.builder()
         .accountNum(accountNum)
         .seqno(1)
         .build();
@@ -106,11 +106,9 @@ public class OperatingLeaseServiceTest {
             .build()
     );
 
-    accountListRepository.flush();
-
-    List<Account> accountList = List.of(account);
+    List<AccountSummary> accountSummaries = List.of(accountSummary);
     List<OperatingLease> operatingLeases = operatingLeaseService
-        .listOperatingLeases(context, organization, accountList);
+        .listOperatingLeases(context, organization, accountSummaries);
 
     List<OperatingLeaseEntity> operatingLeaseEntities = operatingLeaseRepository.findAll();
     List<OperatingLeaseHistoryEntity> operatingLeaseHistoryEntities = operatingLeaseHistoryRepository.findAll();
@@ -119,7 +117,7 @@ public class OperatingLeaseServiceTest {
     // 재조회시 히스토리 중첩여부 테스트
     LocalDateTime recentTime = LocalDateTime.now();
     context = generateExecutionContext(recentTime);
-    operatingLeases = operatingLeaseService.listOperatingLeases(context, organization, accountList);
+    operatingLeases = operatingLeaseService.listOperatingLeases(context, organization, accountSummaries);
 
     operatingLeaseEntities = operatingLeaseRepository.findAll();
     operatingLeaseHistoryEntities = operatingLeaseHistoryRepository.findAll();

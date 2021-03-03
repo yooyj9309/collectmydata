@@ -1,7 +1,7 @@
 package com.banksalad.collectmydata.capital.common.service;
 
-import com.banksalad.collectmydata.capital.common.dto.Account;
-import com.banksalad.collectmydata.capital.common.dto.AccountResponse;
+import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
+import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicResponse;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountDetailResponse;
@@ -13,25 +13,25 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 public interface ExternalApiService {
 
   // 6.7.1
-  AccountResponse getAccounts(ExecutionContext executionContext, String orgCode, long searchTimeStamp);
+  AccountSummaryResponse getAccounts(ExecutionContext executionContext, String orgCode, long searchTimeStamp);
 
   // 6.7.2
   LoanAccountBasicResponse getAccountBasic(ExecutionContext executionContext, Organization organization,
-      Account account);
+      AccountSummary accountSummary);
 
   // 6.7.3
   LoanAccountDetailResponse getAccountDetail(ExecutionContext executionContext, Organization organization,
-      Account account);
+      AccountSummary accountSummary);
 
   // 6.7.4
   LoanAccountTransactionResponse getAccountTransactions(ExecutionContext executionContext, Organization organization,
-      Account account);
+      AccountSummary accountSummary);
 
   // 6.7.5
   OperatingLeaseBasicResponse getOperatingLeaseBasic(ExecutionContext executionContext, Organization organization,
-      Account account);
+      AccountSummary accountSummary);
 
   // 6.7.6
   OperatingLeaseTransactionResponse getOperatingLeaseTransactions(ExecutionContext executionContext,
-      Organization organization, Account account);
+      Organization organization, AccountSummary accountSummary);
 }

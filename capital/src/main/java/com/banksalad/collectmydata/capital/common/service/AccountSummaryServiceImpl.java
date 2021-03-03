@@ -6,20 +6,19 @@ import com.banksalad.collectmydata.capital.common.collect.Apis;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountListEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountListMapper;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountListRepository;
-import com.banksalad.collectmydata.capital.common.dto.Account;
-import com.banksalad.collectmydata.capital.common.dto.AccountResponse;
+import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
+import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class AccountServiceImpl implements AccountService {
+public class AccountSummaryServiceImpl implements AccountSummaryService {
 
   private final ExternalApiService externalApiService;
   private final UserSyncStatusService userSyncStatusService;
@@ -31,13 +30,13 @@ public class AccountServiceImpl implements AccountService {
    * 6.7.1 계좌 목록 조회
    */
   @Override
-  public List<Account> listAccounts(ExecutionContext executionContext, Organization organization) {
+  public List<AccountSummary> listAccountSummaries(ExecutionContext executionContext, Organization organization) {
 
     long banksaladUserId = executionContext.getBanksaladUserId();
     String organizationId = executionContext.getOrganizationId();
     String organizationCode = organization.getOrganizationCode();
 
-    AccountResponse accountResponse = null;
+    AccountSummaryResponse accountSummaryResponse = null;
     boolean isExceptionOccurred = false;
 
     // UserSyncStatus 조회 -> timestamp 조회
@@ -45,28 +44,27 @@ public class AccountServiceImpl implements AccountService {
         .getSearchTimestamp(executionContext.getBanksaladUserId(), organizationId, Apis.capital_get_accounts);
 
     // api 호출 try-catch
-    try {
-      accountResponse = externalApiService.getAccounts(executionContext, organizationCode, searchTimeStamp);
-    } catch (Exception e) {
-      isExceptionOccurred = true;
-    }
+    accountSummaryResponse = externalApiService.getAccounts(executionContext, organizationCode, searchTimeStamp);
 
     // TODO ORGANIZAITON_USER 적재로직 추가.
-    
-    List<Account> apiResponseAccounts = Optional.ofNullable(accountResponse.getAccountList()).orElse(List.of());
-    for (Account account : apiResponseAccounts) {
-      //find
-      AccountListEntity accountListEntity = accountListRepository
-          .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
-              banksaladUserId, organizationId, account.getAccountNum(), account.getSeqno()
-          ).orElse(AccountListEntity.builder().build());
 
-      // merge
-      accountListMapper.merge(executionContext, account, accountListEntity);
+    if (accountSummaryResponse.getAccountSummaries() != null) {
+      for (AccountSummary accountSummary : accountSummaryResponse.getAccountSummaries()) {
+        //find
+        AccountListEntity accountListEntity = accountListRepository
+            .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+                banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno()
+            ).orElse(AccountListEntity.builder().build());
 
-      // save (insert, update)
-      accountListEntity.setSyncedAt(executionContext.getSyncStartedAt());
-      accountListRepository.save(accountListEntity);
+        // merge
+        accountListMapper.merge(accountSummary, accountListEntity);
+
+        // save (insert, update)
+        accountListEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
+        accountListEntity.setOrganizationId(executionContext.getOrganizationId());
+        accountListEntity.setSyncedAt(executionContext.getSyncStartedAt());
+        accountListRepository.save(accountListEntity);
+      }
     }
 
     // userSyncStatus table update
@@ -76,7 +74,7 @@ public class AccountServiceImpl implements AccountService {
             organizationId,
             Apis.capital_get_accounts.getId(),
             executionContext.getSyncStartedAt(),
-            accountResponse.getSearchTimestamp(),
+            accountSummaryResponse.getSearchTimestamp(),
             true // TODO https://github.com/banksalad/collectmydata/pull/89 머지 후 수정.
         );
 
@@ -84,10 +82,10 @@ public class AccountServiceImpl implements AccountService {
     List<AccountListEntity> accountListEntities = accountListRepository
         .findByBanksaladUserIdAndOrganizationIdAndIsConsent(banksaladUserId, organizationId, true);
 
-    List<Account> responseAccounts = accountListEntities.stream()
+    List<AccountSummary> responseAccountSummaries = accountListEntities.stream()
         .map(entity -> accountListMapper.entityToDto(entity))
         .collect(Collectors.toList());
 
-    return responseAccounts;
+    return responseAccountSummaries;
   }
 }

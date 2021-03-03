@@ -8,19 +8,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class AccountResponse {
+public class AccountSummaryRequest {
 
-  private String rspCode;
-  private String rspMsg;
-  private long searchTimestamp;
-  private String regDate;
-  private int accountCnt;
-  private List<Account> accountList;
+  public String orgCode;
+  public long searchTimestamp;
 }
+

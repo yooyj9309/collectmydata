@@ -5,8 +5,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 
-import com.banksalad.collectmydata.capital.common.dto.Account;
-import com.banksalad.collectmydata.capital.common.dto.AccountResponse;
+import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
+import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicResponse;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountDetailResponse;
@@ -87,16 +87,16 @@ class ExternalApiServiceTest {
     // Given
     ExecutionContext executionContext = getExecutionContext();
     Organization organization = getOrganization();
-    AccountResponse expectedAccountResponse = getAccountResponse();
+    AccountSummaryResponse expectedAccountSummaryResponse = getAccountResponse();
 
     // When
-    AccountResponse actualAccountResponse = externalApiService
+    AccountSummaryResponse actualAccountSummaryResponse = externalApiService
         .getAccounts(executionContext, organization.getOrganizationCode(), 0l);
 
     // Then
-    assertEquals(2, actualAccountResponse.getAccountCnt());
-    assertThat(actualAccountResponse.getAccountList()).usingRecursiveComparison()
-        .isEqualTo(expectedAccountResponse.getAccountList());
+    assertEquals(2, actualAccountSummaryResponse.getAccountCnt());
+    assertThat(actualAccountSummaryResponse.getAccountSummaries()).usingRecursiveComparison()
+        .isEqualTo(expectedAccountSummaryResponse.getAccountSummaries());
   }
 
   @Test
@@ -105,11 +105,11 @@ class ExternalApiServiceTest {
     // given
     ExecutionContext executionContext = getExecutionContext();
     Organization organization = getOrganization();
-    Account account = getAccount();
+    AccountSummary accountSummary = getAccount();
 
     // when
     LoanAccountBasicResponse loanAccountBasicResponse = externalApiService
-        .getAccountBasic(executionContext, organization, account);
+        .getAccountBasic(executionContext, organization, accountSummary);
 
     // then
     assertThat(loanAccountBasicResponse).usingRecursiveComparison().isEqualTo(
@@ -135,12 +135,12 @@ class ExternalApiServiceTest {
     // Given
     ExecutionContext executionContext = getExecutionContext();
     Organization organization = getOrganization();
-    Account account = getAccount();
+    AccountSummary accountSummary = getAccount();
     LoanAccountDetailResponse expectedLoanAccountDetailResponse = getAccountDetailResponse();
 
     // When
     LoanAccountDetailResponse actualLoanAccountDetailResponse = externalApiService
-        .getAccountDetail(executionContext, organization, account);
+        .getAccountDetail(executionContext, organization, accountSummary);
 
     // Then
     assertThat(actualLoanAccountDetailResponse).usingRecursiveComparison().isEqualTo(expectedLoanAccountDetailResponse);
@@ -152,11 +152,11 @@ class ExternalApiServiceTest {
     // Given
     ExecutionContext executionContext = getExecutionContext();
     Organization organization = getOrganization();
-    Account account = getAccount();
+    AccountSummary accountSummary = getAccount();
 
     // When
     LoanAccountTransactionResponse response = externalApiService
-        .getAccountTransactions(executionContext, organization, account);
+        .getAccountTransactions(executionContext, organization, accountSummary);
 
     // Then
     assertEquals(3, response.getTransCnt());
@@ -231,12 +231,12 @@ class ExternalApiServiceTest {
     // Given
     ExecutionContext executionContext = getExecutionContext();
     Organization organization = getOrganization();
-    Account account = getAccount();
+    AccountSummary accountSummary = getAccount();
     OperatingLeaseBasicResponse expectedLeaseBasicResponse = getOperatingLeaseBasicResponse();
 
     // When
     OperatingLeaseBasicResponse actualLeaseBasicResponseResponse = externalApiService
-        .getOperatingLeaseBasic(executionContext, organization, account);
+        .getOperatingLeaseBasic(executionContext, organization, accountSummary);
 
     // Then
     assertThat(actualLeaseBasicResponseResponse).usingRecursiveComparison().isEqualTo(expectedLeaseBasicResponse);
@@ -248,11 +248,11 @@ class ExternalApiServiceTest {
     // given
     ExecutionContext executionContext = getExecutionContext();
     Organization organization = getOrganization();
-    Account account = getAccount();
+    AccountSummary accountSummary = getAccount();
 
     // when
     OperatingLeaseTransactionResponse operatingLeaseTransactionResponse = externalApiService
-        .getOperatingLeaseTransactions(executionContext, organization, account);
+        .getOperatingLeaseTransactions(executionContext, organization, accountSummary);
 
     // then
     assertThat(operatingLeaseTransactionResponse).usingRecursiveComparison().isEqualTo(
@@ -309,8 +309,8 @@ class ExternalApiServiceTest {
         .build();
   }
 
-  private Account getAccount() {
-    return Account.builder()
+  private AccountSummary getAccount() {
+    return AccountSummary.builder()
         .accountNum(ACCOUNT_NUMBER)
         .isConsent(TRUE)
         .seqno(SEQNO)
@@ -320,15 +320,15 @@ class ExternalApiServiceTest {
         .build();
   }
 
-  private AccountResponse getAccountResponse() {
-    return AccountResponse.builder()
+  private AccountSummaryResponse getAccountResponse() {
+    return AccountSummaryResponse.builder()
         .rspCode("200")
         .rspMsg("success")
         .searchTimestamp(0L)
         .regDate("20201114")
         .accountCnt(2)
-        .accountList(List.of(
-            Account.builder()
+        .accountSummaries(List.of(
+            AccountSummary.builder()
                 .accountNum("1234123412341234")
                 .isConsent(true)
                 .seqno(1)
@@ -336,7 +336,7 @@ class ExternalApiServiceTest {
                 .accountType("3100")
                 .accountStatus("01")
                 .build(),
-            Account.builder()
+            AccountSummary.builder()
                 .accountNum("5678567856785678")
                 .isConsent(true)
                 .seqno(2)

@@ -3,9 +3,9 @@ package com.banksalad.collectmydata.capital.loan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.banksalad.collectmydata.capital.common.dto.Account;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountListEntity;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountListRepository;
+import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @DisplayName("LoanAccountService Test")
-public class LoanAccountServiceTest {
+public class LoanAccountSummaryServiceTest {
 
   @Autowired
   private LoanAccountService loanAccountService;
@@ -88,8 +88,8 @@ public class LoanAccountServiceTest {
     );
   }
 
-  private Account accountAssembler() {
-    return Account.builder()
+  private AccountSummary accountAssembler() {
+    return AccountSummary.builder()
         .accountNum(accountNum)
         .seqno(1)
         .basicSearchTimestamp(1000l)

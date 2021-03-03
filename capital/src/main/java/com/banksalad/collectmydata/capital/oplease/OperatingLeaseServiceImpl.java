@@ -10,7 +10,7 @@ import com.banksalad.collectmydata.capital.common.db.entity.mapper.OperatingLeas
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.OperatingLeaseMapper;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseHistoryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseRepository;
-import com.banksalad.collectmydata.capital.common.dto.Account;
+import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.ExecutionResponseValidateService;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
@@ -53,13 +53,13 @@ public class OperatingLeaseServiceImpl implements OperatingLeaseService {
 
   @Override
   public List<OperatingLease> listOperatingLeases(ExecutionContext executionContext, Organization organization,
-      List<Account> accounts) {
+      List<AccountSummary> accountSummaries) {
 
     long banksaladUserId = executionContext.getBanksaladUserId();
     String organizationId = executionContext.getOrganizationId();
     AtomicReference<Boolean> isExceptionOccurred = new AtomicReference<>(false);
 
-    List<OperatingLease> operatingLeases = accounts.stream()
+    List<OperatingLease> operatingLeases = accountSummaries.stream()
         .map(account -> CompletableFuture
             .supplyAsync(
                 () -> operatingLeaseProcess(executionContext, organization, account, banksaladUserId, organizationId),
@@ -87,17 +87,18 @@ public class OperatingLeaseServiceImpl implements OperatingLeaseService {
     return operatingLeases;
   }
 
-  public OperatingLease operatingLeaseProcess(ExecutionContext context, Organization organization, Account account,
+  public OperatingLease operatingLeaseProcess(ExecutionContext context, Organization organization,
+      AccountSummary accountSummary,
       long banksaladUserId, String organizationId) {
     OperatingLeaseBasicResponse response = externalApiService
-        .getOperatingLeaseBasic(context, organization, account);
+        .getOperatingLeaseBasic(context, organization, accountSummary);
 
     OperatingLeaseEntity entity = operatingLeaseRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
             banksaladUserId,
             organizationId,
-            account.getAccountNum(),
-            account.getSeqno()
+            accountSummary.getAccountNum(),
+            accountSummary.getSeqno()
         ).orElse(OperatingLeaseEntity.builder().build());
 
     OperatingLeaseBasicResponse entityDto = operatingLeaseMapper
@@ -105,7 +106,7 @@ public class OperatingLeaseServiceImpl implements OperatingLeaseService {
 
     if (!ObjectComparator.isSame(entityDto, response, LEASE_RES_EXCLUDE_EQUALS_FIELD)) {
       // merge
-      operatingLeaseMapper.merge(context, account, response, entity);
+      operatingLeaseMapper.merge(context, accountSummary, response, entity);
 
       // make history
       OperatingLeaseHistoryEntity historyEntity = operatingLeaseHistoryMapper
@@ -117,15 +118,15 @@ public class OperatingLeaseServiceImpl implements OperatingLeaseService {
     }
 
     // accountList timestamp update
-    account.setOperatingLeaseBasicSearchTimestamp(response.getSearchTimestamp());
-    loanAccountService.updateSearchTimestampOnAccount(banksaladUserId, organizationId, account);
+    accountSummary.setOperatingLeaseBasicSearchTimestamp(response.getSearchTimestamp());
+    loanAccountService.updateSearchTimestampOnAccount(banksaladUserId, organizationId, accountSummary);
 
-    return operatingLeaseMapper.operatingLeaseAssembler(response, account);
+    return operatingLeaseMapper.operatingLeaseAssembler(response, accountSummary);
   }
 
   @Override
   public List<OperatingLeaseTransaction> listOperatingLeaseTransactions(ExecutionContext executionContext,
-      Organization organization, List<Account> accounts) {
+      Organization organization, List<AccountSummary> accountSummaries) {
 
     return null;
   }

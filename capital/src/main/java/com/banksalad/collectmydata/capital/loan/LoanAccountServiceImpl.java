@@ -2,13 +2,13 @@ package com.banksalad.collectmydata.capital.loan;
 
 import org.springframework.stereotype.Service;
 
-import com.banksalad.collectmydata.capital.common.dto.Account;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccount;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountListEntity;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountListRepository;
+import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
+import com.banksalad.collectmydata.capital.loan.dto.LoanAccount;
+import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +27,12 @@ public class LoanAccountServiceImpl implements LoanAccountService {
    *
    * @param executionContext
    * @param organization
-   * @param accounts
+   * @param accountSummaries
    * @return List<AccountInfo>
    */
   @Override
   public List<LoanAccount> listLoanAccounts(ExecutionContext executionContext, Organization organization,
-      List<Account> accounts) {
+      List<AccountSummary> accountSummaries) {
 
     // 2번 3번 api 조합
 
@@ -44,7 +44,7 @@ public class LoanAccountServiceImpl implements LoanAccountService {
    */
   @Override
   public List<LoanAccount> listLoanAccountBasics(ExecutionContext executionContext, Organization organization,
-      List<Account> accounts) {
+      List<AccountSummary> accountSummaries) {
     return null;
   }
 
@@ -53,7 +53,7 @@ public class LoanAccountServiceImpl implements LoanAccountService {
    */
   @Override
   public List<LoanAccount> listLoanAccountDetails(ExecutionContext executionContext, Organization organization,
-      List<Account> accounts) {
+      List<AccountSummary> accountSummaries) {
     return null;
   }
 
@@ -62,18 +62,20 @@ public class LoanAccountServiceImpl implements LoanAccountService {
    *
    * @param executionContext
    * @param organization
-   * @param accounts
+   * @param accountSummaries
    * @return
    */
   @Override
-  public List<LoanAccountTransaction> listAccountTransactions(ExecutionContext executionContext, Organization organization,
-      List<Account> accounts) {
+  public List<LoanAccountTransaction> listAccountTransactions(ExecutionContext executionContext,
+      Organization organization,
+      List<AccountSummary> accountSummaries) {
     return null;
   }
 
   @Override
-  public void updateSearchTimestampOnAccount(long banksaladUserId, String organizationId, Account account) {
-    if (account == null) {
+  public void updateSearchTimestampOnAccount(long banksaladUserId, String organizationId,
+      AccountSummary accountSummary) {
+    if (accountSummary == null) {
       throw new CollectRuntimeException("Invalid account"); //TODO
     }
 
@@ -81,13 +83,13 @@ public class LoanAccountServiceImpl implements LoanAccountService {
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
             banksaladUserId,
             organizationId,
-            account.getAccountNum(),
-            account.getSeqno()
+            accountSummary.getAccountNum(),
+            accountSummary.getSeqno()
         ).orElseThrow(() -> new CollectRuntimeException("No data AccountListEntity")); //TODO
 
-    entity.setBasicSearchTimestamp(account.getBasicSearchTimestamp());
-    entity.setDetailSearchTimestamp(account.getDetailSearchTimestamp());
-    entity.setOperatingLeaseBasicSearchTimestamp(account.getOperatingLeaseBasicSearchTimestamp());
+    entity.setBasicSearchTimestamp(accountSummary.getBasicSearchTimestamp());
+    entity.setDetailSearchTimestamp(accountSummary.getDetailSearchTimestamp());
+    entity.setOperatingLeaseBasicSearchTimestamp(accountSummary.getOperatingLeaseBasicSearchTimestamp());
     accountListRepository.save(entity);
   }
 }

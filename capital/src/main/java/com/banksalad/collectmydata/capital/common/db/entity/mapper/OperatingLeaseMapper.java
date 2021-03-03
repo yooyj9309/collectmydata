@@ -1,7 +1,7 @@
 package com.banksalad.collectmydata.capital.common.db.entity.mapper;
 
-import com.banksalad.collectmydata.capital.common.dto.Account;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseEntity;
+import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLease;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
@@ -17,21 +17,13 @@ public interface OperatingLeaseMapper {
   @Mappings(
       value = {
           @Mapping(target = "operatingLeaseId", ignore = true),
-          @Mapping(source = "account.accountNum", target = "accountNum"),
-          @Mapping(source = "account.seqno", target = "seqno"),
-
           @Mapping(source = "context.syncStartedAt", target = "syncedAt"),
-          @Mapping(source = "response.holderName", target = "holderName"),
           @Mapping(source = "response.issueDate", target = "issueDate", dateFormat = "yyyyMMdd"),
           @Mapping(source = "response.expDate", target = "expDate", dateFormat = "yyyyMMdd"),
-          @Mapping(source = "response.repayDate", target = "repayDate"),
-          @Mapping(source = "response.repayMethod", target = "repayMethod"),
-          @Mapping(source = "response.repayOrgCode", target = "repayOrgCode"),
-          @Mapping(source = "response.repayAccountNum", target = "repayAccountNum"),
           @Mapping(source = "response.nextRepayDate", target = "nextRepayDate", dateFormat = "yyyyMMdd"),
       }
   )
-  void merge(ExecutionContext context, Account account, OperatingLeaseBasicResponse response,
+  void merge(ExecutionContext context, AccountSummary accountSummary, OperatingLeaseBasicResponse response,
       @MappingTarget OperatingLeaseEntity entity);
 
   @Mappings(
@@ -46,5 +38,5 @@ public interface OperatingLeaseMapper {
   )
   OperatingLeaseBasicResponse entityToOperatingLeaseBasicResponse(OperatingLeaseEntity entity);
 
-  OperatingLease operatingLeaseAssembler(OperatingLeaseBasicResponse response, Account account);
+  OperatingLease operatingLeaseAssembler(OperatingLeaseBasicResponse response, AccountSummary accountSummary);
 }

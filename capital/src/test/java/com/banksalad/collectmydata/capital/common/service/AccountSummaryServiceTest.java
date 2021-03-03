@@ -9,7 +9,7 @@ import com.banksalad.collectmydata.capital.common.db.entity.AccountListEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.UserSyncStatusEntity;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountListRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.UserSyncStatusRepository;
-import com.banksalad.collectmydata.capital.common.dto.Account;
+import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -31,10 +31,10 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class AccountServiceTest {
+public class AccountSummaryServiceTest {
 
   @Autowired
-  private AccountService accountService;
+  private AccountSummaryService accountSummaryService;
 
   @Autowired
   private AccountListRepository accountListRepository;
@@ -65,7 +65,7 @@ public class AccountServiceTest {
     ExecutionContext context = executionContextAssembler(now);
     Organization organization = organizationAssembler();
 
-    List<Account> accounts = accountService.listAccounts(context, organization);
+    List<AccountSummary> accountSummaries = accountSummaryService.listAccountSummaries(context, organization);
 
     List<AccountListEntity> accountListEntities = accountListRepository.findAll(); // 검증
     List<UserSyncStatusEntity> userSyncStatusEntities = userSyncStatusRepository.findAll(); // 검증
@@ -88,9 +88,9 @@ public class AccountServiceTest {
                 .build()
         );
 
-    assertThat(accounts.get(0)).usingRecursiveComparison()
+    assertThat(accountSummaries.get(0)).usingRecursiveComparison()
         .isEqualTo(
-            Account.builder()
+            AccountSummary.builder()
                 .accountNum("1234123412341234")
                 .isConsent(true)
                 .seqno(1)

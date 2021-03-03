@@ -1,6 +1,6 @@
 package com.banksalad.collectmydata.capital.common.collect;
 
-import com.banksalad.collectmydata.capital.common.dto.AccountResponse;
+import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicResponse;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountDetailResponse;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
@@ -14,7 +14,7 @@ public class Executions {
   public static final Execution capital_get_accounts =
       Execution.create()
           .exchange(Apis.capital_get_accounts)
-          .as(AccountResponse.class)
+          .as(AccountSummaryResponse.class)
           .build();
 
   // 6.7.2 대출상품계좌 기본정보 조회

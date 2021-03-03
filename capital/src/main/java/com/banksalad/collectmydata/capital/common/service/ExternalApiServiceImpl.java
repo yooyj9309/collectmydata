@@ -3,9 +3,9 @@ package com.banksalad.collectmydata.capital.common.service;
 import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.capital.common.collect.Executions;
-import com.banksalad.collectmydata.capital.common.dto.Account;
-import com.banksalad.collectmydata.capital.common.dto.AccountRequest;
-import com.banksalad.collectmydata.capital.common.dto.AccountResponse;
+import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
+import com.banksalad.collectmydata.capital.common.dto.AccountSummaryRequest;
+import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicRequest;
@@ -42,33 +42,33 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   private static final int MAX_LIMIT = 2;
 
   @Override
-  public AccountResponse getAccounts(ExecutionContext executionContext, String orgCode, long searchTimeStamp) {
+  public AccountSummaryResponse getAccounts(ExecutionContext executionContext, String orgCode, long searchTimeStamp) {
     // executionId 생성.
     executionContext.generateAndsUpdateExecutionRequestId();
 
     Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
-    AccountRequest accountRequest = AccountRequest.builder()
+    AccountSummaryRequest accountSummaryRequest = AccountSummaryRequest.builder()
         .searchTimestamp(searchTimeStamp)
         .orgCode(orgCode)
         .build();
 
-    ExecutionRequest<AccountRequest> executionRequest = ExecutionUtil
-        .executionRequestAssembler(headers, accountRequest);
+    ExecutionRequest<AccountSummaryRequest> executionRequest = ExecutionUtil
+        .executionRequestAssembler(headers, accountSummaryRequest);
 
     return executionService.execute(executionContext, capital_get_accounts, executionRequest);
   }
 
   @Override
   public LoanAccountBasicResponse getAccountBasic(ExecutionContext executionContext, Organization organization,
-      Account account) {
+      AccountSummary accountSummary) {
     // executionId 생성.
     executionContext.generateAndsUpdateExecutionRequestId();
 
     Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
     LoanAccountBasicRequest request = LoanAccountBasicRequest.builder()
         .orgCode(organization.getOrganizationCode())
-        .accountNum(account.getAccountNum())
-        .seqno(account.getSeqno())
+        .accountNum(accountSummary.getAccountNum())
+        .seqno(accountSummary.getSeqno())
         .searchTimestamp(0L) // TODO
         .build();
 
@@ -80,15 +80,15 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
   @Override
   public LoanAccountDetailResponse getAccountDetail(ExecutionContext executionContext, Organization organization,
-      Account account) {
+      AccountSummary accountSummary) {
     // executionId 생성.
     executionContext.generateAndsUpdateExecutionRequestId();
 
     Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
     LoanAccountDetailRequest loanAccountDetailRequest = LoanAccountDetailRequest.builder()
         .orgCode(organization.getOrganizationCode())
-        .accountNum(account.getAccountNum())
-        .seqno(account.getSeqno())
+        .accountNum(accountSummary.getAccountNum())
+        .seqno(accountSummary.getSeqno())
         .searchTimestamp(0L) // TODO
         .build();
 
@@ -101,15 +101,15 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   @Override
   public LoanAccountTransactionResponse getAccountTransactions(ExecutionContext executionContext,
       Organization organization,
-      Account account) {
+      AccountSummary accountSummary) {
     // executionId 생성.
     executionContext.generateAndsUpdateExecutionRequestId();
 
     Map<String, String> header = Map.of("Authorization", executionContext.getAccessToken());
     LoanAccountTransactionRequest request = LoanAccountTransactionRequest.builder()
         .orgCode(organization.getOrganizationCode())
-        .accountNum(account.getAccountNum())
-        .seqno(account.getSeqno())
+        .accountNum(accountSummary.getAccountNum())
+        .seqno(accountSummary.getSeqno())
         .fromDtime("20210121000000") // fixme : user_sync_stat.synced_at
         .toDtime("20210122000000") // fixme : kstCurrentDatetime(); // a new method of util.DateUtil
         .limit(MAX_LIMIT)
@@ -140,16 +140,16 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
   @Override
   public OperatingLeaseBasicResponse getOperatingLeaseBasic(ExecutionContext executionContext,
-      Organization organization, Account account) {
+      Organization organization, AccountSummary accountSummary) {
     // executionId 생성.
     executionContext.generateAndsUpdateExecutionRequestId();
 
     Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
     OperatingLeaseBasicRequest request = OperatingLeaseBasicRequest.builder()
         .orgCode(organization.getOrganizationCode())
-        .accountNum(account.getAccountNum())
-        .seqno(account.getSeqno())
-        .searchTimestamp(account.getOperatingLeaseBasicSearchTimestamp())
+        .accountNum(accountSummary.getAccountNum())
+        .seqno(accountSummary.getSeqno())
+        .searchTimestamp(accountSummary.getOperatingLeaseBasicSearchTimestamp())
         .build();
 
     ExecutionRequest<OperatingLeaseBasicRequest> executionRequest = ExecutionUtil
@@ -160,7 +160,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
   @Override
   public OperatingLeaseTransactionResponse getOperatingLeaseTransactions(ExecutionContext executionContext,
-      Organization organization, Account account) {
+      Organization organization, AccountSummary accountSummary) {
     // executionId 생성.
     executionContext.generateAndsUpdateExecutionRequestId();
 
@@ -169,8 +169,8 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     OperatingLeaseTransactionResponse response = OperatingLeaseTransactionResponse.builder().build();
     OperatingLeaseTransactionRequest request = OperatingLeaseTransactionRequest.builder()
         .orgCode(organization.getOrganizationCode())
-        .accountNum(account.getAccountNum())
-        .seqno(account.getSeqno())
+        .accountNum(accountSummary.getAccountNum())
+        .seqno(accountSummary.getSeqno())
         .fromDtime("20210121000000") // fixme : user_sync_stat.synced_at
         .toDtime("20210122000000") // fixme : kstCurrentDatetime
         .limit(MAX_LIMIT)
