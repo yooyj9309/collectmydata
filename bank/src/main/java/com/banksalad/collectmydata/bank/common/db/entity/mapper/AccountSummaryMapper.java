@@ -2,7 +2,6 @@ package com.banksalad.collectmydata.bank.common.db.entity.mapper;
 
 import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
-import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -25,7 +24,7 @@ public interface AccountSummaryMapper {
           @Mapping(target = "isForeignDeposit", source = "accountSummary.foreignDeposit")
       }
   )
-  void merge(ExecutionContext context, AccountSummary accountSummary, @MappingTarget AccountSummaryEntity entity);
+  void merge(AccountSummary accountSummary, @MappingTarget AccountSummaryEntity entity);
 
   @Mappings(
       value = {@Mapping(target = "foreignDeposit", source = "isForeignDeposit")}

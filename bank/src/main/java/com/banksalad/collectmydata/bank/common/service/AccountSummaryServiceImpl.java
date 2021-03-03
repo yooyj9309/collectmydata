@@ -86,7 +86,9 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
         accountSummaryEntity = AccountSummaryEntity.builder().build();
       }
 
-      accountSummaryMapper.merge(executionContext, accountSummary, accountSummaryEntity);
+      accountSummaryMapper.merge(accountSummary, accountSummaryEntity);
+      accountSummaryEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
+      accountSummaryEntity.setOrganizationId(executionContext.getOrganizationId());
       accountSummaryEntity.setSyncedAt(executionContext.getSyncStartedAt());
 
       try {

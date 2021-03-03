@@ -23,8 +23,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "deposit_account")
-public class DepositAccountEntity extends BaseTimeAndUserEntity {
+@Table(name = "deposit_account_basic")
+public class DepositAccountBasicEntity extends BaseTimeAndUserEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +42,7 @@ public class DepositAccountEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false, name = "account_num_encrypted")
   private String accountNum;
 
-  private Integer seqno;
+  private String seqno;
 
   private String currencyCode;
 
@@ -60,10 +60,6 @@ public class DepositAccountEntity extends BaseTimeAndUserEntity {
   private BigDecimal commitAmt;
 
   private BigDecimal monthlyPaidInAmt;
-
-  private BigDecimal terminationAmt;
-
-  private BigDecimal lastOfferedRate;
 
   @Column(nullable = false)
   private BigDecimal balanceAmt;
