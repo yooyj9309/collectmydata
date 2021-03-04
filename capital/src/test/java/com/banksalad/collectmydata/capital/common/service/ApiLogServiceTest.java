@@ -12,6 +12,7 @@ import com.banksalad.collectmydata.common.collect.api.Api;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
+import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
@@ -50,7 +51,7 @@ public class ApiLogServiceTest {
   private static WireMockServer wireMockServer;
 
   @Autowired
-  private ExecutionService executionService;
+  private CollectExecutor collectExecutor;
 
   @Autowired
   private ApiLogRepository apiLogRepository;
@@ -85,8 +86,8 @@ public class ApiLogServiceTest {
 
     ExecutionRequest<Object> executionRequest = ExecutionUtil
         .executionRequestAssembler(Map.of("token", "token"), new Object());
-    executionService.execute(context, apiLogTestExecution, executionRequest);
-
+    collectExecutor.execute(context, apiLogTestExecution, executionRequest);
+    
     List<ApiLogEntity> entities = apiLogRepository.findAll();
 
     assertEquals(1, entities.size());

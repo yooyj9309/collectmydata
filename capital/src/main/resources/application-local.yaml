@@ -15,3 +15,11 @@ banksalad:
 
 kafka:
   bootstrap-servers: localhost:9092
+
+logging:
+  level:
+    com.zaxxer.hikari.HikariConfig: DEBUG
+    com.zaxxer.hikari: TRACE
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+    org.springframework.transaction.interceptor: trace

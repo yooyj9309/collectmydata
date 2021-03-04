@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.capital.common.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.capital.common.collect.Executions;
@@ -20,8 +21,12 @@ import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicReques
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionRequest;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
+import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
+import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
+import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
+import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
@@ -39,7 +44,7 @@ import static com.banksalad.collectmydata.capital.common.collect.Executions.capi
 @RequiredArgsConstructor
 public class ExternalApiServiceImpl implements ExternalApiService {
 
-  private final ExecutionService executionService;
+  private final CollectExecutor collectExecutor;
   private static final String AUTHORIZATION = "Authorization";
   private static final int MAX_LIMIT = 2;
 
@@ -57,7 +62,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     ExecutionRequest<AccountSummaryRequest> executionRequest = ExecutionUtil
         .executionRequestAssembler(headers, accountSummaryRequest);
 
-    return executionService.execute(executionContext, capital_get_accounts, executionRequest);
+    return execute(executionContext, capital_get_accounts, executionRequest);
   }
 
   @Override
@@ -77,7 +82,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     ExecutionRequest<LoanAccountBasicRequest> executionRequest = ExecutionUtil
         .executionRequestAssembler(headers, request);
 
-    return executionService.execute(executionContext, Executions.capital_get_account_basic, executionRequest);
+    return execute(executionContext, Executions.capital_get_account_basic, executionRequest);
   }
 
   @Override
@@ -97,7 +102,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     ExecutionRequest<LoanAccountDetailRequest> executionRequest = ExecutionUtil
         .executionRequestAssembler(headers, loanAccountDetailRequest);
 
-    return executionService.execute(executionContext, capital_get_account_detail, executionRequest);
+    return execute(executionContext, capital_get_account_detail, executionRequest);
   }
 
   @Override
@@ -130,8 +135,8 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     //TODO
     //  Change to flex-like instead of do-while.
     do {
-      LoanAccountTransactionResponse page = executionService
-          .execute(executionContext, Executions.capital_get_account_transactions, executionRequest);
+      LoanAccountTransactionResponse page = execute(executionContext, Executions.capital_get_account_transactions,
+          executionRequest);
       response.setRspCode(page.getRspCode());
       response.setRspMsg(page.getRspMsg());
       response.setNextPage(page.getNextPage());
@@ -164,7 +169,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     ExecutionRequest<OperatingLeaseBasicRequest> executionRequest = ExecutionUtil
         .executionRequestAssembler(headers, request);
 
-    return executionService.execute(executionContext, capital_get_operating_lease_basic, executionRequest);
+    return execute(executionContext, capital_get_operating_lease_basic, executionRequest);
   }
 
   @Override
@@ -187,13 +192,32 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     do {
       ExecutionRequest<OperatingLeaseTransactionRequest> executionRequest = ExecutionUtil
           .executionRequestAssembler(headers, request);
-      OperatingLeaseTransactionResponse pageResponse = executionService
-          .execute(executionContext, capital_get_operating_lease_transactions, executionRequest);
+      OperatingLeaseTransactionResponse pageResponse = execute(executionContext,
+          capital_get_operating_lease_transactions, executionRequest);
 
       response.updateFrom(pageResponse);
       request.updateNextPage(pageResponse.getNextPage());
     } while (Objects.nonNull(response.getNextPage()));
 
     return response;
+  }
+  
+  private <T, R> R execute(ExecutionContext executionContext, Execution execution,
+      ExecutionRequest<T> executionRequest) {
+
+    ExecutionResponse<R> executionResponse = collectExecutor.execute(executionContext, execution, executionRequest);
+
+    if (executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
+      throw new CollectRuntimeException("execution Statue is not OK");
+      //TODO Throw 추후 적용
+      // logging
+      // execution monitoring
+      // throw
+    }
+
+    if (executionResponse.getResponse() == null) {
+      throw new CollectRuntimeException("response is null");
+    }
+    return executionResponse.getResponse();
   }
 }
