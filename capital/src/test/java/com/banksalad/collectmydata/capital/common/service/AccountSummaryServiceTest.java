@@ -5,7 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 
-import com.banksalad.collectmydata.capital.common.db.entity.AccountListEntity;
+import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.UserSyncStatusEntity;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountListRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.UserSyncStatusRepository;
@@ -67,7 +67,7 @@ public class AccountSummaryServiceTest {
 
     List<AccountSummary> accountSummaries = accountSummaryService.listAccountSummaries(context, organization);
 
-    List<AccountListEntity> accountListEntities = accountListRepository.findAll(); // 검증
+    List<AccountSummaryEntity> accountListEntities = accountListRepository.findAll(); // 검증
     List<UserSyncStatusEntity> userSyncStatusEntities = userSyncStatusRepository.findAll(); // 검증
 
     assertEquals(2, accountListEntities.size());
@@ -76,7 +76,7 @@ public class AccountSummaryServiceTest {
     assertThat(accountListEntities.get(0)).usingRecursiveComparison()
         .ignoringFields("id", "syncedAt", "createdAt", "createdBy", "updatedAt", "updatedBy")
         .isEqualTo(
-            AccountListEntity.builder()
+            AccountSummaryEntity.builder()
                 .banksaladUserId(banksaladUserId)
                 .organizationId(organizationId)
                 .accountNum("1234123412341234")

@@ -3,7 +3,7 @@ package com.banksalad.collectmydata.capital.common.service;
 import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.capital.common.collect.Apis;
-import com.banksalad.collectmydata.capital.common.db.entity.AccountListEntity;
+import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountListMapper;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountListRepository;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
@@ -51,19 +51,19 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
     if (accountSummaryResponse.getAccountSummaries() != null) {
       for (AccountSummary accountSummary : accountSummaryResponse.getAccountSummaries()) {
         //find
-        AccountListEntity accountListEntity = accountListRepository
+        AccountSummaryEntity accountSummaryEntity = accountListRepository
             .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
                 banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno()
-            ).orElse(AccountListEntity.builder().build());
+            ).orElse(AccountSummaryEntity.builder().build());
 
         // merge
-        accountListMapper.merge(accountSummary, accountListEntity);
+        accountListMapper.merge(accountSummary, accountSummaryEntity);
 
         // save (insert, update)
-        accountListEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
-        accountListEntity.setOrganizationId(executionContext.getOrganizationId());
-        accountListEntity.setSyncedAt(executionContext.getSyncStartedAt());
-        accountListRepository.save(accountListEntity);
+        accountSummaryEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
+        accountSummaryEntity.setOrganizationId(executionContext.getOrganizationId());
+        accountSummaryEntity.setSyncedAt(executionContext.getSyncStartedAt());
+        accountListRepository.save(accountSummaryEntity);
       }
     }
 
@@ -79,7 +79,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
         );
 
     // db에 적재되어있는 항목을 꺼내어 리턴
-    List<AccountListEntity> accountListEntities = accountListRepository
+    List<AccountSummaryEntity> accountListEntities = accountListRepository
         .findByBanksaladUserIdAndOrganizationIdAndIsConsent(banksaladUserId, organizationId, true);
 
     List<AccountSummary> responseAccountSummaries = accountListEntities.stream()

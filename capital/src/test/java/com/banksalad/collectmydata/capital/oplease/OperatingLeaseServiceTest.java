@@ -1,6 +1,11 @@
 package com.banksalad.collectmydata.capital.oplease;
 
-import com.banksalad.collectmydata.capital.common.db.entity.AccountListEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
+import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseHistoryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.UserSyncStatusEntity;
@@ -12,12 +17,6 @@ import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLease;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterEach;
@@ -94,7 +93,7 @@ public class OperatingLeaseServiceTest {
         .build();
 
     accountListRepository.save(
-        AccountListEntity.builder()
+        AccountSummaryEntity.builder()
             .syncedAt(LocalDateTime.now())
             .banksaladUserId(banksaladUserId)
             .organizationId(organizationId)

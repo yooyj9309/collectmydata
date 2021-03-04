@@ -1,6 +1,6 @@
 package com.banksalad.collectmydata.capital.common.db.entity.mapper;
 
-import com.banksalad.collectmydata.capital.common.db.entity.AccountListEntity;
+import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,7 +17,7 @@ public interface AccountListMapper {
           @Mapping(target = "operatingLeaseBasicSearchTimestamp", ignore = true)
       }
   )
-  void merge(AccountSummary accountSummary, @MappingTarget AccountListEntity entity);
+  void merge(AccountSummary accountSummary, @MappingTarget AccountSummaryEntity entity);
 
-  AccountSummary entityToDto(AccountListEntity entity);
+  AccountSummary entityToDto(AccountSummaryEntity entity);
 }

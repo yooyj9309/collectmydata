@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,7 +23,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "account_list")
-public class AccountListEntity extends BaseTimeAndUserEntity {
+public class AccountSummaryEntity extends BaseTimeAndUserEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,4 +60,8 @@ public class AccountListEntity extends BaseTimeAndUserEntity {
   private Long detailSearchTimestamp;
 
   private Long operatingLeaseBasicSearchTimestamp;
+
+  private LocalDate transactionFromDate;
+
+  private LocalDate operatingLeaseTransactionFromDate;
 }

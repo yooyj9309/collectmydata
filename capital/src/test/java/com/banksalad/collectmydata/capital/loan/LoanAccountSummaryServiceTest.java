@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import com.banksalad.collectmydata.capital.common.db.entity.AccountListEntity;
+import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountListRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionInterestRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionRepository;
@@ -201,11 +201,11 @@ public class LoanAccountSummaryServiceTest {
   @Transactional
   @DisplayName("updateAccountTimestamp 성공 케이스")
   public void updateAccountTimestamp_success() {
-    saveAccountListEntity();
+    saveAccountSummaryEntity();
     loanAccountService.updateSearchTimestampOnAccount(banksaladUserId, organizationId, accountAssembler());
     assertEquals(1, accountListRepository.findAll().size());
 
-    AccountListEntity entity = accountListRepository.findAll().get(0);
+    AccountSummaryEntity entity = accountListRepository.findAll().get(0);
     assertEquals(1000L, entity.getBasicSearchTimestamp());
     assertEquals(2000L, entity.getDetailSearchTimestamp());
     assertEquals(3000L, entity.getOperatingLeaseBasicSearchTimestamp());
@@ -216,7 +216,7 @@ public class LoanAccountSummaryServiceTest {
   @Transactional
   @DisplayName("updateAccountTimestamp account가 넘어오지 않은경우.")
   public void updateAccountTimestamp_invalid_account() {
-    saveAccountListEntity();
+    saveAccountSummaryEntity();
     Exception exception = assertThrows(
         Exception.class,
         () -> loanAccountService.updateSearchTimestampOnAccount(banksaladUserId, organizationId, null)
@@ -234,12 +234,12 @@ public class LoanAccountSummaryServiceTest {
         () -> loanAccountService.updateSearchTimestampOnAccount(banksaladUserId, organizationId, accountAssembler())
     );
     assertThat(exception).isInstanceOf(CollectRuntimeException.class);
-    assertEquals("No data AccountListEntity", exception.getMessage());
+    assertEquals("No data AccountSummaryEntity", exception.getMessage());
   }
 
-  private void saveAccountListEntity() {
+  private void saveAccountSummaryEntity() {
     accountListRepository.save(
-        AccountListEntity.builder()
+        AccountSummaryEntity.builder()
             .syncedAt(LocalDateTime.now())
             .banksaladUserId(banksaladUserId)
             .organizationId(organizationId)

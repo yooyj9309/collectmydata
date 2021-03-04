@@ -2,16 +2,16 @@ package com.banksalad.collectmydata.capital.common.db.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.banksalad.collectmydata.capital.common.db.entity.AccountListEntity;
+import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface AccountListRepository extends JpaRepository<AccountListEntity, Long> {
+public interface AccountListRepository extends JpaRepository<AccountSummaryEntity, Long> {
 
-  Optional<AccountListEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(Long banksaladUserId,
+  Optional<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(Long banksaladUserId,
       String organizationId, String accountNum, String seqno);
 
-  List<AccountListEntity> findByBanksaladUserIdAndOrganizationIdAndIsConsent(Long banksaladUserId,
+  List<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndIsConsent(Long banksaladUserId,
       String organizationId, Boolean isConsent);
 }

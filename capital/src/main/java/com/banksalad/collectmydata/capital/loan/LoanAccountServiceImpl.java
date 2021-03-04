@@ -1,7 +1,10 @@
 package com.banksalad.collectmydata.capital.loan;
 
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Service;
+
 import com.banksalad.collectmydata.capital.common.collect.Apis;
-import com.banksalad.collectmydata.capital.common.db.entity.AccountListEntity;
+import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionInterestEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountTransactionInterestMapper;
@@ -20,10 +23,6 @@ import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionRespon
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.crypto.HashUtil;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
-
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
@@ -138,13 +137,13 @@ public class LoanAccountServiceImpl implements LoanAccountService {
       throw new CollectRuntimeException("Invalid account"); //TODO
     }
 
-    AccountListEntity entity = accountListRepository
+    AccountSummaryEntity entity = accountListRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
             banksaladUserId,
             organizationId,
             accountSummary.getAccountNum(),
             accountSummary.getSeqno()
-        ).orElseThrow(() -> new CollectRuntimeException("No data AccountListEntity")); //TODO
+        ).orElseThrow(() -> new CollectRuntimeException("No data AccountSummaryEntity")); //TODO
 
     entity.setBasicSearchTimestamp(accountSummary.getBasicSearchTimestamp());
     entity.setDetailSearchTimestamp(accountSummary.getDetailSearchTimestamp());
