@@ -12,8 +12,8 @@ import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicRequest;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicResponse;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountDetailRequest;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountDetailResponse;
+import com.banksalad.collectmydata.capital.loan.dto.AccountDetailRequest;
+import com.banksalad.collectmydata.capital.loan.dto.AccountDetailResponse;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionRequest;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
@@ -86,21 +86,21 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   }
 
   @Override
-  public LoanAccountDetailResponse getAccountDetail(ExecutionContext executionContext, Organization organization,
+  public AccountDetailResponse getAccountDetail(ExecutionContext executionContext, Organization organization,
       AccountSummary accountSummary) {
     // executionId 생성.
     executionContext.generateAndsUpdateExecutionRequestId();
 
     Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
-    LoanAccountDetailRequest loanAccountDetailRequest = LoanAccountDetailRequest.builder()
+    AccountDetailRequest accountDetailRequest = AccountDetailRequest.builder()
         .orgCode(organization.getOrganizationCode())
         .accountNum(accountSummary.getAccountNum())
         .seqno(accountSummary.getSeqno())
         .searchTimestamp(0L) // TODO
         .build();
 
-    ExecutionRequest<LoanAccountDetailRequest> executionRequest = ExecutionUtil
-        .executionRequestAssembler(headers, loanAccountDetailRequest);
+    ExecutionRequest<AccountDetailRequest> executionRequest = ExecutionUtil
+        .executionRequestAssembler(headers, accountDetailRequest);
 
     return execute(executionContext, capital_get_account_detail, executionRequest);
   }

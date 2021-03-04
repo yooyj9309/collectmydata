@@ -16,7 +16,7 @@ import static lombok.AccessLevel.*;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class LoanAccountDetailResponse {
+public class AccountDetailResponse {
 
   private String rspCode;
   private String rspMsg;

@@ -9,7 +9,7 @@ import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicResponse;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountDetailResponse;
+import com.banksalad.collectmydata.capital.loan.dto.AccountDetailResponse;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
@@ -135,14 +135,14 @@ class ExternalApiServiceTest {
     ExecutionContext executionContext = getExecutionContext();
     Organization organization = getOrganization();
     AccountSummary accountSummary = getAccount();
-    LoanAccountDetailResponse expectedLoanAccountDetailResponse = getAccountDetailResponse();
+    AccountDetailResponse expectedAccountDetailResponse = getAccountDetailResponse();
 
     // When
-    LoanAccountDetailResponse actualLoanAccountDetailResponse = externalApiService
+    AccountDetailResponse actualAccountDetailResponse = externalApiService
         .getAccountDetail(executionContext, organization, accountSummary);
 
     // Then
-    assertThat(actualLoanAccountDetailResponse).usingRecursiveComparison().isEqualTo(expectedLoanAccountDetailResponse);
+    assertThat(actualAccountDetailResponse).usingRecursiveComparison().isEqualTo(expectedAccountDetailResponse);
   }
 
   @Test
@@ -295,8 +295,8 @@ class ExternalApiServiceTest {
         .build();
   }
 
-  private LoanAccountDetailResponse getAccountDetailResponse() {
-    return LoanAccountDetailResponse.builder()
+  private AccountDetailResponse getAccountDetailResponse() {
+    return AccountDetailResponse.builder()
         .rspCode("000")
         .rspMsg("rsp_msg")
         .searchTimestamp(0L)

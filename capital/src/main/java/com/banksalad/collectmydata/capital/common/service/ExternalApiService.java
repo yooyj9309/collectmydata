@@ -4,7 +4,7 @@ import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicResponse;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountDetailResponse;
+import com.banksalad.collectmydata.capital.loan.dto.AccountDetailResponse;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
@@ -20,7 +20,7 @@ public interface ExternalApiService {
       AccountSummary accountSummary);
 
   // 6.7.3
-  LoanAccountDetailResponse getAccountDetail(ExecutionContext executionContext, Organization organization,
+  AccountDetailResponse getAccountDetail(ExecutionContext executionContext, Organization organization,
       AccountSummary accountSummary);
 
   // 6.7.4
