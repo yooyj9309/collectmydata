@@ -114,7 +114,7 @@ public class AccountSummaryServiceImplTest {
                 .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/bank/BA01_001_single_page_00.json"))));
+                .withBody(readText("classpath:mock/bank/response/BA01_001_single_page_00.json"))));
   }
 
   private void setupServerAccountsMultiPage() throws Exception {
@@ -128,7 +128,7 @@ public class AccountSummaryServiceImplTest {
                 .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/bank/BA01_001_single_page_01.json"))));
+                .withBody(readText("classpath:mock/bank/response/BA01_001_single_page_01.json"))));
 
     // 계좌목록조회 page 02
     wiremock.stubFor(get(urlMatching("/accounts.*"))
@@ -141,7 +141,7 @@ public class AccountSummaryServiceImplTest {
                 .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/bank/BA01_001_single_page_02.json"))));
+                .withBody(readText("classpath:mock/bank/response/BA01_001_single_page_02.json"))));
 
     // 계좌목록조회 page 03
     wiremock.stubFor(get(urlMatching("/accounts.*"))
@@ -154,6 +154,6 @@ public class AccountSummaryServiceImplTest {
                 .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/bank/BA01_001_single_page_03.json"))));
+                .withBody(readText("classpath:mock/bank/response/BA01_001_single_page_03.json"))));
   }
 }

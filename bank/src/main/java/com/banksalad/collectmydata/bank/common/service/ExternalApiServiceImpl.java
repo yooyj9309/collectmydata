@@ -4,12 +4,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.bank.common.collect.Executions;
+import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.common.dto.ListAccountSummariesRequest;
 import com.banksalad.collectmydata.bank.common.dto.ListAccountSummariesResponse;
+import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicRequest;
+import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicResponse;
+import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailRequest;
+import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
+import com.banksalad.collectmydata.common.organization.Organization;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,18 +26,18 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ExternalApiServiceImpl implements ExternalApiService {
 
+  private static final String AUTHORIZATION = "Authorization";
   private static final int PAGING_MAXIMUM_LIMIT = 500;
-
   private final CollectExecutor collectExecutor;
 
   @Override
-  public ListAccountSummariesResponse exchangeListAccountSummaries(ExecutionContext executionContext, String orgCode,
+  public ListAccountSummariesResponse listAccountSummaries(ExecutionContext executionContext, String orgCode,
       long searchTimeStamp) {
 
     executionContext.generateAndsUpdateExecutionRequestId();
 
     ExecutionRequest<ListAccountSummariesRequest> pagingExecutionRequest = ExecutionRequest.<ListAccountSummariesRequest>builder()
-        .headers(Map.of("Authorization", executionContext.getAccessToken()))
+        .headers(Map.of(AUTHORIZATION, executionContext.getAccessToken()))
         .request(
             ListAccountSummariesRequest.builder()
                 .orgCode(orgCode)
@@ -75,5 +81,58 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     } while (pagingExecutionRequest.getRequest().getNextPage() != null);
 
     return listAccountSummariesResponse;
+  }
+
+  @Override
+  public GetInvestAccountBasicResponse getInvestAccountBasic(ExecutionContext executionContext,
+      AccountSummary accountSummary, Organization organization, long searchTimestamp) {
+    executionContext.generateAndsUpdateExecutionRequestId();
+
+    ExecutionRequest<GetInvestAccountBasicRequest> request = ExecutionRequest.<GetInvestAccountBasicRequest>builder()
+        .headers(Map.of(AUTHORIZATION, executionContext.getAccessToken()))
+        .request(
+            GetInvestAccountBasicRequest.builder()
+                .accountNum(accountSummary.getAccountNum())
+                .orgCode(organization.getOrganizationCode())
+                .seqno(accountSummary.getSeqno())
+                .searchTimestamp(searchTimestamp)
+                .build())
+        .build();
+
+    ExecutionResponse<GetInvestAccountBasicResponse> investAccountBasicResponse = collectExecutor
+        .execute(executionContext, Executions.finance_bank_invest_account_basic, request);
+
+    if (investAccountBasicResponse == null || investAccountBasicResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
+      throw new RuntimeException("Invest account basic Status is not OK");
+    }
+
+    return investAccountBasicResponse.getResponse();
+  }
+
+  @Override
+  public GetInvestAccountDetailResponse getInvestAccountDetail(ExecutionContext executionContext,
+      AccountSummary accountSummary, Organization organization, long searchTimestamp) {
+    executionContext.generateAndsUpdateExecutionRequestId();
+
+    ExecutionRequest<GetInvestAccountDetailRequest> request = ExecutionRequest.<GetInvestAccountDetailRequest>builder()
+        .headers(Map.of(AUTHORIZATION, executionContext.getAccessToken()))
+        .request(
+            GetInvestAccountDetailRequest.builder()
+                .accountNum(accountSummary.getAccountNum())
+                .orgCode(organization.getOrganizationCode())
+                .seqno(accountSummary.getSeqno())
+                .searchTimestamp(searchTimestamp)
+                .build())
+        .build();
+
+    ExecutionResponse<GetInvestAccountDetailResponse> investAccountDetailResponse = collectExecutor
+        .execute(executionContext, Executions.finance_bank_invest_account_detail, request);
+
+    if (investAccountDetailResponse == null || investAccountDetailResponse.getHttpStatusCode() != HttpStatus.OK
+        .value()) {
+      throw new RuntimeException("Invest account detail Status is not OK");
+    }
+
+    return investAccountDetailResponse.getResponse();
   }
 }

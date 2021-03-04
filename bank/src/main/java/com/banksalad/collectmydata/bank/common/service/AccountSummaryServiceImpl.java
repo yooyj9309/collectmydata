@@ -38,7 +38,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
     long searchTimestamp = getSearchTimestamp(executionContext);
 
     ListAccountSummariesResponse listAccountSummariesResponse = externalApiService
-        .exchangeListAccountSummaries(executionContext, organization.getOrganizationCode(), searchTimestamp);
+        .listAccountSummaries(executionContext, organization.getOrganizationCode(), searchTimestamp);
 
     saveAccountSummaries(executionContext, listAccountSummariesResponse);
 
