@@ -29,4 +29,13 @@ public class Apis {
           .endpoint("/accounts/invest/basic")
           .method(HttpMethod.POST.name())
           .build();
+
+  //6.2.6 투자상품 계좌 추가 정보 조회
+  public static Api finance_bank_invest_account_detail =
+      Api.builder()
+          .id("BA06")
+          .name("투자 상품 계좌 추가 정보 조회")
+          .endpoint("/accounts/invest/detail")
+          .method(HttpMethod.POST.name())
+          .build();
 }
