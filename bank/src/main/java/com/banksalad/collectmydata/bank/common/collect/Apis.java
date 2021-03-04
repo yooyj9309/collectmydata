@@ -21,6 +21,14 @@ public class Apis {
               .build())
           .build();
 
+  public static Api finance_bank_deposit_account_basic =
+      Api.builder()
+          .id("BA02")
+          .name("수신계좌 기본정보 조회")
+          .endpoint("/accounts/deposit/basic")
+          .method(HttpMethod.POST.name())
+          .build();
+
   //6.2.5 투자상품 계좌 기본 정보 조회
   public static Api finance_bank_invest_account_basic =
       Api.builder()

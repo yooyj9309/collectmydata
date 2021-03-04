@@ -99,7 +99,7 @@ class ExternalApiServiceTest {
         .accountType("2100")
         .foreignDeposit(false)
         .accountStatus("01")
-        .isConsent("true")
+        .consent(true)
         .seqno("1")
         .prodName("뱅샐 투자 상품")
         .build();
@@ -136,11 +136,10 @@ class ExternalApiServiceTest {
         .accountType("2100")
         .foreignDeposit(false)
         .accountStatus("01")
-        .isConsent("true")
+        .consent(true)
         .seqno("1")
         .prodName("뱅샐 투자 상품")
         .build();
-
 
     // when
     GetInvestAccountDetailResponse actualInvestAccountDetailResponse = externalApiService

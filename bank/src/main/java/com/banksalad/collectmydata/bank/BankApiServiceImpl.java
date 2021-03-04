@@ -5,16 +5,17 @@ import org.springframework.stereotype.Service;
 import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.common.dto.BankApiResponse;
 import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
+import com.banksalad.collectmydata.bank.depoist.DepositAccountService;
+import com.banksalad.collectmydata.bank.depoist.dto.DepositAccountBasic;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.enums.SyncRequestType;
-import com.banksalad.collectmydata.common.exception.CollectException;
-import com.banksalad.collectmydata.common.logging.CollectLogbackJsonLayout;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -24,15 +25,17 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public class BankApiServiceImpl implements BankApiService {
 
+  private static final String DEPOSIT_ACCOUNT_TYPE_CODE = "DEPOSIT";
+  private static final String LOAN_ACCOUNT_TYPE_CODE = "LOAN";
+  private static final String INVEST_ACCOUNT_TYPE_CODE = "INVEST";
+
   private final AccountSummaryService accountSummaryService;
+  private final DepositAccountService depositAccountService;
 
   @Override
   public BankApiResponse requestApi(long banksaladUserId, String organizationId, String syncRequestId,
-      SyncRequestType syncRequestType) throws CollectException {
-
-    MDC.put(CollectLogbackJsonLayout.JSON_KEY_BANKSALAD_USER_ID, String.valueOf(banksaladUserId));
-    MDC.put(CollectLogbackJsonLayout.JSON_KEY_ORGANIZATION_ID, organizationId);
-
+      SyncRequestType syncRequestType) {
+    
     ExecutionContext executionContext = ExecutionContext.builder()
         .banksaladUserId(banksaladUserId)
         .organizationId(organizationId)
@@ -44,11 +47,83 @@ public class BankApiServiceImpl implements BankApiService {
 
     List<AccountSummary> accountSummaries = accountSummaryService.listAccountSummaries(executionContext);
 
+    List<AccountSummary> depositAccountSummaries = new ArrayList<>();
+    List<AccountSummary> investAccountSummaries = new ArrayList<>();
+    List<AccountSummary> loanAccountSummaries = new ArrayList<>();
+
+    for (AccountSummary accountSummary : accountSummaries) {
+      String accountType = accountSummary.getAccountType();
+      if (StringUtils.isEmpty(accountType)) {
+        log.error("Unavailable account type: {}", accountType);
+        continue;
+      }
+
+      String accountTypeCode = getAccountTypeCode(accountSummary.getAccountType());
+
+      if (DEPOSIT_ACCOUNT_TYPE_CODE.equals(accountTypeCode)) {
+        depositAccountSummaries.add(accountSummary);
+
+      } else if (INVEST_ACCOUNT_TYPE_CODE.equals(accountType)) {
+        investAccountSummaries.add(accountSummary);
+
+      } else if (LOAN_ACCOUNT_TYPE_CODE.equals(accountType)) {
+        loanAccountSummaries.add(accountSummary);
+      }
+    }
+
     AtomicReference<BankApiResponse> bankApiResponseAtomicReference = new AtomicReference<>();
     bankApiResponseAtomicReference.set(BankApiResponse.builder().build());
 
     // TODO jayden-lee parallel api requests
+    List<DepositAccountBasic> depositAccountBasics = depositAccountService.listDepositAccountBasics(executionContext,
+        depositAccountSummaries);
 
     return bankApiResponseAtomicReference.get();
+  }
+
+  // TODO jayden-lee Enum 클래스 생성하고 변경할 예정
+  // int accountTypeCode = Integer.valueOf(accountType);
+  // accountTypeCode % 1000, 공통된 규칙은 4자리에서 첫번째 자리에 따라 계좌 유형이 달라짐.
+  private String getAccountTypeCode(String accountType) {
+    switch (accountType) {
+      case "1001":
+      case "1002":
+      case "1003":
+      case "1999":
+        return DEPOSIT_ACCOUNT_TYPE_CODE;
+
+      case "2001":
+      case "2002":
+      case "2003":
+      case "2004":
+      case "2999":
+        return INVEST_ACCOUNT_TYPE_CODE;
+
+      case "3001":
+      case "3150":
+      case "3170":
+      case "3200":
+      case "3210":
+      case "3220":
+      case "3230":
+      case "3240":
+      case "3245":
+      case "3250":
+      case "3260":
+      case "3270":
+      case "3271":
+      case "3290":
+      case "3400":
+      case "3500":
+      case "3510":
+      case "3590":
+      case "3700":
+      case "3710":
+      case "3999":
+        return LOAN_ACCOUNT_TYPE_CODE;
+
+      default:
+        return "";
+    }
   }
 }

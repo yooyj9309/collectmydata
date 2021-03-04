@@ -8,4 +8,7 @@ import java.util.List;
 public interface AccountSummaryService {
 
   List<AccountSummary> listAccountSummaries(ExecutionContext executionContext);
+
+  void updateBasicTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      long basicSearchTimestamp);
 }

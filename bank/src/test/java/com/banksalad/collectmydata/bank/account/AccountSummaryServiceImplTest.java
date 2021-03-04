@@ -39,12 +39,12 @@ public class AccountSummaryServiceImplTest {
 
   private static final Long BANKSALAD_USER_ID = 1L;
   private static final String ORGANIZATION_ID = "woori_bank";
-  private static final String ORGANIZATION_HOST = "http://localhost:9090";
+  private static final String ORGANIZATION_HOST = "http://localhost";
 
   @Autowired
   private AccountSummaryService accountSummaryService;
 
-  public static WireMockServer wiremock = new WireMockServer(WireMockSpring.options().port(9090));
+  public static WireMockServer wiremock = new WireMockServer(WireMockSpring.options().dynamicPort());
 
   @BeforeEach
   public void setupClass() {
@@ -73,7 +73,7 @@ public class AccountSummaryServiceImplTest {
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
         .accessToken("test")
-        .organizationHost(ORGANIZATION_HOST)
+        .organizationHost(ORGANIZATION_HOST + ":" + wiremock.port())
         .executionRequestId(UUID.randomUUID().toString())
         .syncStartedAt(LocalDateTime.now(DateUtil.KST_ZONE_ID))
         .build();
@@ -94,7 +94,7 @@ public class AccountSummaryServiceImplTest {
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
         .accessToken("test")
-        .organizationHost(ORGANIZATION_HOST)
+        .organizationHost(ORGANIZATION_HOST + ":" + wiremock.port())
         .executionRequestId(UUID.randomUUID().toString())
         .syncStartedAt(LocalDateTime.now(DateUtil.KST_ZONE_ID))
         .build();

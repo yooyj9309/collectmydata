@@ -7,6 +7,8 @@ import com.banksalad.collectmydata.bank.common.collect.Executions;
 import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.common.dto.ListAccountSummariesRequest;
 import com.banksalad.collectmydata.bank.common.dto.ListAccountSummariesResponse;
+import com.banksalad.collectmydata.bank.depoist.dto.GetDepositAccountBasicRequest;
+import com.banksalad.collectmydata.bank.depoist.dto.GetDepositAccountBasicResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicRequest;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailRequest;
@@ -32,7 +34,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
   @Override
   public ListAccountSummariesResponse listAccountSummaries(ExecutionContext executionContext, String orgCode,
-      long searchTimeStamp) {
+      long searchTimestamp) {
 
     executionContext.generateAndsUpdateExecutionRequestId();
 
@@ -41,7 +43,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         .request(
             ListAccountSummariesRequest.builder()
                 .orgCode(orgCode)
-                .searchTimestamp(searchTimeStamp)
+                .searchTimestamp(searchTimestamp)
                 .limit(PAGING_MAXIMUM_LIMIT)
                 .build())
         .build();
@@ -54,7 +56,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
           .execute(executionContext, Executions.finance_bank_accounts, pagingExecutionRequest);
 
       if (pagingExecutionResponse == null || pagingExecutionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
-        throw new RuntimeException("ListAccounts Status is not OK");
+        throw new RuntimeException("List accounts status is not OK");
       }
 
       ListAccountSummariesResponse pagingListAccountSummariesResponse = pagingExecutionResponse.getResponse();
@@ -81,6 +83,33 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     } while (pagingExecutionRequest.getRequest().getNextPage() != null);
 
     return listAccountSummariesResponse;
+  }
+
+  @Override
+  public GetDepositAccountBasicResponse getDepositAccountBasic(ExecutionContext executionContext,
+      String orgCode, String accountNum, String seqno, long searchTimestamp) {
+
+    executionContext.generateAndsUpdateExecutionRequestId();
+
+    ExecutionRequest<GetDepositAccountBasicRequest> executionRequest = ExecutionRequest.<GetDepositAccountBasicRequest>builder()
+        .headers(Map.of(AUTHORIZATION, executionContext.getAccessToken()))
+        .request(
+            GetDepositAccountBasicRequest.builder()
+                .orgCode(orgCode)
+                .accountNum(accountNum)
+                .seqno(seqno)
+                .searchTimestamp(searchTimestamp)
+                .build())
+        .build();
+
+    ExecutionResponse<GetDepositAccountBasicResponse> executionResponse = collectExecutor
+        .execute(executionContext, Executions.finance_bank_deposit_account_basic, executionRequest);
+
+    if (executionResponse == null || executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
+      throw new RuntimeException("Get deposit account basic status is not OK");
+    }
+
+    return executionResponse.getResponse();
   }
 
   @Override

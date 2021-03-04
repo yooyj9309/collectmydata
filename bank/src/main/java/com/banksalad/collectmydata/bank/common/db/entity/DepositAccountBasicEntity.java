@@ -60,15 +60,4 @@ public class DepositAccountBasicEntity extends BaseTimeAndUserEntity {
   private BigDecimal commitAmt;
 
   private BigDecimal monthlyPaidInAmt;
-
-  @Column(nullable = false)
-  private BigDecimal balanceAmt;
-
-  @Column(nullable = false)
-  private BigDecimal withdrawableAmt;
-
-  @Column(nullable = false)
-  private BigDecimal offeredRate;
-
-  private Integer lastPaidInCnt;
 }

@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.bank.common.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.bank.common.collect.Apis;
@@ -55,7 +56,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
 
   private Organization getOrganization(ExecutionContext executionContext) {
     return Organization.builder()
-        .organizationCode("020")
+        .organizationCode("020") // TODO jayden-lee implement organizationCode
         .build();
   }
 
@@ -107,5 +108,17 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
     return accountListEntities.stream()
         .map(accountSummaryMapper::entityToDto)
         .collect(Collectors.toList());
+  }
+
+  @Transactional(propagation = Propagation.REQUIRED)
+  public void updateBasicTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      long basicSearchTimestamp) {
+
+    AccountSummaryEntity accountSummaryEntity = accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndIsForeignDeposit(
+            banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno(),
+            accountSummary.isForeignDeposit());
+
+    accountSummaryEntity.setBasicSearchTimestamp(basicSearchTimestamp);
   }
 }

@@ -12,6 +12,10 @@ public interface AccountSummaryMapper {
 
   @Mappings(
       value = {
+          @Mapping(target = "id", ignore = true),
+          @Mapping(target = "banksaladUserId", ignore = true),
+          @Mapping(target = "organizationId", ignore = true),
+          @Mapping(target = "syncedAt", ignore = true),
           @Mapping(target = "basicSearchTimestamp", ignore = true),
           @Mapping(target = "detailSearchTimestamp", ignore = true),
           @Mapping(target = "transactionFromDate", ignore = true),
@@ -19,15 +23,17 @@ public interface AccountSummaryMapper {
           @Mapping(target = "createdBy", ignore = true),
           @Mapping(target = "updatedAt", ignore = true),
           @Mapping(target = "updatedBy", ignore = true),
-          @Mapping(target = "id", ignore = true),
-          @Mapping(target = "syncedAt", ignore = true),
-          @Mapping(target = "isForeignDeposit", source = "accountSummary.foreignDeposit")
+          @Mapping(target = "isConsent", source = "consent"),
+          @Mapping(target = "isForeignDeposit", source = "foreignDeposit")
       }
   )
   void merge(AccountSummary accountSummary, @MappingTarget AccountSummaryEntity entity);
 
   @Mappings(
-      value = {@Mapping(target = "foreignDeposit", source = "isForeignDeposit")}
+      value = {
+          @Mapping(target = "consent", source = "isConsent"),
+          @Mapping(target = "foreignDeposit", source = "isForeignDeposit")
+      }
   )
   AccountSummary entityToDto(AccountSummaryEntity entity);
 }
