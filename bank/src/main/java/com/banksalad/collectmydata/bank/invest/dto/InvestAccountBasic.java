@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -17,17 +17,11 @@ import java.math.BigDecimal;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class InvestAccount {
+public class InvestAccountBasic {
 
-  private String accountNum;
-  private String seqno;
   private String standardFundCode;
   private String paidInType;
   private String issueDate;
   private String expDate;
-  private String currencyCode;
-  private BigDecimal balanceAmt;
-  private BigDecimal evalAmt;
-  private BigDecimal invPrincipal;
-  private BigDecimal fundNum;
+
 }
