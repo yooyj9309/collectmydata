@@ -25,6 +25,7 @@ spring:
 #      idle-timeout: 54000
 #    type: com.zaxxer.hikari.HikariDataSource
 
+
 #aws:
 #  region: ap-northeast-2
 #  iam:

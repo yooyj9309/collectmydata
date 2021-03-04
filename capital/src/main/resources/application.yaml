@@ -3,8 +3,28 @@ spring:
     active: local
   application:
     name: collectmydata-capital
-  main:
-    web-application-type: none
+
+logging:
+  config: classpath:logback/logback-${spring.profiles.active}.xml
+  level:
+    com.zaxxer.hikari.HikariConfig: WARN
+    com.zaxxer.hikari: TRACE
+
+management:
+  metrics:
+    export:
+      statsd:
+        enabled: true
+        flavor: telegraf
+        polling-frequency: 5s
+        max-packet-length: 5000
+        host: localhost
+        port: 8126
+        publish-unchanged-meters: true
+  endpoint.health.probes.enabled: true
+  health:
+    livenessState.enabled: true
+    readinessState.enabled: true
 
 banksalad:
   cipher.uri: dns:///cipher-headless:18081

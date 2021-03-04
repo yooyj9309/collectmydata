@@ -4,10 +4,6 @@ spring:
   application:
     name: collectmydata-bank
 
-server:
-  address: 127.0.0.1
-  port: 8080
-
 logging:
   config: classpath:logback/logback-${spring.profiles.active}.xml
   level:

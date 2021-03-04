@@ -10,3 +10,11 @@ spring:
 banksalad:
   cipher.uri: localhost:9999
   collectmydata-connect.uri: localhost:9998
+
+logging:
+  config: classpath:logback/logback-${spring.profiles.active}.xml
+  level:
+    com.zaxxer.hikari.HikariConfig: INFO
+    com.zaxxer.hikari: INFO
+    org.hibernate.SQL: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: INFO

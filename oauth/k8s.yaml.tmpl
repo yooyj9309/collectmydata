@@ -199,7 +199,7 @@ spec:
               memory: 1Gi
           livenessProbe:
             httpGet:
-              path: "/ping/health"
+              path: "/actuator/health/liveness"
               port: {{ $service_port }}
               scheme: HTTP
             initialDelaySeconds: 60
@@ -209,7 +209,7 @@ spec:
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: "/ping/health"
+              path: "/actuator/health/readiness"
               port: {{ $service_port }}
               scheme: HTTP
             initialDelaySeconds: 20
