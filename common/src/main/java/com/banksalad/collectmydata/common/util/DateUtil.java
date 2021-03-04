@@ -63,36 +63,40 @@ public class DateUtil {
     return datetimeFormatter.format(LocalDateTime.now(KST_ZONE_ID));
   }
 
-  public static String localDateToDateString(LocalDate source) {
-    if (source == null) {
+  public static String toDateString(LocalDate localDate) {
+    if (localDate == null) {
       return null;
     }
 
-    return dateFormatter.format(source);
+    return dateFormatter.format(localDate);
   }
 
-  public static String localDateTimeToDateString(LocalDateTime source) {
-    if (source == null) {
+  public static String toDateString(LocalDateTime localDateTime) {
+    if (localDateTime == null) {
       return null;
     }
 
-    return dateFormatter.format(source);
+    return dateFormatter.format(localDateTime);
   }
 
-  public static LocalDate stringToLocalDate(String source) {
-    validateDate(source);
+  public static LocalDate toLocalDate(String dateString) {
+    validateDate(dateString);
 
-    return LocalDate.parse(source, dateFormatter);
+    return LocalDate.parse(dateString, dateFormatter);
   }
 
-  public static LocalTime stringToLocalTime(String source) {
-    validateDate(source);
+  public static LocalTime toLocalTime(String timeString) {
+    validateDate(timeString);
 
-    return LocalTime.parse(source, timeFormatter);
+    return LocalTime.parse(timeString, timeFormatter);
   }
 
-  public static LocalDateTime toLocalDateTime(String date, String time) {
-    return LocalDateTime.parse(date + time, datetimeFormatter);
+  public static LocalDateTime toLocalDateTime(String dateString, String timeString) {
+    return LocalDateTime.parse(dateString + timeString, datetimeFormatter);
+  }
+
+  public static LocalDate toLocalDate(LocalDateTime localDateTime){
+    return localDateTime.toLocalDate();
   }
 
   public static List<DateRange> splitDate(LocalDate startDate, LocalDate endDate, int intervalMonths) {

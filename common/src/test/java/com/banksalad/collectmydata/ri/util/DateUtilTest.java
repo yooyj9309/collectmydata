@@ -26,8 +26,15 @@ public class DateUtilTest {
 
   @Test
   @DisplayName("LocalDateTime to String of Date")
-  public void convertLocalDateTimetoStringOfDate() {
+  public void convertLocalDateTimeToStringOfDate() {
     LocalDateTime localDateTime = LocalDateTime.of(2020, 10, 10, 18, 0, 0);
-    assertEquals("20201010", DateUtil.localDateTimeToDateString(localDateTime));
+    assertEquals("20201010", DateUtil.toDateString(localDateTime));
+  }
+
+  @Test
+  @DisplayName("LocalDateTime to LocalDate")
+  public void convertLocalDateTimeToLocalDate() {
+    LocalDateTime localDateTime = LocalDateTime.of(2020, 10, 10, 18, 0, 0);
+    assertEquals(DateUtil.toLocalDate("20201010"), DateUtil.toLocalDate(localDateTime));
   }
 }
