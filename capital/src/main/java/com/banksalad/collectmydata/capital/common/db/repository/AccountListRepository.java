@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface AccountListRepository extends JpaRepository<AccountListEntity, Long> {
 
   Optional<AccountListEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(Long banksaladUserId,
-      String organizationId, String accountNum, Integer seqno);
+      String organizationId, String accountNum, String seqno);
 
   List<AccountListEntity> findByBanksaladUserIdAndOrganizationIdAndIsConsent(Long banksaladUserId,
       String organizationId, Boolean isConsent);

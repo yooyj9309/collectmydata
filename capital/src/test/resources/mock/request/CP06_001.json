@@ -1,7 +1,7 @@
 {
   "org_code": "10041004",
   "account_num": "1234567890",
-  "seqno": 1,
+  "seqno": "1",
   "from_dtime": "20210121000000",
   "to_dtime": "20210122000000",
   "limit": 2

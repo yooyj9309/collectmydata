@@ -1,10 +1,5 @@
 package com.banksalad.collectmydata.capital.oplease;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
 import com.banksalad.collectmydata.capital.common.db.entity.AccountListEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseHistoryEntity;
@@ -17,6 +12,12 @@ import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLease;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterEach;
@@ -89,7 +90,7 @@ public class OperatingLeaseServiceTest {
 
     AccountSummary accountSummary = AccountSummary.builder()
         .accountNum(accountNum)
-        .seqno(1)
+        .seqno("1")
         .build();
 
     accountListRepository.save(
@@ -98,7 +99,7 @@ public class OperatingLeaseServiceTest {
             .banksaladUserId(banksaladUserId)
             .organizationId(organizationId)
             .accountNum(accountNum)
-            .seqno(1)
+            .seqno("1")
             .isConsent(true)
             .prodName("prodName")
             .accountType("")
@@ -139,14 +140,14 @@ public class OperatingLeaseServiceTest {
       List<OperatingLeaseHistoryEntity> operatingLeaseHistoryEntities, List<OperatingLease> operatingLeases) {
     assertEquals(1, operatingLeaseEntities.size());
     assertThat(operatingLeaseEntities.get(0)).usingRecursiveComparison()
-        .ignoringFields("operatingLeaseId", "createdAt", "updatedAt")
+        .ignoringFields("operatingLeaseId", "createdAt", "updatedAt", "syncedAt")
         .isEqualTo(
             OperatingLeaseEntity.builder()
                 .syncedAt(firstTime)
                 .banksaladUserId(banksaladUserId)
                 .organizationId(organizationId)
                 .accountNum(accountNum)
-                .seqno(1)
+                .seqno("1")
                 .holderName("김뱅셀")
                 .issueDate(LocalDate.parse("20210210", DateTimeFormatter.ofPattern("yyyyMMdd")))
                 .expDate(LocalDate.parse("20221231", DateTimeFormatter.ofPattern("yyyyMMdd")))
@@ -160,14 +161,14 @@ public class OperatingLeaseServiceTest {
 
     assertEquals(1, operatingLeaseHistoryEntities.size());
     assertThat(operatingLeaseHistoryEntities.get(0)).usingRecursiveComparison()
-        .ignoringFields("operatingLeaseHistoryId", "createdAt", "updatedAt")
+        .ignoringFields("operatingLeaseHistoryId", "createdAt", "updatedAt", "syncedAt")
         .isEqualTo(
             OperatingLeaseHistoryEntity.builder()
                 .syncedAt(firstTime)
                 .banksaladUserId(banksaladUserId)
                 .organizationId(organizationId)
                 .accountNum(accountNum)
-                .seqno(1)
+                .seqno("1")
                 .holderName("김뱅셀")
                 .issueDate(LocalDate.parse("20210210", DateTimeFormatter.ofPattern("yyyyMMdd")))
                 .expDate(LocalDate.parse("20221231", DateTimeFormatter.ofPattern("yyyyMMdd")))
@@ -184,7 +185,7 @@ public class OperatingLeaseServiceTest {
         .isEqualTo(
             OperatingLease.builder()
                 .accountNum(accountNum)
-                .seqno(1)
+                .seqno("1")
                 .holderName("김뱅셀")
                 .issueDate("20210210")
                 .expDate("20221231")

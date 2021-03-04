@@ -19,7 +19,7 @@ public class OperatingLeaseTransactionRequest {
 
   private String orgCode;
   private String accountNum;
-  private Integer seqno;
+  private String seqno;
   private String fromDtime;
   private String toDtime;
   private String nextPage;

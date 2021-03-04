@@ -20,7 +20,7 @@ import static lombok.AccessLevel.PROTECTED;
 public class LoanAccount {
 
   private String accountNum;
-  private Integer seqno;
+  private String seqno;
   private String holderName;
   private String issueDate;
   private String expDate;

@@ -8,7 +8,7 @@
     {
       "account_num": "1234123412341234",
       "is_consent": true,
-      "seqno": 1,
+      "seqno": "1",
       "prod_name": "상품명1",
       "account_type": "3100",
       "account_status": "01"
@@ -16,7 +16,7 @@
     {
       "account_num": "5678567856785678",
       "is_consent": true,
-      "seqno": 2,
+      "seqno": "2",
       "prod_name": "상품명2",
       "account_type": "3210",
       "account_status": "03"

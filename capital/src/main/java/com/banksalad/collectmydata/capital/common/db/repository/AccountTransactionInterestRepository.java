@@ -9,6 +9,10 @@ import java.util.List;
 public interface AccountTransactionInterestRepository extends JpaRepository<AccountTransactionInterestEntity, Long> {
 
   void deleteByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransactionYearMonthAndUniqueTransNoIn(
-      long banksaladUserId, String organizationId, String accountNum, Integer seqno, Integer transactionYearMonth,
+      long banksaladUserId, String organizationId, String accountNum, String seqno, Integer transactionYearMonth,
       List<String> uniqueTransNo);
+
+  void deleteByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransactionYearMonthAndUniqueTransNo(
+      long banksaladUserId, String organizationId, String accountNum, String seqno, Integer transactionYearMonth,
+      String uniqueTransNo);
 }

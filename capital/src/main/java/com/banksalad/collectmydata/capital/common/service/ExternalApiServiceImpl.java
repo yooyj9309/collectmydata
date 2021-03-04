@@ -3,6 +3,7 @@ package com.banksalad.collectmydata.capital.common.service;
 import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.capital.common.collect.Executions;
+import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountTransactionMapper;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummaryRequest;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
@@ -12,6 +13,7 @@ import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicRequest;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicResponse;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountDetailRequest;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountDetailResponse;
+import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionRequest;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicRequest;
@@ -21,10 +23,12 @@ import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.factory.Mappers;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.banksalad.collectmydata.capital.common.collect.Executions.capital_get_account_detail;
 import static com.banksalad.collectmydata.capital.common.collect.Executions.capital_get_accounts;
@@ -37,8 +41,6 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
   private final ExecutionService executionService;
   private static final String AUTHORIZATION = "Authorization";
-  //FIXME
-  //  Change MAX_LIMIT to 500
   private static final int MAX_LIMIT = 2;
 
   @Override
@@ -100,18 +102,16 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
   @Override
   public LoanAccountTransactionResponse getAccountTransactions(ExecutionContext executionContext,
-      Organization organization,
-      AccountSummary accountSummary) {
+      Organization organization, AccountSummary accountSummary) {
     // executionId 생성.
     executionContext.generateAndsUpdateExecutionRequestId();
-
     Map<String, String> header = Map.of("Authorization", executionContext.getAccessToken());
     LoanAccountTransactionRequest request = LoanAccountTransactionRequest.builder()
         .orgCode(organization.getOrganizationCode())
         .accountNum(accountSummary.getAccountNum())
         .seqno(accountSummary.getSeqno())
-        .fromDtime("20210121000000") // fixme : user_sync_stat.synced_at
-        .toDtime("20210122000000") // fixme : kstCurrentDatetime(); // a new method of util.DateUtil
+        .fromDate("20210121") // fixme : user_sync_stat.synced_at
+        .toDate("20210122") // fixme : kstCurrentDatetime(); // a new method of util.DateUtil
         .limit(MAX_LIMIT)
         .build();
     ExecutionRequest<LoanAccountTransactionRequest> executionRequest = ExecutionUtil
@@ -121,6 +121,11 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         .transCnt(0)
         .transList(new ArrayList<>())
         .build();
+    final LoanAccountTransaction defaultTransaction = LoanAccountTransaction.builder()
+        .accountNum(accountSummary.getAccountNum())
+        .seqno(accountSummary.getSeqno())
+        .build();
+    final AccountTransactionMapper accountTransactionMapper = Mappers.getMapper(AccountTransactionMapper.class);
 
     //TODO
     //  Change to flex-like instead of do-while.
@@ -131,10 +136,14 @@ public class ExternalApiServiceImpl implements ExternalApiService {
       response.setRspMsg(page.getRspMsg());
       response.setNextPage(page.getNextPage());
       response.setTransCnt(response.getTransCnt() + page.getTransCnt());
-      response.getTransList().addAll(page.getTransList());
+      response.getTransList().addAll(
+          page.getTransList().stream()
+              .peek(loanAccountTransaction -> accountTransactionMapper
+                  .updateDtoFromDto(defaultTransaction, loanAccountTransaction))
+              .collect(Collectors.toList())
+      );
       executionRequest.getRequest().setNextPage(page.getNextPage());
     } while (response.getNextPage() != null);
-
     return response;
   }
 

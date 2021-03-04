@@ -42,7 +42,7 @@ public class OperatingLeaseTransactionEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false)
   private String accountNumEncrypted;
 
-  private Integer seqno;
+  private String seqno;
 
   @Column(nullable = false)
   private LocalDateTime transDtime;

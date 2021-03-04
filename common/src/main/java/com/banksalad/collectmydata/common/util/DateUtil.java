@@ -46,7 +46,7 @@ public class DateUtil {
 
     return toDatetimeEpochMilli(dateSource + timeSource);
   }
-  
+
   public static long kstLocalDateTimeToEpochMilliSecond(LocalDateTime localDateTime) {
     return localDateTime.toInstant(ZoneOffset.of(ASIA_SEOUL_ZONEOFFSET)).toEpochMilli();
   }
@@ -64,6 +64,14 @@ public class DateUtil {
   }
 
   public static String localDateToDateString(LocalDate source) {
+    if (source == null) {
+      return null;
+    }
+
+    return dateFormatter.format(source);
+  }
+
+  public static String localDateTimeToDateString(LocalDateTime source) {
     if (source == null) {
       return null;
     }

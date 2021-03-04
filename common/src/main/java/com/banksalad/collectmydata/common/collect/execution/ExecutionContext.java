@@ -12,7 +12,7 @@ public class ExecutionContext {
 
   private final String syncRequestId;
   private String executionRequestId;
-  private final long banksaladUserId;
+  private final Long banksaladUserId;
   private final String organizationId;
   private final String accessToken;
   private final String organizationHost;

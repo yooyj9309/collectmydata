@@ -40,7 +40,7 @@ public class AccountListEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false, name = "account_num_encrypted")
   private String accountNum;
 
-  private Integer seqno;
+  private String seqno;
 
   @Column(nullable = false)
   private Boolean isConsent;

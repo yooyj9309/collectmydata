@@ -10,15 +10,11 @@ import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicResponse;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountDetailResponse;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionInterest;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.common.enums.Industry;
-import com.banksalad.collectmydata.common.enums.MydataSector;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
@@ -35,6 +31,21 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
+import static com.banksalad.collectmydata.capital.common.TestHelper.ACCESS_TOKEN;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ACCOUNT_NUM;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ACCOUNT_STATUS;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ACCOUNT_TYPE;
+import static com.banksalad.collectmydata.capital.common.TestHelper.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.capital.common.TestHelper.INDUSTRY;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ORGANIZATION_CODE;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ORGANIZATION_HOST;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.capital.common.TestHelper.PRODUCT_NAME;
+import static com.banksalad.collectmydata.capital.common.TestHelper.SECTOR;
+import static com.banksalad.collectmydata.capital.common.TestHelper.SEQNO1;
+import static com.banksalad.collectmydata.capital.common.TestHelper.SEQNO2;
+import static com.banksalad.collectmydata.capital.common.TestHelper.respondLoanAccountTransactionResponseWithOnePage;
+import static com.banksalad.collectmydata.capital.common.TestHelper.respondLoanAccountTransactionResponseWithTwoPages;
 import static com.banksalad.collectmydata.capital.util.FileUtil.readText;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -51,18 +62,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DisplayName("ExternalApiService Test")
 class ExternalApiServiceTest {
 
-  private static final MydataSector SECTOR = MydataSector.FINANCE;
-  private static final Industry INDUSTRY = Industry.CAPITAL;
-  private static final String ORGANIZATION_ID = "X-loan";
-  private static final String ORGANIZATION_CODE = "10041004";
-  private static final String ORGANIZATION_HOST = "localhost";
-  private static final Long BANKSALAD_USER_ID = 1L;
-  private static final String ACCESS_TOKEN = "abc.def.ghi";
-  private static final String ACCOUNT_NUMBER = "1234567890";
-  private static final Integer SEQNO = 1;
-  private static final String ACCOUNT_TYPE = "3100";
-  private static final String ACCOUNT_STATUS = "01";
-  private static final String PRODUCT_NAME = "X-론 직장인 신용대출";
 
   private static WireMockServer wireMockServer;
 
@@ -148,81 +147,29 @@ class ExternalApiServiceTest {
 
   @Test
   @DisplayName("6.7.4 대출상품계좌 거래내역 조회: 2개 페이지 결합하기 (seqno 없는 경우)")
-  public void givenExecutionContextAndRequest_whenGetTransactions_thenFirstPage() {
+  public void givenExecutionContextAndRequest_whenGetTransactions_thenTwoPages() {
     // Given
-    ExecutionContext executionContext = getExecutionContext();
-    Organization organization = getOrganization();
-    AccountSummary accountSummary = getAccount();
+    final ExecutionContext executionContext = getExecutionContext();
+    final Organization organization = getOrganization();
+    final AccountSummary accountSummary = getAccount();
+    final Long bankSaladUserId = executionContext.getBanksaladUserId();
+    final String organizationId = organization.getOrganizationId();
+    LoanAccountTransactionResponse expectedLoanAccountTransactionResponse = respondLoanAccountTransactionResponseWithTwoPages();
+    expectedLoanAccountTransactionResponse.getTransList().forEach(loanAccountTransaction -> {
+          loanAccountTransaction.setAccountNum(accountSummary.getAccountNum());
+          loanAccountTransaction.setSeqno(accountSummary.getSeqno());
+        }
+    );
 
     // When
-    LoanAccountTransactionResponse response = externalApiService
+    LoanAccountTransactionResponse actualLoanAccountTransactionResponse = externalApiService
         .getAccountTransactions(executionContext, organization, accountSummary);
 
     // Then
-    assertEquals(3, response.getTransCnt());
-    assertEquals(3, response.getTransList().size());
-    assertThat(response).usingRecursiveComparison().isEqualTo(
-        LoanAccountTransactionResponse.builder()
-            .rspCode("00000")
-            .rspMsg("rsp_msg")
-            .transCnt(3)
-            .transList(List.of(
-                LoanAccountTransaction.builder()
-                    .transDtime("20210121103000")
-                    .transNo("trans#2")
-                    .transType("03")
-                    .transAmt(BigDecimal.valueOf(1000.3))
-                    .balanceAmt(BigDecimal.valueOf(18000.7))
-                    .principalAmt(BigDecimal.valueOf(20000.0))
-                    .intAmt(100)
-                    .intCnt(2)
-                    .intList(List.of(
-                        LoanAccountTransactionInterest.builder()
-                            .intStartDate("20201201")
-                            .intEndDate("20201231")
-                            .intRate(BigDecimal.valueOf(4.125))
-                            .intType("02")
-                            .build(),
-                        LoanAccountTransactionInterest.builder()
-                            .intStartDate("20201201")
-                            .intEndDate("20201231")
-                            .intRate(BigDecimal.valueOf(3.025))
-                            .intType("01")
-                            .build()
-                    ))
-                    .build(),
-                LoanAccountTransaction.builder()
-                    .transDtime("20210121093000")
-                    .transNo("trans#1")
-                    .transType("03")
-                    .transAmt(BigDecimal.valueOf(1000.3))
-                    .balanceAmt(BigDecimal.valueOf(18000.7))
-                    .principalAmt(BigDecimal.valueOf(20000.0))
-                    .intAmt(100)
-                    .intCnt(1)
-                    .intList(List.of(
-                        LoanAccountTransactionInterest.builder()
-                            .intStartDate("20201201")
-                            .intEndDate("20201231")
-                            .intRate(BigDecimal.valueOf(3.025))
-                            .intType("99")
-                            .build()
-                    ))
-                    .build(),
-                LoanAccountTransaction.builder()
-                    .transDtime("20210121221000")
-                    .transNo("trans#3")
-                    .transType("99")
-                    .transAmt(BigDecimal.valueOf(0.0))
-                    .balanceAmt(BigDecimal.valueOf(18000.7))
-                    .principalAmt(BigDecimal.valueOf(20000.0))
-                    .intAmt(0)
-                    .intCnt(0)
-                    .intList(List.of())
-                    .build()
-            ))
-            .build()
-    );
+    assertEquals(3, actualLoanAccountTransactionResponse.getTransCnt());
+    assertEquals(3, actualLoanAccountTransactionResponse.getTransList().size());
+    assertThat(actualLoanAccountTransactionResponse).usingRecursiveComparison()
+        .isEqualTo(expectedLoanAccountTransactionResponse);
   }
 
   @Test
@@ -311,9 +258,9 @@ class ExternalApiServiceTest {
 
   private AccountSummary getAccount() {
     return AccountSummary.builder()
-        .accountNum(ACCOUNT_NUMBER)
+        .accountNum(ACCOUNT_NUM)
         .isConsent(TRUE)
-        .seqno(SEQNO)
+        .seqno(SEQNO1)
         .prodName(PRODUCT_NAME)
         .accountType(ACCOUNT_TYPE)
         .accountStatus(ACCOUNT_STATUS)
@@ -331,7 +278,7 @@ class ExternalApiServiceTest {
             AccountSummary.builder()
                 .accountNum("1234123412341234")
                 .isConsent(true)
-                .seqno(1)
+                .seqno(SEQNO1)
                 .prodName("상품명1")
                 .accountType("3100")
                 .accountStatus("01")
@@ -339,7 +286,7 @@ class ExternalApiServiceTest {
             AccountSummary.builder()
                 .accountNum("5678567856785678")
                 .isConsent(true)
-                .seqno(2)
+                .seqno(SEQNO2)
                 .prodName("상품명2")
                 .accountType("3210")
                 .accountStatus("03")

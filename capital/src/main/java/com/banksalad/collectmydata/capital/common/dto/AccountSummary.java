@@ -18,7 +18,7 @@ import lombok.Setter;
 public class AccountSummary {
 
   private String accountNum;
-  private Integer seqno; // seqno는 null 필드이나, int 일 경우, mapping 과정에서 디폴트값 적재될 가능성있음.
+  private String seqno; // seqno는 null 필드이나, int 일 경우, mapping 과정에서 디폴트값 적재될 가능성있음.
   private Boolean isConsent;
   private String prodName;
   private String accountType;

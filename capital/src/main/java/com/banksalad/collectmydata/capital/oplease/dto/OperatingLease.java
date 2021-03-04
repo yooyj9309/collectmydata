@@ -18,7 +18,7 @@ import lombok.Setter;
 public class OperatingLease {
 
   private String accountNum;
-  private Integer seqno;
+  private String seqno;
   private String holderName;
   private String issueDate;
   private String expDate;

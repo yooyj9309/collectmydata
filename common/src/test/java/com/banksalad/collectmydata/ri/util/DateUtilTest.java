@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.ri.util;
 
 import com.banksalad.collectmydata.common.util.DateUtil;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -21,5 +22,12 @@ public class DateUtilTest {
 
     //1602320400000 == 2020년 10월 10일 토요일 오후 6:00:00 GMT+09:00
     assertEquals(1602320400000L, DateUtil.kstLocalDateTimeToEpochMilliSecond(localDateTime));
+  }
+
+  @Test
+  @DisplayName("LocalDateTime to String of Date")
+  public void convertLocalDateTimetoStringOfDate() {
+    LocalDateTime localDateTime = LocalDateTime.of(2020, 10, 10, 18, 0, 0);
+    assertEquals("20201010", DateUtil.localDateTimeToDateString(localDateTime));
   }
 }

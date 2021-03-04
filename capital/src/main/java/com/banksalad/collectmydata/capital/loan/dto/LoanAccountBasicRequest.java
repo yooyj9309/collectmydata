@@ -17,6 +17,6 @@ public class LoanAccountBasicRequest {
 
   private String orgCode;
   private String accountNum;
-  private Integer seqno;
+  private String seqno;
   private long searchTimestamp;
 }

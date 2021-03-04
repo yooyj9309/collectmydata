@@ -18,6 +18,6 @@ public class OperatingLeaseBasicRequest {
 
   private String orgCode;
   private String accountNum;
-  private Integer seqno;
+  private String seqno;
   private long searchTimestamp;
 }

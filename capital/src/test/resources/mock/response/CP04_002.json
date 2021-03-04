@@ -8,10 +8,10 @@
       "trans_dtime": "20210121103000",
       "trans_no": "trans#2",
       "trans_type": "03",
-      "trans_amt": 1000.3,
-      "balance_amt": 18000.7,
-      "principal_amt": 20000.0,
-      "int_amt": 100,
+      "trans_amt": 1000.300,
+      "balance_amt": 18000.700,
+      "principal_amt": 20000.000,
+      "int_amt": 100.000,
       "int_cnt": 2,
       "int_list": [
         {
@@ -32,10 +32,10 @@
       "trans_dtime": "20210121093000",
       "trans_no": "trans#1",
       "trans_type": "03",
-      "trans_amt": 1000.3,
-      "balance_amt": 18000.7,
-      "principal_amt": 20000.0,
-      "int_amt": 100,
+      "trans_amt": 1000.300,
+      "balance_amt": 18000.700,
+      "principal_amt": 20000.000,
+      "int_amt": 100.000,
       "int_cnt": 1,
       "int_list": [
         {

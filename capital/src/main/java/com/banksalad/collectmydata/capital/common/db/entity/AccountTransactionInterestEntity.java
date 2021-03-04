@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -45,13 +47,13 @@ public class AccountTransactionInterestEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false, name = "account_num_encrypted")
   private String accountNum;
 
-  private Integer seqno;
+  private String seqno;
 
   @NotNull
   private String uniqueTransNo;
 
   @NotNull
-  private int intNo;
+  private Integer intNo;
 
   @NotNull
   private LocalDate intStartDate;
@@ -60,6 +62,7 @@ public class AccountTransactionInterestEntity extends BaseTimeAndUserEntity {
   private LocalDate intEndDate;
 
   @NotNull
+  @Column(precision = 5, scale = 3)
   private BigDecimal intRate;
 
   @NotNull
