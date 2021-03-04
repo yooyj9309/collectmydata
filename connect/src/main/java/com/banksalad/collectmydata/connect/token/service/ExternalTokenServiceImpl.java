@@ -1,16 +1,23 @@
 package com.banksalad.collectmydata.connect.token.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
+import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
+import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
+import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
+import com.banksalad.collectmydata.connect.common.dto.ErrorResponse;
+import com.banksalad.collectmydata.connect.common.enums.TokenErrorType;
 import com.banksalad.collectmydata.connect.common.exception.ConnectException;
 import com.banksalad.collectmydata.connect.common.collect.Executions;
 import com.banksalad.collectmydata.connect.common.db.entity.OrganizationClientEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationClientRepository;
 import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
-import com.banksalad.collectmydata.connect.common.service.ExecutionService;
+import com.banksalad.collectmydata.connect.common.meters.ConnectMeterRegistry;
 import com.banksalad.collectmydata.connect.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
 import com.banksalad.collectmydata.connect.token.dto.ExternalIssueTokenRequest;
@@ -24,7 +31,8 @@ import lombok.RequiredArgsConstructor;
 public class ExternalTokenServiceImpl implements ExternalTokenService {
 
   private final OrganizationClientRepository organizationClientRepository;
-  private final ExecutionService executionService;
+  private final CollectExecutor collectExecutor;
+  private final ConnectMeterRegistry connectMeterRegistry;
 
   @Value("${banksalad.oauth-callback-url}")
   private String redirectUrl;
@@ -44,9 +52,7 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
     ExecutionRequest<ExternalIssueTokenRequest> executionRequest = ExecutionUtil.executionRequestAssembler(request);
     ExecutionContext executionContext = buildExecutionContext(organization);
 
-    ExternalTokenResponse response = executionService
-        .execute(executionContext, Executions.oauth_issue_token, executionRequest);
-    return response;
+    return execute(executionContext, Executions.oauth_issue_token, executionRequest);
   }
 
   @Override
@@ -63,9 +69,7 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
     ExecutionRequest<ExternalRefreshTokenRequest> executionRequest = ExecutionUtil.executionRequestAssembler(request);
     ExecutionContext executionContext = buildExecutionContext(organization);
 
-    ExternalTokenResponse response = executionService
-        .execute(executionContext, Executions.oauth_refresh_token, executionRequest);
-    return response;
+    return execute(executionContext, Executions.oauth_refresh_token, executionRequest);
   }
 
   @Override
@@ -82,7 +86,7 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
     ExecutionRequest<ExternalRevokeTokenRequest> executionRequest = ExecutionUtil.executionRequestAssembler(request);
     ExecutionContext executionContext = buildExecutionContext(organization);
 
-    executionService.execute(executionContext, Executions.oauth_revoke_token, executionRequest);
+    execute(executionContext, Executions.oauth_revoke_token, executionRequest);
   }
 
   private OrganizationClientEntity getOrganizationClientEntity(Organization organization) {
@@ -96,5 +100,21 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
         .organizationId(organization.getOrganizationId())
         .organizationHost(organization.getDomain())
         .build();
+  }
+
+  private <T, R> R execute(ExecutionContext executionContext, Execution execution,
+      ExecutionRequest<T> executionRequest) {
+
+    ExecutionResponse<R> executionResponse = collectExecutor.execute(executionContext, execution, executionRequest);
+
+    // TODO : Throw 부분 개선후 적용 - logging, execution monitoring,throw
+    if (executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
+      ErrorResponse errorResponse = (ErrorResponse) executionResponse.getResponse();
+      connectMeterRegistry.incrementTokenErrorCount(executionContext.getOrganizationId(),
+          TokenErrorType.getValidatedError(errorResponse.getError()));
+
+      throw new CollectRuntimeException(errorResponse.getError());
+    }
+    return executionResponse.getResponse();
   }
 }

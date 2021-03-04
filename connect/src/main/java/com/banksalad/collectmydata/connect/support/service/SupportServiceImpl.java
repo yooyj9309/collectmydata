@@ -1,11 +1,16 @@
 package com.banksalad.collectmydata.connect.support.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.common.collect.api.Api;
+import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
+import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
+import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
+import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.connect.common.collect.Apis;
 import com.banksalad.collectmydata.connect.common.collect.Executions;
 import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
@@ -23,7 +28,9 @@ import com.banksalad.collectmydata.connect.common.db.repository.FinanceServiceRe
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationClientRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationOauthTokenRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.SyncApiStatusRepository;
-import com.banksalad.collectmydata.connect.common.service.ExecutionService;
+import com.banksalad.collectmydata.connect.common.dto.ErrorResponse;
+import com.banksalad.collectmydata.connect.common.enums.TokenErrorType;
+import com.banksalad.collectmydata.connect.common.meters.ConnectMeterRegistry;
 import com.banksalad.collectmydata.connect.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationInfo;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationRequest;
@@ -50,7 +57,8 @@ public class SupportServiceImpl implements SupportService {
   public static final String AUTHORIZATION = "Authorization";
   public static final String BANKSALAD_ORAGNIZATION_ID = "banksalad";
 
-  private final ExecutionService executionService;
+  private final CollectExecutor collectExecutor;
+  private final ConnectMeterRegistry connectMeterRegistry;
   private final ConnectOrganizationRepository connectOrganizationRepository;
   private final SyncApiStatusRepository syncApiStatusRepository;
   private final OrganizationClientRepository organizationClientRepository;
@@ -82,11 +90,8 @@ public class SupportServiceImpl implements SupportService {
     ExecutionRequest<FinanceOrganizationRequest> executionRequest = ExecutionUtil
         .executionRequestAssembler(headers, request);
 
-    FinanceOrganizationResponse financeOrganizationResponse = (FinanceOrganizationResponse) executionService.execute(
-        executionContext,
-        Executions.support_get_organization_info,
-        executionRequest
-    );
+    FinanceOrganizationResponse financeOrganizationResponse = execute(executionContext,
+        Executions.support_get_organization_info, executionRequest);
 
     // db 조회
     for (FinanceOrganizationInfo orgInfo : financeOrganizationResponse.getOrgList()) {
@@ -107,18 +112,16 @@ public class SupportServiceImpl implements SupportService {
     Long timestamp = getTimeStamp(Apis.support_get_organization_service_info); // 7.1.3 timestamp 조회
     // 7.1.3 기관 서비스 정보 조회 및 적재
     Map<String, String> headers = Map.of(AUTHORIZATION, accessToken);
-    FinanceOrganizationRequest request = FinanceOrganizationRequest.builder().searchTimestamp(timestamp).build();
+    FinanceOrganizationRequest request = FinanceOrganizationRequest.builder()
+        .searchTimestamp(timestamp)
+        .build();
 
     ExecutionRequest<FinanceOrganizationRequest> executionRequest = ExecutionUtil
         .executionRequestAssembler(headers, request);
 
     // 7.1.2 기관 정보 조회 및 적재
-    FinanceOrganizationServiceResponse executionResponse = (FinanceOrganizationServiceResponse) executionService
-        .execute(
-            executionContext,
-            Executions.support_get_organization_info,
-            executionRequest
-        );
+    FinanceOrganizationServiceResponse executionResponse = execute(executionContext,
+        Executions.support_get_organization_info, executionRequest);
 
     // db 적재
     // 기관 리스트 순회
@@ -185,11 +188,8 @@ public class SupportServiceImpl implements SupportService {
           .executionRequestAssembler(request);
 
       // 7.1.1 기관 정보 조회 및 적재
-      FinanceOrganizationTokenResponse response = (FinanceOrganizationTokenResponse) executionService.execute(
-          executionContext,
-          Executions.support_get_access_token,
-          executionRequest
-      );
+      FinanceOrganizationTokenResponse response = execute(executionContext, Executions.support_get_access_token,
+          executionRequest);
 
       //TODO token_type, scope 고정값 검증 및 에러 처리
 
@@ -223,5 +223,23 @@ public class SupportServiceImpl implements SupportService {
     return ExecutionContext.builder()
         .organizationHost(financePortalDomain)
         .build();
+  }
+
+  private <T, R> R execute(ExecutionContext executionContext, Execution execution,
+      ExecutionRequest<T> executionRequest) {
+
+    ExecutionResponse<R> executionResponse = collectExecutor.execute(executionContext, execution, executionRequest);
+
+    // TODO : Throw 부분 개선후 적용 - logging, execution monitoring,throw
+    if (executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
+      ErrorResponse errorResponse = (ErrorResponse) executionResponse.getResponse();
+
+      // TODO : 지원 API의 경우 error & metric 변경
+      connectMeterRegistry.incrementTokenErrorCount(executionContext.getOrganizationId(),
+          TokenErrorType.getValidatedError(errorResponse.getError()));
+
+      throw new CollectRuntimeException(errorResponse.getError());
+    }
+    return executionResponse.getResponse();
   }
 }

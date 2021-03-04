@@ -5,6 +5,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
+import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.enums.Industry;
 import com.banksalad.collectmydata.common.enums.MydataSector;
 import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
@@ -17,7 +19,6 @@ import com.banksalad.collectmydata.connect.common.db.repository.FinanceServiceCl
 import com.banksalad.collectmydata.connect.common.db.repository.FinanceServiceRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationClientRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationOauthTokenRepository;
-import com.banksalad.collectmydata.connect.common.service.ExecutionService;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationInfo;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationResponse;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationServiceInfo;
@@ -45,7 +46,7 @@ public class SupportServiceTest {
   private SupportService supportService;
 
   @MockBean
-  private ExecutionService executionService;
+  private CollectExecutor collectExecutor;
 
   @Autowired
   private OrganizationClientRepository organizationClientRepository;
@@ -177,60 +178,70 @@ public class SupportServiceTest {
   }
 
   public void mockingOrganizationInfoTest() {
-    when(executionService.execute(any(), any(), any())).thenReturn(
-        FinanceOrganizationResponse.builder()
-            .rspCode("000")
-            .rspMsg("rsp_msg")
-            .searchTimestamp(1000L)
-            .orgCnt(2)
-            .orgList(List.of(
-                FinanceOrganizationInfo.builder()
-                    .opType("I")
-                    .orgCode("020")
-                    .orgType("01")
-                    .orgName("기관1")
-                    .orgRegno("1234567890")
-                    .corpRegno("1234567890")
-                    .address("address1")
-                    .domain("domain1")
-                    .relayOrgCode("relay_org_code1")
-                    .build(),
-                FinanceOrganizationInfo.builder()
-                    .opType("I")
-                    .orgCode("030")
-                    .orgType("02")
-                    .orgName("기관2")
-                    .orgRegno("1234567890")
-                    .corpRegno("1234567890")
-                    .address("address2")
-                    .domain("domain2")
-                    .relayOrgCode("relay_org_code2")
-                    .build()
-            )).build()
+    when(collectExecutor.execute(any(), any(), any())).thenReturn(
+        ExecutionResponse.builder()
+            .httpStatusCode(200)
+            .response(
+                FinanceOrganizationResponse.builder()
+                    .rspCode("000")
+                    .rspMsg("rsp_msg")
+                    .searchTimestamp(1000L)
+                    .orgCnt(2)
+                    .orgList(List.of(
+                        FinanceOrganizationInfo.builder()
+                            .opType("I")
+                            .orgCode("020")
+                            .orgType("01")
+                            .orgName("기관1")
+                            .orgRegno("1234567890")
+                            .corpRegno("1234567890")
+                            .address("address1")
+                            .domain("domain1")
+                            .relayOrgCode("relay_org_code1")
+                            .build(),
+                        FinanceOrganizationInfo.builder()
+                            .opType("I")
+                            .orgCode("030")
+                            .orgType("02")
+                            .orgName("기관2")
+                            .orgRegno("1234567890")
+                            .corpRegno("1234567890")
+                            .address("address2")
+                            .domain("domain2")
+                            .relayOrgCode("relay_org_code2")
+                            .build()
+                    )).build()
+            )
+            .build()
     );
   }
 
   public void mockingOrganizationServiceInfo() {
-    when(executionService.execute(any(), any(), any())).thenReturn(
-        FinanceOrganizationServiceResponse.builder()
-            .rspCode("000")
-            .rspMsg("rsp_msg")
-            .searchTimestamp(1000L)
-            .orgList(List.of(FinanceOrganizationInfo.builder()
-                .orgCode("020")
-                .serviceCnt(1)
-                .serviceList(List.of(FinanceOrganizationServiceInfo.builder()
-                    .serviceName("service1")
-                    .opType("I")
-                    .clientId("clientId")
-                    .clientSecret("clientSecret")
-                    .redirectUri("http://redirect.com")
-                    .clientIpCnt(1)
-                    .clientIpList(List.of(FinanceOrganizationServiceIp.builder()
-                        .clientIp("127.0.0.1")
+    when(collectExecutor.execute(any(), any(), any())).thenReturn(
+        ExecutionResponse.builder()
+            .httpStatusCode(200)
+            .response(
+                FinanceOrganizationServiceResponse.builder()
+                    .rspCode("000")
+                    .rspMsg("rsp_msg")
+                    .searchTimestamp(1000L)
+                    .orgList(List.of(FinanceOrganizationInfo.builder()
+                        .orgCode("020")
+                        .serviceCnt(1)
+                        .serviceList(List.of(FinanceOrganizationServiceInfo.builder()
+                            .serviceName("service1")
+                            .opType("I")
+                            .clientId("clientId")
+                            .clientSecret("clientSecret")
+                            .redirectUri("http://redirect.com")
+                            .clientIpCnt(1)
+                            .clientIpList(List.of(FinanceOrganizationServiceIp.builder()
+                                .clientIp("127.0.0.1")
+                                .build()))
+                            .build()))
                         .build()))
-                    .build()))
-                .build()))
+                    .build()
+            )
             .build()
     );
   }
