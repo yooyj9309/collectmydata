@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @Builder
@@ -26,6 +28,6 @@ public class AccountSummary {
   private long basicSearchTimestamp; // account -> entity mapping 과정에서 제거해야될 필드
   private long detailSearchTimestamp; // account -> entity mapping 과정에서 제거해야될 필드
   private long operatingLeaseBasicSearchTimestamp; // account -> entity mapping 과정에서 제거해야될 필드
-
-  // TODO 6.7.2 6.7.3 response도 아래에 이어서 관리하는게 맞지않나 고려, (dto -> entity로 변환될 구조이니)
+  private LocalDate transactionFromDate;
+  private LocalDate operatingLeaseTransactionFromDate;
 }
