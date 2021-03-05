@@ -6,12 +6,15 @@ import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
+import com.banksalad.collectmydata.capital.common.db.entity.OrganizationUserEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.UserSyncStatusEntity;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountListRepository;
+import com.banksalad.collectmydata.capital.common.db.repository.OrganizationUserRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.UserSyncStatusRepository;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+import com.banksalad.collectmydata.common.util.DateUtil;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
@@ -41,6 +44,9 @@ public class AccountSummaryServiceTest {
 
   @Autowired
   private UserSyncStatusRepository userSyncStatusRepository;
+
+  @Autowired
+  private OrganizationUserRepository organizationUserRepository;
 
   private static WireMockServer wireMockServer;
 
@@ -85,6 +91,17 @@ public class AccountSummaryServiceTest {
                 .prodName("상품명1")
                 .accountType("3100")
                 .accountStatus("01")
+                .build()
+        );
+
+    assertThat(organizationUserRepository.findAll().get(0)).usingRecursiveComparison()
+        .ignoringFields("id", "createdAt", "createdBy", "updatedAt", "updatedBy")
+        .isEqualTo(
+            OrganizationUserEntity.builder()
+                .syncedAt(now)
+                .banksaladUserId(banksaladUserId)
+                .organizationId(organizationId)
+                .regDate(DateUtil.toLocalDate("20210207"))
                 .build()
         );
 

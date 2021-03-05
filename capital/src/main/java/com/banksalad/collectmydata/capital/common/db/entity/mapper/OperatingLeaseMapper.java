@@ -16,7 +16,6 @@ public interface OperatingLeaseMapper {
 
   @Mappings(
       value = {
-          @Mapping(target = "id", ignore = true),
           @Mapping(source = "context.syncStartedAt", target = "syncedAt"),
           @Mapping(source = "response.issueDate", target = "issueDate", dateFormat = "yyyyMMdd"),
           @Mapping(source = "response.expDate", target = "expDate", dateFormat = "yyyyMMdd"),
@@ -28,9 +27,6 @@ public interface OperatingLeaseMapper {
 
   @Mappings(
       value = {
-          @Mapping(target = "rspCode", ignore = true),
-          @Mapping(target = "rspMsg", ignore = true),
-          @Mapping(target = "searchTimestamp", ignore = true),
           @Mapping(target = "issueDate", dateFormat = "yyyyMMdd"),
           @Mapping(target = "expDate", dateFormat = "yyyyMMdd"),
           @Mapping(target = "nextRepayDate", dateFormat = "yyyyMMdd"),

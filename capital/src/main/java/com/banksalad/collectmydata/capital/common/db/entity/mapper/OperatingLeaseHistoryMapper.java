@@ -3,16 +3,10 @@ package com.banksalad.collectmydata.capital.common.db.entity.mapper;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseHistoryEntity;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface OperatingLeaseHistoryMapper {
 
-  @Mappings(
-      value = {
-          @Mapping(target = "id", ignore = true)
-      }
-  )
   OperatingLeaseHistoryEntity toOperatingLeaseHistoryEntity(OperatingLeaseEntity operatingLeaseEntity);
 }

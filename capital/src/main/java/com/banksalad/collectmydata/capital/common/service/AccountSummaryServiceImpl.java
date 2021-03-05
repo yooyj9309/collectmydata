@@ -4,12 +4,15 @@ import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.capital.common.collect.Apis;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
+import com.banksalad.collectmydata.capital.common.db.entity.OrganizationUserEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountListMapper;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountListRepository;
+import com.banksalad.collectmydata.capital.common.db.repository.OrganizationUserRepository;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+import com.banksalad.collectmydata.common.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
@@ -23,6 +26,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
   private final ExternalApiService externalApiService;
   private final UserSyncStatusService userSyncStatusService;
   private final AccountListRepository accountListRepository;
+  private final OrganizationUserRepository organizationUserRepository;
 
   private final AccountListMapper accountListMapper = Mappers.getMapper(AccountListMapper.class);
 
@@ -36,17 +40,25 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
     String organizationId = executionContext.getOrganizationId();
     String organizationCode = organization.getOrganizationCode();
 
-    AccountSummaryResponse accountSummaryResponse = null;
-    boolean isExceptionOccurred = false;
-
     // UserSyncStatus 조회 -> timestamp 조회
     long searchTimeStamp = userSyncStatusService
         .getSearchTimestamp(executionContext.getBanksaladUserId(), organizationId, Apis.capital_get_accounts);
 
     // api 호출 try-catch
-    accountSummaryResponse = externalApiService.getAccounts(executionContext, organizationCode, searchTimeStamp);
+    AccountSummaryResponse accountSummaryResponse = externalApiService
+        .getAccounts(executionContext, organizationCode, searchTimeStamp);
 
-    // TODO ORGANIZAITON_USER 적재로직 추가.
+    // OragnizationUser 등록
+    if (!organizationUserRepository.existsByBanksaladUserIdAndOrganizationId(banksaladUserId, organizationId)) {
+      organizationUserRepository.save(
+          OrganizationUserEntity.builder()
+              .syncedAt(executionContext.getSyncStartedAt())
+              .banksaladUserId(banksaladUserId)
+              .organizationId(organizationId)
+              .regDate(DateUtil.toLocalDate(accountSummaryResponse.getRegDate()))
+              .build()
+      );
+    }
 
     if (accountSummaryResponse.getAccountSummaries() != null) {
       for (AccountSummary accountSummary : accountSummaryResponse.getAccountSummaries()) {
@@ -75,7 +87,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
             Apis.capital_get_accounts.getId(),
             executionContext.getSyncStartedAt(),
             accountSummaryResponse.getSearchTimestamp(),
-            true // TODO https://github.com/banksalad/collectmydata/pull/89 머지 후 수정.
+            true //목록조회에서는 실패시 throw를 하기에 true값 전달
         );
 
     // db에 적재되어있는 항목을 꺼내어 리턴
