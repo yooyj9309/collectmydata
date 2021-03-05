@@ -32,6 +32,6 @@ public interface ExternalApiService {
       AccountSummary accountSummary);
 
   // 6.7.6
-  OperatingLeaseTransactionResponse getOperatingLeaseTransactions(ExecutionContext executionContext,
+  OperatingLeaseTransactionResponse listOperatingLeaseTransactions(ExecutionContext executionContext,
       Organization organization, AccountSummary accountSummary);
 }

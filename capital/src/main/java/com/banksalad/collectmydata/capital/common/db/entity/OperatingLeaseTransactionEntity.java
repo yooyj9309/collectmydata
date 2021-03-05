@@ -25,7 +25,7 @@ public class OperatingLeaseTransactionEntity extends BaseTimeAndUserEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long operatingLeaseTransactionId;
+  private Long id;
 
   @Column(nullable = false)
   private Integer transactionYearMonth;
@@ -39,8 +39,8 @@ public class OperatingLeaseTransactionEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false)
   private String organizationId;
 
-  @Column(nullable = false)
-  private String accountNumEncrypted;
+  @Column(nullable = false, name = "account_num_encrypted")
+  private String accountNum;
 
   private String seqno;
 

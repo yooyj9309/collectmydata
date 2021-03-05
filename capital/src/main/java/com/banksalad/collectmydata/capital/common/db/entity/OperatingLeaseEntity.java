@@ -27,7 +27,7 @@ public class OperatingLeaseEntity extends BaseTimeAndUserEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long operatingLeaseId;
+  private Long id;
 
   @Column(nullable = false)
   private LocalDateTime syncedAt;

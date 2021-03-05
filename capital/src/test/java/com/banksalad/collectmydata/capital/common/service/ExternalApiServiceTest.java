@@ -44,7 +44,6 @@ import static com.banksalad.collectmydata.capital.common.TestHelper.PRODUCT_NAME
 import static com.banksalad.collectmydata.capital.common.TestHelper.SECTOR;
 import static com.banksalad.collectmydata.capital.common.TestHelper.SEQNO1;
 import static com.banksalad.collectmydata.capital.common.TestHelper.SEQNO2;
-import static com.banksalad.collectmydata.capital.common.TestHelper.respondLoanAccountTransactionResponseWithOnePage;
 import static com.banksalad.collectmydata.capital.common.TestHelper.respondLoanAccountTransactionResponseWithTwoPages;
 import static com.banksalad.collectmydata.capital.util.FileUtil.readText;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -199,7 +198,7 @@ class ExternalApiServiceTest {
 
     // when
     OperatingLeaseTransactionResponse operatingLeaseTransactionResponse = externalApiService
-        .getOperatingLeaseTransactions(executionContext, organization, accountSummary);
+        .listOperatingLeaseTransactions(executionContext, organization, accountSummary);
 
     // then
     assertThat(operatingLeaseTransactionResponse).usingRecursiveComparison().isEqualTo(

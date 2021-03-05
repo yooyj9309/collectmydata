@@ -16,7 +16,7 @@ public interface OperatingLeaseMapper {
 
   @Mappings(
       value = {
-          @Mapping(target = "operatingLeaseId", ignore = true),
+          @Mapping(target = "id", ignore = true),
           @Mapping(source = "context.syncStartedAt", target = "syncedAt"),
           @Mapping(source = "response.issueDate", target = "issueDate", dateFormat = "yyyyMMdd"),
           @Mapping(source = "response.expDate", target = "expDate", dateFormat = "yyyyMMdd"),

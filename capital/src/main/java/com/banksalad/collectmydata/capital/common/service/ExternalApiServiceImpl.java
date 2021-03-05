@@ -173,7 +173,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   }
 
   @Override
-  public OperatingLeaseTransactionResponse getOperatingLeaseTransactions(ExecutionContext executionContext,
+  public OperatingLeaseTransactionResponse listOperatingLeaseTransactions(ExecutionContext executionContext,
       Organization organization, AccountSummary accountSummary) {
     // executionId 생성.
     executionContext.generateAndsUpdateExecutionRequestId();

@@ -14,6 +14,5 @@ public interface OperatingLeaseService {
       List<AccountSummary> accountSummaries);
 
   List<OperatingLeaseTransaction> listOperatingLeaseTransactions(ExecutionContext executionContext,
-      Organization organization,
-      List<AccountSummary> accountSummaries);
+      Organization organization, List<AccountSummary> accountSummaries);
 }

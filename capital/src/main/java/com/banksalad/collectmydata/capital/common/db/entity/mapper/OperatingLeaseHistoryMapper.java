@@ -11,7 +11,7 @@ public interface OperatingLeaseHistoryMapper {
 
   @Mappings(
       value = {
-          @Mapping(target = "operatingLeaseHistoryId", ignore = true),
+          @Mapping(target = "id", ignore = true)
       }
   )
   OperatingLeaseHistoryEntity toOperatingLeaseHistoryEntity(OperatingLeaseEntity operatingLeaseEntity);
