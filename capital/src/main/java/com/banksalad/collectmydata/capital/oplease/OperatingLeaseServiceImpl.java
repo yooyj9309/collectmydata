@@ -15,7 +15,7 @@ import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.ExecutionResponseValidateService;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
 import com.banksalad.collectmydata.capital.common.service.UserSyncStatusService;
-import com.banksalad.collectmydata.capital.loan.LoanAccountService;
+import com.banksalad.collectmydata.capital.loan.AccountService;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLease;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OperatingLeaseServiceImpl implements OperatingLeaseService {
 
-  private final LoanAccountService loanAccountService;
+  private final AccountService accountService;
   private final ExternalApiService externalApiService;
   private final UserSyncStatusService userSyncStatusService;
   private final ExecutionResponseValidateService executionResponseValidateService;
@@ -119,7 +119,7 @@ public class OperatingLeaseServiceImpl implements OperatingLeaseService {
 
     // accountList timestamp update
     accountSummary.setOperatingLeaseBasicSearchTimestamp(response.getSearchTimestamp());
-    loanAccountService.updateSearchTimestampOnAccount(banksaladUserId, organizationId, accountSummary);
+    accountService.updateSearchTimestampOnAccount(banksaladUserId, organizationId, accountSummary);
 
     return operatingLeaseMapper.operatingLeaseAssembler(response, accountSummary);
   }

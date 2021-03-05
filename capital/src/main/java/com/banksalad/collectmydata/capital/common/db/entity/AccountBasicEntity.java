@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -22,8 +23,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "account_summary")
-public class AccountSummaryEntity extends BaseTimeAndUserEntity {
+@Table(name = "account_basic")
+public class AccountBasicEntity extends BaseTimeAndUserEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,25 +44,27 @@ public class AccountSummaryEntity extends BaseTimeAndUserEntity {
 
   private String seqno;
 
-  @Column(nullable = false)
-  private Boolean isConsent;
+  @Column(nullable = false, name = "holder_name_encrypted")
+  private String holderName;
 
   @Column(nullable = false)
-  private String prodName;
+  private LocalDate issueDate;
 
   @Column(nullable = false)
-  private String accountType;
+  private LocalDate expDate;
 
   @Column(nullable = false)
-  private String accountStatus;
+  private BigDecimal lastOfferedRate;
 
-  private Long basicSearchTimestamp;
+  @Column(nullable = false)
+  private String repayDate;
 
-  private Long detailSearchTimestamp;
+  @Column(nullable = false)
+  private String repayMethod;
 
-  private Long operatingLeaseBasicSearchTimestamp;
+  @Column(nullable = false)
+  private String repayOrgCode;
 
-  private LocalDate transactionFromDate;
-
-  private LocalDate operatingLeaseTransactionFromDate;
+  @Column(name = "repay_account_num_encrypted")
+  private String repayAccountNum;
 }

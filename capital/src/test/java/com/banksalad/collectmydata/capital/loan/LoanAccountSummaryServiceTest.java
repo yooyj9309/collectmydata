@@ -48,7 +48,7 @@ public class LoanAccountSummaryServiceTest {
   private ExternalApiService externalApiService;
 
   @Autowired
-  private LoanAccountService loanAccountService;
+  private AccountService accountService;
 
   @Autowired
   private AccountListRepository accountListRepository;
@@ -100,7 +100,7 @@ public class LoanAccountSummaryServiceTest {
         .thenReturn(respondLoanAccountTransactionResponseWithEmptyPages());
 
     // When
-    List<LoanAccountTransaction> response = loanAccountService
+    List<LoanAccountTransaction> response = accountService
         .listAccountTransactions(executionContext, organization, List.of(accountSummary));
 
     // Then
@@ -130,7 +130,7 @@ public class LoanAccountSummaryServiceTest {
         .thenReturn(expectedLoanAccountTransactionResponse);
 
     // When
-    List<LoanAccountTransaction> actualLoanAccountTransactions = loanAccountService
+    List<LoanAccountTransaction> actualLoanAccountTransactions = accountService
         .listAccountTransactions(executionContext, organization, List.of(accountSummary));
 
     // Then
@@ -160,7 +160,7 @@ public class LoanAccountSummaryServiceTest {
         .thenReturn(expectedLoanAccountTransactionResponse);
 
     // When
-    List<LoanAccountTransaction> actualLoanAccountTransactions = loanAccountService
+    List<LoanAccountTransaction> actualLoanAccountTransactions = accountService
         .listAccountTransactions(executionContext, organization, List.of(accountSummary));
 
     // Then
@@ -202,7 +202,7 @@ public class LoanAccountSummaryServiceTest {
   @DisplayName("updateAccountTimestamp 성공 케이스")
   public void updateAccountTimestamp_success() {
     saveAccountSummaryEntity();
-    loanAccountService.updateSearchTimestampOnAccount(banksaladUserId, organizationId, accountAssembler());
+    accountService.updateSearchTimestampOnAccount(banksaladUserId, organizationId, accountAssembler());
     assertEquals(1, accountListRepository.findAll().size());
 
     AccountSummaryEntity entity = accountListRepository.findAll().get(0);
@@ -219,7 +219,7 @@ public class LoanAccountSummaryServiceTest {
     saveAccountSummaryEntity();
     Exception exception = assertThrows(
         Exception.class,
-        () -> loanAccountService.updateSearchTimestampOnAccount(banksaladUserId, organizationId, null)
+        () -> accountService.updateSearchTimestampOnAccount(banksaladUserId, organizationId, null)
     );
     assertThat(exception).isInstanceOf(CollectRuntimeException.class);
     assertEquals("Invalid account", exception.getMessage());
@@ -231,7 +231,7 @@ public class LoanAccountSummaryServiceTest {
   public void updateAccountTimestamp_nodata() {
     Exception exception = assertThrows(
         Exception.class,
-        () -> loanAccountService.updateSearchTimestampOnAccount(banksaladUserId, organizationId, accountAssembler())
+        () -> accountService.updateSearchTimestampOnAccount(banksaladUserId, organizationId, accountAssembler())
     );
     assertThat(exception).isInstanceOf(CollectRuntimeException.class);
     assertEquals("No data AccountSummaryEntity", exception.getMessage());

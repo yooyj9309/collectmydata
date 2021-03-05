@@ -5,10 +5,16 @@ import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.capital.common.collect.Apis;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
+import com.banksalad.collectmydata.capital.common.db.entity.AccountBasicEntity;
+import com.banksalad.collectmydata.capital.common.db.entity.AccountBasicHistoryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionInterestEntity;
+import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountBasicHistoryMapper;
+import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountBasicMapper;
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountTransactionInterestMapper;
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountTransactionMapper;
+import com.banksalad.collectmydata.capital.common.db.repository.AccountBasicHistoryRepository;
+import com.banksalad.collectmydata.capital.common.db.repository.AccountBasicRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountListRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionInterestRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionRepository;
@@ -17,17 +23,25 @@ import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.ExecutionResponseValidateService;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
 import com.banksalad.collectmydata.capital.common.service.UserSyncStatusService;
+import com.banksalad.collectmydata.capital.loan.dto.AccountBasic;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccount;
+import com.banksalad.collectmydata.capital.loan.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.crypto.HashUtil;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
+
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -40,15 +54,21 @@ import java.util.stream.Stream;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class LoanAccountServiceImpl implements LoanAccountService {
+public class AccountServiceImpl implements AccountService {
 
   private final ExternalApiService externalApiService;
   private final UserSyncStatusService userSyncStatusService;
   private final ExecutionResponseValidateService executionResponseValidateService;
   private final AccountListRepository accountListRepository;
+  private final AccountBasicRepository accountBasicRepository;
+  private final AccountBasicHistoryRepository accountBasicHistoryRepository;
   private final AccountTransactionRepository accountTransactionRepository;
   private final AccountTransactionInterestRepository accountTransactionInterestRepository;
   private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
+
+  private final AccountBasicMapper accountBasicMapper = Mappers.getMapper(AccountBasicMapper.class);
+  private final AccountBasicHistoryMapper accountBasicHistoryMapper = Mappers
+      .getMapper(AccountBasicHistoryMapper.class);
 
   /**
    * on-demand 6.7.2 (대출상품계좌 기본정보 조회) 및 6.7.3(대출상품계좌 추가정보 조회) 두개를 조회하여 조합, 적재
@@ -71,8 +91,9 @@ public class LoanAccountServiceImpl implements LoanAccountService {
    * 정기전송 시점에 6.7.2만 호출되는 경우. 업데이트가 있는경우 List<AccountInfo>에 매핑
    */
   @Override
-  public List<LoanAccount> listLoanAccountBasics(ExecutionContext executionContext, Organization organization,
+  public List<AccountBasic> listLoanAccountBasics(ExecutionContext executionContext, Organization organization,
       List<AccountSummary> accountSummaries) {
+
     return null;
   }
 

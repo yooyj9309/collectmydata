@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicResponse;
 import com.banksalad.collectmydata.capital.loan.dto.AccountDetailResponse;
+import com.banksalad.collectmydata.capital.loan.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
@@ -106,12 +106,12 @@ class ExternalApiServiceTest {
     AccountSummary accountSummary = getAccount();
 
     // when
-    LoanAccountBasicResponse loanAccountBasicResponse = externalApiService
+    AccountBasicResponse accountBasicResponse = externalApiService
         .getAccountBasic(executionContext, organization, accountSummary);
 
     // then
-    assertThat(loanAccountBasicResponse).usingRecursiveComparison().isEqualTo(
-        LoanAccountBasicResponse.builder()
+    assertThat(accountBasicResponse).usingRecursiveComparison().isEqualTo(
+        AccountBasicResponse.builder()
             .rspCode("000")
             .rspMsg("rep_msg")
             .searchTimestamp(1000)

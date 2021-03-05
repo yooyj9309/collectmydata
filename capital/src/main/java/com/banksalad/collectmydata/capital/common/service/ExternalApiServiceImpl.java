@@ -10,10 +10,12 @@ import com.banksalad.collectmydata.capital.common.dto.AccountSummaryRequest;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.util.ExecutionUtil;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicRequest;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountBasicResponse;
+
 import com.banksalad.collectmydata.capital.loan.dto.AccountDetailRequest;
 import com.banksalad.collectmydata.capital.loan.dto.AccountDetailResponse;
+import com.banksalad.collectmydata.capital.loan.dto.AccountBasicRequest;
+import com.banksalad.collectmydata.capital.loan.dto.AccountBasicResponse;
+
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionRequest;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
@@ -66,20 +68,20 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   }
 
   @Override
-  public LoanAccountBasicResponse getAccountBasic(ExecutionContext executionContext, Organization organization,
+  public AccountBasicResponse getAccountBasic(ExecutionContext executionContext, Organization organization,
       AccountSummary accountSummary) {
     // executionId 생성.
     executionContext.generateAndsUpdateExecutionRequestId();
 
     Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
-    LoanAccountBasicRequest request = LoanAccountBasicRequest.builder()
+    AccountBasicRequest request = AccountBasicRequest.builder()
         .orgCode(organization.getOrganizationCode())
         .accountNum(accountSummary.getAccountNum())
         .seqno(accountSummary.getSeqno())
         .searchTimestamp(0L) // TODO
         .build();
 
-    ExecutionRequest<LoanAccountBasicRequest> executionRequest = ExecutionUtil
+    ExecutionRequest<AccountBasicRequest> executionRequest = ExecutionUtil
         .executionRequestAssembler(headers, request);
 
     return execute(executionContext, Executions.capital_get_account_basic, executionRequest);

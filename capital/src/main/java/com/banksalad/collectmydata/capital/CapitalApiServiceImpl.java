@@ -8,7 +8,7 @@ import com.banksalad.collectmydata.capital.common.dto.CapitalApiResponse.Capital
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.capital.grpc.client.CollectmydataConnectClientService;
-import com.banksalad.collectmydata.capital.loan.LoanAccountService;
+import com.banksalad.collectmydata.capital.loan.AccountService;
 import com.banksalad.collectmydata.capital.oplease.OperatingLeaseService;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class CapitalApiServiceImpl implements CapitalApiService {
 
   private final AccountSummaryService accountSummaryService;
-  private final LoanAccountService loanAccountService;
+  private final AccountService accountService;
   private final CollectmydataConnectClientService collectmydataConnectClientService;
   private final OperatingLeaseService operatingLeaseService;
   private final CapitalPublishService capitalPublishService;
@@ -58,7 +58,7 @@ public class CapitalApiServiceImpl implements CapitalApiService {
 
     // 이부분을 비동기로 진행하는경우, executionRequestId를 덮어쓰는 문제 발생. 해당부분 해결후 수정.
     List<AccountSummary> operatingLeaseAccountSummaries = accountSummaries.stream()
-        .filter(account -> OPERATING_LEASE_ACCOUNT_TYPE.equals(account.getAccountType()))
+        .filter(account -> OPERATING_LEASE_ACCOUNT_TYPE.equals(account.getAccountType()) && account.getIsConsent())
         .collect(Collectors.toList());
     capitalApiResponseBuilder.operatingLeases(
         operatingLeaseService.listOperatingLeases(executionContext, organization, operatingLeaseAccountSummaries));
@@ -67,12 +67,12 @@ public class CapitalApiServiceImpl implements CapitalApiService {
             operatingLeaseAccountSummaries));
 
     List<AccountSummary> anotherAccountSummaries = accountSummaries.stream()
-        .filter(account -> !OPERATING_LEASE_ACCOUNT_TYPE.equals(account.getAccountType()))
+        .filter(account -> !OPERATING_LEASE_ACCOUNT_TYPE.equals(account.getAccountType()) && account.getIsConsent())
         .collect(Collectors.toList());
     capitalApiResponseBuilder.loanAccounts(
-        loanAccountService.listLoanAccounts(executionContext, organization, anotherAccountSummaries));
+        accountService.listLoanAccounts(executionContext, organization, anotherAccountSummaries));
     capitalApiResponseBuilder.loanAccountTransactions(
-        loanAccountService.listAccountTransactions(executionContext, organization, anotherAccountSummaries));
+        accountService.listAccountTransactions(executionContext, organization, anotherAccountSummaries));
 
     return capitalApiResponseBuilder.build();
   }
