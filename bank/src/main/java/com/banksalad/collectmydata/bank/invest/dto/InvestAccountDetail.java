@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -20,9 +19,21 @@ import java.time.LocalDateTime;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class InvestAccountDetail {
 
-  private String currencyCode;
+  private String rspCode;
+
+  private String rspMsg;
+
+  private long searchTimestamp;
+
+  @Builder.Default
+  private String currencyCode = "KRW";
+
   private BigDecimal balanceAmt;
+
   private BigDecimal evalAmt;
+
   private BigDecimal invPrincipal;
+
   private BigDecimal fundNum;
+
 }

@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.bank.invest.dto;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
@@ -17,12 +18,7 @@ import lombok.Setter;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class GetInvestAccountBasicResponse {
 
-  private String rspCode;
-  private String rspMsg;
-  private long searchTimestamp;
-  private String standardFundCode;
-  private String paidInType;
-  private String issueDate;
-  private String expDate;
+  @JsonUnwrapped
+  private InvestAccountBasic investAccountBasic;
 
 }

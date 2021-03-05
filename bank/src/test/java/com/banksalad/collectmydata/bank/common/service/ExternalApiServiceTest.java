@@ -9,6 +9,8 @@ import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.common.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailResponse;
+import com.banksalad.collectmydata.bank.invest.dto.InvestAccountBasic;
+import com.banksalad.collectmydata.bank.invest.dto.InvestAccountDetail;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.organization.Organization;
 import com.banksalad.collectmydata.common.util.DateUtil;
@@ -85,13 +87,13 @@ class ExternalApiServiceTest {
     ExecutionContext executionContext = getExecutionContext();
     Organization organization = getOrganization();
     GetInvestAccountBasicResponse expectedInvestAccountBasicResponse = GetInvestAccountBasicResponse.builder()
-        .rspCode("000")
-        .rspMsg("rsp_msg")
-        .searchTimestamp(1000)
-        .standardFundCode("standard_101")
-        .paidInType("01")
-        .issueDate("20200101")
-        .expDate("20201231")
+        .investAccountBasic(InvestAccountBasic.builder().rspCode("000")
+            .rspMsg("rsp_msg")
+            .searchTimestamp(1000)
+            .standardFundCode("standard_101")
+            .paidInType("01")
+            .issueDate("20200101")
+            .expDate("20201231").build())
         .build();
 
     AccountSummary accountSummary = AccountSummary.builder()
@@ -122,13 +124,16 @@ class ExternalApiServiceTest {
     ExecutionContext executionContext = getExecutionContext();
     Organization organization = getOrganization();
     GetInvestAccountDetailResponse expectedInvestAccountDetailResponse = GetInvestAccountDetailResponse.builder()
-        .rspCode("000")
-        .rspMsg("rsp_msg")
-        .searchTimestamp(1000)
-        .balanceAmt(new BigDecimal("1928393.123"))
-        .evalAmt(new BigDecimal("12345.678"))
-        .invPrincipal(new BigDecimal("123456789123456789.123"))
-        .fundNum(new BigDecimal("12342.12"))
+        .investAccountDetail(InvestAccountDetail.builder()
+            .rspCode("000")
+            .rspMsg("rsp_msg")
+            .searchTimestamp(1000)
+            .currencyCode("KRW")
+            .balanceAmt(new BigDecimal("1928393.123"))
+            .evalAmt(new BigDecimal("12345.678"))
+            .invPrincipal(new BigDecimal("123456.123"))
+            .fundNum(new BigDecimal("12342.12"))
+            .build())
         .build();
 
     AccountSummary accountSummary = AccountSummary.builder()

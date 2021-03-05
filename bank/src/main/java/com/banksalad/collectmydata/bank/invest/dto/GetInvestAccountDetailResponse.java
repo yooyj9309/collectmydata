@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.bank.invest.dto;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
@@ -9,8 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @Getter
 @Setter
 @Builder
@@ -19,13 +18,7 @@ import java.math.BigDecimal;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class GetInvestAccountDetailResponse {
 
-  private String rspCode;
-  private String rspMsg;
-  private long searchTimestamp;
-  private String currencyCode;
-  private BigDecimal balanceAmt;
-  private BigDecimal evalAmt;
-  private BigDecimal invPrincipal;
-  private BigDecimal fundNum;
+  @JsonUnwrapped
+  private InvestAccountDetail investAccountDetail;
 
 }

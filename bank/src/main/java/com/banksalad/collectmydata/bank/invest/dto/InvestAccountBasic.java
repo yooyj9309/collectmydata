@@ -19,9 +19,18 @@ import java.time.LocalDateTime;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class InvestAccountBasic {
 
+  private String rspCode;
+
+  private String rspMsg;
+
+  private long searchTimestamp;
+
   private String standardFundCode;
+
   private String paidInType;
+
   private String issueDate;
+
   private String expDate;
 
 }
