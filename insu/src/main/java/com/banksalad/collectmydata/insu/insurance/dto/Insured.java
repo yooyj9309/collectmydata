@@ -13,9 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class GetInsuranceBasicRequest {
+public class Insured {
 
-  private String orgCode;
-  private String insuNum;
-  private long searchTimestamp;
+  private String insuredNo;
+  private String insuredName;
 }
