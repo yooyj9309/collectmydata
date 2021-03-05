@@ -10,7 +10,6 @@ import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionRespon
 import com.banksalad.collectmydata.common.crypto.HashUtil;
 import com.banksalad.collectmydata.common.enums.Industry;
 import com.banksalad.collectmydata.common.enums.MydataSector;
-
 import org.mapstruct.factory.Mappers;
 
 import java.math.BigDecimal;
@@ -37,17 +36,17 @@ public class TestHelper {
   public static final int TRANSACTION_YEAR_MONTH = Integer.parseInt(TRANS_DTIME.substring(0, 6));
   public static final String TRANS_NO = "1";
   public static final String TRANS_TYPE = "01";
-  public static final BigDecimal TRANS_AMT = bigDecimalOf(100.001);
-  public static final BigDecimal BALANCE_AMT = bigDecimalOf(899.999);
-  public static final BigDecimal PRINCIPAL_AMT = bigDecimalOf(1000.000);
-  public static final BigDecimal INT_AMT = bigDecimalOf(5L);
+  public static final BigDecimal TRANS_AMT = bigDecimalOf(100.001, 3);
+  public static final BigDecimal BALANCE_AMT = bigDecimalOf(899.999, 3);
+  public static final BigDecimal PRINCIPAL_AMT = bigDecimalOf(1000.000, 3);
+  public static final BigDecimal INT_AMT = bigDecimalOf(5L, 3);
   public static final int INT_CNT = 1;
   public static final int INT_NO = 1;
   public static final String UNIQUE_TRANS_NO = HashUtil
       .hashCat(Arrays.asList(TRANS_DTIME, TRANS_NO, BALANCE_AMT.toString()));
   public static final String INT_START_DATE = "20200101";
   public static final String INT_END_DATE = "20200131";
-  public static final BigDecimal INT_RATE = bigDecimalOf(3.124);
+  public static final BigDecimal INT_RATE = bigDecimalOf(3.124, 3);
   public static final String INT_TYPE = "01";
   public static final String ACCESS_TOKEN = "abc.def.ghi";
   public static final String ACCOUNT_TYPE = "3100";
@@ -92,22 +91,22 @@ public class TestHelper {
         .transDtime("20210121103000")
         .transNo("trans#2")
         .transType("03")
-        .transAmt(bigDecimalOf(1000.3))
-        .balanceAmt(bigDecimalOf(18000.7))
-        .principalAmt(bigDecimalOf(20000.0))
-        .intAmt(bigDecimalOf(100))
+        .transAmt(bigDecimalOf(1000.3, 3))
+        .balanceAmt(bigDecimalOf(18000.7, 3))
+        .principalAmt(bigDecimalOf(20000.0, 3))
+        .intAmt(bigDecimalOf(100, 3))
         .intCnt(2)
         .intList(List.of(
             LoanAccountTransactionInterest.builder()
                 .intStartDate("20201201")
                 .intEndDate("20201231")
-                .intRate(bigDecimalOf(4.125))
+                .intRate(bigDecimalOf(4.125, 3))
                 .intType("02")
                 .build(),
             LoanAccountTransactionInterest.builder()
                 .intStartDate("20201201")
                 .intEndDate("20201231")
-                .intRate(bigDecimalOf(3.025))
+                .intRate(bigDecimalOf(3.025, 3))
                 .intType("01")
                 .build()
         ))
@@ -115,7 +114,7 @@ public class TestHelper {
   }
 
   public static String uniqueTransNo1() {
-    return HashUtil.hashCat(Arrays.asList("20210121103000", "trans#2", bigDecimalOf(18000.7).toString()));
+    return HashUtil.hashCat(Arrays.asList("20210121103000", "trans#2", bigDecimalOf(18000.7, 3).toString()));
   }
 
   public static LoanAccountTransaction generateLoanAccountTransaction2() {
@@ -123,16 +122,16 @@ public class TestHelper {
         .transDtime("20210121093000")
         .transNo("trans#1")
         .transType("03")
-        .transAmt(bigDecimalOf(1000.3))
-        .balanceAmt(bigDecimalOf(18000.7))
-        .principalAmt(bigDecimalOf(20000.0))
-        .intAmt(bigDecimalOf(100))
+        .transAmt(bigDecimalOf(1000.3, 3))
+        .balanceAmt(bigDecimalOf(18000.7, 3))
+        .principalAmt(bigDecimalOf(20000.0, 3))
+        .intAmt(bigDecimalOf(100, 3))
         .intCnt(1)
         .intList(List.of(
             LoanAccountTransactionInterest.builder()
                 .intStartDate("20201201")
                 .intEndDate("20201231")
-                .intRate(bigDecimalOf(3.025))
+                .intRate(bigDecimalOf(3.025, 3))
                 .intType("99")
                 .build()
         ))
@@ -140,7 +139,7 @@ public class TestHelper {
   }
 
   public static String uniqueTransNo2() {
-    return HashUtil.hashCat(Arrays.asList("20210121093000", "trans#1", bigDecimalOf(18000.7).toString()));
+    return HashUtil.hashCat(Arrays.asList("20210121093000", "trans#1", bigDecimalOf(18000.7, 3).toString()));
   }
 
   public static LoanAccountTransaction generateLoanAccountTransaction3() {
@@ -148,17 +147,17 @@ public class TestHelper {
         .transDtime("20210121221000")
         .transNo("trans#3")
         .transType("99")
-        .transAmt(bigDecimalOf(0.0))
-        .balanceAmt(bigDecimalOf(18000.7))
-        .principalAmt(bigDecimalOf(20000.0))
-        .intAmt(bigDecimalOf(0))
+        .transAmt(bigDecimalOf(0.0, 3))
+        .balanceAmt(bigDecimalOf(18000.7, 3))
+        .principalAmt(bigDecimalOf(20000.0, 3))
+        .intAmt(bigDecimalOf(0, 3))
         .intCnt(0)
         .intList(List.of())
         .build();
   }
 
   public static String uniqueTransNo3() {
-    return HashUtil.hashCat(Arrays.asList("20210121221000", "trans#3", bigDecimalOf(18000.7).toString()));
+    return HashUtil.hashCat(Arrays.asList("20210121221000", "trans#3", bigDecimalOf(18000.7, 3).toString()));
   }
 
   public static LoanAccountTransactionResponse respondLoanAccountTransactionResponseWithEmptyPages() {

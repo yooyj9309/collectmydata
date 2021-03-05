@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.bank.depoist.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
@@ -9,7 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,16 +19,17 @@ import java.math.BigDecimal;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class DepositAccountDetail {
+public class GetDepositAccountDetailResponse {
 
+  private String rspCode;
+
+  private String rspMsg;
+
+  private long searchTimestamp;
+
+  private int detailCnt;
+
+  @JsonProperty(value = "detail_list")
   @Builder.Default
-  private String currencyCode = "KRW";
-
-  private BigDecimal balanceAmt;
-
-  private BigDecimal withdrawableAmt;
-
-  private BigDecimal offeredRate;
-
-  private Integer lastPaidInCnt;
+  private List<DepositAccountDetail> depositAccountDetails = new ArrayList<>();
 }

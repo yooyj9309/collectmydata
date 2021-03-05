@@ -9,6 +9,5 @@ import org.mapstruct.Mapping;
 public interface DepositAccountBasicHistoryMapper {
 
   @Mapping(target = "id", ignore = true)
-  DepositAccountBasicHistoryEntity toDepositAccountBasicHistoryEntity(
-      DepositAccountBasicEntity DepositAccountBasicEntity);
+  DepositAccountBasicHistoryEntity toHistoryEntity(DepositAccountBasicEntity DepositAccountBasicEntity);
 }

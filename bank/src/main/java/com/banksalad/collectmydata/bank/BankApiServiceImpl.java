@@ -7,6 +7,7 @@ import com.banksalad.collectmydata.bank.common.dto.BankApiResponse;
 import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.bank.depoist.DepositAccountService;
 import com.banksalad.collectmydata.bank.depoist.dto.DepositAccountBasic;
+import com.banksalad.collectmydata.bank.depoist.dto.DepositAccountDetail;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.enums.SyncRequestType;
 import com.banksalad.collectmydata.common.util.DateUtil;
@@ -35,7 +36,7 @@ public class BankApiServiceImpl implements BankApiService {
   @Override
   public BankApiResponse requestApi(long banksaladUserId, String organizationId, String syncRequestId,
       SyncRequestType syncRequestType) {
-    
+
     ExecutionContext executionContext = ExecutionContext.builder()
         .banksaladUserId(banksaladUserId)
         .organizationId(organizationId)
@@ -75,7 +76,11 @@ public class BankApiServiceImpl implements BankApiService {
     bankApiResponseAtomicReference.set(BankApiResponse.builder().build());
 
     // TODO jayden-lee parallel api requests
+
     List<DepositAccountBasic> depositAccountBasics = depositAccountService.listDepositAccountBasics(executionContext,
+        depositAccountSummaries);
+
+    List<DepositAccountDetail> depositAccountDetails = depositAccountService.listDepositAccountDetails(executionContext,
         depositAccountSummaries);
 
     return bankApiResponseAtomicReference.get();

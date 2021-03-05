@@ -12,6 +12,7 @@ import com.banksalad.collectmydata.bank.common.db.entity.mapper.AccountSummaryMa
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.depoist.dto.DepositAccountBasic;
+import com.banksalad.collectmydata.bank.depoist.dto.DepositAccountDetail;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -38,7 +39,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DisplayName("수신계좌 기본정보 조회 테스트")
+@DisplayName("수신계좌 서비스 테스트")
 @Transactional
 class DepositAccountServiceImplTest {
 
@@ -103,6 +104,38 @@ class DepositAccountServiceImplTest {
     Assertions.assertThat(depositAccountBasics.size()).isEqualTo(1);
   }
 
+  @Test
+  @DisplayName("수신계좌 추가정보 조회")
+  public void step_02_listDepositAccountDetails_success() throws Exception {
+    /* deposit account detail mock server */
+    setupServerDepositAccountDetail();
+
+    /* save mock account summaries */
+    List<AccountSummaryEntity> accountSummaryEntities = getAccountSummaryEntities();
+    accountSummaryRepository.saveAll(accountSummaryEntities);
+
+    List<AccountSummary> accountSummaries = accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndIsConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true)
+        .stream()
+        .map(accountSummaryMapper::entityToDto)
+        .collect(Collectors.toList());
+
+    /* execution context */
+    ExecutionContext executionContext = ExecutionContext.builder()
+        .banksaladUserId(BANKSALAD_USER_ID)
+        .organizationId(ORGANIZATION_ID)
+        .accessToken("test")
+        .organizationHost(ORGANIZATION_HOST + ":" + wiremock.port())
+        .executionRequestId(UUID.randomUUID().toString())
+        .syncStartedAt(LocalDateTime.now(DateUtil.KST_ZONE_ID))
+        .build();
+
+    List<DepositAccountDetail> depositAccountDetails = depositAccountService
+        .listDepositAccountDetails(executionContext, accountSummaries);
+
+    Assertions.assertThat(depositAccountDetails.size()).isEqualTo(2);
+  }
+
   private void setupServerDepositAccountBasic() throws Exception {
     wiremock.stubFor(post(urlMatching("/accounts/deposit/basic"))
         .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA02_001_single_page_00.json")))
@@ -112,6 +145,17 @@ class DepositAccountServiceImplTest {
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA02_001_single_page_00.json"))));
+  }
+
+  private void setupServerDepositAccountDetail() throws Exception {
+    wiremock.stubFor(post(urlMatching("/accounts/deposit/detail"))
+        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA03_002_single_page_00.json")))
+        .willReturn(
+            aResponse()
+                .withFixedDelay(1000)
+                .withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+                .withBody(readText("classpath:mock/bank/response/BA03_002_single_page_00.json"))));
   }
 
   private List<AccountSummaryEntity> getAccountSummaryEntities() {

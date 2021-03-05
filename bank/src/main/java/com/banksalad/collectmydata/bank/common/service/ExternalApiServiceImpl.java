@@ -9,6 +9,8 @@ import com.banksalad.collectmydata.bank.common.dto.ListAccountSummariesRequest;
 import com.banksalad.collectmydata.bank.common.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.bank.depoist.dto.GetDepositAccountBasicRequest;
 import com.banksalad.collectmydata.bank.depoist.dto.GetDepositAccountBasicResponse;
+import com.banksalad.collectmydata.bank.depoist.dto.GetDepositAccountDetailRequest;
+import com.banksalad.collectmydata.bank.depoist.dto.GetDepositAccountDetailResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicRequest;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailRequest;
@@ -105,8 +107,42 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     ExecutionResponse<GetDepositAccountBasicResponse> executionResponse = collectExecutor
         .execute(executionContext, Executions.finance_bank_deposit_account_basic, executionRequest);
 
-    if (executionResponse == null || executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
+    if (executionResponse.getResponse() == null || executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
       throw new RuntimeException("Get deposit account basic status is not OK");
+    }
+
+    return executionResponse.getResponse();
+  }
+
+  @Override
+  public GetDepositAccountDetailResponse getDepositAccountDetail(ExecutionContext executionContext,
+      String orgCode, String accountNum, String seqno, long searchTimestamp) {
+
+    executionContext.generateAndsUpdateExecutionRequestId();
+
+    ExecutionRequest<GetDepositAccountDetailRequest> executionRequest = ExecutionRequest.<GetDepositAccountDetailRequest>builder()
+        .headers(Map.of(AUTHORIZATION, executionContext.getAccessToken()))
+        .request(
+            GetDepositAccountDetailRequest.builder()
+                .orgCode(orgCode)
+                .accountNum(accountNum)
+                .seqno(seqno)
+                .searchTimestamp(searchTimestamp)
+                .build())
+        .build();
+
+    ExecutionResponse<GetDepositAccountDetailResponse> executionResponse = collectExecutor
+        .execute(executionContext, Executions.finance_bank_deposit_account_detail, executionRequest);
+
+    if (executionResponse.getResponse() == null || executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
+      throw new RuntimeException("Get deposit account detail status is not OK");
+    }
+
+    GetDepositAccountDetailResponse response = executionResponse.getResponse();
+
+    if (response.getDetailCnt() != response.getDepositAccountDetails().size()) {
+      log.error("account details size not equal. cnt: {}, size: {}", response.getDetailCnt(),
+          response.getDepositAccountDetails().size());
     }
 
     return executionResponse.getResponse();
@@ -131,7 +167,8 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     ExecutionResponse<GetInvestAccountBasicResponse> investAccountBasicResponse = collectExecutor
         .execute(executionContext, Executions.finance_bank_invest_account_basic, request);
 
-    if (investAccountBasicResponse == null || investAccountBasicResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
+    if (investAccountBasicResponse.getResponse() == null
+        || investAccountBasicResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
       throw new RuntimeException("Invest account basic Status is not OK");
     }
 
@@ -157,7 +194,8 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     ExecutionResponse<GetInvestAccountDetailResponse> investAccountDetailResponse = collectExecutor
         .execute(executionContext, Executions.finance_bank_invest_account_detail, request);
 
-    if (investAccountDetailResponse == null || investAccountDetailResponse.getHttpStatusCode() != HttpStatus.OK
+    if (investAccountDetailResponse.getResponse() == null
+        || investAccountDetailResponse.getHttpStatusCode() != HttpStatus.OK
         .value()) {
       throw new RuntimeException("Invest account detail Status is not OK");
     }

@@ -9,6 +9,9 @@ public interface AccountSummaryService {
 
   List<AccountSummary> listAccountSummaries(ExecutionContext executionContext);
 
-  void updateBasicTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+  void updateBasicSearchTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary,
       long basicSearchTimestamp);
+
+  void updateDetailSearchTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      long detailSearchTimestamp);
 }

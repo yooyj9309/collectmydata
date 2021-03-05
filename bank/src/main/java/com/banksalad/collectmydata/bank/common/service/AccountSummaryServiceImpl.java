@@ -110,8 +110,9 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
         .collect(Collectors.toList());
   }
 
+  @Override
   @Transactional(propagation = Propagation.REQUIRED)
-  public void updateBasicTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+  public void updateBasicSearchTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary,
       long basicSearchTimestamp) {
 
     AccountSummaryEntity accountSummaryEntity = accountSummaryRepository
@@ -120,5 +121,22 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
             accountSummary.isForeignDeposit());
 
     accountSummaryEntity.setBasicSearchTimestamp(basicSearchTimestamp);
+
+    accountSummaryRepository.save(accountSummaryEntity);
+  }
+
+  @Override
+  @Transactional(propagation = Propagation.REQUIRED)
+  public void updateDetailSearchTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      long detailSearchTimestamp) {
+
+    AccountSummaryEntity accountSummaryEntity = accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndIsForeignDeposit(
+            banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno(),
+            accountSummary.isForeignDeposit());
+
+    accountSummaryEntity.setDetailSearchTimestamp(detailSearchTimestamp);
+
+    accountSummaryRepository.save(accountSummaryEntity);
   }
 }

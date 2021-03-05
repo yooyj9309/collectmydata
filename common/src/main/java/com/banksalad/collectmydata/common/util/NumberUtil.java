@@ -7,7 +7,6 @@ public class NumberUtil {
 
   private static final int X100 = 100;
   private static final int X1000 = 1000;
-  private static final int AMOUNT_SCALE = 3;
 
   public static long multiply1000(BigDecimal source) {
     if (source == null) {
@@ -35,18 +34,19 @@ public class NumberUtil {
     return result.longValueExact();
   }
 
-  public static BigDecimal setScale(BigDecimal source) {
+  public static BigDecimal setScale(BigDecimal source, int scale) {
     if (source == null) {
       return null;
     }
-    return source.setScale(AMOUNT_SCALE, RoundingMode.UNNECESSARY);
+
+    return source.setScale(scale, RoundingMode.UNNECESSARY);
   }
 
-  public static BigDecimal bigDecimalOf(double source){
-    return setScale(BigDecimal.valueOf(source));
+  public static BigDecimal bigDecimalOf(double source, int scale) {
+    return setScale(BigDecimal.valueOf(source), scale);
   }
 
-  public static BigDecimal bigDecimalOf(long source){
-    return setScale(BigDecimal.valueOf(source));
+  public static BigDecimal bigDecimalOf(long source, int scale) {
+    return setScale(BigDecimal.valueOf(source), scale);
   }
 }
