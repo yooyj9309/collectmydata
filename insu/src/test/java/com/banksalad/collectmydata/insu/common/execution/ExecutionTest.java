@@ -12,6 +12,9 @@ import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.insu.collect.Executions;
+import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractRequest;
+import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractResponse;
+import com.banksalad.collectmydata.insu.insurance.dto.InsuranceContract;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.Insured;
@@ -60,7 +63,6 @@ public class ExecutionTest {
     wireMockServer.shutdown();
   }
 
-  @Test
   @DisplayName("6.5.2 보험 기본정보 조회")
   public void getInsuranceBasicApiTest() {
     ExecutionContext executionContext = getExecutionContext();
@@ -104,6 +106,56 @@ public class ExecutionTest {
                 .build()
         );
   }
+  
+  @Test
+  @DisplayName("6.5.3 보험 특약정보 조회")
+  public void getInsuranceContractApiTest() {
+    ExecutionContext executionContext = getExecutionContext();
+
+    GetInsuranceContractRequest request = GetInsuranceContractRequest.builder()
+        .orgCode(ORGANIZATION_CODE)
+        .insuNum("123456789")
+        .insuredNo("01")
+        .searchTimestamp(0L)
+        .build();
+
+    ExecutionRequest<GetInsuranceContractRequest> executionRequest = ExecutionUtil
+        .assembleExecutionRequest(HEADERS, request);
+
+    ExecutionResponse<GetInsuranceContractResponse> executionResponse = collectExecutor
+        .execute(executionContext, Executions.insurance_get_contract, executionRequest);
+
+    assertThat(executionResponse.getResponse()).usingRecursiveComparison()
+        .isEqualTo(
+            GetInsuranceContractResponse.builder()
+                .rspCode("00000")
+                .rspMsg("success")
+                .searchTimestamp(1000L)
+                .contractCnt(2)
+                .contractList(
+                    List.of(
+                        InsuranceContract.builder()
+                            .contractName("묻지도따지지도않고")
+                            .contractStatus("02")
+                            .contractExpDate("99991231")
+                            .contractFaceAmt(new BigDecimal("153212463.135"))
+                            .currencyCode("KRW")
+                            .required(true)
+                            .build(),
+                        InsuranceContract.builder()
+                            .contractName("무조건보장")
+                            .contractStatus("02")
+                            .contractExpDate("99991201")
+                            .contractFaceAmt(new BigDecimal("35363.135"))
+                            .currencyCode("KRW")
+                            .required(true)
+                            .build()
+                      
+                    )
+                )
+                .build()
+        );
+  }
 
   private ExecutionContext getExecutionContext() {
     return ExecutionContext.builder()
@@ -116,7 +168,7 @@ public class ExecutionTest {
         .build();
   }
 
-
+                           
   private static void setupMockServer() {
     // 6.5.2 보험 기본정보 조회
     wireMockServer.stubFor(post(urlMatching("/insurances/basic.*"))
@@ -126,7 +178,20 @@ public class ExecutionTest {
             aResponse()
                 .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())                  
                 .withBody(readText("classpath:mock/response/IS02_001_single_page_00.json"))));
-  }
+
+    // 6.5.3 보험 특약정보 조회
+    wireMockServer.stubFor(post(urlMatching("/insurances/contracts.*"))
+        .withRequestBody(
+            equalToJson(readText("classpath:mock/request/IS03_001_single_page_00.json")))
+        .willReturn(
+            aResponse()
+                .withFixedDelay(1000)
+                .withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())                  
+                .withBody(readText("classpath:mock/response/IS03_001_single_page_00.json"))));
+
+
+  }           
 }
