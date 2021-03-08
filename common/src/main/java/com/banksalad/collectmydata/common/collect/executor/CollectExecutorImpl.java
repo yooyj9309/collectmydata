@@ -19,11 +19,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.schibsted.spt.data.jslt.JsltException;
 import com.schibsted.spt.data.jslt.Parser;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +63,8 @@ public class CollectExecutorImpl implements CollectExecutor {
 
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    objectMapper.configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true);
+    objectMapper.setNodeFactory(JsonNodeFactory.withExactBigDecimals(true));
 
     objectMapper.getSerializerProvider().setNullValueSerializer(new JsonSerializer<Object>() {
       @Override
@@ -111,19 +115,19 @@ public class CollectExecutorImpl implements CollectExecutor {
         transformedRequestBody
     );
 
-    Map<String, String> standardResponsetHeader = transformResponseHeader(apiRequestId, execution,
+    Map<String, String> standardResponseHeader = transformResponseHeader(apiRequestId, execution,
         apiResponseEntity.getHeaders());
 
-    String standardResopnseBody = transformResponseBody(apiRequestId, execution, apiResponseEntity.getBody());
-    String responseNextPage = getResponseNextPage(execution.getApi(), standardResopnseBody);
+    String standardResponseBody = transformResponseBody(apiRequestId, execution, apiResponseEntity.getBody());
+    String responseNextPage = getResponseNextPage(execution.getApi(), standardResponseBody);
 
     /* logging response */
-    logResponse(context, apiRequestId, execution.getApi(), apiResponseEntity, standardResponsetHeader,
-        standardResopnseBody);
+    logResponse(context, apiRequestId, execution.getApi(), apiResponseEntity, standardResponseHeader,
+        standardResponseBody);
 
     try {
       Class<R> clazz = execution.getAs();
-      R response = objectMapper.readValue(standardResopnseBody, clazz);
+      R response = objectMapper.readValue(standardResponseBody, clazz);
 
       return ExecutionResponse.<R>builder()
           .httpStatusCode(apiResponseEntity.getHttpStatusCode())

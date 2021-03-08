@@ -195,8 +195,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         .execute(executionContext, Executions.finance_bank_invest_account_detail, request);
 
     if (investAccountDetailResponse.getResponse() == null
-        || investAccountDetailResponse.getHttpStatusCode() != HttpStatus.OK
-        .value()) {
+        || investAccountDetailResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
       throw new RuntimeException("Invest account detail Status is not OK");
     }
 
