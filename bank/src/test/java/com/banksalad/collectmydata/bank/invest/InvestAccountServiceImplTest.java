@@ -11,12 +11,15 @@ import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
+import com.banksalad.collectmydata.bank.depoist.dto.DepositAccountDetail;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountBasic;
+import com.banksalad.collectmydata.bank.invest.dto.InvestAccountDetail;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -103,6 +106,38 @@ class InvestAccountServiceImplTest {
     assertThat(investAccountBasics.size()).isEqualTo(1);
   }
 
+  @Test
+  @DisplayName("투자계좌 추가정보 조회")
+  public void step_02_listDepositAccountDetails_success() throws Exception {
+    /* invest account detail mock server */
+    setupServerInvestAccountDetail();
+
+    /* save mock account summaries */
+    List<AccountSummaryEntity> accountSummaryEntities = getAccountSummaryEntities();
+    accountSummaryRepository.saveAll(accountSummaryEntities);
+
+    List<AccountSummary> accountSummaries = accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndIsConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true)
+        .stream()
+        .map(accountSummaryMapper::entityToDto)
+        .collect(Collectors.toList());
+
+    /* execution context */
+    ExecutionContext executionContext = ExecutionContext.builder()
+        .banksaladUserId(BANKSALAD_USER_ID)
+        .organizationId(ORGANIZATION_ID)
+        .accessToken("test")
+        .organizationHost(ORGANIZATION_HOST + ":" + wiremock.port())
+        .executionRequestId(UUID.randomUUID().toString())
+        .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+        .build();
+
+    List<InvestAccountDetail> investAccountDetails = investAccountService
+        .listInvestAccountDetails(executionContext, accountSummaries);
+
+    Assertions.assertThat(investAccountDetails.size()).isEqualTo(1);
+  }
+
   private void setupServerInvestAccountBasic() throws Exception {
     wiremock.stubFor(post(urlMatching("/accounts/invest/basic"))
         .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA05_001_single_page_00.json")))
@@ -112,6 +147,17 @@ class InvestAccountServiceImplTest {
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA05_001_single_page_00.json"))));
+  }
+
+  private void setupServerInvestAccountDetail() throws Exception {
+    wiremock.stubFor(post(urlMatching("/accounts/invest/detail"))
+        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA06_001_single_page_00.json")))
+        .willReturn(
+            aResponse()
+                .withFixedDelay(1000)
+                .withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+                .withBody(readText("classpath:mock/bank/response/BA06_001_single_page_00.json"))));
   }
 
   private List<AccountSummaryEntity> getAccountSummaryEntities() {

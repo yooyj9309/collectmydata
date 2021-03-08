@@ -131,7 +131,7 @@ class ExternalApiServiceTest {
             .currencyCode("KRW")
             .balanceAmt(new BigDecimal("1928393.123"))
             .evalAmt(new BigDecimal("12345.678"))
-            .invPrincipal(new BigDecimal("123456789123456789.123"))
+            .invPrincipal(new BigDecimal("123456789123456.123"))
             .fundNum(new BigDecimal("12342.12"))
             .build())
         .build();

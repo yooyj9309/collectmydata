@@ -10,16 +10,16 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface InvestAccountBasicMapper {
 
+  @Mappings(
+      value = {
+          @Mapping(target = "issueDate", source = "issueDate", dateFormat = "yyyyMMdd"),
+          @Mapping(target = "expDate", source = "expDate", dateFormat = "yyyyMMdd")
+      }
+  )
   InvestAccountBasic entityToDto(InvestAccountBasicEntity entity);
 
   @Mappings(
       value = {
-          @Mapping(target = "id", ignore = true),
-          @Mapping(target = "banksaladUserId", ignore = true),
-          @Mapping(target = "organizationId", ignore = true),
-          @Mapping(target = "accountNum", ignore = true),
-          @Mapping(target = "seqno", ignore = true),
-          @Mapping(target = "syncedAt", ignore = true),
           @Mapping(target = "issueDate", source = "issueDate", dateFormat = "yyyyMMdd"),
           @Mapping(target = "expDate", source = "expDate", dateFormat = "yyyyMMdd")
       }

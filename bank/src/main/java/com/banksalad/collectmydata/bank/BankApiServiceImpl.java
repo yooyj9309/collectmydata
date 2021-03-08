@@ -10,7 +10,7 @@ import com.banksalad.collectmydata.bank.depoist.dto.DepositAccountBasic;
 import com.banksalad.collectmydata.bank.depoist.dto.DepositAccountDetail;
 import com.banksalad.collectmydata.bank.invest.InvestAccountService;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountBasic;
-
+import com.banksalad.collectmydata.bank.invest.dto.InvestAccountDetail;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.enums.SyncRequestType;
 import com.banksalad.collectmydata.common.util.DateUtil;
@@ -89,7 +89,10 @@ public class BankApiServiceImpl implements BankApiService {
 
     List<InvestAccountBasic> investAccountBasics = investAccountService.listInvestAccountBasics(executionContext,
         investAccountSummaries);
-    
+
+    List<InvestAccountDetail> investAccountDetails = investAccountService.listInvestAccountDetails(executionContext,
+        investAccountSummaries);
+
     return bankApiResponseAtomicReference.get();
   }
 
