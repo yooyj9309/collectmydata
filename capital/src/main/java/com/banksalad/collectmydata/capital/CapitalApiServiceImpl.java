@@ -69,8 +69,8 @@ public class CapitalApiServiceImpl implements CapitalApiService {
     List<AccountSummary> anotherAccountSummaries = accountSummaries.stream()
         .filter(account -> !OPERATING_LEASE_ACCOUNT_TYPE.equals(account.getAccountType()) && account.getIsConsent())
         .collect(Collectors.toList());
-    capitalApiResponseBuilder.loanAccounts(
-        accountService.listLoanAccounts(executionContext, organization, anotherAccountSummaries));
+//    capitalApiResponseBuilder.loanAccounts(
+//        accountService.listLoanAccounts(executionContext, organization, anotherAccountSummaries));
     capitalApiResponseBuilder.loanAccountTransactions(
         accountService.listAccountTransactions(executionContext, organization, anotherAccountSummaries));
 

@@ -5,7 +5,6 @@ import com.banksalad.collectmydata.capital.loan.dto.AccountBasic;
 import com.banksalad.collectmydata.capital.loan.dto.AccountBasicResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.ReportingPolicy;
 
@@ -14,11 +13,11 @@ public interface AccountBasicMapper {
 
   @Mappings(
       value = {
-          @Mapping(source = "accountBasicResponse.expDate", target = "expDate", dateFormat = "yyyyMMdd"),
-          @Mapping(source = "accountBasicResponse.issueDate", target = "issueDate", dateFormat = "yyyyMMdd")
+          @Mapping(source = "accountBasicResponse.issueDate", target = "issueDate", dateFormat = "yyyyMMdd"),
+          @Mapping(source = "accountBasicResponse.expDate", target = "expDate", dateFormat = "yyyyMMdd")
       }
   )
-  void merge(AccountBasicResponse accountBasicResponse, @MappingTarget AccountBasicEntity accountBasicEntity);
+  AccountBasicEntity toAccountBasicEntityFrom(AccountBasicResponse accountBasicResponse);
 
   AccountBasic toAccountBasicFrom(AccountBasicEntity accountBasicEntity);
 }

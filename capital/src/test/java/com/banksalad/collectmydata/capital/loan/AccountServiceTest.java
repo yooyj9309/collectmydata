@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import com.banksalad.collectmydata.capital.common.db.entity.AccountBasicEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
+import com.banksalad.collectmydata.capital.common.db.repository.AccountBasicRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionInterestRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.UserSyncStatusRepository;
@@ -13,6 +15,7 @@ import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
+import com.banksalad.collectmydata.capital.loan.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
@@ -21,12 +24,16 @@ import com.banksalad.collectmydata.common.enums.Industry;
 import com.banksalad.collectmydata.common.enums.MydataSector;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.common.util.DateUtil;
+import javax.persistence.EntityExistsException;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -36,14 +43,16 @@ import static com.banksalad.collectmydata.capital.common.TestHelper.respondLoanA
 import static com.banksalad.collectmydata.capital.common.TestHelper.respondLoanAccountTransactionResponseWithOnePage;
 import static com.banksalad.collectmydata.capital.common.TestHelper.respondLoanAccountTransactionResponseWithTwoPages;
 import static java.lang.Boolean.TRUE;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-@DisplayName("LoanAccountSummaryService Test")
-public class LoanAccountSummaryServiceTest {
+public class AccountServiceTest {
 
   @MockBean
   private ExternalApiService externalApiService;
@@ -56,6 +65,9 @@ public class LoanAccountSummaryServiceTest {
 
   @Autowired
   private AccountSummaryRepository accountSummaryRepository;
+
+  @Autowired
+  private AccountBasicRepository accountBasicRepository;
 
   @Autowired
   private AccountTransactionRepository accountTransactionRepository;
@@ -88,9 +100,106 @@ public class LoanAccountSummaryServiceTest {
 
   @AfterEach
   public void cleanRepositories() {
+    accountSummaryRepository.deleteAll();
+    accountBasicRepository.deleteAll();
     accountTransactionRepository.deleteAll();
     accountTransactionInterestRepository.deleteAll();
     userSyncStatusRepository.deleteAll();
+  }
+
+  @Test
+  @DisplayName("6.7.2 account_basic table 에 row 가 있음 && Data Provider API Response 와 다름")
+  public void givenExistingAccountBasicDifferedWithApiResponse_whenListAccountBasics_UpdateAccountBasic() {
+    // Given
+    ExecutionContext executionContext = getExecutionContext();
+    Organization organization = getOrganization();
+    AccountSummary accountSummary = getAccount();
+    AccountBasicResponse accountBasicResponse = getAccountBasicResponse();
+
+    AccountSummaryEntity accountSummaryEntity = AccountSummaryEntity.builder()
+        .syncedAt(LocalDateTime.now())
+        .banksaladUserId(executionContext.getBanksaladUserId())
+        .organizationId(organization.getOrganizationId())
+        .accountNum(accountSummary.getAccountNum())
+        .seqno(accountSummary.getSeqno())
+        .isConsent(TRUE)
+        .prodName("prodName")
+        .accountType("")
+        .accountStatus("")
+        .build();
+    accountSummaryRepository.save(accountSummaryEntity);
+
+    AccountBasicEntity accountBasicEntity = AccountBasicEntity.builder()
+        .syncedAt(LocalDateTime.now())
+        .banksaladUserId(executionContext.getBanksaladUserId())
+        .organizationId(organization.getOrganizationId())
+        .accountNum(accountSummary.getAccountNum())
+        .seqno(accountSummary.getSeqno())
+        .holderName(accountBasicResponse.getHolderName())
+        .issueDate(LocalDate.parse(accountBasicResponse.getIssueDate(), DateTimeFormatter.ofPattern("yyyyMMdd")))
+        .expDate(LocalDate.parse(accountBasicResponse.getExpDate(), DateTimeFormatter.ofPattern("yyyyMMdd")))
+        .lastOfferedRate(accountBasicResponse.getLastOfferedRate())
+        .repayDate(accountBasicResponse.getRepayDate())
+        .repayMethod(accountBasicResponse.getRepayMethod())
+        .repayOrgCode(accountBasicResponse.getRepayOrgCode())
+        .repayAccountNum("will-be-updated")
+        .build();
+    accountBasicRepository.save(accountBasicEntity);
+
+    given(externalApiService.getAccountBasic(executionContext, organization, accountSummary))
+        .willReturn(accountBasicResponse);
+
+    // When
+    accountService.listAccountBasics(executionContext, organization, singletonList(accountSummary));
+
+    // Then
+    AccountBasicEntity actualAccountBasicEntity = accountBasicRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            executionContext.getBanksaladUserId(), organization.getOrganizationId(),
+            accountSummary.getAccountNum(), accountSummary.getSeqno());
+    assertEquals(accountBasicResponse.getRepayAccountNum(), actualAccountBasicEntity.getRepayAccountNum());
+  }
+
+  @Test
+  @DisplayName("6.7.2 account_basic table 에 row 가 없음")
+  public void givenNotExistAccountBasic_whenListAccountBasics_SavedAccountBasicAndUpdateSearchTimestamp() {
+    // Given
+    ExecutionContext executionContext = getExecutionContext();
+    Organization organization = getOrganization();
+    AccountSummary accountSummary = getAccount();
+    AccountBasicResponse accountBasicResponse = getAccountBasicResponse();
+    AccountSummaryEntity accountSummaryEntity = AccountSummaryEntity.builder()
+        .syncedAt(LocalDateTime.now())
+        .banksaladUserId(executionContext.getBanksaladUserId())
+        .organizationId(organization.getOrganizationId())
+        .accountNum(accountSummary.getAccountNum())
+        .seqno(accountSummary.getSeqno())
+        .isConsent(TRUE)
+        .prodName("prodName")
+        .accountType("")
+        .accountStatus("")
+        .build();
+    accountSummaryRepository.save(accountSummaryEntity);
+
+    given(externalApiService.getAccountBasic(executionContext, organization, accountSummary))
+        .willReturn(accountBasicResponse);
+
+    // When
+    accountService.listAccountBasics(executionContext, organization, singletonList(accountSummary));
+
+    // Then
+    AccountBasicEntity actualAccountBasicEntity = accountBasicRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            executionContext.getBanksaladUserId(), organization.getOrganizationId(),
+            accountSummary.getAccountNum(), accountSummary.getSeqno());
+    assertNotNull(actualAccountBasicEntity);
+
+    AccountSummaryEntity actualAccountSummaryEntity = accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            executionContext.getBanksaladUserId(), organization.getOrganizationId(),
+            accountSummary.getAccountNum(), accountSummary.getSeqno())
+        .orElseThrow(EntityExistsException::new);
+    assertEquals(1000, actualAccountSummaryEntity.getBasicSearchTimestamp());
   }
 
   @Test
@@ -296,6 +405,22 @@ public class LoanAccountSummaryServiceTest {
         .prodName(PRODUCT_NAME)
         .accountType(ACCOUNT_TYPE)
         .accountStatus(ACCOUNT_STATUS)
+        .build();
+  }
+
+  private AccountBasicResponse getAccountBasicResponse() {
+    return AccountBasicResponse.builder()
+        .rspCode("000")
+        .rspMsg("rep_msg")
+        .searchTimestamp(1000)
+        .holderName("대출차주명")
+        .issueDate("20210210")
+        .expDate("20221231")
+        .lastOfferedRate(BigDecimal.valueOf(2.117))
+        .repayDate("03")
+        .repayMethod("01")
+        .repayOrgCode("B01")
+        .repayAccountNum("11022212345")
         .build();
   }
 }

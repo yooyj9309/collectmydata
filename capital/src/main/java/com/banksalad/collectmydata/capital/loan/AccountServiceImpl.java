@@ -4,6 +4,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.capital.common.collect.Apis;
+import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
+import com.banksalad.collectmydata.capital.common.db.entity.AccountBasicEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionInterestEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountBasicHistoryMapper;
@@ -21,16 +23,21 @@ import com.banksalad.collectmydata.capital.common.service.ExecutionResponseValid
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
 import com.banksalad.collectmydata.capital.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.capital.loan.dto.AccountBasic;
+import com.banksalad.collectmydata.capital.loan.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccount;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.crypto.HashUtil;
+
+import com.banksalad.collectmydata.common.util.ObjectComparator;
+import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -39,6 +46,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 
 @Slf4j
 @Service
@@ -59,38 +69,79 @@ public class AccountServiceImpl implements AccountService {
   private final AccountBasicHistoryMapper accountBasicHistoryMapper = Mappers
       .getMapper(AccountBasicHistoryMapper.class);
 
-  /**
-   * on-demand 6.7.2 (대출상품계좌 기본정보 조회) 및 6.7.3(대출상품계좌 추가정보 조회) 두개를 조회하여 조합, 적재
-   *
-   * @param executionContext
-   * @param organization
-   * @param accountSummaries
-   * @return List<AccountInfo>
-   */
   @Override
-  public List<LoanAccount> listLoanAccounts(ExecutionContext executionContext, Organization organization,
+  public List<AccountBasic> listAccountBasics(ExecutionContext executionContext, Organization organization,
       List<AccountSummary> accountSummaries) {
+    List<AccountBasic> accountBasics = new ArrayList<>();
 
-    // 2번 3번 api 조합
+    boolean isExceptionOccurred = FALSE;
+    for (AccountSummary account : accountSummaries) {
+      try {
+        AccountBasicResponse response = externalApiService.getAccountBasic(executionContext, organization, account);
+        AccountBasicEntity accountBasicEntity = saveAccountBasicWithHistory(executionContext, account, response);
+        accountBasics.add(accountBasicMapper.toAccountBasicFrom(accountBasicEntity));
+        updateSearchTimestamp(executionContext, account, response);
+      } catch (Exception e) {
+        isExceptionOccurred = TRUE;
+        log.error("Failed to save account basic", e);
+      }
+    }
 
-    return null;
+    userSyncStatusService.updateUserSyncStatus(
+        executionContext.getBanksaladUserId(),
+        executionContext.getOrganizationId(),
+        Apis.capital_get_account_basic.getId(),
+        executionContext.getSyncStartedAt(),
+        null,
+        executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred));
+
+    return accountBasics;
   }
 
-  /**
-   * 정기전송 시점에 6.7.2만 호출되는 경우. 업데이트가 있는경우 List<AccountInfo>에 매핑
-   */
-  @Override
-  public List<AccountBasic> listLoanAccountBasics(ExecutionContext executionContext, Organization organization,
-      List<AccountSummary> accountSummaries) {
+  private AccountBasicEntity saveAccountBasicWithHistory(ExecutionContext executionContext,
+      AccountSummary accountSummary, AccountBasicResponse accountBasicResponse) {
+    AccountBasicEntity accountBasicEntity = accountBasicMapper.toAccountBasicEntityFrom(accountBasicResponse);
+    accountBasicEntity.setSyncedAt(executionContext.getSyncStartedAt());
+    accountBasicEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
+    accountBasicEntity.setOrganizationId(executionContext.getOrganizationId());
+    accountBasicEntity.setAccountNum(accountSummary.getAccountNum());
+    accountBasicEntity.setSeqno(accountSummary.getSeqno());
 
-    return null;
+    AccountBasicEntity existingAccountBasicEntity = accountBasicRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(executionContext.getBanksaladUserId(),
+            executionContext.getOrganizationId(), accountSummary.getAccountNum(), accountSummary.getSeqno());
+
+    if (existingAccountBasicEntity != null) {
+      accountBasicEntity.setId(existingAccountBasicEntity.getId());
+    }
+
+    if (!ObjectComparator.isSame(accountBasicEntity, existingAccountBasicEntity, "syncedAt", "createdAt", "createdBy", "updatedAt", "updatedBy")) {
+      accountBasicRepository.save(accountBasicEntity);
+      accountBasicHistoryRepository.save(accountBasicHistoryMapper.toAccountBasicHistoryEntityFrom(accountBasicEntity));
+    }
+
+    return accountBasicEntity;
+  }
+
+  private void updateSearchTimestamp(ExecutionContext executionContext, AccountSummary accountSummary,
+      AccountBasicResponse accountBasicResponse) {
+    AccountSummaryEntity accountSummaryEntity = accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            executionContext.getBanksaladUserId(),
+            executionContext.getOrganizationId(),
+            accountSummary.getAccountNum(),
+            accountSummary.getSeqno())
+        .orElseThrow(EntityNotFoundException::new);
+
+    accountSummaryEntity.setBasicSearchTimestamp(accountBasicResponse.getSearchTimestamp());
+    accountSummaryRepository.save(accountSummaryEntity);
   }
 
   /**
    * 정기전송 시점에 6.7.3만 호출되는 경우. 업데이트가 있는경우 List<AccountInfo>에 매핑
    */
   @Override
-  public List<LoanAccount> listLoanAccountDetails(ExecutionContext executionContext, Organization organization,
+  public List<LoanAccount> listAccountDetails(ExecutionContext executionContext, Organization organization,
       List<AccountSummary> accountSummaries) {
     return null;
   }

@@ -11,13 +11,10 @@ import java.util.List;
 
 public interface AccountService {
 
-  List<LoanAccount> listLoanAccounts(ExecutionContext executionContext, Organization organization,
+  List<AccountBasic> listAccountBasics(ExecutionContext executionContext, Organization organization,
       List<AccountSummary> accountSummaries);
 
-  List<AccountBasic> listLoanAccountBasics(ExecutionContext executionContext, Organization organization,
-      List<AccountSummary> accountSummaries);
-
-  List<LoanAccount> listLoanAccountDetails(ExecutionContext executionContext, Organization organization,
+  List<LoanAccount> listAccountDetails(ExecutionContext executionContext, Organization organization,
       List<AccountSummary> accountSummaries);
 
   List<LoanAccountTransaction> listAccountTransactions(ExecutionContext executionContext, Organization organization,
