@@ -5,12 +5,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
-import com.banksalad.collectmydata.capital.common.db.repository.AccountListRepository;
+import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionInterestRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.UserSyncStatusRepository;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
+import com.banksalad.collectmydata.capital.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
@@ -51,7 +52,10 @@ public class LoanAccountSummaryServiceTest {
   private AccountService accountService;
 
   @Autowired
-  private AccountListRepository accountListRepository;
+  private AccountSummaryService accountSummaryService;
+
+  @Autowired
+  private AccountSummaryRepository accountSummaryRepository;
 
   @Autowired
   private AccountTransactionRepository accountTransactionRepository;
@@ -202,10 +206,10 @@ public class LoanAccountSummaryServiceTest {
   @DisplayName("updateAccountTimestamp 성공 케이스")
   public void updateAccountTimestamp_success() {
     saveAccountSummaryEntity();
-    accountService.updateSearchTimestampOnAccount(banksaladUserId, organizationId, accountAssembler());
-    assertEquals(1, accountListRepository.findAll().size());
+    accountSummaryService.updateSearchTimestamp(banksaladUserId, organizationId, accountAssembler());
+    assertEquals(1, accountSummaryRepository.findAll().size());
 
-    AccountSummaryEntity entity = accountListRepository.findAll().get(0);
+    AccountSummaryEntity entity = accountSummaryRepository.findAll().get(0);
     assertEquals(1000L, entity.getBasicSearchTimestamp());
     assertEquals(2000L, entity.getDetailSearchTimestamp());
     assertEquals(3000L, entity.getOperatingLeaseBasicSearchTimestamp());
@@ -219,7 +223,7 @@ public class LoanAccountSummaryServiceTest {
     saveAccountSummaryEntity();
     Exception exception = assertThrows(
         Exception.class,
-        () -> accountService.updateSearchTimestampOnAccount(banksaladUserId, organizationId, null)
+        () -> accountSummaryService.updateSearchTimestamp(banksaladUserId, organizationId, null)
     );
     assertThat(exception).isInstanceOf(CollectRuntimeException.class);
     assertEquals("Invalid account", exception.getMessage());
@@ -231,14 +235,14 @@ public class LoanAccountSummaryServiceTest {
   public void updateAccountTimestamp_nodata() {
     Exception exception = assertThrows(
         Exception.class,
-        () -> accountService.updateSearchTimestampOnAccount(banksaladUserId, organizationId, accountAssembler())
+        () -> accountSummaryService.updateSearchTimestamp(banksaladUserId, organizationId, accountAssembler())
     );
     assertThat(exception).isInstanceOf(CollectRuntimeException.class);
     assertEquals("No data AccountSummaryEntity", exception.getMessage());
   }
 
   private void saveAccountSummaryEntity() {
-    accountListRepository.save(
+    accountSummaryRepository.save(
         AccountSummaryEntity.builder()
             .syncedAt(LocalDateTime.now())
             .banksaladUserId(banksaladUserId)

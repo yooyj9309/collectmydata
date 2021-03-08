@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OrganizationUserEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.UserSyncStatusEntity;
-import com.banksalad.collectmydata.capital.common.db.repository.AccountListRepository;
+import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OrganizationUserRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.UserSyncStatusRepository;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
@@ -40,7 +40,7 @@ public class AccountSummaryServiceTest {
   private AccountSummaryService accountSummaryService;
 
   @Autowired
-  private AccountListRepository accountListRepository;
+  private AccountSummaryRepository accountSummaryRepository;
 
   @Autowired
   private UserSyncStatusRepository userSyncStatusRepository;
@@ -73,7 +73,7 @@ public class AccountSummaryServiceTest {
 
     List<AccountSummary> accountSummaries = accountSummaryService.listAccountSummaries(context, organization);
 
-    List<AccountSummaryEntity> accountListEntities = accountListRepository.findAll(); // 검증
+    List<AccountSummaryEntity> accountListEntities = accountSummaryRepository.findAll(); // 검증
     List<UserSyncStatusEntity> userSyncStatusEntities = userSyncStatusRepository.findAll(); // 검증
 
     assertEquals(2, accountListEntities.size());

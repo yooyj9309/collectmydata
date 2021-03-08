@@ -4,9 +4,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.capital.common.collect.Apis;
-import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
-import com.banksalad.collectmydata.capital.common.db.entity.AccountBasicEntity;
-import com.banksalad.collectmydata.capital.common.db.entity.AccountBasicHistoryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionInterestEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountBasicHistoryMapper;
@@ -15,7 +12,7 @@ import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountTransa
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountTransactionMapper;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountBasicHistoryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountBasicRepository;
-import com.banksalad.collectmydata.capital.common.db.repository.AccountListRepository;
+import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionInterestRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionRepository;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
@@ -25,23 +22,15 @@ import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
 import com.banksalad.collectmydata.capital.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.capital.loan.dto.AccountBasic;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccount;
-import com.banksalad.collectmydata.capital.loan.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
 import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.crypto.HashUtil;
-import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
-
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Service;
-
-import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -59,7 +48,7 @@ public class AccountServiceImpl implements AccountService {
   private final ExternalApiService externalApiService;
   private final UserSyncStatusService userSyncStatusService;
   private final ExecutionResponseValidateService executionResponseValidateService;
-  private final AccountListRepository accountListRepository;
+  private final AccountSummaryRepository accountSummaryRepository;
   private final AccountBasicRepository accountBasicRepository;
   private final AccountBasicHistoryRepository accountBasicHistoryRepository;
   private final AccountTransactionRepository accountTransactionRepository;
@@ -149,27 +138,6 @@ public class AccountServiceImpl implements AccountService {
         executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred.get())
     );
     return loanAccountTransactions;
-  }
-
-  @Override
-  public void updateSearchTimestampOnAccount(long banksaladUserId, String organizationId,
-      AccountSummary accountSummary) {
-    if (accountSummary == null) {
-      throw new CollectRuntimeException("Invalid account"); //TODO
-    }
-
-    AccountSummaryEntity entity = accountListRepository
-        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
-            banksaladUserId,
-            organizationId,
-            accountSummary.getAccountNum(),
-            accountSummary.getSeqno()
-        ).orElseThrow(() -> new CollectRuntimeException("No data AccountSummaryEntity")); //TODO
-
-    entity.setBasicSearchTimestamp(accountSummary.getBasicSearchTimestamp());
-    entity.setDetailSearchTimestamp(accountSummary.getDetailSearchTimestamp());
-    entity.setOperatingLeaseBasicSearchTimestamp(accountSummary.getOperatingLeaseBasicSearchTimestamp());
-    accountListRepository.save(entity);
   }
 
   private void saveAccountTransaction(ExecutionContext executionContext, Organization organization,

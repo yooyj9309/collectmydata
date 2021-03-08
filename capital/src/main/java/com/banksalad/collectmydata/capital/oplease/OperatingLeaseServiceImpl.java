@@ -12,10 +12,10 @@ import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseHi
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseRepository;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
+import com.banksalad.collectmydata.capital.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.capital.common.service.ExecutionResponseValidateService;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
 import com.banksalad.collectmydata.capital.common.service.UserSyncStatusService;
-import com.banksalad.collectmydata.capital.loan.AccountService;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLease;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OperatingLeaseServiceImpl implements OperatingLeaseService {
 
-  private final AccountService accountService;
+  private final AccountSummaryService accountSummaryService;
   private final ExternalApiService externalApiService;
   private final UserSyncStatusService userSyncStatusService;
   private final ExecutionResponseValidateService executionResponseValidateService;
@@ -119,7 +119,7 @@ public class OperatingLeaseServiceImpl implements OperatingLeaseService {
 
     // accountList timestamp update
     accountSummary.setOperatingLeaseBasicSearchTimestamp(response.getSearchTimestamp());
-    accountService.updateSearchTimestampOnAccount(banksaladUserId, organizationId, accountSummary);
+    accountSummaryService.updateSearchTimestamp(banksaladUserId, organizationId, accountSummary);
 
     return operatingLeaseMapper.operatingLeaseAssembler(response, accountSummary);
   }

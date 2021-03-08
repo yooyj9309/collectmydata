@@ -9,7 +9,7 @@ import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseHistoryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.UserSyncStatusEntity;
-import com.banksalad.collectmydata.capital.common.db.repository.AccountListRepository;
+import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseHistoryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.UserSyncStatusRepository;
@@ -51,7 +51,7 @@ public class OperatingLeaseServiceTest {
   private OperatingLeaseHistoryRepository operatingLeaseHistoryRepository;
 
   @Autowired
-  private AccountListRepository accountListRepository;
+  private AccountSummaryRepository accountSummaryRepository;
 
   @Autowired
   private UserSyncStatusRepository userSyncStatusRepository;
@@ -73,7 +73,7 @@ public class OperatingLeaseServiceTest {
   private void after() {
     operatingLeaseRepository.deleteAll();
     operatingLeaseHistoryRepository.deleteAll();
-    accountListRepository.deleteAll();
+    accountSummaryRepository.deleteAll();
     userSyncStatusRepository.deleteAll();
   }
 
@@ -92,7 +92,7 @@ public class OperatingLeaseServiceTest {
         .seqno("1")
         .build();
 
-    accountListRepository.save(
+    accountSummaryRepository.save(
         AccountSummaryEntity.builder()
             .syncedAt(LocalDateTime.now())
             .banksaladUserId(banksaladUserId)

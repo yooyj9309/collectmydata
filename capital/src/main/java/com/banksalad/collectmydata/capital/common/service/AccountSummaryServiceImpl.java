@@ -6,12 +6,13 @@ import com.banksalad.collectmydata.capital.common.collect.Apis;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OrganizationUserEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountListMapper;
-import com.banksalad.collectmydata.capital.common.db.repository.AccountListRepository;
+import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OrganizationUserRepository;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
@@ -25,7 +26,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
 
   private final ExternalApiService externalApiService;
   private final UserSyncStatusService userSyncStatusService;
-  private final AccountListRepository accountListRepository;
+  private final AccountSummaryRepository accountSummaryRepository;
   private final OrganizationUserRepository organizationUserRepository;
 
   private final AccountListMapper accountListMapper = Mappers.getMapper(AccountListMapper.class);
@@ -63,7 +64,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
     if (accountSummaryResponse.getAccountSummaries() != null) {
       for (AccountSummary accountSummary : accountSummaryResponse.getAccountSummaries()) {
         //find
-        AccountSummaryEntity accountSummaryEntity = accountListRepository
+        AccountSummaryEntity accountSummaryEntity = accountSummaryRepository
             .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
                 banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno()
             ).orElse(AccountSummaryEntity.builder().build());
@@ -75,7 +76,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
         accountSummaryEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
         accountSummaryEntity.setOrganizationId(executionContext.getOrganizationId());
         accountSummaryEntity.setSyncedAt(executionContext.getSyncStartedAt());
-        accountListRepository.save(accountSummaryEntity);
+        accountSummaryRepository.save(accountSummaryEntity);
       }
     }
 
@@ -91,7 +92,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
         );
 
     // db에 적재되어있는 항목을 꺼내어 리턴
-    List<AccountSummaryEntity> accountListEntities = accountListRepository
+    List<AccountSummaryEntity> accountListEntities = accountSummaryRepository
         .findByBanksaladUserIdAndOrganizationIdAndIsConsent(banksaladUserId, organizationId, true);
 
     List<AccountSummary> responseAccountSummaries = accountListEntities.stream()
@@ -99,5 +100,26 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
         .collect(Collectors.toList());
 
     return responseAccountSummaries;
+  }
+
+  @Override
+  public void updateSearchTimestamp(long banksaladUserId, String organizationId,
+      AccountSummary accountSummary) {
+    if (accountSummary == null) {
+      throw new CollectRuntimeException("Invalid account"); //TODO
+    }
+
+    AccountSummaryEntity entity = accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            banksaladUserId,
+            organizationId,
+            accountSummary.getAccountNum(),
+            accountSummary.getSeqno()
+        ).orElseThrow(() -> new CollectRuntimeException("No data AccountSummaryEntity")); //TODO
+
+    entity.setBasicSearchTimestamp(accountSummary.getBasicSearchTimestamp());
+    entity.setDetailSearchTimestamp(accountSummary.getDetailSearchTimestamp());
+    entity.setOperatingLeaseBasicSearchTimestamp(accountSummary.getOperatingLeaseBasicSearchTimestamp());
+    accountSummaryRepository.save(entity);
   }
 }

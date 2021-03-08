@@ -7,7 +7,7 @@ import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity
 import java.util.List;
 import java.util.Optional;
 
-public interface AccountListRepository extends JpaRepository<AccountSummaryEntity, Long> {
+public interface AccountSummaryRepository extends JpaRepository<AccountSummaryEntity, Long> {
 
   Optional<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(Long banksaladUserId,
       String organizationId, String accountNum, String seqno);

@@ -22,6 +22,4 @@ public interface AccountService {
 
   List<LoanAccountTransaction> listAccountTransactions(ExecutionContext executionContext, Organization organization,
       List<AccountSummary> accountSummaries);
-
-  void updateSearchTimestampOnAccount(long banksaladUserId, String organizationId, AccountSummary accountSummary);
 }
