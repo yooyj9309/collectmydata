@@ -18,7 +18,7 @@ public interface AccountSummaryMapper {
           @Mapping(target = "syncedAt", ignore = true),
           @Mapping(target = "basicSearchTimestamp", ignore = true),
           @Mapping(target = "detailSearchTimestamp", ignore = true),
-          @Mapping(target = "transactionFromDate", ignore = true),
+          @Mapping(target = "transactionSyncedAt", ignore = true),
           @Mapping(target = "createdAt", ignore = true),
           @Mapping(target = "createdBy", ignore = true),
           @Mapping(target = "updatedAt", ignore = true),

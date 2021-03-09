@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.bank.common.dto;
+package com.banksalad.collectmydata.bank.depoist.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -10,7 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,27 +19,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class AccountSummary {
+public class ListDepositAccountTransactionsResponse {
 
-  private String accountNum;
+  private String rspCode;
 
-  @JsonProperty("is_consent")
-  private boolean consent;
+  private String rspMsg;
 
-  private String seqno;
+  private String nextPage;
 
-  @JsonProperty("is_foreign_deposit")
-  private boolean foreignDeposit;
+  private int transCnt;
 
-  private String prodName;
+  @JsonProperty(value = "trans_list")
+  @Builder.Default
+  private List<DepositAccountTransaction> depositAccountTransactions = new ArrayList<>();
 
-  private String accountType;
-
-  private String accountStatus;
-
-  private long basicSearchTimestamp;
-
-  private long detailSearchTimestamp;
-
-  private LocalDateTime transactionSyncedAt;
 }

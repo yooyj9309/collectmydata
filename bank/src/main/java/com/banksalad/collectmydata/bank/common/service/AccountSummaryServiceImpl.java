@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -136,6 +137,21 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
             accountSummary.isForeignDeposit());
 
     accountSummaryEntity.setDetailSearchTimestamp(detailSearchTimestamp);
+
+    accountSummaryRepository.save(accountSummaryEntity);
+  }
+
+  @Override
+  @Transactional
+  public void updateTransactionSyncedAt(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      LocalDateTime transactionSyncedAt) {
+
+    AccountSummaryEntity accountSummaryEntity = accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndIsForeignDeposit(
+            banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno(),
+            accountSummary.isForeignDeposit());
+
+    accountSummaryEntity.setTransactionSyncedAt(transactionSyncedAt);
 
     accountSummaryRepository.save(accountSummaryEntity);
   }

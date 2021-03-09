@@ -1,5 +1,9 @@
 package com.banksalad.collectmydata.capital.account;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
 import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
@@ -22,11 +26,6 @@ import com.banksalad.collectmydata.common.enums.Industry;
 import com.banksalad.collectmydata.common.enums.MydataSector;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.common.util.DateUtil;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
@@ -38,7 +37,6 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -375,16 +373,17 @@ public class AccountServiceTest {
   private void assertUniqueTransNo(List<AccountTransaction> actualAccountTransactions, Long bankSaladUserId,
       String organizationId) {
     List<String> expectedUniqueTransNoList = actualAccountTransactions.stream()
-        .map(accountTransaction -> HashUtil.hashCat(Arrays.asList(accountTransaction.getTransDtime(),
-            accountTransaction.getTransNo(), accountTransaction.getBalanceAmt().toString())))
+        .map(accountTransaction -> HashUtil.hashCat(accountTransaction.getTransDtime(),
+            accountTransaction.getTransNo(), accountTransaction.getBalanceAmt().toString()))
         .collect(Collectors.toList());
     List<String> actualUniqueTransNoList = actualAccountTransactions.stream()
         .map(accountTransaction -> {
           final String accountNum = accountTransaction.getAccountNum();
           final String seqno = accountTransaction.getSeqno();
-          final Integer transactionYearMonth = Integer.valueOf(accountTransaction.getTransDtime().substring(0, 6));
-          final String uniqueTransNo = HashUtil.hashCat(Arrays.asList(accountTransaction.getTransDtime(),
-              accountTransaction.getTransNo(), accountTransaction.getBalanceAmt().toString()));
+          final Integer transactionYearMonth = Integer
+              .valueOf(accountTransaction.getTransDtime().substring(0, 6));
+          final String uniqueTransNo = HashUtil.hashCat(accountTransaction.getTransDtime(),
+              accountTransaction.getTransNo(), accountTransaction.getBalanceAmt().toString());
           return accountTransactionRepository
               .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransactionYearMonthAndUniqueTransNo(
                   bankSaladUserId, organizationId, accountNum, seqno, transactionYearMonth, uniqueTransNo

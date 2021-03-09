@@ -37,6 +37,14 @@ public class Apis {
           .method(HttpMethod.POST.name())
           .build();
 
+  public static Api finance_bank_deposit_account_transaction =
+      Api.builder()
+          .id("BA04")
+          .name("수신계좌 거래내역 조회")
+          .endpoint("/accounts/deposit/transactions")
+          .method(HttpMethod.POST.name())
+          .build();
+
   //6.2.5 투자상품 계좌 기본 정보 조회
   public static Api finance_bank_invest_account_basic =
       Api.builder()

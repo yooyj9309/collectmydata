@@ -5,7 +5,6 @@ import com.banksalad.collectmydata.common.exception.CipherException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 import java.util.StringJoiner;
 
 public class HashUtil {
@@ -21,16 +20,16 @@ public class HashUtil {
     }
   }
 
-  public static String hashCat(List<String> strings){
+  public static String hashCat(String... strings) {
     StringJoiner stringJoiner = new StringJoiner(":");
-    for(String s:strings){
+    for (String s : strings) {
       stringJoiner.add(s);
     }
     return digest(stringJoiner.toString());
   }
 
-  public static String digest(String s){
-    final byte[] bytes=messageDigest.digest(s.getBytes(StandardCharsets.UTF_8));
+  public static String digest(String s) {
+    final byte[] bytes = messageDigest.digest(s.getBytes(StandardCharsets.UTF_8));
     return bytesToHex(bytes);
   }
 

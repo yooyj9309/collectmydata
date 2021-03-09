@@ -13,7 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -61,5 +60,5 @@ public class AccountSummaryEntity extends BaseTimeAndUserEntity {
 
   private Long detailSearchTimestamp;
 
-  private LocalDate transactionFromDate;
+  private LocalDateTime transactionSyncedAt;
 }

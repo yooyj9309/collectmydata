@@ -30,7 +30,7 @@ public class BankSyncRequestedConsumer {
       bankApiService.requestApi(message.getBanksaladUserId(),
           message.getOrganizationId(), message.getSyncRequestId(), message.getSyncRequestType());
 
-      // TODO jayden-lee product publishmentRequested 구현
+      // TODO jayden-lee product publishmentRequested 구현, kafka 메시지 버전 관리를 어떻게 할지?
 
     } catch (JsonProcessingException e) {
       log.error("Fail to deserialize syncRequestedMessage: {}", e.getMessage(), e);

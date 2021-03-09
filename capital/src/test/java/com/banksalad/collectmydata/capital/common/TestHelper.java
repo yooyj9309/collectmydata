@@ -15,7 +15,6 @@ import org.mapstruct.factory.Mappers;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.banksalad.collectmydata.common.util.NumberUtil.bigDecimalOf;
@@ -44,7 +43,7 @@ public class TestHelper {
   public static final int INT_CNT = 1;
   public static final int INT_NO = 1;
   public static final String UNIQUE_TRANS_NO = HashUtil
-      .hashCat(Arrays.asList(TRANS_DTIME, TRANS_NO, BALANCE_AMT.toString()));
+      .hashCat(TRANS_DTIME, TRANS_NO, BALANCE_AMT.toString());
   public static final String INT_START_DATE = "20200101";
   public static final String INT_END_DATE = "20200131";
   public static final BigDecimal INT_RATE = bigDecimalOf(3.124, 3);
@@ -115,7 +114,7 @@ public class TestHelper {
   }
 
   public static String uniqueTransNo1() {
-    return HashUtil.hashCat(Arrays.asList("20210121103000", "trans#2", bigDecimalOf(18000.7, 3).toString()));
+    return HashUtil.hashCat("20210121103000", "trans#2", bigDecimalOf(18000.7, 3).toString());
   }
 
   public static AccountTransaction generateAccountTransaction2() {
@@ -140,7 +139,7 @@ public class TestHelper {
   }
 
   public static String uniqueTransNo2() {
-    return HashUtil.hashCat(Arrays.asList("20210121093000", "trans#1", bigDecimalOf(18000.7, 3).toString()));
+    return HashUtil.hashCat("20210121093000", "trans#1", bigDecimalOf(18000.7, 3).toString());
   }
 
   public static AccountTransaction generateAccountTransaction3() {
@@ -158,7 +157,7 @@ public class TestHelper {
   }
 
   public static String uniqueTransNo3() {
-    return HashUtil.hashCat(Arrays.asList("20210121221000", "trans#3", bigDecimalOf(18000.7, 3).toString()));
+    return HashUtil.hashCat("20210121221000", "trans#3", bigDecimalOf(18000.7, 3).toString());
   }
 
   public static AccountTransactionResponse respondAccountTransactionResponseWithEmptyPages() {

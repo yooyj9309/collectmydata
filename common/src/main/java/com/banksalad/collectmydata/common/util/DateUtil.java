@@ -95,7 +95,11 @@ public class DateUtil {
     return LocalDateTime.parse(dateString + timeString, datetimeFormatter);
   }
 
-  public static LocalDate toLocalDate(LocalDateTime localDateTime){
+  public static LocalDateTime utcLocalDateTimeToKstLocalDateTime(LocalDateTime localDateTime) {
+    return LocalDateTime.ofInstant(localDateTime.atZone(UTC_ZONE_ID).toInstant(), KST_ZONE_ID);
+  }
+
+  public static LocalDate toLocalDate(LocalDateTime localDateTime) {
     return localDateTime.toLocalDate();
   }
 
@@ -128,4 +132,5 @@ public class DateUtil {
       throw new IllegalArgumentException("Source is null or empty");
     }
   }
+
 }

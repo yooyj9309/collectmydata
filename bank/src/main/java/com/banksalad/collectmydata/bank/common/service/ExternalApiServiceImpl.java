@@ -7,6 +7,8 @@ import com.banksalad.collectmydata.bank.common.collect.Executions;
 import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.common.dto.ListAccountSummariesRequest;
 import com.banksalad.collectmydata.bank.common.dto.ListAccountSummariesResponse;
+import com.banksalad.collectmydata.bank.depoist.dto.ListDepositAccountTransactionsRequest;
+import com.banksalad.collectmydata.bank.depoist.dto.ListDepositAccountTransactionsResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicRequest;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountDetailRequest;
@@ -20,9 +22,11 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.organization.Organization;
+import com.banksalad.collectmydata.common.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @Slf4j
@@ -57,7 +61,8 @@ public class ExternalApiServiceImpl implements ExternalApiService {
       ExecutionResponse<ListAccountSummariesResponse> pagingExecutionResponse = collectExecutor
           .execute(executionContext, Executions.finance_bank_accounts, pagingExecutionRequest);
 
-      if (pagingExecutionResponse == null || pagingExecutionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
+      if (pagingExecutionResponse.getResponse() == null || HttpStatus.OK.value() != pagingExecutionResponse
+          .getHttpStatusCode()) {
         throw new RuntimeException("List accounts status is not OK");
       }
 
@@ -146,6 +151,64 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     }
 
     return executionResponse.getResponse();
+  }
+
+  @Override
+  public ListDepositAccountTransactionsResponse listDepositAccountTransactions(ExecutionContext executionContext,
+      String orgCode, String accountNum, String seqno, LocalDate fromDate, LocalDate toDate) {
+
+    executionContext.generateAndsUpdateExecutionRequestId();
+
+    ExecutionRequest<ListDepositAccountTransactionsRequest> pagingExecutionRequest = ExecutionRequest.<ListDepositAccountTransactionsRequest>builder()
+        .headers(Map.of(AUTHORIZATION, executionContext.getAccessToken()))
+        .request(
+            ListDepositAccountTransactionsRequest.builder()
+                .orgCode(orgCode)
+                .accountNum(accountNum)
+                .seqno(seqno)
+                .fromDate(DateUtil.toDateString(fromDate))
+                .toDate(DateUtil.toDateString(toDate))
+                .limit(PAGING_MAXIMUM_LIMIT)
+                .build())
+        .build();
+
+    ListDepositAccountTransactionsResponse listDepositAccountTransactionsResponse = ListDepositAccountTransactionsResponse
+        .builder()
+        .build();
+
+    do {
+      ExecutionResponse<ListDepositAccountTransactionsResponse> pagingExecutionResponse = collectExecutor
+          .execute(executionContext, Executions.finance_bank_deposit_account_transaction, pagingExecutionRequest);
+
+      if (pagingExecutionResponse.getResponse() == null ||
+          HttpStatus.OK.value() != pagingExecutionResponse.getHttpStatusCode()) {
+        throw new RuntimeException("List deposit account transactions status is not OK");
+      }
+
+      ListDepositAccountTransactionsResponse pagingListDepositAccountTransactionsResponse = pagingExecutionResponse
+          .getResponse();
+
+      if (pagingListDepositAccountTransactionsResponse.getTransCnt() != pagingListDepositAccountTransactionsResponse
+          .getDepositAccountTransactions().size()) {
+        log.error("transactions size not equal. cnt: {}, size: {}",
+            pagingListDepositAccountTransactionsResponse.getTransCnt(),
+            pagingListDepositAccountTransactionsResponse.getDepositAccountTransactions().size());
+      }
+
+      listDepositAccountTransactionsResponse.setRspCode(pagingListDepositAccountTransactionsResponse.getRspCode());
+      listDepositAccountTransactionsResponse.setRspMsg(pagingListDepositAccountTransactionsResponse.getRspMsg());
+      listDepositAccountTransactionsResponse.setNextPage(pagingListDepositAccountTransactionsResponse.getNextPage());
+      listDepositAccountTransactionsResponse.setTransCnt(
+          listDepositAccountTransactionsResponse.getTransCnt() + pagingListDepositAccountTransactionsResponse
+              .getTransCnt());
+      listDepositAccountTransactionsResponse.getDepositAccountTransactions()
+          .addAll(pagingListDepositAccountTransactionsResponse.getDepositAccountTransactions());
+
+      pagingExecutionRequest.getRequest().setNextPage(pagingListDepositAccountTransactionsResponse.getNextPage());
+
+    } while (pagingExecutionRequest.getRequest().getNextPage() != null);
+
+    return listDepositAccountTransactionsResponse;
   }
 
   @Override

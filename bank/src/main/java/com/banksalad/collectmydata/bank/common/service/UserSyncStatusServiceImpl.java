@@ -26,7 +26,7 @@ public class UserSyncStatusServiceImpl implements UserSyncStatusService {
         .organizationId(organizationId)
         .apiId(apiId)
         .searchTimestamp(0L)
-        .syncedAt(LocalDateTime.now(DateUtil.KST_ZONE_ID))
+        .syncedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
   }
 

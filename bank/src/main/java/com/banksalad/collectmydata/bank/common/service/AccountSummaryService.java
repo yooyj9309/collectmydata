@@ -3,6 +3,7 @@ package com.banksalad.collectmydata.bank.common.service;
 import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AccountSummaryService {
@@ -14,4 +15,8 @@ public interface AccountSummaryService {
 
   void updateDetailSearchTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary,
       long detailSearchTimestamp);
+
+  void updateTransactionSyncedAt(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      LocalDateTime transactionSyncedAt);
+
 }

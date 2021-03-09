@@ -75,7 +75,7 @@ public class AccountSummaryServiceImplTest {
         .accessToken("test")
         .organizationHost(ORGANIZATION_HOST + ":" + wiremock.port())
         .executionRequestId(UUID.randomUUID().toString())
-        .syncStartedAt(LocalDateTime.now(DateUtil.KST_ZONE_ID))
+        .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
 
     List<AccountSummary> accountSummaries = accountSummaryService.listAccountSummaries(executionContext);
@@ -96,7 +96,7 @@ public class AccountSummaryServiceImplTest {
         .accessToken("test")
         .organizationHost(ORGANIZATION_HOST + ":" + wiremock.port())
         .executionRequestId(UUID.randomUUID().toString())
-        .syncStartedAt(LocalDateTime.now(DateUtil.KST_ZONE_ID))
+        .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
 
     List<AccountSummary> accountSummaries = accountSummaryService.listAccountSummaries(executionContext);

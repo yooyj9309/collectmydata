@@ -127,7 +127,7 @@ class DepositAccountServiceImplTest {
         .accessToken("test")
         .organizationHost(ORGANIZATION_HOST + ":" + wiremock.port())
         .executionRequestId(UUID.randomUUID().toString())
-        .syncStartedAt(LocalDateTime.now(DateUtil.KST_ZONE_ID))
+        .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
 
     List<DepositAccountDetail> depositAccountDetails = depositAccountService
@@ -169,7 +169,7 @@ class DepositAccountServiceImplTest {
             .accountType("1001")
             .basicSearchTimestamp(0L)
             .detailSearchTimestamp(0L)
-            .transactionFromDate(null)
+            .transactionSyncedAt(null)
             .isForeignDeposit(false)
             .isConsent(true)
             .prodName("자유입출식 계좌")
@@ -184,7 +184,7 @@ class DepositAccountServiceImplTest {
             .accountType("1001")
             .basicSearchTimestamp(0L)
             .detailSearchTimestamp(0L)
-            .transactionFromDate(null)
+            .transactionSyncedAt(null)
             .isForeignDeposit(false)
             .isConsent(false)
             .prodName("자유입출식 계좌")

@@ -5,12 +5,9 @@ import org.springframework.stereotype.Service;
 import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.common.dto.BankApiResponse;
 import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
+import com.banksalad.collectmydata.bank.depoist.DepositAccountTransactionService;
 import com.banksalad.collectmydata.bank.deposit.DepositAccountService;
-import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountBasic;
-import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountDetail;
 import com.banksalad.collectmydata.bank.invest.InvestAccountService;
-import com.banksalad.collectmydata.bank.invest.dto.InvestAccountBasic;
-import com.banksalad.collectmydata.bank.invest.dto.InvestAccountDetail;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.enums.SyncRequestType;
 import com.banksalad.collectmydata.common.util.DateUtil;
@@ -22,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
@@ -35,6 +33,7 @@ public class BankApiServiceImpl implements BankApiService {
 
   private final AccountSummaryService accountSummaryService;
   private final DepositAccountService depositAccountService;
+  private final DepositAccountTransactionService depositAccountTransactionService;
   private final InvestAccountService investAccountService;
 
   @Override
@@ -47,11 +46,12 @@ public class BankApiServiceImpl implements BankApiService {
         .accessToken("fixme")
         .organizationHost("http://whatever")
         .executionRequestId(UUID.randomUUID().toString())
-        .syncStartedAt(LocalDateTime.now(DateUtil.KST_ZONE_ID))
+        .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
 
     List<AccountSummary> accountSummaries = accountSummaryService.listAccountSummaries(executionContext);
 
+    // TODO jayden-lee 마이너스 통장은 별도의 리스트에 담아야 함 (기본정보: 대출, 추가정보: 수신, 거래내역: 수신)
     List<AccountSummary> depositAccountSummaries = new ArrayList<>();
     List<AccountSummary> investAccountSummaries = new ArrayList<>();
     List<AccountSummary> loanAccountSummaries = new ArrayList<>();
@@ -79,19 +79,34 @@ public class BankApiServiceImpl implements BankApiService {
     AtomicReference<BankApiResponse> bankApiResponseAtomicReference = new AtomicReference<>();
     bankApiResponseAtomicReference.set(BankApiResponse.builder().build());
 
-    // TODO jayden-lee parallel api requests
+    // TODO jayden-lee 투자, 대출, IRP 서비스 추가
+    CompletableFuture.allOf(
+        CompletableFuture.supplyAsync(
+            () -> depositAccountService.listDepositAccountBasics(executionContext, depositAccountSummaries))
+            .thenAccept(depositAccountBasics -> bankApiResponseAtomicReference.get()
+                .setDepositAccountBasics(depositAccountBasics)),
 
-    List<DepositAccountBasic> depositAccountBasics = depositAccountService.listDepositAccountBasics(executionContext,
-        depositAccountSummaries);
+        CompletableFuture.supplyAsync(
+            () -> depositAccountService.listDepositAccountDetails(executionContext, depositAccountSummaries))
+            .thenAccept(depositAccountDetails -> bankApiResponseAtomicReference.get()
+                .setDepositAccountDetails(depositAccountDetails)),
 
-    List<DepositAccountDetail> depositAccountDetails = depositAccountService.listDepositAccountDetails(executionContext,
-        depositAccountSummaries);
+        CompletableFuture.supplyAsync(
+            () -> depositAccountTransactionService
+                .listDepositAccountTransactions(executionContext, depositAccountSummaries))
+            .thenAccept(depositAccountTransactions -> bankApiResponseAtomicReference.get()
+                .setDepositAccountTransactions(depositAccountTransactions)),
 
-    List<InvestAccountBasic> investAccountBasics = investAccountService.listInvestAccountBasics(executionContext,
-        investAccountSummaries);
+        CompletableFuture.supplyAsync(
+            () -> investAccountService.listInvestAccountBasics(executionContext, investAccountSummaries))
+            .thenAccept(investAccountBasics -> bankApiResponseAtomicReference.get()
+                .setInvestAccountBasics(investAccountBasics)),
 
-    List<InvestAccountDetail> investAccountDetails = investAccountService.listInvestAccountDetails(executionContext,
-        investAccountSummaries);
+        CompletableFuture.supplyAsync(
+            () -> investAccountService.listInvestAccountDetails(executionContext, investAccountSummaries))
+            .thenAccept(investAccountDetails -> bankApiResponseAtomicReference.get()
+                .setInvestAccountDetails(investAccountDetails))
+    ).join();
 
     return bankApiResponseAtomicReference.get();
   }
