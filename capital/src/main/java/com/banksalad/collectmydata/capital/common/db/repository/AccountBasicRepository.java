@@ -4,9 +4,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.banksalad.collectmydata.capital.common.db.entity.AccountBasicEntity;
 
+import java.util.Optional;
+
 public interface AccountBasicRepository extends JpaRepository<AccountBasicEntity, Long> {
 
-  AccountBasicEntity findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+  Optional<AccountBasicEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
       Long banksaladUserId, String organizationId, String accountNum, String seqno
   );
 }

@@ -300,8 +300,8 @@ class ExternalApiServiceTest {
         .rspCode("000")
         .rspMsg("rsp_msg")
         .searchTimestamp(0L)
-        .balanceAmount(BigDecimal.valueOf(30000))
-        .loanPrincipal(BigDecimal.valueOf(20000))
+        .balanceAmt(BigDecimal.valueOf(30000.123))
+        .loanPrincipal(BigDecimal.valueOf(20000.456))
         .nextRepayDate(LocalDate.of(2020, 11, 14).format(DateTimeFormatter.ofPattern("yyyyMMdd")))
         .build();
   }

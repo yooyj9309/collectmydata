@@ -1,21 +1,26 @@
 package com.banksalad.collectmydata.capital.account;
 
-import com.banksalad.collectmydata.capital.account.dto.Account;
 import com.banksalad.collectmydata.capital.account.dto.AccountBasic;
 import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
+import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.collect.Apis;
-import com.banksalad.collectmydata.capital.common.db.entity.AccountBasicEntity;
+import com.banksalad.collectmydata.capital.common.db.entity.AccountDetailEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
+import com.banksalad.collectmydata.capital.common.db.entity.AccountBasicEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionInterestEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountBasicHistoryMapper;
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountBasicMapper;
+import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountDetailHistoryMapper;
+import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountDetailMapper;
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountTransactionInterestMapper;
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountTransactionMapper;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountBasicHistoryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountBasicRepository;
+import com.banksalad.collectmydata.capital.common.db.repository.AccountDetailHistoryRepository;
+import com.banksalad.collectmydata.capital.common.db.repository.AccountDetailRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionInterestRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionRepository;
@@ -24,6 +29,7 @@ import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.ExecutionResponseValidateService;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
 import com.banksalad.collectmydata.capital.common.service.UserSyncStatusService;
+import com.banksalad.collectmydata.capital.account.dto.AccountDetail;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.crypto.HashUtil;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
@@ -61,6 +67,8 @@ public class AccountServiceImpl implements AccountService {
   private final AccountSummaryRepository accountSummaryRepository;
   private final AccountBasicRepository accountBasicRepository;
   private final AccountBasicHistoryRepository accountBasicHistoryRepository;
+  private final AccountDetailRepository accountDetailRepository;
+  private final AccountDetailHistoryRepository accountDetailHistoryRepository;
   private final AccountTransactionRepository accountTransactionRepository;
   private final AccountTransactionInterestRepository accountTransactionInterestRepository;
   private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
@@ -68,6 +76,10 @@ public class AccountServiceImpl implements AccountService {
   private final AccountBasicMapper accountBasicMapper = Mappers.getMapper(AccountBasicMapper.class);
   private final AccountBasicHistoryMapper accountBasicHistoryMapper = Mappers
       .getMapper(AccountBasicHistoryMapper.class);
+  private final AccountDetailMapper accountDetailMapper = Mappers.getMapper(AccountDetailMapper.class);
+  private final AccountDetailHistoryMapper accountDetailHistoryMapper = Mappers
+      .getMapper(AccountDetailHistoryMapper.class);
+
 
   @Override
   public List<AccountBasic> listAccountBasics(ExecutionContext executionContext, Organization organization,
@@ -75,12 +87,13 @@ public class AccountServiceImpl implements AccountService {
     List<AccountBasic> accountBasics = new ArrayList<>();
 
     boolean isExceptionOccurred = FALSE;
-    for (AccountSummary account : accountSummaries) {
+    for (AccountSummary accountSummary : accountSummaries) {
       try {
-        AccountBasicResponse response = externalApiService.getAccountBasic(executionContext, organization, account);
-        AccountBasicEntity accountBasicEntity = saveAccountBasicWithHistory(executionContext, account, response);
+        AccountBasicResponse response = externalApiService
+            .getAccountBasic(executionContext, organization, accountSummary);
+        AccountBasicEntity accountBasicEntity = saveAccountBasicWithHistory(executionContext, accountSummary, response);
         accountBasics.add(accountBasicMapper.toAccountBasicFrom(accountBasicEntity));
-        updateSearchTimestamp(executionContext, account, response);
+        updateSearchTimestamp(executionContext, accountSummary, response);
       } catch (Exception e) {
         isExceptionOccurred = TRUE;
         log.error("Failed to save account basic", e);
@@ -109,15 +122,15 @@ public class AccountServiceImpl implements AccountService {
 
     AccountBasicEntity existingAccountBasicEntity = accountBasicRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(executionContext.getBanksaladUserId(),
-            executionContext.getOrganizationId(), accountSummary.getAccountNum(), accountSummary.getSeqno());
+            executionContext.getOrganizationId(), accountSummary.getAccountNum(), accountSummary.getSeqno())
+        .orElse(AccountBasicEntity.builder().build());
 
-    if (existingAccountBasicEntity != null) {
+    if (existingAccountBasicEntity.getId() != null) {
       accountBasicEntity.setId(existingAccountBasicEntity.getId());
     }
 
-    if (!ObjectComparator
-        .isSame(accountBasicEntity, existingAccountBasicEntity, "syncedAt", "createdAt", "createdBy", "updatedAt",
-            "updatedBy")) {
+    if (!ObjectComparator.isSame(accountBasicEntity, existingAccountBasicEntity,
+        "syncedAt", "createdAt", "createdBy", "updatedAt", "updatedBy")) {
       accountBasicRepository.save(accountBasicEntity);
       accountBasicHistoryRepository.save(accountBasicHistoryMapper.toAccountBasicHistoryEntityFrom(accountBasicEntity));
     }
@@ -139,13 +152,77 @@ public class AccountServiceImpl implements AccountService {
     accountSummaryRepository.save(accountSummaryEntity);
   }
 
-  /**
-   * 정기전송 시점에 6.7.3만 호출되는 경우. 업데이트가 있는경우 List<AccountInfo>에 매핑
-   */
   @Override
-  public List<Account> listAccountDetails(ExecutionContext executionContext, Organization organization,
+  public List<AccountDetail> listAccountDetails(ExecutionContext executionContext, Organization organization,
       List<AccountSummary> accountSummaries) {
-    return null;
+    List<AccountDetail> accountDetails = new ArrayList<>();
+
+    boolean isExceptionOccurred = FALSE;
+    for (AccountSummary accountSummary : accountSummaries) {
+      try {
+        AccountDetailResponse response = externalApiService
+            .getAccountDetail(executionContext, organization, accountSummary);
+        AccountDetailEntity accountDetailEntity = saveAccountDetailWithHistory(executionContext, accountSummary,
+            response);
+        accountDetails.add(accountDetailMapper.toAccountDetailFrom(accountDetailEntity));
+        updateSearchTimestamp(executionContext, accountSummary, response);
+      } catch (Exception e) {
+        isExceptionOccurred = TRUE;
+        log.error("Failed to save account detail", e);
+      }
+    }
+
+    userSyncStatusService.updateUserSyncStatus(
+        executionContext.getBanksaladUserId(),
+        executionContext.getOrganizationId(),
+        Apis.capital_get_account_detail.getId(),
+        executionContext.getSyncStartedAt(),
+        null,
+        executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred));
+
+    return accountDetails;
+  }
+
+  private AccountDetailEntity saveAccountDetailWithHistory(ExecutionContext executionContext,
+      AccountSummary accountSummary, AccountDetailResponse accountDetailResponse) {
+    AccountDetailEntity accountDetailEntity = accountDetailMapper.toAccountDetailEntityFrom(accountDetailResponse);
+    accountDetailEntity.setSyncedAt(executionContext.getSyncStartedAt());
+    accountDetailEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
+    accountDetailEntity.setOrganizationId(executionContext.getOrganizationId());
+    accountDetailEntity.setAccountNum(accountSummary.getAccountNum());
+    accountDetailEntity.setSeqno(accountSummary.getSeqno());
+
+    AccountDetailEntity existingAccountDetailEntity = accountDetailRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(executionContext.getBanksaladUserId(),
+            executionContext.getOrganizationId(), accountSummary.getAccountNum(), accountSummary.getSeqno())
+        .orElse((AccountDetailEntity.builder().build()));
+
+    if (existingAccountDetailEntity.getId() != null) {
+      accountDetailEntity.setId(existingAccountDetailEntity.getId());
+    }
+
+    if (!ObjectComparator.isSame(accountDetailEntity, existingAccountDetailEntity,
+        "syncedAt", "createdAt", "createdBy", "updatedAt", "updatedBy")) {
+      accountDetailRepository.save(accountDetailEntity);
+      accountDetailHistoryRepository
+          .save(accountDetailHistoryMapper.toAccountDetailHistoryEntityFrom(accountDetailEntity));
+    }
+
+    return accountDetailEntity;
+  }
+
+  private void updateSearchTimestamp(ExecutionContext executionContext, AccountSummary accountSummary,
+      AccountDetailResponse accountDetailResponse) {
+    AccountSummaryEntity accountSummaryEntity = accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            executionContext.getBanksaladUserId(),
+            executionContext.getOrganizationId(),
+            accountSummary.getAccountNum(),
+            accountSummary.getSeqno())
+        .orElseThrow(EntityNotFoundException::new);
+
+    accountSummaryEntity.setDetailSearchTimestamp(accountDetailResponse.getSearchTimestamp());
+    accountSummaryRepository.save(accountSummaryEntity);
   }
 
   /**

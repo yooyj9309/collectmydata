@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
@@ -17,12 +18,11 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class AccountDetailResponse {
+public class AccountDetail {
 
-  private String rspCode;
-  private String rspMsg;
-  private long searchTimestamp;
+  private String accountNum;
+  private String seqno;
   private BigDecimal balanceAmt;
   private BigDecimal loanPrincipal;
-  private String nextRepayDate;
+  private LocalDate nextRepayDate;
 }
