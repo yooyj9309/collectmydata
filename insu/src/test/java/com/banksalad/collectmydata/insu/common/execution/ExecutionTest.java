@@ -12,6 +12,9 @@ import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.insu.collect.Executions;
+import com.banksalad.collectmydata.insu.common.dto.ListLoanSummariesRequest;
+import com.banksalad.collectmydata.insu.common.dto.ListLoanSummariesResponse;
+import com.banksalad.collectmydata.insu.common.dto.LoanSummary;
 import com.banksalad.collectmydata.insu.common.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.common.dto.ListInsuranceSummariesRequest;
 import com.banksalad.collectmydata.insu.common.dto.ListInsuranceSummariesResponse;
@@ -193,7 +196,44 @@ public class ExecutionTest {
                             .currencyCode("KRW")
                             .required(true)
                             .build()
+                    )
+                )
+                .build()
+        );
+  }
 
+  @Test
+  @DisplayName("6.5.8 보험 기본정보 조회")
+  public void listLoanSummaryApiTest() {
+    ExecutionContext executionContext = getExecutionContext();
+
+    ListLoanSummariesRequest request = ListLoanSummariesRequest.builder()
+        .orgCode(ORGANIZATION_CODE)
+        .searchTimestamp(0L)
+        .build();
+
+    ExecutionRequest<ListLoanSummariesRequest> executionRequest = ExecutionUtil
+        .assembleExecutionRequest(HEADERS, request);
+
+    ExecutionResponse<ListLoanSummariesResponse> executionResponse = collectExecutor
+        .execute(executionContext, Executions.insurance_get_loan_summaries, executionRequest);
+
+    assertThat(executionResponse.getResponse()).usingRecursiveComparison()
+        .isEqualTo(
+            ListLoanSummariesResponse.builder()
+                .rspCode("00000")
+                .rspMsg("success")
+                .searchTimestamp(1000L)
+                .loan_cnt(1)
+                .loanList(
+                    List.of(
+                        LoanSummary.builder()
+                            .prodName("보금자리론")
+                            .accountNum("123456789")
+                            .consent(true)
+                            .accountType("3245")
+                            .accountStatus("01")
+                            .build()
                     )
                 )
                 .build()
@@ -275,8 +315,19 @@ public class ExecutionTest {
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS03_001_single_page_00.json"))));
-
-    // 6.5.9 대출 기본정보 조회
+    
+    // 6.5.9 보험 목록조회                        
+    wireMockServer.stubFor(get(urlMatching("/loans.*"))
+        .withRequestBody(
+            equalToJson(readText("classpath:mock/request/IS11_001_single_page_00.json")))                 
+        .willReturn(
+            aResponse()
+                .withFixedDelay(1000)
+                .withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+                .withBody(readText("classpath:mock/response/IS11_001_single_page_00.json"))));
+    
+    // 6.5.10 보험 기본 조회   
     wireMockServer.stubFor(post(urlMatching("/loans/basic"))
         .withRequestBody(
             equalToJson(readText("classpath:mock/request/IS12_001_single_page_00.json")))

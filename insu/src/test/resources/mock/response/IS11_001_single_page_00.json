@@ -1,0 +1,15 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "success",
+  "search_timestamp": 1000,
+  "loan_cnt": 1,
+  "loan_list": [
+    {
+      "prod_name": "보금자리론",
+      "account_num": "123456789",
+      "is_consent": true,
+      "account_type": "3245",
+      "account_status": "01"
+    }
+  ]
+}

@@ -39,8 +39,8 @@ public class LoanSummaryEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false, name = "account_num_encrypted")
   private String accountNum;
 
-  @Column(nullable = false, columnDefinition = "BIT", length = 1)
-  private Boolean isConsent;
+  @Column(nullable = false, name = "is_consent", columnDefinition = "BIT", length = 1)
+  private Boolean consent;
 
   @Column(nullable = false)
   private String prodName;
@@ -54,6 +54,6 @@ public class LoanSummaryEntity extends BaseTimeAndUserEntity {
   private Long basicSearchTimestamp;
 
   private Long detailSearchTimestamp;
-  
+
   private LocalDate loanTransactionFromDate;
 }
