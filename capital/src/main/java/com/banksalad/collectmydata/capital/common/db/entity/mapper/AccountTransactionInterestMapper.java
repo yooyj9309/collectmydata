@@ -1,8 +1,8 @@
 package com.banksalad.collectmydata.capital.common.db.entity.mapper;
 
+import com.banksalad.collectmydata.capital.account.dto.AccountTransactionInterest;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionInterestEntity;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionInterest;
 
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -20,12 +20,12 @@ public interface AccountTransactionInterestMapper {
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   @Mappings(value = {
       // Data types of `transDtime` between two are quite different so advice an explicit formatting.
-      @Mapping(source = "loanAccountTransactionInterest.intStartDate", target = "intStartDate", dateFormat = "yyyyMMdd"),
-      @Mapping(source = "loanAccountTransactionInterest.intEndDate", target = "intEndDate", dateFormat = "yyyyMMdd"),
+      @Mapping(source = "accountTransactionInterest.intStartDate", target = "intStartDate", dateFormat = "yyyyMMdd"),
+      @Mapping(source = "accountTransactionInterest.intEndDate", target = "intEndDate", dateFormat = "yyyyMMdd"),
       // Must ignore id from `accountTransactionEntity`.
       @Mapping(target = "id", ignore = true)
   })
   void updateEntityFromDto(AccountTransactionEntity accountTransactionEntity,
-      int intNo, LoanAccountTransactionInterest loanAccountTransactionInterest,
+      int intNo, AccountTransactionInterest accountTransactionInterest,
       @MappingTarget AccountTransactionInterestEntity accountTransactionInterestEntity);
 }

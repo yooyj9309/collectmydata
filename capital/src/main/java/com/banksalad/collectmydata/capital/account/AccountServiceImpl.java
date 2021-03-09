@@ -1,11 +1,13 @@
-package com.banksalad.collectmydata.capital.loan;
+package com.banksalad.collectmydata.capital.account;
 
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Service;
-
+import com.banksalad.collectmydata.capital.account.dto.Account;
+import com.banksalad.collectmydata.capital.account.dto.AccountBasic;
+import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
+import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
+import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.collect.Apis;
-import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountBasicEntity;
+import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionInterestEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountBasicHistoryMapper;
@@ -22,15 +24,13 @@ import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.ExecutionResponseValidateService;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
 import com.banksalad.collectmydata.capital.common.service.UserSyncStatusService;
-import com.banksalad.collectmydata.capital.loan.dto.AccountBasic;
-import com.banksalad.collectmydata.capital.loan.dto.AccountBasicResponse;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccount;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.crypto.HashUtil;
-
 import com.banksalad.collectmydata.common.util.ObjectComparator;
+
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Service;
+
 import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -115,7 +115,9 @@ public class AccountServiceImpl implements AccountService {
       accountBasicEntity.setId(existingAccountBasicEntity.getId());
     }
 
-    if (!ObjectComparator.isSame(accountBasicEntity, existingAccountBasicEntity, "syncedAt", "createdAt", "createdBy", "updatedAt", "updatedBy")) {
+    if (!ObjectComparator
+        .isSame(accountBasicEntity, existingAccountBasicEntity, "syncedAt", "createdAt", "createdBy", "updatedAt",
+            "updatedBy")) {
       accountBasicRepository.save(accountBasicEntity);
       accountBasicHistoryRepository.save(accountBasicHistoryMapper.toAccountBasicHistoryEntityFrom(accountBasicEntity));
     }
@@ -141,7 +143,7 @@ public class AccountServiceImpl implements AccountService {
    * 정기전송 시점에 6.7.3만 호출되는 경우. 업데이트가 있는경우 List<AccountInfo>에 매핑
    */
   @Override
-  public List<LoanAccount> listAccountDetails(ExecutionContext executionContext, Organization organization,
+  public List<Account> listAccountDetails(ExecutionContext executionContext, Organization organization,
       List<AccountSummary> accountSummaries) {
     return null;
   }
@@ -158,13 +160,13 @@ public class AccountServiceImpl implements AccountService {
    * @return
    */
   @Override
-  public List<LoanAccountTransaction> listAccountTransactions(ExecutionContext executionContext,
+  public List<AccountTransaction> listAccountTransactions(ExecutionContext executionContext,
       Organization organization, List<AccountSummary> accountSummaries) {
     // Request POST to a data provider.
     // Check if the API has no any error.
     // Save the start time on `user_sync_status` table in case of no error.
     AtomicReference<Boolean> isExceptionOccurred = new AtomicReference<>(false);
-    List<LoanAccountTransaction> loanAccountTransactions = accountSummaries.stream()
+    List<AccountTransaction> accountTransactions = accountSummaries.stream()
         .map(account -> CompletableFuture
             .supplyAsync(() -> externalApiService.getAccountTransactions(executionContext, organization, account),
                 threadPoolTaskExecutor)
@@ -174,11 +176,11 @@ public class AccountServiceImpl implements AccountService {
               return null;
             }))
         .map(CompletableFuture::join)
-        .map(LoanAccountTransactionResponse::getTransList)
+        .map(AccountTransactionResponse::getTransList)
         .flatMap(Stream::ofNullable)
         .flatMap(Collection::stream)
-        .peek(loanAccountTransaction -> saveAccountTransaction(executionContext, organization,
-            loanAccountTransaction))
+        .peek(accountTransaction -> saveAccountTransaction(executionContext, organization,
+            accountTransaction))
         .collect(Collectors.toList());
     userSyncStatusService.updateUserSyncStatus(
         executionContext.getBanksaladUserId(),
@@ -188,22 +190,22 @@ public class AccountServiceImpl implements AccountService {
         null,
         executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred.get())
     );
-    return loanAccountTransactions;
+    return accountTransactions;
   }
 
   private void saveAccountTransaction(ExecutionContext executionContext, Organization organization,
-      LoanAccountTransaction loanAccountTransaction) {
+      AccountTransaction accountTransaction) {
     final AccountTransactionMapper accountTransactionMapper = Mappers.getMapper(AccountTransactionMapper.class);
     final AccountTransactionInterestMapper accountTransactionInterestMapper = Mappers
         .getMapper(AccountTransactionInterestMapper.class);
-    final Integer transactionYearMonth = Integer.valueOf(loanAccountTransaction.getTransDtime().substring(0, 6));
+    final Integer transactionYearMonth = Integer.valueOf(accountTransaction.getTransDtime().substring(0, 6));
     final LocalDateTime syncedAt = executionContext.getSyncStartedAt();
     final Long bankSaladUserId = executionContext.getBanksaladUserId();
     final String organizationId = organization.getOrganizationId();
-    final String accountNum = loanAccountTransaction.getAccountNum();
-    final String seqno = loanAccountTransaction.getSeqno();
-    final String uniqueTransNo = HashUtil.hashCat(Arrays.asList(loanAccountTransaction.getTransDtime(),
-        loanAccountTransaction.getTransNo(), loanAccountTransaction.getBalanceAmt().toString()));
+    final String accountNum = accountTransaction.getAccountNum();
+    final String seqno = accountTransaction.getSeqno();
+    final String uniqueTransNo = HashUtil.hashCat(Arrays.asList(accountTransaction.getTransDtime(),
+        accountTransaction.getTransNo(), accountTransaction.getBalanceAmt().toString()));
 
     AccountTransactionEntity accountTransactionEntity = accountTransactionRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransactionYearMonthAndUniqueTransNo(
@@ -219,19 +221,19 @@ public class AccountServiceImpl implements AccountService {
             .build()
         );
 
-    accountTransactionMapper.updateEntityFromDto(loanAccountTransaction, accountTransactionEntity);
+    accountTransactionMapper.updateEntityFromDto(accountTransaction, accountTransactionEntity);
     accountTransactionRepository.save(accountTransactionEntity);
     accountTransactionInterestRepository
         .deleteByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransactionYearMonthAndUniqueTransNo(
             bankSaladUserId, organizationId, accountNum, seqno, transactionYearMonth, uniqueTransNo
         );
     AtomicInteger counter = new AtomicInteger();
-    loanAccountTransaction.getIntList()
-        .forEach(loanAccountTransactionInterest -> {
+    accountTransaction.getIntList()
+        .forEach(accountTransactionInterest -> {
               AccountTransactionInterestEntity accountTransactionInterestEntity = AccountTransactionInterestEntity.builder()
                   .build();
               accountTransactionInterestMapper
-                  .updateEntityFromDto(accountTransactionEntity, counter.incrementAndGet(), loanAccountTransactionInterest,
+                  .updateEntityFromDto(accountTransactionEntity, counter.incrementAndGet(), accountTransactionInterest,
                       accountTransactionInterestEntity);
               accountTransactionInterestRepository.save(accountTransactionInterestEntity);
             }

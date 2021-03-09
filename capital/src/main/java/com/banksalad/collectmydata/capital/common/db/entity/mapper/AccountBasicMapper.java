@@ -1,8 +1,9 @@
 package com.banksalad.collectmydata.capital.common.db.entity.mapper;
 
+import com.banksalad.collectmydata.capital.account.dto.AccountBasic;
+import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountBasicEntity;
-import com.banksalad.collectmydata.capital.loan.dto.AccountBasic;
-import com.banksalad.collectmydata.capital.loan.dto.AccountBasicResponse;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;

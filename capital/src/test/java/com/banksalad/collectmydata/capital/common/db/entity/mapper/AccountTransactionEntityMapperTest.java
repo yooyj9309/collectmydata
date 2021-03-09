@@ -1,12 +1,12 @@
 package com.banksalad.collectmydata.capital.common.db.entity.mapper;
 
+import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
+import com.banksalad.collectmydata.capital.account.dto.AccountTransactionInterest;
 import com.banksalad.collectmydata.capital.common.TestHelper;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionInterestEntity;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionInterestRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionRepository;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionInterest;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -32,7 +32,7 @@ import static com.banksalad.collectmydata.capital.common.TestHelper.TRANS_AMT;
 import static com.banksalad.collectmydata.capital.common.TestHelper.UNIQUE_TRANS_NO;
 import static com.banksalad.collectmydata.capital.common.TestHelper.createAccountTransactionEntity;
 import static com.banksalad.collectmydata.capital.common.TestHelper.createAccountTransactionInterestEntity;
-import static com.banksalad.collectmydata.capital.common.TestHelper.generateLoanAccountTransaction;
+import static com.banksalad.collectmydata.capital.common.TestHelper.generateAccountTransaction;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
@@ -61,13 +61,13 @@ public class AccountTransactionEntityMapperTest {
     // When
     AccountTransactionEntity accountTransactionEntity = queryAccountTransaction();
     // Create an empty transaction object.
-    LoanAccountTransaction loanAccountTransaction = LoanAccountTransaction.builder().build();
+    AccountTransaction accountTransaction = AccountTransaction.builder().build();
     // We simulate some changes against the empty transaction object.
-    loanAccountTransaction.setTransAmt(TRANS_AMT.add(BigDecimal.valueOf(-10)));
-    loanAccountTransaction.setBalanceAmt(BALANCE_AMT.add(BigDecimal.valueOf(10)));
+    accountTransaction.setTransAmt(TRANS_AMT.add(BigDecimal.valueOf(-10)));
+    accountTransaction.setBalanceAmt(BALANCE_AMT.add(BigDecimal.valueOf(10)));
     // At this time, all fields except `transAmt` and `balanceAmt` are in null state.
     // Try to update only with a few non-null fields.
-    accountTransactionMapper.updateEntityFromDto(loanAccountTransaction, accountTransactionEntity);
+    accountTransactionMapper.updateEntityFromDto(accountTransaction, accountTransactionEntity);
 
     // Then
     // See `accountTransactionEntity` was updated only with `transAmt` and `balanceAmt`.
@@ -89,10 +89,10 @@ public class AccountTransactionEntityMapperTest {
     // When
     AccountTransactionEntity accountTransactionEntity = queryAccountTransaction();
     // We simulate to get an `LoanAccountTransaction` from an external mydata capital API.
-    LoanAccountTransaction loanAccountTransaction = generateLoanAccountTransaction();
+    AccountTransaction accountTransaction = generateAccountTransaction();
     // At this time, we transfer a fully-packed object to the mapper.
     // Then the mapper will pour `loanAccountTransaction` into `accountTransactionEntity`.
-    accountTransactionMapper.updateEntityFromDto(loanAccountTransaction, accountTransactionEntity);
+    accountTransactionMapper.updateEntityFromDto(accountTransaction, accountTransactionEntity);
 
     // Then
     assertThat(accountTransactionEntity).usingRecursiveComparison().isEqualTo(createAccountTransactionEntity());
@@ -105,7 +105,7 @@ public class AccountTransactionEntityMapperTest {
     // Assume we have gotten an `AccountTransactionEntity` from the above test cases.
     AccountTransactionEntity accountTransactionEntity = createAccountTransactionEntity();
     // `LoanAccountTransactionInterest` is acquired from the external transaction API.
-    LoanAccountTransactionInterest loanAccountTransactionInterest = generateLoanAccountTransaction().getIntList().get(0);
+    AccountTransactionInterest accountTransactionInterest = generateAccountTransaction().getIntList().get(0);
 
     // When
     // The following deletion has no meaning but just shows our business logic.
@@ -118,7 +118,7 @@ public class AccountTransactionEntityMapperTest {
     // Fill `AccountTransactionInterestEntity` object with accountTransactionEntity, interest sequence number,
     // and loanAccountTransactionInterest.
     accountTransactionInterestMapper
-        .updateEntityFromDto(accountTransactionEntity, INT_NO, loanAccountTransactionInterest,
+        .updateEntityFromDto(accountTransactionEntity, INT_NO, accountTransactionInterest,
             accountTransactionInterestEntity);
 
     // Then

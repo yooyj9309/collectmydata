@@ -1,21 +1,22 @@
 package com.banksalad.collectmydata.capital.common.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
+import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
+import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
+import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
-import com.banksalad.collectmydata.capital.loan.dto.AccountDetailResponse;
-import com.banksalad.collectmydata.capital.loan.dto.AccountBasicResponse;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
@@ -44,7 +45,7 @@ import static com.banksalad.collectmydata.capital.common.TestHelper.PRODUCT_NAME
 import static com.banksalad.collectmydata.capital.common.TestHelper.SECTOR;
 import static com.banksalad.collectmydata.capital.common.TestHelper.SEQNO1;
 import static com.banksalad.collectmydata.capital.common.TestHelper.SEQNO2;
-import static com.banksalad.collectmydata.capital.common.TestHelper.respondLoanAccountTransactionResponseWithTwoPages;
+import static com.banksalad.collectmydata.capital.common.TestHelper.respondAccountTransactionResponseWithTwoPages;
 import static com.banksalad.collectmydata.capital.util.FileUtil.readText;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -153,22 +154,22 @@ class ExternalApiServiceTest {
     final AccountSummary accountSummary = getAccount();
     final Long bankSaladUserId = executionContext.getBanksaladUserId();
     final String organizationId = organization.getOrganizationId();
-    LoanAccountTransactionResponse expectedLoanAccountTransactionResponse = respondLoanAccountTransactionResponseWithTwoPages();
-    expectedLoanAccountTransactionResponse.getTransList().forEach(loanAccountTransaction -> {
-          loanAccountTransaction.setAccountNum(accountSummary.getAccountNum());
-          loanAccountTransaction.setSeqno(accountSummary.getSeqno());
+    AccountTransactionResponse expectedAccountTransactionResponse = respondAccountTransactionResponseWithTwoPages();
+    expectedAccountTransactionResponse.getTransList().forEach(accountTransaction -> {
+          accountTransaction.setAccountNum(accountSummary.getAccountNum());
+          accountTransaction.setSeqno(accountSummary.getSeqno());
         }
     );
 
     // When
-    LoanAccountTransactionResponse actualLoanAccountTransactionResponse = externalApiService
+    AccountTransactionResponse actualAccountTransactionResponse = externalApiService
         .getAccountTransactions(executionContext, organization, accountSummary);
 
     // Then
-    assertEquals(3, actualLoanAccountTransactionResponse.getTransCnt());
-    assertEquals(3, actualLoanAccountTransactionResponse.getTransList().size());
-    assertThat(actualLoanAccountTransactionResponse).usingRecursiveComparison()
-        .isEqualTo(expectedLoanAccountTransactionResponse);
+    assertEquals(3, actualAccountTransactionResponse.getTransCnt());
+    assertEquals(3, actualAccountTransactionResponse.getTransList().size());
+    assertThat(actualAccountTransactionResponse).usingRecursiveComparison()
+        .isEqualTo(expectedAccountTransactionResponse);
   }
 
   @Test

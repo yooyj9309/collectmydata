@@ -1,9 +1,9 @@
 package com.banksalad.collectmydata.capital.common.collect;
 
+import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
+import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
+import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
-import com.banksalad.collectmydata.capital.loan.dto.AccountDetailResponse;
-import com.banksalad.collectmydata.capital.loan.dto.AccountBasicResponse;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
@@ -35,7 +35,7 @@ public class Executions {
   public static final Execution capital_get_account_transactions =
       Execution.create()
           .exchange(Apis.capital_get_account_transactions)
-          .as(LoanAccountTransactionResponse.class)
+          .as(AccountTransactionResponse.class)
           .build();
 
   // 6.7.5 운용리스 기본정보 조회

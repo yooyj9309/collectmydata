@@ -1,7 +1,7 @@
 package com.banksalad.collectmydata.capital.common.db.entity.mapper;
 
+import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEntity;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
 
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -20,15 +20,15 @@ public interface AccountTransactionMapper {
   @Mappings(value = {
       // Data types of `transDtime` between two are quite different so advice an explicit formatting.
       // `syncedAt' is copied smoothly without any directives.
-      @Mapping(source = "loanAccountTransaction.transDtime", target = "transDtime", dateFormat = "yyyyMMddHHmmss")
+      @Mapping(source = "accountTransaction.transDtime", target = "transDtime", dateFormat = "yyyyMMddHHmmss")
   })
-  void updateEntityFromDto(LoanAccountTransaction loanAccountTransaction,
+  void updateEntityFromDto(AccountTransaction accountTransaction,
       @MappingTarget AccountTransactionEntity accountTransactionEntity);
 
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   @Mappings(value = {
       @Mapping(target = "intCnt", ignore = true)
   })
-  void updateDtoFromDto(LoanAccountTransaction sourceLoanAccountTransaction,
-      @MappingTarget LoanAccountTransaction targetLoanAccountTransaction);
+  void updateDtoFromDto(AccountTransaction sourceAccountTransaction,
+      @MappingTarget AccountTransaction targetAccountTransaction);
 }

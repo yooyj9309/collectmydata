@@ -1,16 +1,17 @@
 package com.banksalad.collectmydata.capital;
 
-import org.springframework.stereotype.Service;
-
+import com.banksalad.collectmydata.capital.account.AccountService;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.CapitalApiResponse;
 import com.banksalad.collectmydata.capital.common.dto.CapitalApiResponse.CapitalApiResponseBuilder;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.capital.grpc.client.CollectmydataConnectClientService;
-import com.banksalad.collectmydata.capital.loan.AccountService;
 import com.banksalad.collectmydata.capital.oplease.OperatingLeaseService;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -71,7 +72,7 @@ public class CapitalApiServiceImpl implements CapitalApiService {
         .collect(Collectors.toList());
 //    capitalApiResponseBuilder.loanAccounts(
 //        accountService.listLoanAccounts(executionContext, organization, anotherAccountSummaries));
-    capitalApiResponseBuilder.loanAccountTransactions(
+    capitalApiResponseBuilder.accountTransactions(
         accountService.listAccountTransactions(executionContext, organization, anotherAccountSummaries));
 
     return capitalApiResponseBuilder.build();

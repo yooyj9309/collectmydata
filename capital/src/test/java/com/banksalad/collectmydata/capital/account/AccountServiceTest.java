@@ -1,13 +1,12 @@
-package com.banksalad.collectmydata.capital.loan;
+package com.banksalad.collectmydata.capital.account;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-
+import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
+import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
+import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountBasicEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
-import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountBasicRepository;
+import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionInterestRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.UserSyncStatusRepository;
@@ -15,15 +14,17 @@ import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
-import com.banksalad.collectmydata.capital.loan.dto.AccountBasicResponse;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.crypto.HashUtil;
 import com.banksalad.collectmydata.common.enums.Industry;
 import com.banksalad.collectmydata.common.enums.MydataSector;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.common.util.DateUtil;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
 import javax.persistence.EntityExistsException;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
@@ -39,9 +40,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.banksalad.collectmydata.capital.common.TestHelper.respondLoanAccountTransactionResponseWithEmptyPages;
-import static com.banksalad.collectmydata.capital.common.TestHelper.respondLoanAccountTransactionResponseWithOnePage;
-import static com.banksalad.collectmydata.capital.common.TestHelper.respondLoanAccountTransactionResponseWithTwoPages;
+import static com.banksalad.collectmydata.capital.common.TestHelper.respondAccountTransactionResponseWithEmptyPages;
+import static com.banksalad.collectmydata.capital.common.TestHelper.respondAccountTransactionResponseWithOnePage;
+import static com.banksalad.collectmydata.capital.common.TestHelper.respondAccountTransactionResponseWithTwoPages;
 import static java.lang.Boolean.TRUE;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -210,10 +211,10 @@ public class AccountServiceTest {
     final Organization organization = getOrganization();
     final AccountSummary accountSummary = getAccount();
     when(externalApiService.getAccountTransactions(executionContext, organization, accountSummary))
-        .thenReturn(respondLoanAccountTransactionResponseWithEmptyPages());
+        .thenReturn(respondAccountTransactionResponseWithEmptyPages());
 
     // When
-    List<LoanAccountTransaction> response = accountService
+    List<AccountTransaction> response = accountService
         .listAccountTransactions(executionContext, organization, List.of(accountSummary));
 
     // Then
@@ -233,17 +234,17 @@ public class AccountServiceTest {
     final AccountSummary accountSummary = getAccount();
     final Long bankSaladUserId = executionContext.getBanksaladUserId();
     final String organizationId = organization.getOrganizationId();
-    LoanAccountTransactionResponse expectedLoanAccountTransactionResponse = respondLoanAccountTransactionResponseWithTwoPages();
-    expectedLoanAccountTransactionResponse.getTransList().forEach(loanAccountTransaction -> {
-          loanAccountTransaction.setAccountNum(accountSummary.getAccountNum());
-          loanAccountTransaction.setSeqno(accountSummary.getSeqno());
+    AccountTransactionResponse expectedAccountTransactionResponse = respondAccountTransactionResponseWithTwoPages();
+    expectedAccountTransactionResponse.getTransList().forEach(accountTransaction -> {
+          accountTransaction.setAccountNum(accountSummary.getAccountNum());
+          accountTransaction.setSeqno(accountSummary.getSeqno());
         }
     );
     when(externalApiService.getAccountTransactions(executionContext, organization, accountSummary))
-        .thenReturn(expectedLoanAccountTransactionResponse);
+        .thenReturn(expectedAccountTransactionResponse);
 
     // When
-    List<LoanAccountTransaction> actualLoanAccountTransactions = accountService
+    List<AccountTransaction> actualAccountTransactions = accountService
         .listAccountTransactions(executionContext, organization, List.of(accountSummary));
 
     // Then
@@ -251,7 +252,7 @@ public class AccountServiceTest {
     assertEquals(3, accountTransactionRepository.count());
     assertEquals(3, accountTransactionInterestRepository.count());
     // Compare API response with modified result from the loan service.
-    assertUniqueTransNo(actualLoanAccountTransactions, bankSaladUserId, organizationId);
+    assertUniqueTransNo(actualAccountTransactions, bankSaladUserId, organizationId);
   }
 
   //  @Test
@@ -263,17 +264,17 @@ public class AccountServiceTest {
     final AccountSummary accountSummary = getAccount();
     final Long bankSaladUserId = executionContext.getBanksaladUserId();
     final String organizationId = organization.getOrganizationId();
-    LoanAccountTransactionResponse expectedLoanAccountTransactionResponse = respondLoanAccountTransactionResponseWithOnePage();
-    expectedLoanAccountTransactionResponse.getTransList().forEach(loanAccountTransaction -> {
-          loanAccountTransaction.setAccountNum(accountSummary.getAccountNum());
-          loanAccountTransaction.setSeqno(accountSummary.getSeqno());
+    AccountTransactionResponse expectedAccountTransactionResponse = respondAccountTransactionResponseWithOnePage();
+    expectedAccountTransactionResponse.getTransList().forEach(accountTransaction -> {
+          accountTransaction.setAccountNum(accountSummary.getAccountNum());
+          accountTransaction.setSeqno(accountSummary.getSeqno());
         }
     );
     when(externalApiService.getAccountTransactions(executionContext, organization, accountSummary))
-        .thenReturn(expectedLoanAccountTransactionResponse);
+        .thenReturn(expectedAccountTransactionResponse);
 
     // When
-    List<LoanAccountTransaction> actualLoanAccountTransactions = accountService
+    List<AccountTransaction> actualAccountTransactions = accountService
         .listAccountTransactions(executionContext, organization, List.of(accountSummary));
 
     // Then
@@ -281,22 +282,22 @@ public class AccountServiceTest {
     assertEquals(1, accountTransactionRepository.count());
     assertEquals(1, accountTransactionInterestRepository.count());
     // Compare API response with modified result from the loan service.
-    assertUniqueTransNo(actualLoanAccountTransactions, bankSaladUserId, organizationId);
+    assertUniqueTransNo(actualAccountTransactions, bankSaladUserId, organizationId);
   }
 
-  private void assertUniqueTransNo(List<LoanAccountTransaction> actualLoanAccountTransactions, Long bankSaladUserId,
+  private void assertUniqueTransNo(List<AccountTransaction> actualAccountTransactions, Long bankSaladUserId,
       String organizationId) {
-    List<String> expectedUniqueTransNoList = actualLoanAccountTransactions.stream()
-        .map(loanAccountTransaction -> HashUtil.hashCat(Arrays.asList(loanAccountTransaction.getTransDtime(),
-            loanAccountTransaction.getTransNo(), loanAccountTransaction.getBalanceAmt().toString())))
+    List<String> expectedUniqueTransNoList = actualAccountTransactions.stream()
+        .map(accountTransaction -> HashUtil.hashCat(Arrays.asList(accountTransaction.getTransDtime(),
+            accountTransaction.getTransNo(), accountTransaction.getBalanceAmt().toString())))
         .collect(Collectors.toList());
-    List<String> actualUniqueTransNoList = actualLoanAccountTransactions.stream()
-        .map(loanAccountTransaction -> {
-          final String accountNum = loanAccountTransaction.getAccountNum();
-          final String seqno = loanAccountTransaction.getSeqno();
-          final Integer transactionYearMonth = Integer.valueOf(loanAccountTransaction.getTransDtime().substring(0, 6));
-          final String uniqueTransNo = HashUtil.hashCat(Arrays.asList(loanAccountTransaction.getTransDtime(),
-              loanAccountTransaction.getTransNo(), loanAccountTransaction.getBalanceAmt().toString()));
+    List<String> actualUniqueTransNoList = actualAccountTransactions.stream()
+        .map(accountTransaction -> {
+          final String accountNum = accountTransaction.getAccountNum();
+          final String seqno = accountTransaction.getSeqno();
+          final Integer transactionYearMonth = Integer.valueOf(accountTransaction.getTransDtime().substring(0, 6));
+          final String uniqueTransNo = HashUtil.hashCat(Arrays.asList(accountTransaction.getTransDtime(),
+              accountTransaction.getTransNo(), accountTransaction.getBalanceAmt().toString()));
           return accountTransactionRepository
               .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransactionYearMonthAndUniqueTransNo(
                   bankSaladUserId, organizationId, accountNum, seqno, transactionYearMonth, uniqueTransNo

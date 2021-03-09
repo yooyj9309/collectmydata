@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.capital.loan.dto;
+package com.banksalad.collectmydata.capital.account.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-import static lombok.AccessLevel.*;
+import static lombok.AccessLevel.PRIVATE;
+import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Builder

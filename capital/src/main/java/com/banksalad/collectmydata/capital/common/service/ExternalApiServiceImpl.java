@@ -1,8 +1,12 @@
 package com.banksalad.collectmydata.capital.common.service;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
+import com.banksalad.collectmydata.capital.account.dto.AccountBasicRequest;
+import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
+import com.banksalad.collectmydata.capital.account.dto.AccountDetailRequest;
+import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
+import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
+import com.banksalad.collectmydata.capital.account.dto.AccountTransactionRequest;
+import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.collect.Executions;
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountTransactionMapper;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
@@ -10,15 +14,6 @@ import com.banksalad.collectmydata.capital.common.dto.AccountSummaryRequest;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.util.ExecutionUtil;
-
-import com.banksalad.collectmydata.capital.loan.dto.AccountDetailRequest;
-import com.banksalad.collectmydata.capital.loan.dto.AccountDetailResponse;
-import com.banksalad.collectmydata.capital.loan.dto.AccountBasicRequest;
-import com.banksalad.collectmydata.capital.loan.dto.AccountBasicResponse;
-
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionRequest;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicRequest;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionRequest;
@@ -29,6 +24,10 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
@@ -108,12 +107,12 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   }
 
   @Override
-  public LoanAccountTransactionResponse getAccountTransactions(ExecutionContext executionContext,
+  public AccountTransactionResponse getAccountTransactions(ExecutionContext executionContext,
       Organization organization, AccountSummary accountSummary) {
     // executionId 생성.
     executionContext.generateAndsUpdateExecutionRequestId();
     Map<String, String> header = Map.of("Authorization", executionContext.getAccessToken());
-    LoanAccountTransactionRequest request = LoanAccountTransactionRequest.builder()
+    AccountTransactionRequest request = AccountTransactionRequest.builder()
         .orgCode(organization.getOrganizationCode())
         .accountNum(accountSummary.getAccountNum())
         .seqno(accountSummary.getSeqno())
@@ -121,14 +120,14 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         .toDate("20210122") // fixme : kstCurrentDatetime(); // a new method of util.DateUtil
         .limit(MAX_LIMIT)
         .build();
-    ExecutionRequest<LoanAccountTransactionRequest> executionRequest = ExecutionUtil
+    ExecutionRequest<AccountTransactionRequest> executionRequest = ExecutionUtil
         .executionRequestAssembler(header, request);
-    LoanAccountTransactionResponse response = LoanAccountTransactionResponse.builder()
+    AccountTransactionResponse response = AccountTransactionResponse.builder()
         .nextPage(null)
         .transCnt(0)
         .transList(new ArrayList<>())
         .build();
-    final LoanAccountTransaction defaultTransaction = LoanAccountTransaction.builder()
+    final AccountTransaction defaultTransaction = AccountTransaction.builder()
         .accountNum(accountSummary.getAccountNum())
         .seqno(accountSummary.getSeqno())
         .build();
@@ -137,7 +136,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     //TODO
     //  Change to flex-like instead of do-while.
     do {
-      LoanAccountTransactionResponse page = execute(executionContext, Executions.capital_get_account_transactions,
+      AccountTransactionResponse page = execute(executionContext, Executions.capital_get_account_transactions,
           executionRequest);
       response.setRspCode(page.getRspCode());
       response.setRspMsg(page.getRspMsg());
@@ -145,8 +144,8 @@ public class ExternalApiServiceImpl implements ExternalApiService {
       response.setTransCnt(response.getTransCnt() + page.getTransCnt());
       response.getTransList().addAll(
           page.getTransList().stream()
-              .peek(loanAccountTransaction -> accountTransactionMapper
-                  .updateDtoFromDto(defaultTransaction, loanAccountTransaction))
+              .peek(accountTransaction -> accountTransactionMapper
+                  .updateDtoFromDto(defaultTransaction, accountTransaction))
               .collect(Collectors.toList())
       );
       executionRequest.getRequest().setNextPage(page.getNextPage());
@@ -203,7 +202,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
     return response;
   }
-  
+
   private <T, R> R execute(ExecutionContext executionContext, Execution execution,
       ExecutionRequest<T> executionRequest) {
 

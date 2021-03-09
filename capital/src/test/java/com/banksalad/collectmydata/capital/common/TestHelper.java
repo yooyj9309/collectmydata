@@ -1,15 +1,16 @@
 package com.banksalad.collectmydata.capital.common;
 
+import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
+import com.banksalad.collectmydata.capital.account.dto.AccountTransactionInterest;
+import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionInterestEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountTransactionInterestMapper;
 import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountTransactionMapper;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionInterest;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransactionResponse;
 import com.banksalad.collectmydata.common.crypto.HashUtil;
 import com.banksalad.collectmydata.common.enums.Industry;
 import com.banksalad.collectmydata.common.enums.MydataSector;
+
 import org.mapstruct.factory.Mappers;
 
 import java.math.BigDecimal;
@@ -61,8 +62,8 @@ public class TestHelper {
   private static final AccountTransactionInterestMapper accountTransactionInterestMapper = Mappers
       .getMapper(AccountTransactionInterestMapper.class);
 
-  public static LoanAccountTransaction generateLoanAccountTransaction() {
-    return LoanAccountTransaction.builder()
+  public static AccountTransaction generateAccountTransaction() {
+    return AccountTransaction.builder()
 //        .banksaladUserId(BANKSALAD_USER_ID)
 //        .organizationId(ORGANIZATION_ID)
 //        .accountNum(ACCOUNT_NUM)
@@ -77,7 +78,7 @@ public class TestHelper {
         .intAmt(INT_AMT)
         .intCnt(INT_CNT)
         .intList(List.of(
-            LoanAccountTransactionInterest.builder()
+            AccountTransactionInterest.builder()
                 .intStartDate(INT_START_DATE)
                 .intEndDate(INT_END_DATE)
                 .intRate(INT_RATE)
@@ -86,8 +87,8 @@ public class TestHelper {
         .build();
   }
 
-  public static LoanAccountTransaction generateLoanAccountTransaction1() {
-    return LoanAccountTransaction.builder()
+  public static AccountTransaction generateAccountTransaction1() {
+    return AccountTransaction.builder()
         .transDtime("20210121103000")
         .transNo("trans#2")
         .transType("03")
@@ -97,13 +98,13 @@ public class TestHelper {
         .intAmt(bigDecimalOf(100, 3))
         .intCnt(2)
         .intList(List.of(
-            LoanAccountTransactionInterest.builder()
+            AccountTransactionInterest.builder()
                 .intStartDate("20201201")
                 .intEndDate("20201231")
                 .intRate(bigDecimalOf(4.125, 3))
                 .intType("02")
                 .build(),
-            LoanAccountTransactionInterest.builder()
+            AccountTransactionInterest.builder()
                 .intStartDate("20201201")
                 .intEndDate("20201231")
                 .intRate(bigDecimalOf(3.025, 3))
@@ -117,8 +118,8 @@ public class TestHelper {
     return HashUtil.hashCat(Arrays.asList("20210121103000", "trans#2", bigDecimalOf(18000.7, 3).toString()));
   }
 
-  public static LoanAccountTransaction generateLoanAccountTransaction2() {
-    return LoanAccountTransaction.builder()
+  public static AccountTransaction generateAccountTransaction2() {
+    return AccountTransaction.builder()
         .transDtime("20210121093000")
         .transNo("trans#1")
         .transType("03")
@@ -128,7 +129,7 @@ public class TestHelper {
         .intAmt(bigDecimalOf(100, 3))
         .intCnt(1)
         .intList(List.of(
-            LoanAccountTransactionInterest.builder()
+            AccountTransactionInterest.builder()
                 .intStartDate("20201201")
                 .intEndDate("20201231")
                 .intRate(bigDecimalOf(3.025, 3))
@@ -142,8 +143,8 @@ public class TestHelper {
     return HashUtil.hashCat(Arrays.asList("20210121093000", "trans#1", bigDecimalOf(18000.7, 3).toString()));
   }
 
-  public static LoanAccountTransaction generateLoanAccountTransaction3() {
-    return LoanAccountTransaction.builder()
+  public static AccountTransaction generateAccountTransaction3() {
+    return AccountTransaction.builder()
         .transDtime("20210121221000")
         .transNo("trans#3")
         .transType("99")
@@ -160,8 +161,8 @@ public class TestHelper {
     return HashUtil.hashCat(Arrays.asList("20210121221000", "trans#3", bigDecimalOf(18000.7, 3).toString()));
   }
 
-  public static LoanAccountTransactionResponse respondLoanAccountTransactionResponseWithEmptyPages() {
-    return LoanAccountTransactionResponse.builder()
+  public static AccountTransactionResponse respondAccountTransactionResponseWithEmptyPages() {
+    return AccountTransactionResponse.builder()
         .rspCode(REP_CODE_OK)
         .rspMsg(REP_MSG_OK)
         .nextPage("0")
@@ -170,24 +171,24 @@ public class TestHelper {
         .build();
   }
 
-  public static LoanAccountTransactionResponse respondLoanAccountTransactionResponseWithOnePage() {
-    return LoanAccountTransactionResponse.builder()
+  public static AccountTransactionResponse respondAccountTransactionResponseWithOnePage() {
+    return AccountTransactionResponse.builder()
         .rspCode(REP_CODE_OK)
         .rspMsg(REP_MSG_OK)
         .transCnt(1)
-        .transList(List.of(generateLoanAccountTransaction()))
+        .transList(List.of(generateAccountTransaction()))
         .build();
   }
 
-  public static LoanAccountTransactionResponse respondLoanAccountTransactionResponseWithTwoPages() {
-    return LoanAccountTransactionResponse.builder()
+  public static AccountTransactionResponse respondAccountTransactionResponseWithTwoPages() {
+    return AccountTransactionResponse.builder()
         .rspCode(REP_CODE_OK)
         .rspMsg(REP_MSG_OK)
         .transCnt(3)
         .transList(List.of(
-            generateLoanAccountTransaction1(),
-            generateLoanAccountTransaction2(),
-            generateLoanAccountTransaction3()
+            generateAccountTransaction1(),
+            generateAccountTransaction2(),
+            generateAccountTransaction3()
         ))
         .build();
   }
@@ -202,7 +203,7 @@ public class TestHelper {
         .seqno(SEQNO1)
         .uniqueTransNo(UNIQUE_TRANS_NO)
         .build();
-    accountTransactionMapper.updateEntityFromDto(generateLoanAccountTransaction(), accountTransactionEntity);
+    accountTransactionMapper.updateEntityFromDto(generateAccountTransaction(), accountTransactionEntity);
     return accountTransactionEntity;
   }
 
@@ -210,7 +211,7 @@ public class TestHelper {
     AccountTransactionInterestEntity accountTransactionInterestEntity = AccountTransactionInterestEntity.builder()
         .build();
     accountTransactionInterestMapper
-        .updateEntityFromDto(createAccountTransactionEntity(), 1, generateLoanAccountTransaction().getIntList().get(0),
+        .updateEntityFromDto(createAccountTransactionEntity(), 1, generateAccountTransaction().getIntList().get(0),
             accountTransactionInterestEntity);
     return accountTransactionInterestEntity;
   }

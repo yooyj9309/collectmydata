@@ -1,4 +1,5 @@
-package com.banksalad.collectmydata.capital.loan.dto;
+package com.banksalad.collectmydata.capital.account.dto;
+
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -10,6 +11,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -17,13 +20,11 @@ import lombok.ToString;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @ToString
-public class LoanAccountTransactionRequest {
+public class AccountTransactionResponse {
 
-  private String orgCode;
-  private String accountNum;
-  private String seqno;
-  private String fromDate;
-  private String toDate;
+  private String rspCode;
+  private String rspMsg;
   private String nextPage;
-  private int limit;
+  private int transCnt;
+  private List<AccountTransaction> transList;
 }

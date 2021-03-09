@@ -1,9 +1,10 @@
 package com.banksalad.collectmydata.capital.common.dto;
 
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccount;
-import com.banksalad.collectmydata.capital.loan.dto.LoanAccountTransaction;
+import com.banksalad.collectmydata.capital.account.dto.Account;
+import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLease;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,9 +21,9 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CapitalApiResponse {
 
-  private List<LoanAccount> loanAccounts;
+  private List<Account> accounts;
 
-  private List<LoanAccountTransaction> loanAccountTransactions;
+  private List<AccountTransaction> accountTransactions;
 
   private List<OperatingLease> operatingLeases;
 
