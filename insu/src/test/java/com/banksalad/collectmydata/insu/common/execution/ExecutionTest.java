@@ -23,9 +23,15 @@ import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceContract;
+import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicRequest;
+import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicResponse;
+import com.banksalad.collectmydata.insu.insurance.dto.InsuranceTransaction;
 import com.banksalad.collectmydata.insu.insurance.dto.Insured;
+import com.banksalad.collectmydata.insu.insurance.dto.ListInsuranceTransactionsRequest;
+import com.banksalad.collectmydata.insu.insurance.dto.ListInsuranceTransactionsResponse;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicRequest;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicResponse;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
@@ -52,6 +58,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 public class ExecutionTest {
@@ -203,6 +210,41 @@ public class ExecutionTest {
   }
 
   @Test
+  @DisplayName("6.5.6 보험 거래내역 조회")
+  void getInsuranceTransactionApiTest() {
+    ExecutionContext executionContext = getExecutionContext();
+
+    ListInsuranceTransactionsRequest request = ListInsuranceTransactionsRequest.builder()
+        .orgCode(ORGANIZATION_CODE)
+        .insuNum("123456789")
+        .fromDate("20200101")
+        .toDate("20200302")
+        .limit(500)
+        .build();
+
+    ExecutionRequest<ListInsuranceTransactionsRequest> executionRequest = ExecutionUtil
+        .assembleExecutionRequest(HEADERS, request);
+
+    ExecutionResponse<ListInsuranceTransactionsResponse> executionResponse = collectExecutor
+        .execute(executionContext, Executions.insurance_get_transactions, executionRequest);
+
+    ListInsuranceTransactionsResponse response = executionResponse.getResponse();
+    assertEquals(2, response.getTransCnt());
+    assertEquals("01", response.getNextPage());
+    assertThat(response.getTransList().get(0)).usingRecursiveComparison()
+        .isEqualTo(
+            InsuranceTransaction.builder()
+                .transDate("20200103")
+                .transAppliedMonth(202001)
+                .transNo(1)
+                .paidAmt(new BigDecimal("12345.123"))
+                .currencyCode("AFA")
+                .payMethod("01")
+                .build()
+        );
+  }
+      
+  @Test
   @DisplayName("6.5.8 보험 기본정보 조회")
   public void listLoanSummaryApiTest() {
     ExecutionContext executionContext = getExecutionContext();
@@ -316,17 +358,28 @@ public class ExecutionTest {
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS03_001_single_page_00.json"))));
     
+    // 6.5.6 보험 거래내 조회
+    wireMockServer.stubFor(post(urlMatching("/insurances/transactions"))
+        .withRequestBody(
+            equalToJson(readText("classpath:mock/request/IS06_001_multi_page_00.json")))
+        .willReturn(
+            aResponse()
+                .withFixedDelay(1000)
+                .withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+                .withBody(readText("classpath:mock/response/IS06_001_multi_page_00.json"))));            
+    
     // 6.5.9 보험 목록조회                        
     wireMockServer.stubFor(get(urlMatching("/loans.*"))
         .withRequestBody(
-            equalToJson(readText("classpath:mock/request/IS11_001_single_page_00.json")))                 
+            equalToJson(readText("classpath:mock/request/IS11_001_single_page_00.json")))         
         .willReturn(
             aResponse()
                 .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS11_001_single_page_00.json"))));
-    
+      
     // 6.5.10 보험 기본 조회   
     wireMockServer.stubFor(post(urlMatching("/loans/basic"))
         .withRequestBody(
@@ -338,4 +391,5 @@ public class ExecutionTest {
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS12_001_single_page_00.json"))));
   }
+      
 }

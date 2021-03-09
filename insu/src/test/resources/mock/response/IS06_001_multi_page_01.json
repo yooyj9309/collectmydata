@@ -1,0 +1,15 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "success",
+  "trans_cnt": 1,
+  "trans_list": [
+    {
+      "trans_date": "20200205",
+      "trans_applied_month": 202002,
+      "trans_no": 3,
+      "paid_amt": 987654321.789,
+      "currency_code": "AFA",
+      "pay_method": "03"
+    }
+  ]
+}
