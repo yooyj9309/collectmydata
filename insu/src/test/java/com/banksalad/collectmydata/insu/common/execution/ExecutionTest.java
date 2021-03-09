@@ -15,12 +15,14 @@ import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.common.dto.ListInsuranceSummariesRequest;
 import com.banksalad.collectmydata.insu.common.dto.ListInsuranceSummariesResponse;
+import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicRequest;
+import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceContract;
-import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicRequest;
-import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.Insured;
+import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicRequest;
+import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicResponse;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
@@ -147,7 +149,7 @@ public class ExecutionTest {
                 .build()
         );
   }
-  
+
   @Test
   @DisplayName("6.5.3 보험 특약정보 조회")
   public void getInsuranceContractApiTest() {
@@ -191,9 +193,39 @@ public class ExecutionTest {
                             .currencyCode("KRW")
                             .required(true)
                             .build()
-                      
+
                     )
                 )
+                .build()
+        );
+  }
+
+  @Test
+  @DisplayName("6.5.9 대출 기본 조회")
+  public void getLoanBasicApiTest() {
+    ExecutionContext executionContext = getExecutionContext();
+
+    GetLoanBasicRequest request = GetLoanBasicRequest.builder()
+        .orgCode(ORGANIZATION_CODE)
+        .accountNum("1234567812345678")
+        .searchTimestamp(0L)
+        .build();
+
+    ExecutionRequest<GetLoanBasicRequest> executionRequest = ExecutionUtil.assembleExecutionRequest(HEADERS, request);
+
+    ExecutionResponse<GetLoanBasicResponse> executionResponse = collectExecutor
+        .execute(executionContext, Executions.insurance_get_loan_basic, executionRequest);
+
+    assertThat(executionResponse.getResponse()).usingRecursiveComparison()
+        .isEqualTo(
+            GetLoanBasicResponse.builder()
+                .rspCode("00000")
+                .rspMsg("success")
+                .searchTimestamp(1000L)
+                .loanStartDate("20210305")
+                .loanExpDate("20300506")
+                .repayMethod("03")
+                .insuNum("123456789")
                 .build()
         );
   }
@@ -209,7 +241,7 @@ public class ExecutionTest {
         .build();
   }
 
-                           
+
   private static void setupMockServer() {
     // 6.5.1 보험 목록 조회
     wireMockServer.stubFor(get(urlMatching("/insurances.*"))
@@ -223,27 +255,36 @@ public class ExecutionTest {
                 .withBody(readText("classpath:mock/response/IS01_001_single_page_00.json"))));
 
     // 6.5.2 보험 기본정보 조회
-    wireMockServer.stubFor(post(urlMatching("/insurances/basic.*"))
+    wireMockServer.stubFor(post(urlMatching("/insurances/basic"))
         .withRequestBody(
             equalToJson(readText("classpath:mock/request/IS02_001_single_page_00.json")))
         .willReturn(
             aResponse()
                 .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())                  
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS02_001_single_page_00.json"))));
 
     // 6.5.3 보험 특약정보 조회
-    wireMockServer.stubFor(post(urlMatching("/insurances/contracts.*"))
+    wireMockServer.stubFor(post(urlMatching("/insurances/contracts"))
         .withRequestBody(
             equalToJson(readText("classpath:mock/request/IS03_001_single_page_00.json")))
         .willReturn(
             aResponse()
                 .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())                  
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS03_001_single_page_00.json"))));
 
-
-  }           
+    // 6.5.9 대출 기본정보 조회
+    wireMockServer.stubFor(post(urlMatching("/loans/basic"))
+        .withRequestBody(
+            equalToJson(readText("classpath:mock/request/IS12_001_single_page_00.json")))
+        .willReturn(
+            aResponse()
+                .withFixedDelay(1000)
+                .withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+                .withBody(readText("classpath:mock/response/IS12_001_single_page_00.json"))));
+  }
 }

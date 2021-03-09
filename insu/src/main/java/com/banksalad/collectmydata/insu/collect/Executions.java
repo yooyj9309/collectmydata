@@ -9,6 +9,7 @@ import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsurancePaymentResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.ListInsuranceTransactionsResponse;
+import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicResponse;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailResponse;
 import com.banksalad.collectmydata.insu.loan.dto.ListLoanTransactionResponse;
 
@@ -74,7 +75,7 @@ public class Executions {
   public static final Execution insurance_get_loan_basic =
       Execution.create()
           .exchange(Apis.insurance_get_loan_basic)
-          .as(GetInsuranceBasicResponse.class)
+          .as(GetLoanBasicResponse.class)
           .build();
 
   // 6.5.10 대출상품 추가정보 조회
