@@ -12,6 +12,9 @@ import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.insu.collect.Executions;
+import com.banksalad.collectmydata.insu.common.dto.InsuranceSummary;
+import com.banksalad.collectmydata.insu.common.dto.ListInsuranceSummariesRequest;
+import com.banksalad.collectmydata.insu.common.dto.ListInsuranceSummariesResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceContract;
@@ -38,7 +41,9 @@ import static com.banksalad.collectmydata.insu.common.util.TestHelper.ORGANIZATI
 import static com.banksalad.collectmydata.insu.common.util.TestHelper.ORGANIZATION_HOST;
 import static com.banksalad.collectmydata.insu.common.util.TestHelper.ORGANIZATION_ID;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,6 +68,42 @@ public class ExecutionTest {
     wireMockServer.shutdown();
   }
 
+  @Test
+  @DisplayName("6.5.1 보험 기본정보 조회")
+  public void getInsuranceSummariesApiTest() {
+    ExecutionContext executionContext = getExecutionContext();
+
+    ListInsuranceSummariesRequest request = ListInsuranceSummariesRequest.builder()
+        .orgCode(ORGANIZATION_CODE)
+        .searchTimestamp(0L)
+        .build();
+
+    ExecutionRequest<ListInsuranceSummariesRequest> executionRequest = ExecutionUtil
+        .assembleExecutionRequest(HEADERS, request);
+
+    ExecutionResponse<ListInsuranceSummariesResponse> executionResponse = collectExecutor
+        .execute(executionContext, Executions.insurance_get_summaries, executionRequest);
+
+    assertThat(executionResponse.getResponse()).usingRecursiveComparison()
+        .isEqualTo(
+            ListInsuranceSummariesResponse.builder()
+                .rspCode("00000")
+                .rspMsg("success")
+                .searchTimestamp(1000L)
+                .insuCnt(1)
+                .insuList(List.of(
+                    InsuranceSummary.builder()
+                        .insuNum("123456789")
+                        .consent(true)
+                        .prodName("묻지도 따지지도않고 암보험")
+                        .insuType("05")
+                        .insuStatus("02")
+                        .build()
+                )).build()
+        );
+  }
+
+  @Test
   @DisplayName("6.5.2 보험 기본정보 조회")
   public void getInsuranceBasicApiTest() {
     ExecutionContext executionContext = getExecutionContext();
@@ -170,6 +211,17 @@ public class ExecutionTest {
 
                            
   private static void setupMockServer() {
+    // 6.5.1 보험 목록 조회
+    wireMockServer.stubFor(get(urlMatching("/insurances.*"))
+        .withQueryParam("org_code", equalTo(ORGANIZATION_CODE))
+        .withQueryParam("search_timestamp", equalTo("0"))
+        .willReturn(
+            aResponse()
+                .withFixedDelay(1000)
+                .withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+                .withBody(readText("classpath:mock/response/IS01_001_single_page_00.json"))));
+
     // 6.5.2 보험 기본정보 조회
     wireMockServer.stubFor(post(urlMatching("/insurances/basic.*"))
         .withRequestBody(
