@@ -34,6 +34,7 @@ dependencyManagement {
 }
 
 dependencies {
+    implementation project(":common")
     // idl
     implementation("com.banksalad:idl:${idlVersion}")
 
@@ -48,6 +49,13 @@ dependencies {
     implementation("io.grpc:grpc-netty:${grpcVersion}")
     implementation("io.grpc:grpc-stub:${grpcVersion}")
     implementation("io.grpc:grpc-protobuf:${grpcVersion}")
+
+    // armeria
+    implementation platform("com.linecorp.armeria:armeria-bom:${armeriaVersion}")
+    implementation platform('io.netty:netty-bom:4.1.54.Final')
+
+    implementation("com.linecorp.armeria:armeria-spring-boot2-webflux-starter:${armeriaVersion}")
+    implementation("com.linecorp.armeria:armeria-grpc:${armeriaVersion}")
 
     implementation("io.github.lognet:grpc-spring-boot-starter:${grpcSpringBootVersion}")
     testImplementation("io.grpc:grpc-testing:1.30.0")
