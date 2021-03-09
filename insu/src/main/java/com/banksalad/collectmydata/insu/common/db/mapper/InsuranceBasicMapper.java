@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.insu.common.db.entity.mapper;
+package com.banksalad.collectmydata.insu.common.db.mapper;
 
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceBasicEntity;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicResponse;

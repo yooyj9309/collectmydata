@@ -100,7 +100,7 @@ public class InsuranceServiceTest {
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
         .insuNum("123456789")
-        .isConsent(true)
+        .consent(true)
         .prodName("name")
         .insuType("01")
         .insuStatus("02")

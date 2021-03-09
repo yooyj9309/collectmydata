@@ -18,10 +18,10 @@ import com.banksalad.collectmydata.insu.common.db.entity.InsuranceBasicEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceBasicHistoryEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuredEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuredHistoryEntity;
-import com.banksalad.collectmydata.insu.common.db.entity.mapper.InsuranceBasicHistoryMapper;
-import com.banksalad.collectmydata.insu.common.db.entity.mapper.InsuranceBasicMapper;
-import com.banksalad.collectmydata.insu.common.db.entity.mapper.InsuredHistoryMapper;
-import com.banksalad.collectmydata.insu.common.db.entity.mapper.InsuredMapper;
+import com.banksalad.collectmydata.insu.common.db.mapper.InsuranceBasicHistoryMapper;
+import com.banksalad.collectmydata.insu.common.db.mapper.InsuranceBasicMapper;
+import com.banksalad.collectmydata.insu.common.db.mapper.InsuredHistoryMapper;
+import com.banksalad.collectmydata.insu.common.db.mapper.InsuredMapper;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceBasicHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceBasicRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuredHistoryRepository;
@@ -30,10 +30,10 @@ import com.banksalad.collectmydata.insu.common.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.common.service.ExecutionResponseValidateService;
 import com.banksalad.collectmydata.insu.common.service.InsuranceSummaryService;
 import com.banksalad.collectmydata.insu.common.service.UserSyncStatusService;
-import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractRequest;
-import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicResponse;
+import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractRequest;
+import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceBasic;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceContract;
 import com.banksalad.collectmydata.insu.insurance.dto.Insured;
@@ -112,7 +112,7 @@ public class InsuranceServiceImpl implements InsuranceService {
       List<InsuranceBasic> insuranceBasics) {
     return null;
   }
-  
+
   private InsuranceBasic progressInsuranceBasic(ExecutionContext executionContext, String orgCode,
       InsuranceSummary insuranceSummary) {
 
@@ -176,7 +176,7 @@ public class InsuranceServiceImpl implements InsuranceService {
 
   private GetInsuranceBasicResponse getInsuranceBasic(ExecutionContext executionContext, String orgCode, String
       insuNum, long searchTimestamp) {
-    
+
     executionContext.generateAndsUpdateExecutionRequestId();
 
     Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
@@ -202,7 +202,7 @@ public class InsuranceServiceImpl implements InsuranceService {
 
     return executionResponse.getResponse();
   }
- 
+
   // 피보험자순번(insuredNo) 을 받는 명세에서는 String인데 Request에서는 int로 되어있는상태. 그러나 N(2)로 되어있어서 String이 되지않을까 추측합니다.
   private GetInsuranceContractResponse getInsuranceContract(ExecutionContext executionContext, String orgCode,
       String insuNum, String insuredNo, long searchTimestamp) {
@@ -221,7 +221,7 @@ public class InsuranceServiceImpl implements InsuranceService {
 
     ExecutionResponse<GetInsuranceContractResponse> executionResponse = collectExecutor
         .execute(executionContext, Executions.insurance_get_contract, executionRequest);
-  
+
     if (executionResponse == null || executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
       throw new CollectRuntimeException("execution Statue is not OK");
     }

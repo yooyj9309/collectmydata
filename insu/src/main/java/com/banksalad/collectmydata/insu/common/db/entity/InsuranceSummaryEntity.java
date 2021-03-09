@@ -41,8 +41,8 @@ public class InsuranceSummaryEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false)
   private String insuNum;
 
-  @Column(nullable = false, columnDefinition = "BIT", length = 1)
-  private Boolean isConsent;
+  @Column(nullable = false, name = "is_consent", columnDefinition = "BIT", length = 1)
+  private Boolean consent;
 
   @Column(nullable = false)
   private String insuType;

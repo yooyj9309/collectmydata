@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -18,8 +19,13 @@ import java.util.List;
 public class ListInsuranceSummariesResponse {
 
   private String rspCode;
+
   private String rspMsg;
+
   private long searchTimestamp;
+
   private int insuCnt;
-  private List<InsuranceSummary> insuList;
+
+  @Builder.Default
+  private List<InsuranceSummary> insuList = new ArrayList<>();
 }
