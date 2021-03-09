@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.bank.depoist.dto;
+package com.banksalad.collectmydata.bank.deposit.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -9,34 +9,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class DepositAccountBasic {
+public class GetDepositAccountDetailRequest {
 
-  private String rspCode;
-
-  private String rspMsg;
-
+  private String orgCode;
+  private String accountNum;
+  private String seqno;
   private long searchTimestamp;
-
-  private String savingMethod;
-
-  private String holderName;
-
-  private String issueDate;
-
-  private String expDate;
-
-  @Builder.Default
-  private String currencyCode = "KRW";
-
-  private BigDecimal commitAmt;
-
-  private BigDecimal monthlyPaidInAmt;
 }

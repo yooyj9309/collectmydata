@@ -11,7 +11,6 @@ import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
-import com.banksalad.collectmydata.bank.depoist.dto.DepositAccountDetail;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountBasic;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountDetail;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;

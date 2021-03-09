@@ -1,5 +1,6 @@
-package com.banksalad.collectmydata.bank.depoist.dto;
+package com.banksalad.collectmydata.bank.deposit.dto;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
@@ -15,10 +16,8 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class GetDepositAccountBasicRequest {
+public class GetDepositAccountBasicResponse {
 
-  private String orgCode;
-  private String accountNum;
-  private String seqno;
-  private long searchTimestamp;
+  @JsonUnwrapped
+  private DepositAccountBasic depositAccountBasic;
 }

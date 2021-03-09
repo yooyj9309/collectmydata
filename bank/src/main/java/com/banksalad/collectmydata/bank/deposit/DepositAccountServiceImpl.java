@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.bank.depoist;
+package com.banksalad.collectmydata.bank.deposit;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,10 +17,10 @@ import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.bank.common.service.ExternalApiService;
 import com.banksalad.collectmydata.bank.common.service.UserSyncStatusService;
-import com.banksalad.collectmydata.bank.depoist.dto.DepositAccountBasic;
-import com.banksalad.collectmydata.bank.depoist.dto.DepositAccountDetail;
-import com.banksalad.collectmydata.bank.depoist.dto.GetDepositAccountBasicResponse;
-import com.banksalad.collectmydata.bank.depoist.dto.GetDepositAccountDetailResponse;
+import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountBasic;
+import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountDetail;
+import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicResponse;
+import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountDetailResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.organization.Organization;
 import com.banksalad.collectmydata.common.util.ObjectComparator;

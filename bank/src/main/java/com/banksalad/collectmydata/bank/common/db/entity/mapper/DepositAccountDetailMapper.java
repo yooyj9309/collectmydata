@@ -1,7 +1,7 @@
 package com.banksalad.collectmydata.bank.common.db.entity.mapper;
 
 import com.banksalad.collectmydata.bank.common.db.entity.DepositAccountDetailEntity;
-import com.banksalad.collectmydata.bank.depoist.dto.DepositAccountDetail;
+import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountDetail;
 import com.banksalad.collectmydata.common.mapper.BigDecimalMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

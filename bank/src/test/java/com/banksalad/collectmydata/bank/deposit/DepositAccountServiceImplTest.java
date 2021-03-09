@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.bank.depoist;
+package com.banksalad.collectmydata.bank.deposit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,8 +11,8 @@ import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
-import com.banksalad.collectmydata.bank.depoist.dto.DepositAccountBasic;
-import com.banksalad.collectmydata.bank.depoist.dto.DepositAccountDetail;
+import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountBasic;
+import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountDetail;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.github.tomakehurst.wiremock.WireMockServer;
