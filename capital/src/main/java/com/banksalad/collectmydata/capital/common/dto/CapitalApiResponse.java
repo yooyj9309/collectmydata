@@ -28,6 +28,4 @@ public class CapitalApiResponse {
   private List<OperatingLease> operatingLeases;
 
   private List<OperatingLeaseTransaction> operatingLeasesTransactions;
-
-
 }

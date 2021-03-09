@@ -8,7 +8,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 
 @Mapper
-public interface AccountListMapper {
+public interface AccountSummaryMapper {
 
   @Mappings(
       value = {

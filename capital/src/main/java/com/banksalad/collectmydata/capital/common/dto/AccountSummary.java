@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -28,6 +29,6 @@ public class AccountSummary {
   private long basicSearchTimestamp; // account -> entity mapping 과정에서 제거해야될 필드
   private long detailSearchTimestamp; // account -> entity mapping 과정에서 제거해야될 필드
   private long operatingLeaseBasicSearchTimestamp; // account -> entity mapping 과정에서 제거해야될 필드
-  private LocalDate transactionFromDate;
-  private LocalDate operatingLeaseTransactionFromDate;
+  private LocalDateTime transactionSyncedAt;
+  private LocalDateTime operatingLeaseTransactionSyncedAt;
 }

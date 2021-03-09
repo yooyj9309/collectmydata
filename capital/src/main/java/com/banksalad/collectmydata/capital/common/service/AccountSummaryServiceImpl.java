@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import com.banksalad.collectmydata.capital.common.collect.Apis;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OrganizationUserEntity;
-import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountListMapper;
+import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OrganizationUserRepository;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
@@ -29,7 +29,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
   private final AccountSummaryRepository accountSummaryRepository;
   private final OrganizationUserRepository organizationUserRepository;
 
-  private final AccountListMapper accountListMapper = Mappers.getMapper(AccountListMapper.class);
+  private final AccountSummaryMapper accountSummaryMapper = Mappers.getMapper(AccountSummaryMapper.class);
 
   /**
    * 6.7.1 계좌 목록 조회
@@ -70,7 +70,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
             ).orElse(AccountSummaryEntity.builder().build());
 
         // merge
-        accountListMapper.merge(accountSummary, accountSummaryEntity);
+        accountSummaryMapper.merge(accountSummary, accountSummaryEntity);
 
         // save (insert, update)
         accountSummaryEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
@@ -96,7 +96,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
         .findByBanksaladUserIdAndOrganizationIdAndIsConsent(banksaladUserId, organizationId, true);
 
     List<AccountSummary> responseAccountSummaries = accountListEntities.stream()
-        .map(entity -> accountListMapper.entityToDto(entity))
+        .map(entity -> accountSummaryMapper.entityToDto(entity))
         .collect(Collectors.toList());
 
     return responseAccountSummaries;
