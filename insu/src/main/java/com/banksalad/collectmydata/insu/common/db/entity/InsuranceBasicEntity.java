@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -40,8 +42,8 @@ public class InsuranceBasicEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false)
   private String insuNum;
 
-  @Column(nullable = false, columnDefinition = "BIT", length = 1)
-  private Boolean isRenewable;
+  @Column(nullable = false, name = "is_renewable", columnDefinition = "BIT", length = 1)
+  private Boolean renewable;
 
   @Column(nullable = false)
   private LocalDate issueDate;
@@ -54,18 +56,18 @@ public class InsuranceBasicEntity extends BaseTimeAndUserEntity {
 
   private String currencyCode;
 
-  @Column(nullable = false, columnDefinition = "BIT", length = 1)
-  private Boolean isVariable;
+  @Column(nullable = false, name = "is_variable", columnDefinition = "BIT", length = 1)
+  private Boolean variable;
 
-  @Column(nullable = false, columnDefinition = "BIT", length = 1)
-  private Boolean isUniversal;
+  @Column(nullable = false, name = "is_universal", columnDefinition = "BIT", length = 1)
+  private Boolean universal;
 
   private LocalDate pensionRcvStartDate;
 
   private String pensionRcvCycle;
 
-  @Column(nullable = false, columnDefinition = "BIT", length = 1)
-  private Boolean isLoanable;
+  @Column(nullable = false, name = "is_loanable", columnDefinition = "BIT", length = 1)
+  private Boolean loanable;
 
   @Column(nullable = false)
   private Integer insuredCount;

@@ -20,22 +20,36 @@ import java.util.List;
 public class GetInsuranceBasicResponse {
 
   private String rspCode;
+
   private String rspMsg;
+
   private long searchTimestamp;
+
   @JsonProperty("is_renewable")
-  private boolean isRenewable;
+  private boolean renewable;
+
   private String issueDate;
+
   private String expDate;
+
   private BigDecimal faceAmt;
+
   private String currencyCode;
+
   @JsonProperty("is_variable")
-  private boolean isVariable;
+  private boolean variable;
+
   @JsonProperty("is_universal")
-  private boolean isUniversal;
+  private boolean universal;
+
   private String pensionRcvStartDate;
+
   private String pensionRcvCycle;
+
   @JsonProperty("is_loanable")
-  private Boolean loanable;
+  private boolean loanable;
+
   private int insuredCount;
+
   private List<Insured> insuredList;
 }

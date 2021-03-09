@@ -8,13 +8,12 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.slf4j.MDC;
 
 import java.util.Map;
-import java.util.concurrent.Executor;
 
 @Configuration
 public class ThreadPoolConfig {
 
-  @Bean
-  public Executor threadPoolTaskExecutor() {
+  @Bean(name = "async-thread")
+  public ThreadPoolTaskExecutor threadPoolTaskExecutor() {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
     executor.setThreadNamePrefix("Async-Thread-Collect-");
     executor.setTaskDecorator(new MdcTaskDecorator());

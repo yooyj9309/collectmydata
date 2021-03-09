@@ -8,4 +8,6 @@ import java.util.List;
 public interface InsuranceSummaryService {
 
   List<InsuranceSummary> listInsuranceSummaries(ExecutionContext executionContext, String organizationCode);
+
+  void updateSearchTimestamp(long banksaladUserId, String organizationId, InsuranceSummary insuranceSummary);
 }
