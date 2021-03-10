@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.capital.common.dto;
 
-import com.banksalad.collectmydata.capital.account.dto.Account;
+import com.banksalad.collectmydata.capital.account.dto.AccountBasic;
+import com.banksalad.collectmydata.capital.account.dto.AccountDetail;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLease;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
@@ -21,7 +22,9 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CapitalApiResponse {
 
-  private List<Account> accounts;
+  private List<AccountBasic> accountBasics;
+
+  private List<AccountDetail> accountDetails;
 
   private List<AccountTransaction> accountTransactions;
 
