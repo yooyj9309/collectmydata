@@ -62,4 +62,22 @@ public class Apis {
           .endpoint("/accounts/invest/detail")
           .method(HttpMethod.POST.name())
           .build();
+
+  //6.2.8 대출상품 기본 정보 조회
+  public static Api finance_bank_loan_account_basic =
+      Api.builder()
+          .id("BA08")
+          .name("대출 상품 계좌 기본 정보 조회")
+          .endpoint("/accounts/loan/basic")
+          .method(HttpMethod.POST.name())
+          .build();
+
+  //6.2.9 대출상품 추가 정보 조회
+  public static Api finance_bank_loan_account_detail =
+      Api.builder()
+          .id("BA09")
+          .name("대출 상품 계좌 추가 정보 조회")
+          .endpoint("/accounts/loan/detail")
+          .method(HttpMethod.POST.name())
+          .build();
 }
