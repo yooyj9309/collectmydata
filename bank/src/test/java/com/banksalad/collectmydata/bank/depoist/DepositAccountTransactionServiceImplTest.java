@@ -12,7 +12,8 @@ import com.banksalad.collectmydata.bank.common.db.entity.mapper.AccountSummaryMa
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.DepositAccountTransactionRepository;
 import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
-import com.banksalad.collectmydata.bank.depoist.dto.DepositAccountTransaction;
+import com.banksalad.collectmydata.bank.deposit.DepositAccountTransactionService;
+import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountTransaction;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.github.tomakehurst.wiremock.WireMockServer;

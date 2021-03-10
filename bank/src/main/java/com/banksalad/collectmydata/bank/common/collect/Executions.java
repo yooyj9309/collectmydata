@@ -1,7 +1,7 @@
 package com.banksalad.collectmydata.bank.common.collect;
 
 import com.banksalad.collectmydata.bank.common.dto.ListAccountSummariesResponse;
-import com.banksalad.collectmydata.bank.depoist.dto.ListDepositAccountTransactionsResponse;
+import com.banksalad.collectmydata.bank.deposit.dto.ListDepositAccountTransactionsResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountDetailResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicResponse;

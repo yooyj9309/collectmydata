@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.common.dto.BankApiResponse;
 import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
-import com.banksalad.collectmydata.bank.depoist.DepositAccountTransactionService;
+import com.banksalad.collectmydata.bank.deposit.DepositAccountTransactionService;
 import com.banksalad.collectmydata.bank.deposit.DepositAccountService;
 import com.banksalad.collectmydata.bank.invest.InvestAccountService;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
