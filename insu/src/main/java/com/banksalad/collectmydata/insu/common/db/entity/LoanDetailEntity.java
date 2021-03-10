@@ -13,7 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -49,5 +48,5 @@ public class LoanDetailEntity extends BaseTimeAndUserEntity {
   private BigDecimal loanPrincipal;
 
   @Column(nullable = false)
-  private LocalDate nextRepayDate;
+  private String nextRepayDate;
 }

@@ -2,6 +2,7 @@ package com.banksalad.collectmydata.common.collect.execution;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.With;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -11,6 +12,7 @@ import java.util.UUID;
 public class ExecutionContext {
 
   private final String syncRequestId;
+  @With
   private String executionRequestId;
   private final Long banksaladUserId;
   private final String organizationId;
