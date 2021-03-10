@@ -11,18 +11,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "account_summary")
-public class AccountSummaryEntity extends BaseTimeAndUserEntity {
+@Table(name = "account_product")
+public class AccountProductEntity extends BaseTimeAndUserEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,20 +39,44 @@ public class AccountSummaryEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false, name = "account_num_encrypted")
   private String accountNum;
 
-  @Column(nullable = false, name = "is_consent", columnDefinition = "BIT", length = 1)
-  private Boolean consent;
-
-  private String accountName;
+  @Column(nullable = false)
+  private Integer prodNo;
 
   @Column(nullable = false)
-  private String accountType;
+  private String prodCode;
 
   @Column(nullable = false)
-  private String accountStatus;
+  private String prodType;
 
-  private Long basicSearchTimestamp;
+  @Column(nullable = false)
+  private String prodTypeDetail;
 
-  private LocalDateTime transactionSyncedAt;
+  @Column(nullable = false)
+  private String prodName;
 
-  private Long productSearchTimestamp;
+  @Column(precision = 18, scale = 3)
+  private BigDecimal purchaseAmt;
+
+  private Long holdingNum;
+
+  private Long availForSaleNum;
+
+  @Column(precision = 18, scale = 3)
+  private BigDecimal evalAmt;
+
+  private String issueDate;
+
+  @Column(precision = 18, scale = 3)
+  private BigDecimal paidInAmt;
+
+  @Column(precision = 18, scale = 3)
+  private BigDecimal withdrawalAmt;
+
+  private String lastPaidInDate;
+
+  @Column(precision = 18, scale = 3)
+  private BigDecimal rcvAmt;
+
+  @Column(nullable = false)
+  private String currencyCode;
 }

@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,8 +22,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "organization_user")
-public class OrganizationUserEntity extends BaseTimeAndUserEntity {
+@Table(name = "account_basic_history")
+public class AccountBasicHistoryEntity extends BaseTimeAndUserEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +38,24 @@ public class OrganizationUserEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false)
   private String organizationId;
 
+  @Column(nullable = false, name = "account_num_encrypted")
+  private String accountNum;
+
   @Column(nullable = false)
-  private String regDate;
+  private String issueDate;
+
+  @Column(nullable = false, name = "is_tax_benefits", columnDefinition = "BIT", length = 1)
+  private Boolean taxBenefits;
+
+  @Column(nullable = false, precision = 18, scale = 3)
+  private BigDecimal withholdingsAmt;
+
+  @Column(nullable = false, precision = 18, scale = 3)
+  private BigDecimal creditLoanAmt;
+
+  @Column(nullable = false, precision = 18, scale = 3)
+  private BigDecimal mortgageAmt;
+
+  @Column(nullable = false)
+  private String currencyCode;
 }
