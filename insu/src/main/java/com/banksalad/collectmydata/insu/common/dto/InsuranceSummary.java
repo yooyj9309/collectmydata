@@ -30,4 +30,6 @@ public class InsuranceSummary {
   private String insuStatus;
 
   private long basicSearchTimestamp;
+
+  private long paymentSearchTimestamp;
 }

@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -55,7 +57,7 @@ public class InsurancePaymentEntity extends BaseTimeAndUserEntity {
   private String payDate;
 
   @Column(nullable = false)
-  private LocalDate payEndDate;
+  private String payEndDate;
 
   @Column(nullable = false, precision = 18, scale = 3)
   private BigDecimal payAmt;

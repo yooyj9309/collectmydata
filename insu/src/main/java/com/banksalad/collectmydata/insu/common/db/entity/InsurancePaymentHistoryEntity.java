@@ -55,7 +55,7 @@ public class InsurancePaymentHistoryEntity extends BaseTimeAndUserEntity {
   private String payDate;
 
   @Column(nullable = false)
-  private LocalDate payEndDate;
+  private String payEndDate;
 
   @Column(nullable = false, precision = 18, scale = 3)
   private BigDecimal payAmt;
