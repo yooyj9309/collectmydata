@@ -26,7 +26,7 @@ public class UserSyncStatusEntity extends BaseTimeAndUserEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long userSyncStatusId;
+  private Long id;
 
   @Column(nullable = false)
   private LocalDateTime syncedAt;

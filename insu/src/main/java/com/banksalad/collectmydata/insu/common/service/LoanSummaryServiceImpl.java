@@ -9,27 +9,84 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.common.util.ExecutionUtil;
+import com.banksalad.collectmydata.insu.collect.Apis;
 import com.banksalad.collectmydata.insu.collect.Executions;
+import com.banksalad.collectmydata.insu.common.db.entity.LoanSummaryEntity;
+import com.banksalad.collectmydata.insu.common.db.mapper.LoanSummaryMapper;
+import com.banksalad.collectmydata.insu.common.db.repository.LoanSummaryRepository;
 import com.banksalad.collectmydata.insu.common.dto.ListLoanSummariesRequest;
 import com.banksalad.collectmydata.insu.common.dto.ListLoanSummariesResponse;
 import com.banksalad.collectmydata.insu.common.dto.LoanSummary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class LoanSummaryServiceImpl implements LoanSummaryService {
 
+  private final ExecutionResponseValidateService executionResponseValidateService;
+  private final UserSyncStatusService userSyncStatusService;
   private final CollectExecutor collectExecutor;
+  private final LoanSummaryRepository loanSummaryRepository;
   private static final String AUTHORIZATION = "Authorization";
+
+  private static final LoanSummaryMapper loanSummaryMapper = Mappers.getMapper(LoanSummaryMapper.class);
 
   @Override
   public List<LoanSummary> listLoanSummaries(ExecutionContext executionContext, String organizationCode) {
-    return null;
+    long banksaladUserId = executionContext.getBanksaladUserId();
+    String organizationId = executionContext.getOrganizationId();
+
+    long searchTimestamp = userSyncStatusService.getSearchTimestamp(
+        banksaladUserId,
+        organizationCode,
+        Apis.insurance_get_loan_summaries
+    );
+
+    ListLoanSummariesResponse loanSummariesResponse = listLoanSummariesResponse(executionContext,
+        organizationCode, searchTimestamp);
+
+    // db 적재
+    for (LoanSummary loanSummary : loanSummariesResponse.getLoanList()) {
+      LoanSummaryEntity loanSummaryEntity = loanSummaryRepository
+          .findByBanksaladUserIdAndOrganizationIdAndAccountNum(
+              banksaladUserId, organizationId, loanSummary.getAccountNum()
+          ).orElse(LoanSummaryEntity.builder().build());
+
+      // merge
+      loanSummaryMapper.merge(loanSummary, loanSummaryEntity);
+
+      // save (insert, update)
+      loanSummaryEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
+      loanSummaryEntity.setOrganizationId(executionContext.getOrganizationId());
+      loanSummaryEntity.setSyncedAt(executionContext.getSyncStartedAt());
+      loanSummaryRepository.save(loanSummaryEntity);
+    }
+
+    userSyncStatusService
+        .updateUserSyncStatus(
+            banksaladUserId,
+            organizationId,
+            Apis.insurance_get_loan_summaries.getId(),
+            executionContext.getSyncStartedAt(),
+            loanSummariesResponse.getSearchTimestamp(),
+            executionResponseValidateService.isAllResponseResultSuccess(executionContext, false)
+        );
+
+    List<LoanSummaryEntity> loanSummaryEntities = loanSummaryRepository
+        .findAllByBanksaladUserIdAndOrganizationId(banksaladUserId, organizationId);
+
+    List<LoanSummary> responseLoanSummaries = loanSummaryEntities.stream()
+        .map(loanSummaryMapper::entityToDto)
+        .collect(Collectors.toList());
+
+    return responseLoanSummaries;
   }
 
   private ListLoanSummariesResponse listLoanSummariesResponse(ExecutionContext executionContext,
