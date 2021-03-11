@@ -34,4 +34,15 @@ public class TestHelper {
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
   }
+
+  public static ExecutionContext getExecutionContext(int port, LocalDateTime now) {
+    return ExecutionContext.builder()
+        .organizationHost("http://" + ORGANIZATION_HOST + ":" + port)
+        .accessToken(ACCESS_TOKEN)
+        .banksaladUserId(BANKSALAD_USER_ID)
+        .organizationId(ORGANIZATION_ID)
+        .executionRequestId(UUID.randomUUID().toString())
+        .syncStartedAt(now)
+        .build();
+  }
 }

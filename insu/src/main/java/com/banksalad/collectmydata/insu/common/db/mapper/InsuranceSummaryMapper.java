@@ -16,8 +16,8 @@ public interface InsuranceSummaryMapper {
           @Mapping(target = "basicSearchTimestamp", ignore = true),
           @Mapping(target = "carSearchTimestamp", ignore = true),
           @Mapping(target = "paymentSearchTimestamp", ignore = true),
-          @Mapping(target = "insuranceTransactionFromDate", ignore = true),
-          @Mapping(target = "carInsuranceTransactionFromDate", ignore = true)
+          @Mapping(target = "transactionSyncedAt", ignore = true),
+          @Mapping(target = "carInsuranceTransactionSyncedAt", ignore = true)
       }
   )
   void merge(InsuranceSummary insuranceSummary, @MappingTarget InsuranceSummaryEntity entity);

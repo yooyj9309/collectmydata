@@ -7,18 +7,21 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class InsuranceTransaction {
 
+  private String insuNum;
   private String transDate;
-  private Integer transAppliedMonth;
+  private String transAppliedMonth;
   private Integer transNo;
   private BigDecimal paidAmt;
   private String currencyCode;

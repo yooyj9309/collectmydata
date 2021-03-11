@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Builder
@@ -31,5 +33,11 @@ public class InsuranceSummary {
 
   private long basicSearchTimestamp;
 
+  private long carSearchTimestamp;
+
   private long paymentSearchTimestamp;
+
+  private LocalDateTime transactionSyncedAt;
+  
+  private LocalDateTime carInsuranceTransactionSyncedAt;
 }

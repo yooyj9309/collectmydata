@@ -100,7 +100,7 @@ public class InsuranceServiceImpl implements InsuranceService {
             .supplyAsync(() ->
                 progressInsuranceBasic(executionContext, organizationCode, insuranceSummary), threadPoolTaskExecutor
             ).exceptionally(e -> {
-              log.error("6.7.2 insuranceBasic exception {}", e.getMessage());
+              log.error("6.5.2 insuranceBasic exception {}", e.getMessage());
               isExceptionOccurred.set(true);
               return null;
             })

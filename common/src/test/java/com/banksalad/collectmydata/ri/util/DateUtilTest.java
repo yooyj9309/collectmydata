@@ -1,7 +1,6 @@
 package com.banksalad.collectmydata.ri.util;
 
 import com.banksalad.collectmydata.common.util.DateUtil;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -36,5 +35,22 @@ public class DateUtilTest {
   public void convertLocalDateTimeToLocalDate() {
     LocalDateTime localDateTime = LocalDateTime.of(2020, 10, 10, 18, 0, 0);
     assertEquals(DateUtil.toLocalDate("20201010"), DateUtil.toLocalDate(localDateTime));
+  }
+
+  @Test
+  @DisplayName("UTC LocalDateTime to String(yyyyMMdd) 테스트")
+  public void convertUtcLocalDateTimeToString() {
+
+    LocalDateTime utcTime1 = LocalDateTime.of(2020, 10, 10, 17, 0, 0);
+    assertEquals("20201011", DateUtil.utcLocalDateTimeToKstDateString(utcTime1));
+
+    LocalDateTime utcTime2 = LocalDateTime.of(2020, 10, 10, 16, 0, 0);
+    assertEquals("20201011", DateUtil.utcLocalDateTimeToKstDateString(utcTime2));
+
+    LocalDateTime utcTime3 = LocalDateTime.of(2020, 10, 10, 15, 0, 0);
+    assertEquals("20201011", DateUtil.utcLocalDateTimeToKstDateString(utcTime3));
+
+    LocalDateTime utcTime4 = LocalDateTime.of(2020, 10, 10, 14, 0, 0);
+    assertEquals("20201010", DateUtil.utcLocalDateTimeToKstDateString(utcTime4));
   }
 }

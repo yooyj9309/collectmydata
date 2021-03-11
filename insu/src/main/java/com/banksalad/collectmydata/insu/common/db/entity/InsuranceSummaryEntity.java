@@ -13,7 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -59,7 +58,7 @@ public class InsuranceSummaryEntity extends BaseTimeAndUserEntity {
 
   private Long paymentSearchTimestamp;
 
-  private LocalDate insuranceTransactionFromDate;
+  private LocalDateTime transactionSyncedAt;
 
-  private LocalDate carInsuranceTransactionFromDate;
+  private LocalDateTime carInsuranceTransactionSyncedAt;
 }

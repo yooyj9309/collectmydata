@@ -16,7 +16,7 @@
       "trans_date": "20200105",
       "trans_applied_month": 202001,
       "trans_no": 2,
-      "paid_amt": 123456789.456,
+      "paid_amt": 123456789.45,
       "currency_code": "ABL",
       "pay_method": "02"
     }

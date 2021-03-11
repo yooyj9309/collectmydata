@@ -11,13 +11,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -47,7 +48,7 @@ public class InsuranceTransactionEntity extends BaseTimeAndUserEntity {
   private Integer transNo;
 
   @Column(nullable = false)
-  private LocalDate transDate;
+  private String transDate;
 
   @Column(nullable = false)
   private Integer transAppliedMonth;

@@ -99,6 +99,10 @@ public class DateUtil {
     return LocalDateTime.ofInstant(localDateTime.atZone(UTC_ZONE_ID).toInstant(), KST_ZONE_ID);
   }
 
+  public static String utcLocalDateTimeToKstDateString(LocalDateTime localDateTime) {
+    return localDateTime.atZone(UTC_ZONE_ID).withZoneSameInstant(DateUtil.KST_ZONE_ID).format(dateFormatter);
+  }
+
   public static LocalDate toLocalDate(LocalDateTime localDateTime) {
     return localDateTime.toLocalDate();
   }

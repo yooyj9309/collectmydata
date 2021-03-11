@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -70,7 +69,7 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
       insuranceSummaryEntity.setSyncedAt(executionContext.getSyncStartedAt());
       insuranceSummaryRepository.save(insuranceSummaryEntity);
     }
-    
+
     userSyncStatusService
         .updateUserSyncStatus(
             banksaladUserId,
@@ -106,10 +105,10 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
         ).orElseThrow(() -> new CollectRuntimeException("No data AccountSummaryEntity"));
 
     entity.setBasicSearchTimestamp(insuranceSummary.getBasicSearchTimestamp());
-    entity.setCarSearchTimestamp(0L); //TODO
-    entity.setPaymentSearchTimestamp(0L); //TODO
-    entity.setCarInsuranceTransactionFromDate(LocalDate.now()); // TODO
-    entity.setInsuranceTransactionFromDate(LocalDate.now()); // TODO
+    entity.setCarSearchTimestamp(insuranceSummary.getCarSearchTimestamp());
+    entity.setPaymentSearchTimestamp(insuranceSummary.getPaymentSearchTimestamp());
+    entity.setTransactionSyncedAt(insuranceSummary.getTransactionSyncedAt());
+    entity.setCarInsuranceTransactionSyncedAt(insuranceSummary.getCarInsuranceTransactionSyncedAt());
     insuranceSummaryRepository.save(entity);
   }
 
