@@ -1,10 +1,11 @@
 package com.banksalad.collectmydata.bank.common.dto;
 
-import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountTransaction;
 import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountBasic;
 import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountDetail;
+import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountTransaction;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountBasic;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountDetail;
+import com.banksalad.collectmydata.bank.invest.dto.InvestAccountTransaction;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,5 +29,6 @@ public class BankApiResponse {
 
   private List<InvestAccountBasic> investAccountBasics;
   private List<InvestAccountDetail> investAccountDetails;
+  private List<InvestAccountTransaction> investAccountTransactions;
 
 }

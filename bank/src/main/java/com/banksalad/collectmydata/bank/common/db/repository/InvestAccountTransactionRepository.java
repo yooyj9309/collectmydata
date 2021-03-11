@@ -6,4 +6,11 @@ import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountTransactio
 
 public interface InvestAccountTransactionRepository extends JpaRepository<InvestAccountTransactionEntity, Long> {
 
+  InvestAccountTransactionEntity findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndUniqueTransNoAndTransactionYearMonth(
+      Long banksaladUserId,
+      String organizationId,
+      String accountNum,
+      String seqno,
+      String uniqueTransNo,
+      Integer transactionYearMonth);
 }

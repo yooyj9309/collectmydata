@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class InvestAccountServiceImpl implements InvestAccountService {
 
-  private static final String EXCLUDE_FIELD = "syncedAt";
+  private static final String[] EXCLUDE_FIELDS = {"syncedAt", "createdAt", "updatedAt", "createdBy", "updatedBy"};
   private final AccountSummaryService accountSummaryService;
   private final UserSyncStatusService userSyncStatusService;
   private final ExternalApiService externalApiService;
@@ -111,7 +111,7 @@ public class InvestAccountServiceImpl implements InvestAccountService {
       investAccountBasicEntity.setId(existingInvestAccountBasicEntity.getId());
     }
 
-    if (!ObjectComparator.isSame(investAccountBasicEntity, existingInvestAccountBasicEntity, EXCLUDE_FIELD)) {
+    if (!ObjectComparator.isSame(investAccountBasicEntity, existingInvestAccountBasicEntity, EXCLUDE_FIELDS)) {
       investAccountBasicRepository.save(investAccountBasicEntity);
       investAccountBasicHistoryRepository
           .save(investAccountBasicHistoryMapper.toInvestAccountBasicHistoryEntity(investAccountBasicEntity));
@@ -171,7 +171,7 @@ public class InvestAccountServiceImpl implements InvestAccountService {
       investAccountDetailEntity.setId(existingInvestAccountDetailEntity.getId());
     }
 
-    if (!ObjectComparator.isSame(investAccountDetailEntity, existingInvestAccountDetailEntity, EXCLUDE_FIELD)) {
+    if (!ObjectComparator.isSame(investAccountDetailEntity, existingInvestAccountDetailEntity, EXCLUDE_FIELDS)) {
       investAccountDetailRepository.save(investAccountDetailEntity);
       investAccountDetailHistoryRepository
           .save(investAccountDetailHistoryMapper.toInvestAccountDetailHistoryEntity(investAccountDetailEntity));

@@ -7,8 +7,10 @@ import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicRespon
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountDetailResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailResponse;
+import com.banksalad.collectmydata.bank.invest.dto.ListInvestAccountTransactionsResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.organization.Organization;
+import com.banksalad.collectmydata.common.util.DateRange;
 
 import java.time.LocalDate;
 
@@ -31,4 +33,7 @@ public interface ExternalApiService {
 
   GetInvestAccountDetailResponse getInvestAccountDetail(ExecutionContext executionContext,
       AccountSummary accountSummary, Organization organization, long searchTimestamp);
+
+  ListInvestAccountTransactionsResponse listInvestAccountTransactions(ExecutionContext executionContext,
+      AccountSummary accountSummary, Organization organization, DateRange dateRange);
 }

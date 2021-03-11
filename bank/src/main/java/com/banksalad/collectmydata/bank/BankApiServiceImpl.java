@@ -5,9 +5,10 @@ import org.springframework.stereotype.Service;
 import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.common.dto.BankApiResponse;
 import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
-import com.banksalad.collectmydata.bank.deposit.DepositAccountTransactionService;
 import com.banksalad.collectmydata.bank.deposit.DepositAccountService;
+import com.banksalad.collectmydata.bank.deposit.DepositAccountTransactionService;
 import com.banksalad.collectmydata.bank.invest.InvestAccountService;
+import com.banksalad.collectmydata.bank.invest.InvestAccountTransactionService;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.enums.SyncRequestType;
 import com.banksalad.collectmydata.common.util.DateUtil;
@@ -35,6 +36,7 @@ public class BankApiServiceImpl implements BankApiService {
   private final DepositAccountService depositAccountService;
   private final DepositAccountTransactionService depositAccountTransactionService;
   private final InvestAccountService investAccountService;
+  private final InvestAccountTransactionService investAccountTransactionService;
 
   @Override
   public BankApiResponse requestApi(long banksaladUserId, String organizationId, String syncRequestId,
@@ -105,7 +107,13 @@ public class BankApiServiceImpl implements BankApiService {
         CompletableFuture.supplyAsync(
             () -> investAccountService.listInvestAccountDetails(executionContext, investAccountSummaries))
             .thenAccept(investAccountDetails -> bankApiResponseAtomicReference.get()
-                .setInvestAccountDetails(investAccountDetails))
+                .setInvestAccountDetails(investAccountDetails)),
+
+        CompletableFuture.supplyAsync(
+            () -> investAccountTransactionService
+                .listInvestAccountTransactions(executionContext, investAccountSummaries))
+            .thenAccept(investAccountTransactions -> bankApiResponseAtomicReference.get()
+                .setInvestAccountTransactions(investAccountTransactions))
     ).join();
 
     return bankApiResponseAtomicReference.get();

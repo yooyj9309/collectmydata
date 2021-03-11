@@ -52,7 +52,7 @@ public class InvestAccountTransactionEntity extends BaseTimeAndUserEntity {
   private String currencyCode;
 
   @Column(nullable = false)
-  private LocalDateTime transDtime;
+  private String transDtime;
 
   private String transNo;
 

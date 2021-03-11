@@ -4,6 +4,7 @@ import com.banksalad.collectmydata.bank.common.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.ListDepositAccountTransactionsResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountDetailResponse;
+import com.banksalad.collectmydata.bank.invest.dto.ListInvestAccountTransactionsResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailResponse;
 import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountBasicResponse;
@@ -46,6 +47,12 @@ public class Executions {
       Execution.create()
           .exchange(Apis.finance_bank_invest_account_detail)
           .as(GetInvestAccountDetailResponse.class)
+          .build();
+
+  public static final Execution finance_bank_invest_account_transaction =
+      Execution.create()
+          .exchange(Apis.finance_bank_invest_account_transaction)
+          .as(ListInvestAccountTransactionsResponse.class)
           .build();
 
   public static final Execution finance_bank_loan_account_basic =

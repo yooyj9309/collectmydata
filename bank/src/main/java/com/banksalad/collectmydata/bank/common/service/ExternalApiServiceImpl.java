@@ -7,21 +7,24 @@ import com.banksalad.collectmydata.bank.common.collect.Executions;
 import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.common.dto.ListAccountSummariesRequest;
 import com.banksalad.collectmydata.bank.common.dto.ListAccountSummariesResponse;
-import com.banksalad.collectmydata.bank.deposit.dto.ListDepositAccountTransactionsRequest;
-import com.banksalad.collectmydata.bank.deposit.dto.ListDepositAccountTransactionsResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicRequest;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountDetailRequest;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountDetailResponse;
+import com.banksalad.collectmydata.bank.deposit.dto.ListDepositAccountTransactionsRequest;
+import com.banksalad.collectmydata.bank.deposit.dto.ListDepositAccountTransactionsResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicRequest;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailRequest;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailResponse;
+import com.banksalad.collectmydata.bank.invest.dto.ListInvestAccountTransactionsRequest;
+import com.banksalad.collectmydata.bank.invest.dto.ListInvestAccountTransactionsResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.organization.Organization;
+import com.banksalad.collectmydata.common.util.DateRange;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -263,5 +266,63 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     }
 
     return investAccountDetailResponse.getResponse();
+  }
+
+  @Override
+  public ListInvestAccountTransactionsResponse listInvestAccountTransactions(ExecutionContext executionContext,
+      AccountSummary accountSummary, Organization organization, DateRange dateRange) {
+
+    executionContext.generateAndsUpdateExecutionRequestId();
+
+    ExecutionRequest<ListInvestAccountTransactionsRequest> pagingExecutionRequest = ExecutionRequest.<ListInvestAccountTransactionsRequest>builder()
+        .headers(Map.of(AUTHORIZATION, executionContext.getAccessToken()))
+        .request(
+            ListInvestAccountTransactionsRequest.builder()
+                .orgCode(organization.getOrganizationCode())
+                .accountNum(accountSummary.getAccountNum())
+                .seqno(accountSummary.getSeqno())
+                .fromDate(DateUtil.toDateString(dateRange.getStartDate()))
+                .toDate(DateUtil.toDateString(dateRange.getEndDate()))
+                .limit(PAGING_MAXIMUM_LIMIT)
+                .build())
+        .build();
+
+    ListInvestAccountTransactionsResponse listInvestAccountTransactionsResponse = ListInvestAccountTransactionsResponse
+        .builder()
+        .build();
+
+    do {
+      ExecutionResponse<ListInvestAccountTransactionsResponse> pagingExecutionResponse = collectExecutor
+          .execute(executionContext, Executions.finance_bank_invest_account_transaction, pagingExecutionRequest);
+
+      if (pagingExecutionResponse.getResponse() == null ||
+          HttpStatus.OK.value() != pagingExecutionResponse.getHttpStatusCode()) {
+        throw new RuntimeException("List invest account transactions status is not OK");
+      }
+
+      ListInvestAccountTransactionsResponse pagingListInvestAccountTransactionsResponse = pagingExecutionResponse
+          .getResponse();
+
+      if (pagingListInvestAccountTransactionsResponse.getTransCnt() != pagingListInvestAccountTransactionsResponse
+          .getInvestAccountTransactions().size()) {
+        log.error("Invest transactions size not equal. cnt: {}, size: {}",
+            pagingListInvestAccountTransactionsResponse.getTransCnt(),
+            pagingListInvestAccountTransactionsResponse.getInvestAccountTransactions().size());
+      }
+
+      listInvestAccountTransactionsResponse.setRspCode(pagingListInvestAccountTransactionsResponse.getRspCode());
+      listInvestAccountTransactionsResponse.setRspMsg(pagingListInvestAccountTransactionsResponse.getRspMsg());
+      listInvestAccountTransactionsResponse.setNextPage(pagingListInvestAccountTransactionsResponse.getNextPage());
+      listInvestAccountTransactionsResponse.setTransCnt(
+          listInvestAccountTransactionsResponse.getTransCnt() + pagingListInvestAccountTransactionsResponse
+              .getTransCnt());
+      listInvestAccountTransactionsResponse.getInvestAccountTransactions()
+          .addAll(pagingListInvestAccountTransactionsResponse.getInvestAccountTransactions());
+
+      pagingExecutionRequest.getRequest().setNextPage(pagingListInvestAccountTransactionsResponse.getNextPage());
+
+    } while (pagingExecutionRequest.getRequest().getNextPage() != null);
+
+    return listInvestAccountTransactionsResponse;
   }
 }

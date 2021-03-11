@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.bank.depoist;
+package com.banksalad.collectmydata.bank.invest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -7,13 +7,12 @@ import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 
 import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
-import com.banksalad.collectmydata.bank.common.db.entity.DepositAccountTransactionEntity;
+import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountTransactionEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
-import com.banksalad.collectmydata.bank.common.db.repository.DepositAccountTransactionRepository;
+import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountTransactionRepository;
 import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
-import com.banksalad.collectmydata.bank.deposit.DepositAccountTransactionService;
-import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountTransaction;
+import com.banksalad.collectmydata.bank.invest.dto.InvestAccountTransaction;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -40,26 +39,26 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DisplayName("수신계좌 거래내역 조회 테스트")
-class DepositAccountTransactionServiceImplTest {
+@DisplayName("투자 계좌 거래내역 조회 테스트")
+public class InvestAccountTransactionServiceImplTest {
 
   private static final Long BANKSALAD_USER_ID = 1L;
   private static final String ORGANIZATION_ID = "woori_bank";
   private static final String ORGANIZATION_HOST = "http://localhost";
   private static final LocalDateTime TRANSACTION_SYNCED_AT = LocalDateTime.of(2020, 03, 27, 0, 0, 0);
+  private static final WireMockServer wiremock = new WireMockServer(WireMockSpring.options().dynamicPort());
+
+  private final AccountSummaryMapper accountSummaryMapper = Mappers.getMapper(AccountSummaryMapper.class);
 
   @Autowired
-  private DepositAccountTransactionService depositAccountTransactionService;
+  private InvestAccountTransactionService investAccountTransactionService;
 
   @Autowired
-  private DepositAccountTransactionRepository depositAccountTransactionRepository;
+  private InvestAccountTransactionRepository investAccountTransactionRepository;
 
   @Autowired
   private AccountSummaryRepository accountSummaryRepository;
 
-  private AccountSummaryMapper accountSummaryMapper = Mappers.getMapper(AccountSummaryMapper.class);
-
-  public static WireMockServer wiremock = new WireMockServer(WireMockSpring.options().dynamicPort());
 
   @BeforeEach
   public void setupClass() {
@@ -70,7 +69,7 @@ class DepositAccountTransactionServiceImplTest {
   public void after() {
     wiremock.resetAll();
     accountSummaryRepository.deleteAll();
-    depositAccountTransactionRepository.deleteAll();
+    investAccountTransactionRepository.deleteAll();
   }
 
   @AfterAll
@@ -79,11 +78,11 @@ class DepositAccountTransactionServiceImplTest {
   }
 
   @Test
-  @DisplayName("총 2개 계좌에 대해 거래내역 동기화 중 1개만 성공 하는 경우") // TODO jayden-lee displayname 변경 필요ㅠ
-  public void step_01_listDepositAccountTransactions_single_page_success() throws Exception {
+  @DisplayName("총 2개 계좌에 대해 거래내역 동기화 중 1개만 성공 하는 경우")
+  public void step_01_listInvestAccountTransactions_single_page_success() throws Exception {
 
     /* transaction mock server */
-    setupServerDepositAccountTransactionsSinglePage();
+    setupServerInvestAccountTransactionsSinglePage();
 
     /* save mock account summaries */
     accountSummaryRepository.saveAll(getAccountSummaryEntities());
@@ -106,15 +105,15 @@ class DepositAccountTransactionServiceImplTest {
         .build();
 
     /* assertions transaction size */
-    List<DepositAccountTransaction> depositAccountTransactions = depositAccountTransactionService
-        .listDepositAccountTransactions(executionContext, accountSummaries);
+    List<InvestAccountTransaction> investAccountTransactions = investAccountTransactionService
+        .listInvestAccountTransactions(executionContext, accountSummaries);
 
-    Assertions.assertThat(depositAccountTransactions.size()).isEqualTo(4);
+    Assertions.assertThat(investAccountTransactions.size()).isEqualTo(4);
 
-    List<DepositAccountTransactionEntity> depositAccountTransactionEntities = depositAccountTransactionRepository
+    List<InvestAccountTransactionEntity> investAccountTransactionEntities = investAccountTransactionRepository
         .findAll();
 
-    Assertions.assertThat(depositAccountTransactionEntities.size()).isEqualTo(4);
+    Assertions.assertThat(investAccountTransactionEntities.size()).isEqualTo(4);
 
     /* assertions transactionSyncedAt */
     AccountSummaryEntity successAccountSummaryEntity = accountSummaryRepository
@@ -130,57 +129,58 @@ class DepositAccountTransactionServiceImplTest {
     Assertions.assertThat(failAccountSummaryEntity.getTransactionSyncedAt()).isEqualTo(TRANSACTION_SYNCED_AT);
   }
 
-  private void setupServerDepositAccountTransactionsSinglePage() {
+
+  private void setupServerInvestAccountTransactionsSinglePage() {
 
     // accountNum: 1234567890, dateRange: 20200901 ~ 20201130, dataSize: 2
-    wiremock.stubFor(post(urlMatching("/accounts/deposit/transactions"))
-        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA04_001_single_page_00.json")))
+    wiremock.stubFor(post(urlMatching("/accounts/invest/transactions"))
+        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA07_001_single_page_00.json")))
         .willReturn(
             aResponse()
                 .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/bank/response/BA04_001_single_page_00.json"))));
+                .withBody(readText("classpath:mock/bank/response/BA07_001_single_page_00.json"))));
 
     // accountNum: 1234567890, dateRange: 20200901 ~ 20201130, dataSize: 0
-    wiremock.stubFor(post(urlMatching("/accounts/deposit/transactions"))
-        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA04_001_single_page_01.json")))
+    wiremock.stubFor(post(urlMatching("/accounts/invest/transactions"))
+        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA07_001_single_page_01.json")))
         .willReturn(
             aResponse()
                 .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/bank/response/BA04_001_single_page_01.json"))));
+                .withBody(readText("classpath:mock/bank/response/BA07_001_single_page_01.json"))));
 
     // accountNum: 1234567890, dateRange: 20200601 ~ 20200831, dataSize: 0
-    wiremock.stubFor(post(urlMatching("/accounts/deposit/transactions"))
-        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA04_001_single_page_02.json")))
+    wiremock.stubFor(post(urlMatching("/accounts/invest/transactions"))
+        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA07_001_single_page_02.json")))
         .willReturn(
             aResponse()
                 .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/bank/response/BA04_001_single_page_01.json"))));
+                .withBody(readText("classpath:mock/bank/response/BA07_001_single_page_01.json"))));
 
     // accountNum: 1234567890, dateRange: 20200327 ~ 20200531, dataSize: 0
-    wiremock.stubFor(post(urlMatching("/accounts/deposit/transactions"))
-        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA04_001_single_page_03.json")))
+    wiremock.stubFor(post(urlMatching("/accounts/invest/transactions"))
+        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA07_001_single_page_03.json")))
         .willReturn(
             aResponse()
                 .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/bank/response/BA04_001_single_page_01.json"))));
+                .withBody(readText("classpath:mock/bank/response/BA07_001_single_page_01.json"))));
 
     // accountNum: 414312341242, dateRange: 20201201 ~ 20210328, dataSize: 2
-    wiremock.stubFor(post(urlMatching("/accounts/deposit/transactions"))
-        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA04_002_single_page_00.json")))
+    wiremock.stubFor(post(urlMatching("/accounts/invest/transactions"))
+        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA07_002_single_page_00.json")))
         .willReturn(
             aResponse()
                 .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/bank/response/BA04_002_single_page_00.json"))));
+                .withBody(readText("classpath:mock/bank/response/BA07_002_single_page_00.json"))));
   }
 
   private List<AccountSummaryEntity> getAccountSummaryEntities() {
