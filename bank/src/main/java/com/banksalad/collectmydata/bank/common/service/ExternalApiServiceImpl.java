@@ -19,6 +19,10 @@ import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailRequest
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailResponse;
 import com.banksalad.collectmydata.bank.invest.dto.ListInvestAccountTransactionsRequest;
 import com.banksalad.collectmydata.bank.invest.dto.ListInvestAccountTransactionsResponse;
+import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountBasicRequest;
+import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountBasicResponse;
+import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountDetailResponse;
+
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
@@ -324,5 +328,38 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     } while (pagingExecutionRequest.getRequest().getNextPage() != null);
 
     return listInvestAccountTransactionsResponse;
+  }
+  
+
+  public GetLoanAccountBasicResponse getLoanAccountBasic(ExecutionContext executionContext,
+      AccountSummary accountSummary, Organization organization, long searchTimestamp) {
+    executionContext.generateAndsUpdateExecutionRequestId();
+
+    ExecutionRequest<GetLoanAccountBasicRequest> request = ExecutionRequest.<GetLoanAccountBasicRequest>builder()
+        .headers(Map.of(AUTHORIZATION, executionContext.getAccessToken()))
+        .request(
+            GetLoanAccountBasicRequest.builder()
+                .accountNum(accountSummary.getAccountNum())
+                .orgCode(organization.getOrganizationCode())
+                .seqno(accountSummary.getSeqno())
+                .searchTimestamp(searchTimestamp)
+                .build())
+        .build();
+
+    ExecutionResponse<GetLoanAccountBasicResponse> loanAccountBasicResponseExecutionResponse = collectExecutor
+        .execute(executionContext, Executions.finance_bank_loan_account_basic, request);
+
+    if (loanAccountBasicResponseExecutionResponse.getResponse() == null
+        || loanAccountBasicResponseExecutionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
+      throw new RuntimeException("Loan account basic Status is not OK");
+    }
+
+    return loanAccountBasicResponseExecutionResponse.getResponse();
+  }
+
+  @Override
+  public GetLoanAccountDetailResponse getLoanAccountDetail(ExecutionContext executionContext,
+      AccountSummary accountSummary, Organization organization, long searchTimestamp) {
+    return null;
   }
 }

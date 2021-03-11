@@ -6,6 +6,8 @@ import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountTransaction;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountBasic;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountDetail;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountTransaction;
+import com.banksalad.collectmydata.bank.loan.dto.LoanAccountBasic;
+import com.banksalad.collectmydata.bank.loan.dto.LoanAccountDetail;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,4 +33,6 @@ public class BankApiResponse {
   private List<InvestAccountDetail> investAccountDetails;
   private List<InvestAccountTransaction> investAccountTransactions;
 
+  private List<LoanAccountBasic> loanAccountBasics;
+  private List<LoanAccountDetail> loanAccountDetails;
 }

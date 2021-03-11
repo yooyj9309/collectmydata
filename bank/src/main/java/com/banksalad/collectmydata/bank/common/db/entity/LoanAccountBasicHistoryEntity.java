@@ -52,7 +52,7 @@ public class LoanAccountBasicHistoryEntity extends BaseTimeAndUserEntity {
 
   private LocalDate expDate;
 
-  @Column(nullable = false, precision = 7, scale = 5)
+  @Column(nullable = false, precision = 5, scale = 3)
   private BigDecimal lastOfferedRate;
 
   private String repayDate;
@@ -62,7 +62,7 @@ public class LoanAccountBasicHistoryEntity extends BaseTimeAndUserEntity {
 
   private String repayOrgCode;
 
-  //TODO: encyrpted가 필요해보임
+  @Column(name = "repay_account_num_encrypted")
   private String repayAccountNum;
 
 }

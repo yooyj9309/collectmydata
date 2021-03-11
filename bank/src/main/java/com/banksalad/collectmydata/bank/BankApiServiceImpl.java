@@ -9,6 +9,7 @@ import com.banksalad.collectmydata.bank.deposit.DepositAccountService;
 import com.banksalad.collectmydata.bank.deposit.DepositAccountTransactionService;
 import com.banksalad.collectmydata.bank.invest.InvestAccountService;
 import com.banksalad.collectmydata.bank.invest.InvestAccountTransactionService;
+import com.banksalad.collectmydata.bank.loan.LoanAccountService;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.enums.SyncRequestType;
 import com.banksalad.collectmydata.common.util.DateUtil;
@@ -37,6 +38,7 @@ public class BankApiServiceImpl implements BankApiService {
   private final DepositAccountTransactionService depositAccountTransactionService;
   private final InvestAccountService investAccountService;
   private final InvestAccountTransactionService investAccountTransactionService;
+  private final LoanAccountService loanAccountService;
 
   @Override
   public BankApiResponse requestApi(long banksaladUserId, String organizationId, String syncRequestId,
@@ -113,8 +115,13 @@ public class BankApiServiceImpl implements BankApiService {
             () -> investAccountTransactionService
                 .listInvestAccountTransactions(executionContext, investAccountSummaries))
             .thenAccept(investAccountTransactions -> bankApiResponseAtomicReference.get()
-                .setInvestAccountTransactions(investAccountTransactions))
-    ).join();
+                .setInvestAccountTransactions(investAccountTransactions)),
+
+        CompletableFuture.supplyAsync(
+            () -> loanAccountService.listLoanAccountBasics(executionContext, investAccountSummaries))
+            .thenAccept(loanAccountBasics -> bankApiResponseAtomicReference.get()
+                .setLoanAccountBasics(loanAccountBasics))
+        ).join();
 
     return bankApiResponseAtomicReference.get();
   }

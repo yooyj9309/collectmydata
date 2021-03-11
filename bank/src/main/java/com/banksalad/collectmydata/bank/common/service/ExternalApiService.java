@@ -2,12 +2,15 @@ package com.banksalad.collectmydata.bank.common.service;
 
 import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.common.dto.ListAccountSummariesResponse;
-import com.banksalad.collectmydata.bank.deposit.dto.ListDepositAccountTransactionsResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountDetailResponse;
+import com.banksalad.collectmydata.bank.deposit.dto.ListDepositAccountTransactionsResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailResponse;
 import com.banksalad.collectmydata.bank.invest.dto.ListInvestAccountTransactionsResponse;
+import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountBasicResponse;
+import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountDetailResponse;
+
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.organization.Organization;
 import com.banksalad.collectmydata.common.util.DateRange;
@@ -36,4 +39,10 @@ public interface ExternalApiService {
 
   ListInvestAccountTransactionsResponse listInvestAccountTransactions(ExecutionContext executionContext,
       AccountSummary accountSummary, Organization organization, DateRange dateRange);
+
+  GetLoanAccountBasicResponse getLoanAccountBasic(ExecutionContext executionContext,
+      AccountSummary accountSummary, Organization organization, long searchTimestamp);
+
+  GetLoanAccountDetailResponse getLoanAccountDetail(ExecutionContext executionContext,
+      AccountSummary accountSummary, Organization organization, long searchTimestamp);
 }
