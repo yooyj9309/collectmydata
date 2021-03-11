@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface OperatingLeaseTransactionRepository extends JpaRepository<OperatingLeaseTransactionEntity, Long> {
 
   Optional<OperatingLeaseTransactionEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransDtimeAndTransNoAndTransactionYearMonth(
-      long banksaladUserId, String organizationId, String accountNum, String seqno, LocalDateTime transDtime,
+      Long banksaladUserId, String organizationId, String accountNum, String seqno, String transDtime,
       String transNo, Integer transactionYearMonth);
 }

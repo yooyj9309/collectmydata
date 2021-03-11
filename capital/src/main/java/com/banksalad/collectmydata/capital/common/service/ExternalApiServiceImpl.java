@@ -24,13 +24,16 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
+import com.banksalad.collectmydata.common.util.DateUtil;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -41,6 +44,7 @@ import static com.banksalad.collectmydata.capital.common.collect.Executions.capi
 import static com.banksalad.collectmydata.capital.common.collect.Executions.capital_get_operating_lease_basic;
 import static com.banksalad.collectmydata.capital.common.collect.Executions.capital_get_operating_lease_transactions;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ExternalApiServiceImpl implements ExternalApiService {
@@ -175,7 +179,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
   @Override
   public OperatingLeaseTransactionResponse listOperatingLeaseTransactions(ExecutionContext executionContext,
-      Organization organization, AccountSummary accountSummary) {
+      Organization organization, AccountSummary accountSummary, LocalDate fromDate, LocalDate toDate) {
     // executionId 생성.
     executionContext.generateAndsUpdateExecutionRequestId();
 
@@ -186,8 +190,8 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         .orgCode(organization.getOrganizationCode())
         .accountNum(accountSummary.getAccountNum())
         .seqno(accountSummary.getSeqno())
-        .fromDtime("20210121000000") // fixme : user_sync_stat.synced_at
-        .toDtime("20210122000000") // fixme : kstCurrentDatetime
+        .fromDate(DateUtil.toDateString(fromDate))
+        .toDate(DateUtil.toDateString(toDate))
         .limit(MAX_LIMIT)
         .build();
     do {
@@ -200,6 +204,10 @@ public class ExternalApiServiceImpl implements ExternalApiService {
       request.updateNextPage(pageResponse.getNextPage());
     } while (Objects.nonNull(response.getNextPage()));
 
+    if (response.getTransCnt() != response.getOperatingLeaseTransactions().size()) {
+      log.error("transactions size not equal. cnt: {}, size: {}", response.getTransCnt(),
+          response.getOperatingLeaseTransactions().size());
+    }
     return response;
   }
 

@@ -196,10 +196,12 @@ class ExternalApiServiceTest {
     ExecutionContext executionContext = getExecutionContext();
     Organization organization = getOrganization();
     AccountSummary accountSummary = getAccount();
+    LocalDate fromDate = LocalDate.of(2021,01,21);
+    LocalDate toDate = LocalDate.of(2021,01,22);
 
     // when
     OperatingLeaseTransactionResponse operatingLeaseTransactionResponse = externalApiService
-        .listOperatingLeaseTransactions(executionContext, organization, accountSummary);
+        .listOperatingLeaseTransactions(executionContext, organization, accountSummary, fromDate, toDate);
 
     // then
     assertThat(operatingLeaseTransactionResponse).usingRecursiveComparison().isEqualTo(
@@ -208,7 +210,7 @@ class ExternalApiServiceTest {
             .rspMsg("rsp_msg")
             .nextPage(null)
             .transCnt(3)
-            .transList(List.of(
+            .operatingLeaseTransactions(List.of(
                 OperatingLeaseTransaction.builder()
                     .transDtime("20210217093000")
                     .transNo("trans#1")

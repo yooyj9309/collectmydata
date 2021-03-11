@@ -76,7 +76,7 @@ public class DateUtil {
       return null;
     }
 
-    return dateFormatter.format(localDateTime);
+    return datetimeFormatter.format(localDateTime);
   }
 
   public static LocalDate toLocalDate(String dateString) {

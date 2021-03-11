@@ -55,6 +55,7 @@ public class TestHelper {
   public static final int MAX_LIMIT = 2;
   public static final String REP_CODE_OK = "00000";
   public static final String REP_MSG_OK = "rsp_msg";
+  public static final String ACCOUNT_NUMBER = "1234567890";
 
   private static final AccountTransactionMapper accountTransactionMapper = Mappers
       .getMapper(AccountTransactionMapper.class);

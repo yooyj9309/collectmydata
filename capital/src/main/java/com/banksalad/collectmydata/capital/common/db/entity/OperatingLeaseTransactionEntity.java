@@ -11,12 +11,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -45,7 +47,7 @@ public class OperatingLeaseTransactionEntity extends BaseTimeAndUserEntity {
   private String seqno;
 
   @Column(nullable = false)
-  private LocalDateTime transDtime;
+  private String transDtime;
 
   private String transNo;
 

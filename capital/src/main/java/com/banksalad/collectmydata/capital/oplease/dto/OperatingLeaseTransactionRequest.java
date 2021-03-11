@@ -20,8 +20,8 @@ public class OperatingLeaseTransactionRequest {
   private String orgCode;
   private String accountNum;
   private String seqno;
-  private String fromDtime;
-  private String toDtime;
+  private String fromDate;
+  private String toDate;
   private String nextPage;
   private int limit;
 

@@ -122,4 +122,16 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
     entity.setOperatingLeaseBasicSearchTimestamp(accountSummary.getOperatingLeaseBasicSearchTimestamp());
     accountSummaryRepository.save(entity);
   }
+
+  @Override
+  public void updateOperatingLeaseTransactionSyncedAt(ExecutionContext executionContext,
+      AccountSummary accountSummary) {
+    AccountSummaryEntity accountSummaryEntity = accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(executionContext.getBanksaladUserId(),
+            executionContext.getOrganizationId(), accountSummary.getAccountNum(), accountSummary.getSeqno())
+        .orElseThrow(() -> new CollectRuntimeException("Couldn't find AccountSummaryEntity"));
+
+    accountSummaryEntity.setOperatingLeaseTransactionSyncedAt(executionContext.getSyncStartedAt());
+    accountSummaryRepository.save(accountSummaryEntity);
+  }
 }

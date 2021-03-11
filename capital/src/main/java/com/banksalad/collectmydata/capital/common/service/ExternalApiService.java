@@ -10,6 +10,8 @@ import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicRespon
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 
+import java.time.LocalDate;
+
 public interface ExternalApiService {
 
   // 6.7.1
@@ -33,5 +35,5 @@ public interface ExternalApiService {
 
   // 6.7.6
   OperatingLeaseTransactionResponse listOperatingLeaseTransactions(ExecutionContext executionContext,
-      Organization organization, AccountSummary accountSummary);
+      Organization organization, AccountSummary accountSummary, LocalDate fromDate, LocalDate toDate);
 }
