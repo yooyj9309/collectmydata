@@ -7,7 +7,7 @@ public class Executions {
 
   public static final Execution finance_invest_accounts =
       Execution.create()
-          .exchange(Apis.invest_get_accounts)
+          .exchange(Apis.finance_invest_accounts)
           .as(ListAccountSummariesResponse.class)
           .build();
 }

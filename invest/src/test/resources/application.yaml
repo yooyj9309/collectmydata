@@ -1,0 +1,19 @@
+spring:
+  profiles:
+    active: test
+  application:
+    name: collectmydata-invest
+  datasource:
+    url: jdbc:h2:mem:collectmydata-invest;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+
+uri:
+  user: dns:///user-headless:18081
+  cipher: dns:///cipher-headless:18081
+  connect: dns:///connect-headless:18081

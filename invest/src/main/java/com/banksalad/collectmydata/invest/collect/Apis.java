@@ -9,7 +9,7 @@ public class Apis {
   }
 
   // 6.4.1 계좌 목록 조회 API
-  public static Api invest_get_accounts =
+  public static Api finance_invest_accounts =
       Api.builder()
           .id("IV01")
           .name("6.4.1 계좌 목록 조회")
