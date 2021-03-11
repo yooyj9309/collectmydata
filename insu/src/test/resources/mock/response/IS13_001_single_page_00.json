@@ -1,6 +1,6 @@
 {
   "rsp_code": "00000",
-  "rsp_msg": "success",
+  "rsp_msg": "성공",
   "search_timestamp": 1000,
   "currency_code": "KRW",
   "balance_amt": 125.075,

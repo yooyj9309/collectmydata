@@ -1,15 +1,25 @@
 package com.banksalad.collectmydata.insu.loan.service;
 
+import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
+import com.banksalad.collectmydata.common.exception.CollectmydataRuntimeException;
 import com.banksalad.collectmydata.common.util.ExecutionUtil;
+import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.insu.collect.Executions;
+import com.banksalad.collectmydata.insu.common.db.entity.LoanDetailEntity;
+import com.banksalad.collectmydata.insu.common.db.entity.LoanSummaryEntity;
+import com.banksalad.collectmydata.insu.common.db.mapper.LoanDetailHistoryMapper;
+import com.banksalad.collectmydata.insu.common.db.mapper.LoanDetailMapper;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanDetailHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanDetailRepository;
+import com.banksalad.collectmydata.insu.common.db.repository.LoanSummaryRepository;
 import com.banksalad.collectmydata.insu.common.dto.LoanSummary;
+import com.banksalad.collectmydata.insu.common.service.ExecutionResponseValidateService;
+import com.banksalad.collectmydata.insu.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicRequest;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicResponse;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailRequest;
@@ -17,26 +27,37 @@ import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailResponse;
 import com.banksalad.collectmydata.insu.loan.dto.LoanBasic;
 import com.banksalad.collectmydata.insu.loan.dto.LoanDetail;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.NoResultException;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mapstruct.factory.Mappers;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class LoanServiceImpl implements LoanService {
 
-  private final CollectExecutor collectExecutor;
   private static final String AUTHORIZATION = "Authorization";
-
+  private final CollectExecutor collectExecutor;
+  private final UserSyncStatusService userSyncStatusService;
+  private final ExecutionResponseValidateService executionResponseValidateService;
+  private final LoanSummaryRepository loanSummaryRepository;
   private final LoanDetailRepository loanDetailRepository;
   private final LoanDetailHistoryRepository loanDetailHistoryRepository;
+  private final LoanDetailMapper loanDetailMapper = Mappers.getMapper(LoanDetailMapper.class);
+  private final LoanDetailHistoryMapper loanDetailHistoryMapper = Mappers.getMapper(LoanDetailHistoryMapper.class);
 
   @Override
   public List<LoanBasic> listLoanBasics(ExecutionContext executionContext, String organizationCode,
@@ -47,29 +68,31 @@ public class LoanServiceImpl implements LoanService {
   @Override
   public List<LoanDetail> listLoanDetails(ExecutionContext executionContext, String organizationCode,
       List<LoanSummary> loanSummaries) {
-    // Create a new ExecutionContext to avoid `executionId` conflicts.
-    ExecutionContext context = executionContext.withExecutionRequestId(UUID.randomUUID().toString());
+    // FIXME: reference 나오면 수정
+    final ExecutionContext context = executionContext.withExecutionRequestId(UUID.randomUUID().toString());
+    final Execution execution = Executions.insurance_get_loan_detail;
+    List<LoanDetail> loanDetails = new ArrayList<>(loanSummaries.size());
+    AtomicBoolean exceptionOccurred = new AtomicBoolean(false);
 
-    // TODO: Do the followings for loanSummaries in parallel or in serial.
-    // Post Mydata API against a data provider and get a GetLoanDetailResponse response.
-    // Extract LoanDetail from the response.
-    // Query a unique key against `loan_detail` table.
-    // If a record (LoanDetailEntity) exists,
-    //  Compare the contents between LoanDetail and the LoanDetailEntity.
-    //    If both are different,
-    //      Update LoanDetailEntity with LoanDetail and save it into the table.
-    //    If equal,
-    //      Do nothing.
-    // If no record exits,
-    //  Clone LoanDetailEntity from LoanDetail.
-    //  Insert LoanDetailEntity into `loan_detail` table.
-    // Clone LoanDetailHistoryEntity from LoanDetailEntity.
-    // Insert LoanDetailHistory into `loan_detail_history` table.
-    // If no exceptions are found, update `detail_search_timestamp` of `loan_summary` table.
-    // Return LoanDetail
-    // Join the returned LoanDetails then make a List.
-    // If no exceptions occurred, upsert `user_sync_status` table.
-    return null;
+    // Non-parallel version:
+    for (LoanSummary loanSummary : loanSummaries) {
+      try {
+        loanDetails.add(processLoanDetail(execution, context, organizationCode, loanSummary));
+      } catch (CollectmydataRuntimeException e) {
+        log.error(e.getMessage(), e);
+        exceptionOccurred.set(true);
+      }
+    }
+
+    userSyncStatusService.updateUserSyncStatus(
+        context.getBanksaladUserId(),
+        context.getOrganizationId(),
+        execution.getApi().getId(),
+        context.getSyncStartedAt(),
+        null,
+        executionResponseValidateService.isAllResponseResultSuccess(context, exceptionOccurred.get())
+    );
+    return loanDetails;
   }
 
   private GetLoanBasicResponse getLoanBasicResponse(ExecutionContext executionContext, String organizationCode,
@@ -98,8 +121,56 @@ public class LoanServiceImpl implements LoanService {
     return executionResponse.getResponse();
   }
 
-  private GetLoanDetailResponse getLoanDetailResponse(ExecutionContext executionContext, String organizationCode, String accountNum,
-      long searchTimestamp) {
+  @Transactional
+  protected LoanDetail processLoanDetail(Execution execution, ExecutionContext executionContext,
+      String organizationCode, LoanSummary loanSummary) {
+    final LocalDateTime syncedAt = executionContext.getSyncStartedAt();
+    final long banksaladUserId = executionContext.getBanksaladUserId();
+    final String organizationId = executionContext.getOrganizationId();
+    final String accountNum = loanSummary.getAccountNum();
+    try {
+      LoanSummaryEntity loanSummaryEntity = loanSummaryRepository
+          .findByBanksaladUserIdAndOrganizationIdAndAccountNum(banksaladUserId, organizationId, accountNum)
+          .orElseThrow(NoResultException::new);
+      LoanDetailEntity loanDetailEntity = loanDetailRepository
+          .findByBanksaladUserIdAndOrganizationIdAndAccountNum(banksaladUserId, organizationId, accountNum)
+          .orElse(LoanDetailEntity.builder().build());
+      // Call a Mydata API
+      GetLoanDetailResponse getLoanDetailResponse = getLoanDetailResponse(
+          execution, executionContext, organizationCode, accountNum, loanSummaryEntity.getDetailSearchTimestamp());
+      LoanDetail loanDetail = getLoanDetailResponse.getLoanDetail();
+      // Compare the API result with the DB record
+      // If both are equal or the API result is new
+      if (!ObjectComparator.isSame(loanDetail, loanDetailMapper.toDto(loanDetailEntity))) {
+        // Update the loan_detail record
+        loanDetailEntity = loanDetailMapper.toEntity(loanDetail);
+        loanDetailEntity.setSyncedAt(syncedAt);
+        loanDetailEntity.setBanksaladUserId(banksaladUserId);
+        loanDetailEntity.setOrganizationId(organizationId);
+        loanDetailRepository.save(loanDetailEntity);
+        loanDetailHistoryRepository.save(loanDetailHistoryMapper.toEntity(loanDetailEntity));
+        // Update the loan_summary record
+        loanSummaryEntity.setDetailSearchTimestamp(getLoanDetailResponse.getSearchTimestamp());
+        loanSummaryRepository.save(loanSummaryEntity);
+      }
+      return loanDetail;
+    } catch (NoResultException e) {
+      throw new CollectmydataRuntimeException(String.format(
+          "No record in loan_summary: banksaladUserId=%s, organizationId=%s, accountNum=%s",
+          banksaladUserId, organizationId, accountNum), e);
+    } catch (DataAccessException e) {
+      throw new CollectmydataRuntimeException("JPA operation failed", e);
+    } catch (CollectRuntimeException e) {
+      throw new CollectmydataRuntimeException(e.getMessage(), e);
+    } catch (NullPointerException e) {
+      throw new CollectmydataRuntimeException("Mydata API Response is null", e);
+    } catch (RuntimeException e) {
+      throw new CollectmydataRuntimeException("Unknown runtime exception", e);
+    }
+  }
+
+  private GetLoanDetailResponse getLoanDetailResponse(Execution execution, ExecutionContext executionContext,
+      String organizationCode, String accountNum, long searchTimestamp) {
     // Make a GetLoanDetailRequest.
     Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
     GetLoanDetailRequest request = GetLoanDetailRequest.builder()
@@ -110,20 +181,17 @@ public class LoanServiceImpl implements LoanService {
     ExecutionRequest<GetLoanDetailRequest> executionRequest = ExecutionUtil.assembleExecutionRequest(headers, request);
 
     // Post a Mydata API and get the response.
-    try {
-      ExecutionResponse<GetLoanDetailResponse> executionResponse = collectExecutor
-          .execute(executionContext, Executions.insurance_get_loan_detail, executionRequest);
-      GetLoanDetailResponse getLoanDetailResponse = executionResponse.getResponse();
-      // 아래 부분은 CollectExecutor에서 발생시키는 것이 나을 것 같음. Exception에 code도 추가
-      if (executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
-        // TODO: throw new CollectRuntimeException("...", ex);
-      }
-      return getLoanDetailResponse;
-    } catch (CollectRuntimeException ex) { // 송수신층으로부터 받은 예외 던짐
-      // TODO: throw new CollectmydataRuntimeException("...", ex);
-    } catch (NullPointerException ex) { // OK인데 알맹이 데이터가 없는 경우 예외 던짐
-      // TODO: throw new CollectmydataRuntimeException("...", ex);
+    ExecutionResponse<GetLoanDetailResponse> executionResponse = collectExecutor
+        .execute(executionContext, execution, executionRequest);
+    GetLoanDetailResponse getLoanDetailResponse = executionResponse.getResponse();
+    if (executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
+      // FIXME: Used a temporal exception message format
+      throw new CollectRuntimeException(String.format(
+          "Mydata API %s was not succeeded: rspCode=%s, rspMsg=%s",
+          execution.getApi().getId(), getLoanDetailResponse.getRspCode(), getLoanDetailResponse.getRspMsg()));
     }
-    return null;
+    // Set account_number for the next logics to process conveniently.
+    getLoanDetailResponse.getLoanDetail().setAccountNum(accountNum);
+    return getLoanDetailResponse;
   }
 }

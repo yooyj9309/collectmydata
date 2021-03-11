@@ -11,7 +11,6 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.common.util.ExecutionUtil;
-import com.banksalad.collectmydata.common.util.NumberUtil;
 import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.common.dto.ListInsuranceSummariesRequest;
@@ -32,7 +31,14 @@ import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicRequest;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicResponse;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailRequest;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
 import com.banksalad.collectmydata.insu.loan.dto.LoanDetail;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
@@ -47,12 +53,13 @@ import java.util.UUID;
 
 import static com.banksalad.collectmydata.insu.common.util.FileUtil.readText;
 import static com.banksalad.collectmydata.insu.common.util.TestHelper.ACCESS_TOKEN;
+import static com.banksalad.collectmydata.insu.common.util.TestHelper.ACCOUNT_NUM;
 import static com.banksalad.collectmydata.insu.common.util.TestHelper.BANKSALAD_USER_ID;
-import static com.banksalad.collectmydata.insu.common.util.TestHelper.CURRENCY_CODE;
 import static com.banksalad.collectmydata.insu.common.util.TestHelper.HEADERS;
 import static com.banksalad.collectmydata.insu.common.util.TestHelper.ORGANIZATION_CODE;
 import static com.banksalad.collectmydata.insu.common.util.TestHelper.ORGANIZATION_HOST;
 import static com.banksalad.collectmydata.insu.common.util.TestHelper.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.insu.common.util.TestHelper.buildGetLoanDetailResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -291,7 +298,7 @@ public class ExecutionTest {
 
     GetLoanBasicRequest request = GetLoanBasicRequest.builder()
         .orgCode(ORGANIZATION_CODE)
-        .accountNum("1234567812345678")
+        .accountNum(ACCOUNT_NUM)
         .searchTimestamp(0L)
         .build();
 
@@ -312,6 +319,28 @@ public class ExecutionTest {
                 .insuNum("123456789")
                 .build()
         );
+  }
+
+  @Test
+  @DisplayName("6.5.10 대출상품 추가정보 조회")
+  public void getLoanDetailApiTest() {
+    // Given
+    ExecutionContext executionContext = getExecutionContext();
+    GetLoanDetailRequest request = GetLoanDetailRequest.builder()
+        .orgCode(ORGANIZATION_CODE)
+        .accountNum(ACCOUNT_NUM)
+        .searchTimestamp(0L)
+        .build();
+    ExecutionRequest<GetLoanDetailResponse> executionRequest = ExecutionUtil.assembleExecutionRequest(HEADERS, request);
+    GetLoanDetailResponse expectedGetLoanDetailResponse = buildGetLoanDetailResponse();
+
+    // When
+    ExecutionResponse<GetLoanDetailResponse> actualExecutionResponse = collectExecutor
+        .execute(executionContext, Executions.insurance_get_loan_detail, executionRequest);
+
+    // Then
+    assertThat(actualExecutionResponse.getResponse()).usingRecursiveComparison()
+        .isEqualTo(expectedGetLoanDetailResponse);
   }
 
   private static void setupMockServer() {
@@ -403,38 +432,4 @@ public class ExecutionTest {
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
   }
-
-  @Test
-  @DisplayName("6.5.10 대출상품 추가정보 조회")
-  public void getLoanDetailApiTest() {
-    // Given
-    ExecutionContext executionContext = getExecutionContext();
-    GetLoanDetailRequest request = GetLoanDetailRequest.builder()
-        .orgCode(ORGANIZATION_CODE)
-        .accountNum("1234567812345678")
-        .searchTimestamp(0L)
-        .build();
-    ExecutionRequest<GetLoanDetailResponse> executionRequest = ExecutionUtil.assembleExecutionRequest(HEADERS, request);
-    GetLoanDetailResponse expectedGetLoanDetailResponse = GetLoanDetailResponse.builder()
-        .rspCode("00000")
-        .rspMsg("success")
-        .searchTimestamp(1000L)
-        .loanDetail(LoanDetail.builder()
-            .currencyCode(CURRENCY_CODE)
-            .balanceAmt(NumberUtil.bigDecimalOf(125.075, 3))
-            .loanPrincipal(NumberUtil.bigDecimalOf(10000.000, 3))
-            .nextRepayDate("20210325")
-            .build()
-        )
-        .build();
-
-    // When
-    ExecutionResponse<GetLoanDetailResponse> actualExecutionResponse = collectExecutor
-        .execute(executionContext, Executions.insurance_get_loan_detail, executionRequest);
-
-    // Then
-    assertThat(actualExecutionResponse.getResponse()).usingRecursiveComparison()
-        .isEqualTo(expectedGetLoanDetailResponse);
-  }
-
 }

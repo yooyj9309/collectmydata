@@ -7,6 +7,7 @@ public class NumberUtil {
 
   private static final int X100 = 100;
   private static final int X1000 = 1000;
+  private static final int DEFAULT_SCALE = 3;
 
   public static long multiply1000(BigDecimal source) {
     if (source == null) {
@@ -48,5 +49,13 @@ public class NumberUtil {
 
   public static BigDecimal bigDecimalOf(long source, int scale) {
     return setScale(BigDecimal.valueOf(source), scale);
+  }
+
+  public static BigDecimal bigDecimalOf(double source) {
+    return setScale(BigDecimal.valueOf(source), DEFAULT_SCALE);
+  }
+
+  public static BigDecimal bigDecimalOf(long source) {
+    return setScale(BigDecimal.valueOf(source), DEFAULT_SCALE);
   }
 }
