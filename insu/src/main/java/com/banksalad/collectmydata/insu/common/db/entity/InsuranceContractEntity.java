@@ -11,13 +11,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -53,7 +54,7 @@ public class InsuranceContractEntity extends BaseTimeAndUserEntity {
   private String contractName;
 
   @Column(nullable = false)
-  private LocalDate contractExpDate;
+  private String contractExpDate;
 
   @Column(nullable = false, precision = 18, scale = 3)
   private BigDecimal contractFaceAmt;
@@ -61,6 +62,6 @@ public class InsuranceContractEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false)
   private String currencyCode;
 
-  @Column(nullable = false, columnDefinition = "BIT", length = 1)
-  private Boolean isRequired;
+  @Column(nullable = false, name = "is_required", columnDefinition = "BIT", length = 1)
+  private Boolean required;
 }

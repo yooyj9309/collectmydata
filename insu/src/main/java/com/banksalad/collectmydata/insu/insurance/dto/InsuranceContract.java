@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,13 +18,22 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@EqualsAndHashCode
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class InsuranceContract {
 
+  private String insuNum;
+
+  private String insuredNo;
+
   private String contractName;
+
   private String contractStatus;
+
   private String contractExpDate;
+
   private BigDecimal contractFaceAmt;
+
   private String currencyCode;
 
   @JsonProperty("is_required")

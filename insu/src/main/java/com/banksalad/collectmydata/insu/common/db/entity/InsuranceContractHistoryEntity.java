@@ -13,7 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -53,7 +52,7 @@ public class InsuranceContractHistoryEntity extends BaseTimeAndUserEntity {
   private String contractName;
 
   @Column(nullable = false)
-  private LocalDate contractExpDate;
+  private String contractExpDate;
 
   @Column(nullable = false, precision = 18, scale = 3)
   private BigDecimal contractFaceAmt;
@@ -61,6 +60,6 @@ public class InsuranceContractHistoryEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false)
   private String currencyCode;
 
-  @Column(nullable = false, columnDefinition = "BIT", length = 1)
-  private Boolean isRequired;
+  @Column(nullable = false, name = "is_required", columnDefinition = "BIT", length = 1)
+  private Boolean required;
 }

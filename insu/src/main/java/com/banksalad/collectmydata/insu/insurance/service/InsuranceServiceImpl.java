@@ -16,14 +16,19 @@ import com.banksalad.collectmydata.insu.collect.Apis;
 import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceBasicEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceBasicHistoryEntity;
+import com.banksalad.collectmydata.insu.common.db.entity.InsuranceContractEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuredEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuredHistoryEntity;
 import com.banksalad.collectmydata.insu.common.db.mapper.InsuranceBasicHistoryMapper;
 import com.banksalad.collectmydata.insu.common.db.mapper.InsuranceBasicMapper;
+import com.banksalad.collectmydata.insu.common.db.mapper.InsuranceContractHistoryMapper;
+import com.banksalad.collectmydata.insu.common.db.mapper.InsuranceContractMapper;
 import com.banksalad.collectmydata.insu.common.db.mapper.InsuredHistoryMapper;
 import com.banksalad.collectmydata.insu.common.db.mapper.InsuredMapper;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceBasicHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceBasicRepository;
+import com.banksalad.collectmydata.insu.common.db.repository.InsuranceContractHistoryRepository;
+import com.banksalad.collectmydata.insu.common.db.repository.InsuranceContractRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuredHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuredRepository;
 import com.banksalad.collectmydata.insu.common.dto.InsuranceSummary;
@@ -41,6 +46,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -61,19 +68,26 @@ public class InsuranceServiceImpl implements InsuranceService {
   private final InsuranceBasicHistoryRepository insuranceBasicHistoryRepository;
   private final InsuredRepository insuredRepository;
   private final InsuredHistoryRepository insuredHistoryRepository;
-
+  private final InsuranceContractRepository insuranceContractRepository;
+  private final InsuranceContractHistoryRepository insuranceContractHistoryRepository;
 
   @Qualifier("async-thread")
   private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
-
-  private static final String AUTHORIZATION = "Authorization";
-  private static final String[] INSURANCE_RES_EXCLUDE_EQUALS_FIELD = {"rspCode", "rspMsg", "searchTimestamp"};
 
   private final InsuranceBasicMapper insuranceBasicMapper = Mappers.getMapper(InsuranceBasicMapper.class);
   private final InsuranceBasicHistoryMapper insuranceBasicHistoryMapper = Mappers
       .getMapper(InsuranceBasicHistoryMapper.class);
   private final InsuredMapper insuredMapper = Mappers.getMapper(InsuredMapper.class);
   private final InsuredHistoryMapper insuredHistoryMapper = Mappers.getMapper(InsuredHistoryMapper.class);
+  private final InsuranceContractMapper insuranceContractMapper = Mappers.getMapper(InsuranceContractMapper.class);
+  private final InsuranceContractHistoryMapper insuranceContractHistoryMapper = Mappers
+      .getMapper(InsuranceContractHistoryMapper.class);
+
+  private static final String[] CONTRACT_EXCLUDE_FIELD = {"insuredNo", "insuNum"};
+  private static final String[] INSURANCE_RES_EXCLUDE_EQUALS_FIELD = {"rspCode", "rspMsg", "searchTimestamp"};
+
+  private static final String AUTHORIZATION = "Authorization";
+  private final long DEFAULT_SEARCH_TIMESTAMP = 0L;
 
   @Override
   public List<InsuranceBasic> listInsuranceBasics(ExecutionContext executionContext, String organizationCode,
@@ -110,13 +124,40 @@ public class InsuranceServiceImpl implements InsuranceService {
   @Override
   public List<InsuranceContract> listInsuranceContracts(ExecutionContext executionContext, String organizationCode,
       List<InsuranceBasic> insuranceBasics) {
-    return null;
+
+    AtomicReference<Boolean> isExceptionOccurred = new AtomicReference<>(false);
+
+    List<InsuranceContract> insuranceContracts = insuranceBasics.stream()
+        .map(insuranceBasic -> CompletableFuture
+            .supplyAsync(() ->
+                progressInsuranceContract(executionContext, organizationCode, insuranceBasic), threadPoolTaskExecutor
+            ).exceptionally(e -> {
+              log.error("6.7.2 insuranceBasic exception {}", e.getMessage());
+              isExceptionOccurred.set(true);
+              return null;
+            })
+        ).map(CompletableFuture::join)
+        .flatMap(Collection::stream)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+
+    userSyncStatusService
+        .updateUserSyncStatus(
+            executionContext.getBanksaladUserId(),
+            executionContext.getOrganizationId(),
+            Apis.insurance_get_contract.getId(),
+            executionContext.getSyncStartedAt(),
+            null,
+            executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred.get())
+        );
+
+    return insuranceContracts;
   }
 
   private InsuranceBasic progressInsuranceBasic(ExecutionContext executionContext, String orgCode,
       InsuranceSummary insuranceSummary) {
 
-    GetInsuranceBasicResponse insuranceBasicResponse = getInsuranceBasic(executionContext, orgCode,
+    GetInsuranceBasicResponse insuranceBasicResponse = getInsuranceBasicResponse(executionContext, orgCode,
         insuranceSummary.getInsuNum(), insuranceSummary.getBasicSearchTimestamp());
 
     long banksaladUserId = executionContext.getBanksaladUserId();
@@ -140,7 +181,7 @@ public class InsuranceServiceImpl implements InsuranceService {
       // make history
       InsuranceBasicHistoryEntity historyEntity = insuranceBasicHistoryMapper.toHistoryEntity(entity);
 
-      // 운용리스 및 history save;
+      // 보험기본 및 history save;
       insuranceBasicRepository.save(entity);
       insuranceBasicHistoryRepository.save(historyEntity);
 
@@ -171,10 +212,80 @@ public class InsuranceServiceImpl implements InsuranceService {
       insuranceSummaryService.updateSearchTimestamp(banksaladUserId, organizationId, insuranceSummary);
     }
 
+    InsuranceBasic insuranceBasic = insuranceBasicMapper.responseDtoToDto(insuranceBasicResponse);
+    insuranceBasic.setInsuNum(insuranceSummary.getInsuNum());
+
     return insuranceBasicMapper.responseDtoToDto(insuranceBasicResponse);
   }
 
-  private GetInsuranceBasicResponse getInsuranceBasic(ExecutionContext executionContext, String orgCode, String
+  private List<InsuranceContract> progressInsuranceContract(ExecutionContext executionContext, String orgCode,
+      InsuranceBasic insuranceBasic) {
+    List<InsuranceContract> responseInsuranceContracts = new ArrayList<>();
+    long banksaladUserId = executionContext.getBanksaladUserId();
+    String organizationId = executionContext.getOrganizationId();
+    String insuNum = insuranceBasic.getInsuNum();
+
+    for (Insured insured : insuranceBasic.getInsuredList()) {
+      String insuredNo = insured.getInsuredNo();
+
+      long searchTimestamp = insuredRepository.findByBanksaladUserIdAndOrganizationIdAndInsuNumAndInsuredNo(
+          banksaladUserId, organizationId, insuranceBasic.getInsuNum(), insured.getInsuredNo()
+      ).map(InsuredEntity::getContractSearchTimestamp).orElse(DEFAULT_SEARCH_TIMESTAMP);
+
+      GetInsuranceContractResponse insuranceContractResponse = getInsuranceContractResponse(executionContext, orgCode,
+          insuranceBasic.getInsuNum(), insured.getInsuredNo(), searchTimestamp);
+
+      List<InsuranceContract> insuranceContracts = insuranceContractResponse.getContractList();
+      
+      List<InsuranceContract> existingInsuranceContracts = insuranceContractRepository
+          .findAllByBanksaladUserIdAndOrganizationIdAndInsuNum(banksaladUserId, organizationId, insuNum)
+          .stream()
+          .map(insuranceContractMapper::entityToDto)
+          .collect(Collectors.toList());
+
+      if (!ObjectComparator.isSameListIgnoreOrder(insuranceContracts, existingInsuranceContracts)) {
+
+        // Delete All
+        insuranceContractRepository.deleteAllByBanksaladUserIdAndOrganizationIdAndInsuNumAndInsuredNo(
+            banksaladUserId, organizationId, insuNum, insuredNo
+        );
+        insuranceContractRepository.flush();
+
+        for (int idx = 0; idx < insuranceContracts.size(); idx++) {
+          InsuranceContract insuranceContract = insuranceContracts.get(idx);
+          insuranceContract.setInsuNum(insuNum);
+          insuranceContract.setInsuredNo(insuredNo);
+
+          InsuranceContractEntity insuranceContractEntity = insuranceContractMapper.dtoToEntity(insuranceContract);
+          insuranceContractEntity.setSyncedAt(executionContext.getSyncStartedAt());
+          insuranceContractEntity.setBanksaladUserId(banksaladUserId);
+          insuranceContractEntity.setOrganizationId(organizationId);
+          insuranceContractEntity.setContractNo(idx);
+
+          insuranceContractRepository.save(insuranceContractEntity);
+          insuranceContractHistoryRepository
+              .save(insuranceContractHistoryMapper.toHistoryEntity(insuranceContractEntity));
+        }
+      }
+      // response Add
+      responseInsuranceContracts.addAll(insuranceContracts);
+
+      // search timestamp 업데이트 -> 피보험자 테이블
+      InsuredEntity insuredEntity = insuredRepository
+          .findByBanksaladUserIdAndOrganizationIdAndInsuNumAndInsuredNo(
+              banksaladUserId,
+              organizationId,
+              insuNum,
+              insuredNo
+          ).orElseThrow(() -> new CollectRuntimeException("No data InsuredEntity"));
+
+      insuredEntity.setContractSearchTimestamp(insuranceContractResponse.getSearchTimestamp());
+      insuredRepository.save(insuredEntity);
+    }
+    return responseInsuranceContracts;
+  }
+
+  private GetInsuranceBasicResponse getInsuranceBasicResponse(ExecutionContext executionContext, String orgCode, String
       insuNum, long searchTimestamp) {
 
     executionContext.generateAndsUpdateExecutionRequestId();
@@ -204,7 +315,7 @@ public class InsuranceServiceImpl implements InsuranceService {
   }
 
   // 피보험자순번(insuredNo) 을 받는 명세에서는 String인데 Request에서는 int로 되어있는상태. 그러나 N(2)로 되어있어서 String이 되지않을까 추측합니다.
-  private GetInsuranceContractResponse getInsuranceContract(ExecutionContext executionContext, String orgCode,
+  private GetInsuranceContractResponse getInsuranceContractResponse(ExecutionContext executionContext, String orgCode,
       String insuNum, String insuredNo, long searchTimestamp) {
     executionContext.generateAndsUpdateExecutionRequestId();
 

@@ -7,27 +7,44 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class InsuranceBasic {
 
+  private String insuNum;
+
   private boolean renewable;
+
   private String issueDate;
+
   private String expDate;
+
   private BigDecimal faceAmt;
+
   private String currencyCode;
+
   private boolean variable;
+
   private boolean universal;
+
   private String pensionRcvStartDate;
+
   private String pensionRcvCycle;
+
   private boolean loanable;
+
   private int insuredCount;
-  private List<Insured> insuredList;
+
+  @Builder.Default
+  private List<Insured> insuredList = new ArrayList<>();
 }

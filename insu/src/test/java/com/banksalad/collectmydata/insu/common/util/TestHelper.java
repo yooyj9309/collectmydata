@@ -21,6 +21,8 @@ public class TestHelper {
   public static final String ACCESS_TOKEN = "accessToken";
   public static final Map<String, String> HEADERS = Map.of("Authorization", ACCESS_TOKEN);
   public static final String CURRENCY_CODE = "KRW";
+  public static final String[] ENTITY_IGNORE_FIELD = {"id", "syncedAt", "createdAt", "createdBy", "updatedAt",
+      "updatedBy"};
 
   public static ExecutionContext getExecutionContext(int port) {
     return ExecutionContext.builder()
