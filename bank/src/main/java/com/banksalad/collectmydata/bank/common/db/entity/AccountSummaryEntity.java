@@ -40,11 +40,12 @@ public class AccountSummaryEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false, name = "account_num_encrypted")
   private String accountNum;
 
-  @Column(nullable = false, columnDefinition = "BIT", length = 1)
+  @Column(nullable = false, columnDefinition = "TINYINT")
   private Boolean isConsent;
 
   private String seqno;
 
+  @Column(columnDefinition = "TINYINT")
   private Boolean isForeignDeposit;
 
   @Column(nullable = false)

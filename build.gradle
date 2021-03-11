@@ -13,6 +13,8 @@ ext {
     grpcVersion = "1.35.0"
     grpcSpringBootVersion = "3.5.5"
 
+    mariadbClientVersion = "2.6.0"
+
     slf4jVersion = "1.7.30"
     logbackVersion = "1.2.3"
     lombokVersion = "1.18.18"
