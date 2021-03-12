@@ -7,20 +7,20 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.ToString;
 
+import java.math.BigDecimal;
+
+@ToString
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ListLoanTransactionRequest {
+public class LoanTransactionInterest {
 
-  private String orgCode;
-  private String accountNum;
-  private String fromDate;
-  private String toDate;
-  private String nextPage;
-  private int limit;
+  private String intStartDate;
+  private String intEndDate;
+  private BigDecimal intRate;
+  private String intType;
 }

@@ -38,6 +38,10 @@ import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicResponse;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailRequest;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailResponse;
 
+import com.banksalad.collectmydata.insu.loan.dto.ListLoanTransactionRequest;
+import com.banksalad.collectmydata.insu.loan.dto.ListLoanTransactionResponse;
+import com.banksalad.collectmydata.insu.loan.dto.LoanTransaction;
+import com.banksalad.collectmydata.insu.loan.dto.LoanTransactionInterest;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
@@ -47,6 +51,8 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -445,6 +451,79 @@ public class ExecutionTest {
         .isEqualTo(expectedGetLoanDetailResponse);
   }
 
+  @Test
+  @DisplayName("6.5.10 대출상품 거래내역 조회")
+  public void getLoanTransactionsApiTest() {
+    // Given
+    ExecutionContext executionContext = getExecutionContext();
+    ListLoanTransactionRequest request = ListLoanTransactionRequest.builder()
+        .orgCode(ORGANIZATION_CODE)
+        .accountNum("1234567812345678")
+        .fromDate("20210121")
+        .toDate("20210122")
+        .limit(2)
+        .build();
+
+    ExecutionRequest<ListLoanTransactionResponse> executionRequest = ExecutionUtil
+        .assembleExecutionRequest(HEADERS, request);
+
+    LoanTransaction loanTransaction01 = LoanTransaction.builder()
+        .transNo("trans#2")
+        .transDtime("20210121103000")
+        .currencyCode("KRW")
+        .loanPaidAmt(BigDecimal.valueOf(1000.312))
+        .intPaidAmt(BigDecimal.valueOf(18000.712))
+        .intCnt(2)
+        .intList(Arrays.asList(
+            LoanTransactionInterest.builder()
+                .intStartDate("20201201")
+                .intEndDate("20201231")
+                .intRate(BigDecimal.valueOf(4.112))
+                .intType("02")
+                .build(),
+            LoanTransactionInterest.builder()
+                .intStartDate("20201201")
+                .intEndDate("20201231")
+                .intRate(BigDecimal.valueOf(3.012))
+                .intType("01")
+                .build()
+        ))
+        .build();
+
+    LoanTransaction loanTransaction02 = LoanTransaction.builder()
+        .transNo("trans#1")
+        .transDtime("20210121093000")
+        .currencyCode("KRW")
+        .loanPaidAmt(BigDecimal.valueOf(1000.312))
+        .intPaidAmt(BigDecimal.valueOf(18000.712))
+        .intCnt(1)
+        .intList(Collections.singletonList(
+            LoanTransactionInterest.builder()
+                .intStartDate("20201201")
+                .intEndDate("20201231")
+                .intRate(BigDecimal.valueOf(3.012))
+                .intType("99")
+                .build()
+        ))
+        .build();
+
+    ListLoanTransactionResponse expectedLoanTransactionResponse = ListLoanTransactionResponse.builder()
+        .rspCode("00000")
+        .rspMsg("rsp_msg")
+        .nextPage(null)
+        .transCnt(2)
+        .transList(Arrays.asList(loanTransaction01, loanTransaction02))
+        .build();
+
+    // When
+    ExecutionResponse<ListLoanTransactionResponse> actualExecutionResponse = collectExecutor
+        .execute(executionContext, Executions.insurance_get_loan_transactions, executionRequest);
+
+    // Then
+    assertThat(actualExecutionResponse.getResponse()).usingRecursiveComparison()
+        .isEqualTo(expectedLoanTransactionResponse);
+  }
+
   private static void setupMockServer() {
     // 6.5.1 보험 목록 조회
     wireMockServer.stubFor(get(urlMatching("/insurances.*"))
@@ -544,6 +623,17 @@ public class ExecutionTest {
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS13_001_single_page_00.json"))));
+
+    // 6.5.11 대출상품 거래내역 조회
+    wireMockServer.stubFor(post(urlMatching("/loans/transactions"))
+        .withRequestBody(
+            equalToJson(readText("classpath:mock/request/IS14_001.json")))
+        .willReturn(
+            aResponse()
+                .withFixedDelay(1000)
+                .withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+                .withBody(readText("classpath:mock/response/IS14_001.json"))));
   }
 
   private ExecutionContext getExecutionContext() {
