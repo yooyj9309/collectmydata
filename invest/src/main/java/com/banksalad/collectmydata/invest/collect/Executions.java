@@ -10,4 +10,11 @@ public class Executions {
           .exchange(Apis.finance_invest_accounts)
           .as(ListAccountSummariesResponse.class)
           .build();
+
+  public static final Execution finance_invest_account_basic =
+      Execution.create()
+          .exchange(Apis.finance_invest_account_basic)
+          .as(ListAccountSummariesResponse.class)
+          .build();
+
 }

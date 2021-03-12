@@ -17,4 +17,13 @@ public class Apis {
           .method(HttpMethod.GET.name())
           .build();
 
+  // 6.4.2 계좌 기본정보 조회 API
+  public static Api finance_invest_account_basic =
+      Api.builder()
+          .id("IV02")
+          .name("6.4.2 계좌 기본정보 조회")
+          .endpoint("/accounts/basic")
+          .method(HttpMethod.POST.name())
+          .build();
+
 }
