@@ -1,0 +1,14 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "success",
+  "next_page": null,
+  "trans_cnt": 1,
+  "trans_list": [
+    {
+      "face_amt": 50000,
+      "trans_no": 0,
+      "paid_amt": 0,
+      "pay_method": "03"
+    }
+  ]
+}

@@ -17,5 +17,5 @@ public class GetCarInsuranceRequest {
 
   private String orgCode;
   private String insuNum;
-  private long serachTimestamp;
+  private long searchTimestamp;
 }

@@ -11,6 +11,12 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.common.util.ExecutionUtil;
+import com.banksalad.collectmydata.insu.car.dto.CarInsurance;
+import com.banksalad.collectmydata.insu.car.dto.CarInsuranceTransaction;
+import com.banksalad.collectmydata.insu.car.dto.GetCarInsuranceRequest;
+import com.banksalad.collectmydata.insu.car.dto.GetCarInsuranceResponse;
+import com.banksalad.collectmydata.insu.car.dto.ListCarInsuranceTransactionsRequest;
+import com.banksalad.collectmydata.insu.car.dto.ListCarInsuranceTransactionsResponse;
 import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.common.dto.ListInsuranceSummariesRequest;
@@ -31,13 +37,6 @@ import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicRequest;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicResponse;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailRequest;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailResponse;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
-import com.banksalad.collectmydata.insu.loan.dto.LoanDetail;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
@@ -219,6 +218,62 @@ public class ExecutionTest {
   }
 
   @Test
+  @DisplayName("6.5.4 자동차보험 정보 조회")
+  void listCarInsurancesApiTest() {
+    ExecutionContext executionContext = getExecutionContext();
+
+    GetCarInsuranceRequest request = GetCarInsuranceRequest.builder()
+        .orgCode(ORGANIZATION_CODE)
+        .insuNum("123456789")
+        .searchTimestamp(0L)
+        .build();
+
+    ExecutionRequest<GetCarInsuranceRequest> executionRequest = ExecutionUtil
+        .assembleExecutionRequest(HEADERS, request);
+
+    ExecutionResponse<GetCarInsuranceResponse> executionResponse = collectExecutor
+        .execute(executionContext, Executions.insurance_get_car, executionRequest);
+
+    GetCarInsuranceResponse response = executionResponse.getResponse();
+
+    assertThat(response).usingRecursiveComparison().isEqualTo(
+        GetCarInsuranceResponse.builder()
+            .rspCode("00000")
+            .rspMsg("success")
+            .searchTimestamp(1000)
+            .carInsuCnt(2)
+            .carInsurances(
+                List.of(
+                    CarInsurance.builder()
+                        .carNumber("60무1234")
+                        .carInsuType("02")
+                        .carName("그랜져 IG")
+                        .startDate("20200101")
+                        .endDate("20210101")
+                        .contractAge("21세")
+                        .contractDriver("가족한정")
+                        .ownDmgCoverage(true)
+                        .selfPayRate("01")
+                        .selfPayAmt(200000)
+                        .build(),
+                    CarInsurance.builder()
+                        .carNumber("60무1234")
+                        .carInsuType("04")
+                        .carName("그랜져 IG")
+                        .startDate("20200601")
+                        .endDate("20210601")
+                        .contractAge("21세")
+                        .contractDriver("본인")
+                        .ownDmgCoverage(false)
+                        .selfPayRate("02")
+                        .selfPayAmt(30000)
+                        .build()
+                ))
+            .build()
+    );
+  }
+
+  @Test
   @DisplayName("6.5.6 보험 거래내역 조회")
   void getInsuranceTransactionApiTest() {
     ExecutionContext executionContext = getExecutionContext();
@@ -251,6 +306,53 @@ public class ExecutionTest {
                 .payMethod("01")
                 .build()
         );
+  }
+
+  @Test
+  @DisplayName("6.5.7 자동차보험 거래내역 조회")
+  void listCarInsuranceTransactionsApiTest() {
+    ExecutionContext executionContext = getExecutionContext();
+
+    ListCarInsuranceTransactionsRequest request = ListCarInsuranceTransactionsRequest.builder()
+        .orgCode(ORGANIZATION_CODE)
+        .insuNum("123456789")
+        .carNumber("60무1234")
+        .fromDate("20200101")
+        .toDate("20200302")
+        .limit(500)
+        .build();
+
+    ExecutionRequest<GetCarInsuranceRequest> executionRequest = ExecutionUtil
+        .assembleExecutionRequest(HEADERS, request);
+
+    ExecutionResponse<ListCarInsuranceTransactionsResponse> executionResponse = collectExecutor
+        .execute(executionContext, Executions.insurance_get_car_transactions, executionRequest);
+
+    ListCarInsuranceTransactionsResponse response = executionResponse.getResponse();
+
+    assertThat(response).usingRecursiveComparison().isEqualTo(
+      ListCarInsuranceTransactionsResponse.builder()
+          .rspCode("00000")
+          .rspMsg("success")
+          .nextPage("2")
+          .transCnt(2)
+          .carInsuranceTransactions(
+              List.of(
+                  CarInsuranceTransaction.builder()
+                      .faceAmt(BigDecimal.valueOf(900000))
+                      .transNo(2)
+                      .paidAmt(BigDecimal.valueOf(450000))
+                      .payMethod("02")
+                      .build(),
+                  CarInsuranceTransaction.builder()
+                      .faceAmt(BigDecimal.valueOf(100000))
+                      .transNo(3)
+                      .paidAmt(BigDecimal.valueOf(70000))
+                      .payMethod("04")
+                      .build()
+              ))
+          .build()
+    );
   }
 
   @Test
@@ -377,7 +479,18 @@ public class ExecutionTest {
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS03_001_single_page_00.json"))));
 
-    // 6.5.6 보험 거래내 조회
+    // 6.5.4 자동차보험 정보 조회
+    wireMockServer.stubFor(post(urlMatching("/insurances/car"))
+        .withRequestBody(
+            equalToJson(readText("classpath:mock/request/IS04_001_single_page_00.json")))
+        .willReturn(
+            aResponse()
+                .withFixedDelay(1000)
+                .withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+                .withBody(readText("classpath:mock/response/IS04_001_single_page_00.json"))));
+
+    // 6.5.6 보험 거래내역 조회
     wireMockServer.stubFor(post(urlMatching("/insurances/transactions"))
         .withRequestBody(
             equalToJson(readText("classpath:mock/request/IS06_001_multi_page_00.json")))
@@ -387,6 +500,17 @@ public class ExecutionTest {
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS06_001_multi_page_00.json"))));
+
+    // 6.5.7 자동차보험 거래내역 조회
+    wireMockServer.stubFor(post(urlMatching("/insurances/car/transactions"))
+        .withRequestBody(
+            equalToJson(readText("classpath:mock/request/IS07_001_multi_page_00.json")))
+        .willReturn(
+            aResponse()
+                .withFixedDelay(1000)
+                .withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+                .withBody(readText("classpath:mock/response/IS07_001_multi_page_00.json"))));
 
     // 6.5.8 대출상품 목록 조회
     wireMockServer.stubFor(get(urlMatching("/loans.*"))

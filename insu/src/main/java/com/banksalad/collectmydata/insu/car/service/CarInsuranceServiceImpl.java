@@ -42,7 +42,7 @@ public class CarInsuranceServiceImpl implements CarInsuranceService {
     GetCarInsuranceRequest request = GetCarInsuranceRequest.builder()
         .orgCode(organization.getOrganizationCode())
         .insuNum(insuranceSummary.getInsuNum())
-        .serachTimestamp(0L) // TODO : get searchTimestamp from account_summary table
+        .searchTimestamp(insuranceSummary.getBasicSearchTimestamp())
         .build();
 
     ExecutionRequest<GetCarInsuranceRequest> executionRequest = ExecutionUtil
@@ -55,7 +55,7 @@ public class CarInsuranceServiceImpl implements CarInsuranceService {
     if (executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
       throw new CollectRuntimeException("execution statue code is not a 200 OK");
     }
-    if (executionResponse == null || executionResponse.getResponse() == null) {
+    if (executionResponse.getResponse() == null) {
       throw new CollectRuntimeException("response is null");
     }
     return executionResponse.getResponse();
