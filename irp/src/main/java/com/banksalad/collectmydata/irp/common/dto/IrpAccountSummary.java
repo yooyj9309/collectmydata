@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.irp.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -8,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 @Getter
 @Builder
@@ -26,4 +29,19 @@ public class IrpAccountSummary {
   private String prodName;
 
   private String accountStatus;
+
+  @JsonIgnore
+  private long basicSearchTimestamp;
+
+  @JsonIgnore
+  private long detailSearchTimestamp;
+
+  @JsonIgnore
+  private LocalDate transactionSyncedAt;
+
+  @JsonIgnore
+  private String basicSearchResponseCode;
+
+  @JsonIgnore
+  private String detailSearchResponseCode;
 }

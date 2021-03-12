@@ -23,8 +23,43 @@ public class UserSyncStatusServiceImpl implements UserSyncStatusService {
   public void updateUserSyncStatus(long banksaladUserId, String organizationId, String apiId, LocalDateTime syncedAt,
       Long searchTimestamp, boolean isAllResponseResultOk) {
 
+    UserSyncStatusEntity userSyncStatusEntity = getUserSyncStatus(banksaladUserId, organizationId, apiId, syncedAt,
+        isAllResponseResultOk);
+
+    if(userSyncStatusEntity != null) {
+      userSyncStatusEntity.setSearchTimestamp(searchTimestamp);
+      userSyncStatusRepository.save(userSyncStatusEntity);
+    }
+  }
+
+  @Transactional
+  @Override
+  public void updateUserSyncStatus(long banksaladUserId, String organizationId, String apiId, LocalDateTime syncedAt,
+      boolean isAllResponseResultOk) {
+
+    UserSyncStatusEntity userSyncStatusEntity = getUserSyncStatus(banksaladUserId, organizationId, apiId, syncedAt,
+        isAllResponseResultOk);
+
+    if(userSyncStatusEntity != null) {
+      userSyncStatusRepository.save(userSyncStatusEntity);
+    }
+  }
+
+  @Override
+  public long getSearchTimestamp(long banksaladUserId, String organizationId, String apiId) {
+
+    return userSyncStatusRepository.findByBanksaladUserIdAndOrganizationIdAndApiId(
+        banksaladUserId, organizationId, apiId
+    ).map(UserSyncStatusEntity::getSearchTimestamp).orElse(DEFAULT_SEARCH_TIMESTAMP);
+  }
+
+  private UserSyncStatusEntity getUserSyncStatus(long banksaladUserId, String organizationId, String apiId, LocalDateTime syncedAt,
+      boolean isAllResponseResultOk) {
+
+    UserSyncStatusEntity userSyncStatusEntity = null;
     if (isAllResponseResultOk) {
-      UserSyncStatusEntity userSyncStatusEntity = userSyncStatusRepository
+
+      userSyncStatusEntity = userSyncStatusRepository
           .findByBanksaladUserIdAndOrganizationIdAndApiId(
               banksaladUserId,
               organizationId,
@@ -38,16 +73,8 @@ public class UserSyncStatusServiceImpl implements UserSyncStatusService {
           );
 
       userSyncStatusEntity.setSyncedAt(syncedAt);
-      userSyncStatusEntity.setSearchTimestamp(searchTimestamp);
-      userSyncStatusRepository.save(userSyncStatusEntity);
     }
-  }
 
-  @Override
-  public long getSearchTimestamp(long banksaladUserId, String organizationId, String apiId) {
-
-    return userSyncStatusRepository.findByBanksaladUserIdAndOrganizationIdAndApiId(
-        banksaladUserId, organizationId, apiId
-    ).map(UserSyncStatusEntity::getSearchTimestamp).orElse(DEFAULT_SEARCH_TIMESTAMP);
+    return userSyncStatusEntity;
   }
 }

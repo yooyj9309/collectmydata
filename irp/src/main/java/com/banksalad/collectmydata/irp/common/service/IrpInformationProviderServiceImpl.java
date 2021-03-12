@@ -9,7 +9,11 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
+import com.banksalad.collectmydata.common.organization.Organization;
 import com.banksalad.collectmydata.irp.collect.Executions;
+import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasicRequest;
+import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasicResponse;
+import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummary;
 import com.banksalad.collectmydata.irp.common.dto.ListIrpAccountSummariesRequest;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummariesResponse;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +47,29 @@ public class IrpInformationProviderServiceImpl implements IrpInformationProvider
         .build();
 
     return execute(executionContext, Executions.irp_get_accounts, executionRequest);
+  }
+
+  @Override
+  public IrpAccountBasicResponse getAccountBasic(ExecutionContext executionContext, Organization organization,
+      IrpAccountSummary irpAccountSummary) {
+
+    // executionId 생성.
+    executionContext.generateAndsUpdateExecutionRequestId();
+
+    Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
+    IrpAccountBasicRequest irpAccountBasicRequest = IrpAccountBasicRequest.builder()
+        .orgCode(organization.getOrganizationCode())
+        .accountNum(irpAccountSummary.getAccountNum())
+        .seqno(irpAccountSummary.getSeqno())
+        .searchTimestamp(irpAccountSummary.getBasicSearchTimestamp())
+        .build();
+
+    ExecutionRequest<IrpAccountBasicRequest> executionRequest = ExecutionRequest.<IrpAccountBasicRequest>builder()
+        .headers(headers)
+        .request(irpAccountBasicRequest)
+        .build();
+
+    return execute(executionContext, Executions.irp_get_basic, executionRequest);
   }
 
   private <T, R> R execute(ExecutionContext executionContext, Execution execution,

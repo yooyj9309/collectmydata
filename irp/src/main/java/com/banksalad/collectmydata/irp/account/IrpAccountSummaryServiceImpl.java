@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.common.organization.Organization;
 import com.banksalad.collectmydata.irp.collect.Apis;
 import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountSummaryEntity;
@@ -105,6 +106,15 @@ public class IrpAccountSummaryServiceImpl implements IrpAccountSummaryService {
   @Transactional(propagation = Propagation.REQUIRED)
   public void updateBasicSearchTimestamp(long banksaladUserId, String organizationId, IrpAccountSummary accountSummary,
       long basicSearchTimestamp) {
+
+    IrpAccountSummaryEntity accountSummaryEntity = irpAccountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno())
+        .orElseThrow(() -> new CollectRuntimeException("No Irp Account Summary Data"));
+
+    accountSummaryEntity.setBasicSearchTimestamp(basicSearchTimestamp);
+
+    irpAccountSummaryRepository.save(accountSummaryEntity);
   }
 
   @Override
