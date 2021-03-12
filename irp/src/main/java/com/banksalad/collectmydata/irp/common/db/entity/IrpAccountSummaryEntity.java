@@ -58,9 +58,7 @@ public class IrpAccountSummaryEntity extends BaseTimeAndUserEntity {
 
   private LocalDate transactionSyncedAt;
 
-  @Column(nullable = false)
   private String basicSearchResponseCode;
 
-  @Column(nullable = false)
   private String detailSearchResponseCode;
 }

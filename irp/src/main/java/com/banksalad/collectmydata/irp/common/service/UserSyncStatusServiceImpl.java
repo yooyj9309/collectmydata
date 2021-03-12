@@ -1,8 +1,7 @@
-package com.banksalad.collectmydata.irp.service;
+package com.banksalad.collectmydata.irp.common.service;
 
 import org.springframework.stereotype.Service;
 
-import com.banksalad.collectmydata.common.collect.api.Api;
 import com.banksalad.collectmydata.irp.common.db.entity.UserSyncStatusEntity;
 import com.banksalad.collectmydata.irp.common.db.repository.UserSyncStatusRepository;
 import javax.transaction.Transactional;
@@ -45,10 +44,10 @@ public class UserSyncStatusServiceImpl implements UserSyncStatusService {
   }
 
   @Override
-  public long getSearchTimestamp(long banksaladUserId, String organizationId, Api api) {
+  public long getSearchTimestamp(long banksaladUserId, String organizationId, String apiId) {
 
     return userSyncStatusRepository.findByBanksaladUserIdAndOrganizationIdAndApiId(
-        banksaladUserId, organizationId, api.getId()
+        banksaladUserId, organizationId, apiId
     ).map(UserSyncStatusEntity::getSearchTimestamp).orElse(DEFAULT_SEARCH_TIMESTAMP);
   }
 }
