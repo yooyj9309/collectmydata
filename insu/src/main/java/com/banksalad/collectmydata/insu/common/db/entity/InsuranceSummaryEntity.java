@@ -54,9 +54,15 @@ public class InsuranceSummaryEntity extends BaseTimeAndUserEntity {
 
   private Long basicSearchTimestamp;
 
+  private String basicSearchResponseCode;
+
   private Long carSearchTimestamp;
 
+  private String carSearchResponseCode;
+
   private Long paymentSearchTimestamp;
+
+  private String paymentSearchResponseCode;
 
   private LocalDateTime transactionSyncedAt;
 

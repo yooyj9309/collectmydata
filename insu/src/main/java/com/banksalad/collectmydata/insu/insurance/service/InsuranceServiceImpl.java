@@ -162,11 +162,12 @@ public class InsuranceServiceImpl implements InsuranceService {
 
     long banksaladUserId = executionContext.getBanksaladUserId();
     String organizationId = executionContext.getOrganizationId();
+    String insuNum = insuranceSummary.getInsuNum();
 
     InsuranceBasicEntity entity = insuranceBasicRepository.findByBanksaladUserIdAndOrganizationIdAndInsuNum(
         banksaladUserId,
         organizationId,
-        insuranceSummary.getInsuNum()
+        insuNum
     ).orElse(InsuranceBasicEntity.builder().build());
 
     GetInsuranceBasicResponse entityDto = insuranceBasicMapper.entityToResponseDto(entity);
@@ -177,7 +178,7 @@ public class InsuranceServiceImpl implements InsuranceService {
       entity.setSyncedAt(executionContext.getSyncStartedAt());
       entity.setBanksaladUserId(banksaladUserId);
       entity.setOrganizationId(organizationId);
-      entity.setInsuNum(insuranceSummary.getInsuNum());
+      entity.setInsuNum(insuNum);
       // make history
       InsuranceBasicHistoryEntity historyEntity = insuranceBasicHistoryMapper.toHistoryEntity(entity);
 
@@ -189,7 +190,7 @@ public class InsuranceServiceImpl implements InsuranceService {
       if (insuranceBasicResponse.getInsuredList() != null) {
         for (Insured insured : insuranceBasicResponse.getInsuredList()) {
           InsuredEntity insuredEntity = insuredRepository.findByBanksaladUserIdAndOrganizationIdAndInsuNumAndInsuredNo(
-              banksaladUserId, organizationId, insuranceSummary.getInsuNum(), insured.getInsuredNo()
+              banksaladUserId, organizationId, insuNum, insured.getInsuredNo()
           ).orElse(InsuredEntity.builder().build());
 
           Insured insuredEntityDto = insuredMapper.entityToDto(insuredEntity);
@@ -199,7 +200,7 @@ public class InsuranceServiceImpl implements InsuranceService {
             insuredEntity.setSyncedAt(executionContext.getSyncStartedAt());
             insuredEntity.setBanksaladUserId(banksaladUserId);
             insuredEntity.setOrganizationId(organizationId);
-            insuredEntity.setInsuNum(insuranceSummary.getInsuNum());
+            insuredEntity.setInsuNum(insuNum);
 
             InsuredHistoryEntity insuredHistoryEntity = insuredHistoryMapper.toHistoryEntity(insuredEntity);
             insuredRepository.save(insuredEntity);
@@ -208,12 +209,12 @@ public class InsuranceServiceImpl implements InsuranceService {
         }
       }
 
-      insuranceSummary.setBasicSearchTimestamp(insuranceBasicResponse.getSearchTimestamp());
-      insuranceSummaryService.updateSearchTimestamp(banksaladUserId, organizationId, insuranceSummary);
+      insuranceSummaryService.updateBasicSearchTimestampAndResponseCode(banksaladUserId, organizationId, insuNum,
+          insuranceBasicResponse.getSearchTimestamp(), insuranceBasicResponse.getRspCode());
     }
 
     InsuranceBasic insuranceBasic = insuranceBasicMapper.responseDtoToDto(insuranceBasicResponse);
-    insuranceBasic.setInsuNum(insuranceSummary.getInsuNum());
+    insuranceBasic.setInsuNum(insuNum);
 
     return insuranceBasicMapper.responseDtoToDto(insuranceBasicResponse);
   }
@@ -236,7 +237,7 @@ public class InsuranceServiceImpl implements InsuranceService {
           insuranceBasic.getInsuNum(), insured.getInsuredNo(), searchTimestamp);
 
       List<InsuranceContract> insuranceContracts = insuranceContractResponse.getContractList();
-      
+
       List<InsuranceContract> existingInsuranceContracts = insuranceContractRepository
           .findAllByBanksaladUserIdAndOrganizationIdAndInsuNum(banksaladUserId, organizationId, insuNum)
           .stream()
@@ -280,6 +281,7 @@ public class InsuranceServiceImpl implements InsuranceService {
           ).orElseThrow(() -> new CollectRuntimeException("No data InsuredEntity"));
 
       insuredEntity.setContractSearchTimestamp(insuranceContractResponse.getSearchTimestamp());
+      insuredEntity.setContractSearchResponseCode(insuranceContractResponse.getRspCode());
       insuredRepository.save(insuredEntity);
     }
     return responseInsuranceContracts;

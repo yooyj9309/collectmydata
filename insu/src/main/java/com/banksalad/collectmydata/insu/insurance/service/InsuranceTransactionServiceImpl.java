@@ -131,9 +131,8 @@ public class InsuranceTransactionServiceImpl implements InsuranceTransactionServ
       // save
       insuranceTransactionRepository.save(transactionEntity);
 
-      // update timestamp
-      insuranceSummary.setTransactionSyncedAt(executionContext.getSyncStartedAt());
-      insuranceSummaryService.updateSearchTimestamp(banksaladUserId, organizationId, insuranceSummary);
+      insuranceSummaryService
+          .updateTransactionSyncedAt(banksaladUserId, organizationId, insuNum, executionContext.getSyncStartedAt());
     }
     return transactionApiResponse.getTransList();
   }

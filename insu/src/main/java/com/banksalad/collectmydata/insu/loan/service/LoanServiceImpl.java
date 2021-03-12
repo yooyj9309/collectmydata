@@ -167,8 +167,12 @@ public class LoanServiceImpl implements LoanService {
       loanBasicHistoryRepository.save(loanBasicHistoryMapper.toHistoryEntity(loanBasicEntity));
     }
 
-    loanSummaryService.updateBasicSearchTimestamp(
-        banksaladUserId, organizationId, accountNum, loanBasicResponse.getSearchTimestamp()
+    loanSummaryService.updateBasicSearchTimestampAndResponseCode(
+        banksaladUserId,
+        organizationId,
+        accountNum,
+        loanBasicResponse.getSearchTimestamp(),
+        loanBasicResponse.getRspCode()
     );
 
     // response에 추가시켜놓고 setter로 AccountNum를 추가하는게 더 나을지도..
@@ -203,8 +207,12 @@ public class LoanServiceImpl implements LoanService {
         loanDetailRepository.save(loanDetailEntity);
         loanDetailHistoryRepository.save(loanDetailHistoryMapper.toEntity(loanDetailEntity));
         // Update the loan_summary record
-        loanSummaryService.updateDetailSearchTimestamp(
-            banksaladUserId, organizationId, accountNum, getLoanDetailResponse.getSearchTimestamp()
+        loanSummaryService.updateDetailSearchTimestampAndResponseCode(
+            banksaladUserId,
+            organizationId,
+            accountNum,
+            getLoanDetailResponse.getSearchTimestamp(),
+            getLoanDetailResponse.getRspCode()
         );
       }
       return loanDetail;

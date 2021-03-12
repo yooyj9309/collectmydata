@@ -10,10 +10,11 @@ public interface LoanSummaryService {
 
   List<LoanSummary> listLoanSummaries(ExecutionContext executionContext, String organizationCode);
 
-  void updateBasicSearchTimestamp(long banksaladUserId, String organizationId, String accountNum, long searchTimestamp);
+  void updateBasicSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String accountNum,
+      long searchTimestamp, String rspCode);
 
-  void updateDetailSearchTimestamp(long banksaladUserId, String organizationId, String accountNum,
-      long searchTimestamp);
+  void updateDetailSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String accountNum,
+      long searchTimestamp, String rspCode);
 
   void updateTransactionSyncedAt(long banksaladUserId, String organizationId, String accountNum,
       LocalDateTime transactionSyncedAt);

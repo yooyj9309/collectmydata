@@ -54,7 +54,11 @@ public class LoanSummaryEntity extends BaseTimeAndUserEntity {
 
   private Long basicSearchTimestamp;
 
+  private String basicSearchResponseCode;
+
   private Long detailSearchTimestamp;
+
+  private String detailSearchResponseCode;
 
   private LocalDateTime transactionSyncedAt;
 }

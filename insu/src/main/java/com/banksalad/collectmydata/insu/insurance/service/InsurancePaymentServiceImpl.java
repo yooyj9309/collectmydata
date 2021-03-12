@@ -14,19 +14,17 @@ import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.insu.collect.Apis;
 import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.db.entity.InsurancePaymentEntity;
-import com.banksalad.collectmydata.insu.common.db.entity.InsuranceSummaryEntity;
 import com.banksalad.collectmydata.insu.common.db.mapper.InsurancePaymentHistoryMapper;
 import com.banksalad.collectmydata.insu.common.db.mapper.InsurancePaymentMapper;
 import com.banksalad.collectmydata.insu.common.db.repository.InsurancePaymentHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsurancePaymentRepository;
-import com.banksalad.collectmydata.insu.common.db.repository.InsuranceSummaryRepository;
 import com.banksalad.collectmydata.insu.common.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.common.service.ExecutionResponseValidateService;
+import com.banksalad.collectmydata.insu.common.service.InsuranceSummaryService;
 import com.banksalad.collectmydata.insu.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsurancePaymentRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsurancePaymentResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.InsurancePayment;
-import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
@@ -43,13 +41,13 @@ import static java.lang.Boolean.TRUE;
 @RequiredArgsConstructor
 public class InsurancePaymentServiceImpl implements InsurancePaymentService {
 
-  private final InsurancePaymentRepository insurancePaymentRepository;
-  private final InsurancePaymentHistoryRepository insurancePaymentHistoryRepository;
 
   private final CollectExecutor collectExecutor;
+  private final InsuranceSummaryService insuranceSummaryService;
   private final UserSyncStatusService userSyncStatusService;
   private final ExecutionResponseValidateService executionResponseValidateService;
-  private final InsuranceSummaryRepository insuranceSummaryRepository;
+  private final InsurancePaymentRepository insurancePaymentRepository;
+  private final InsurancePaymentHistoryRepository insurancePaymentHistoryRepository;
 
   private final InsurancePaymentMapper insurancePaymentMapper = Mappers.getMapper(InsurancePaymentMapper.class);
   private final InsurancePaymentHistoryMapper insurancePaymentHistoryMapper = Mappers
@@ -61,6 +59,8 @@ public class InsurancePaymentServiceImpl implements InsurancePaymentService {
   public List<InsurancePayment> listInsurancePayments(ExecutionContext executionContext, Organization organization,
       List<InsuranceSummary> insuranceSummaries) {
     List<InsurancePayment> insurancePayments = new ArrayList<>();
+    long banksaladUserId = executionContext.getBanksaladUserId();
+    String organizationId = executionContext.getOrganizationId();
 
     boolean isExceptionOccurred = FALSE;
     for (InsuranceSummary insuranceSummary : insuranceSummaries) {
@@ -72,7 +72,14 @@ public class InsurancePaymentServiceImpl implements InsurancePaymentService {
         InsurancePaymentEntity insurancePaymentEntity = saveInsurancePaymentWithHistory(executionContext,
             insuranceSummary, insurancePaymentResponse);
         insurancePayments.add(insurancePaymentMapper.toInsurancePaymentFrom(insurancePaymentEntity));
-        updateSearchTimestamp(executionContext, insuranceSummary, insurancePaymentResponse);
+
+        insuranceSummaryService.updatePaymentSearchTimestampAndResponseCode(
+            banksaladUserId,
+            organizationId,
+            insuranceSummary.getInsuNum(),
+            insurancePaymentResponse.getSearchTimestamp(),
+            insurancePaymentResponse.getRspCode()
+        );
       } catch (Exception e) {
         isExceptionOccurred = TRUE;
         log.error("Failed to save insurance payment", e);
@@ -80,8 +87,8 @@ public class InsurancePaymentServiceImpl implements InsurancePaymentService {
     }
 
     userSyncStatusService.updateUserSyncStatus(
-        executionContext.getBanksaladUserId(),
-        executionContext.getOrganizationId(),
+        banksaladUserId,
+        organizationId,
         Apis.insurance_get_payment.getId(),
         executionContext.getSyncStartedAt(),
         null,
@@ -117,19 +124,6 @@ public class InsurancePaymentServiceImpl implements InsurancePaymentService {
     }
 
     return insurancePaymentEntity;
-  }
-
-  private void updateSearchTimestamp(ExecutionContext executionContext, InsuranceSummary insuranceSummary,
-      GetInsurancePaymentResponse insurancePaymentResponse) {
-    InsuranceSummaryEntity insuranceSummaryEntity = insuranceSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndInsuNum(
-            executionContext.getBanksaladUserId(),
-            executionContext.getOrganizationId(),
-            insuranceSummary.getInsuNum())
-        .orElseThrow(EntityNotFoundException::new);
-
-    insuranceSummaryEntity.setPaymentSearchTimestamp(insurancePaymentResponse.getSearchTimestamp());
-    insuranceSummaryRepository.save(insuranceSummaryEntity);
   }
 
   private GetInsurancePaymentResponse getInsurancePaymentResponse(ExecutionContext executionContext,

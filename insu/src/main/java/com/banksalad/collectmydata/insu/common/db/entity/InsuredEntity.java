@@ -47,4 +47,6 @@ public class InsuredEntity extends BaseTimeAndUserEntity {
   private String insuredName;
 
   private Long contractSearchTimestamp;
+
+  private String contractSearchResponseCode;
 }

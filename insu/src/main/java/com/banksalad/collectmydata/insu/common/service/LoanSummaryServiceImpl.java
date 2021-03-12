@@ -91,20 +91,22 @@ public class LoanSummaryServiceImpl implements LoanSummaryService {
   }
 
   @Override
-  public void updateBasicSearchTimestamp(long banksaladUserId, String organizationId, String accountNum,
-      long searchTimestamp) {
+  public void updateBasicSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String accountNum,
+      long searchTimestamp, String rspCode) {
     LoanSummaryEntity entity = getLoanSummaryEntity(banksaladUserId, organizationId, accountNum);
 
     entity.setBasicSearchTimestamp(searchTimestamp);
+    entity.setBasicSearchResponseCode(rspCode);
     loanSummaryRepository.save(entity);
   }
 
   @Override
-  public void updateDetailSearchTimestamp(long banksaladUserId, String organizationId, String accountNum,
-      long searchTimestamp) {
+  public void updateDetailSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String accountNum,
+      long searchTimestamp, String rspCode) {
     LoanSummaryEntity entity = getLoanSummaryEntity(banksaladUserId, organizationId, accountNum);
 
     entity.setDetailSearchTimestamp(searchTimestamp);
+    entity.setDetailSearchResponseCode(rspCode);
     loanSummaryRepository.save(entity);
   }
 

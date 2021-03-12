@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -91,25 +92,47 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
   }
 
   @Override
-  public void updateSearchTimestamp(long banksaladUserId, String organizationId,
-      InsuranceSummary insuranceSummary) {
-    if (insuranceSummary == null) {
-      throw new CollectRuntimeException("Invalid insurance");
-    }
+  public void updateBasicSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String insuNum,
+      long basicSearchTimestamp, String rspCode) {
+    InsuranceSummaryEntity entity = getInsuranceSummaryEntity(banksaladUserId, organizationId, insuNum);
+    entity.setBasicSearchTimestamp(basicSearchTimestamp);
+    entity.setBasicSearchResponseCode(rspCode);
+    insuranceSummaryRepository.save(entity);
+  }
 
-    InsuranceSummaryEntity entity = insuranceSummaryRepository
+  @Override
+  public void updateCarSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String insuNum,
+      long carSearchTimestamp, String rspCode) {
+    InsuranceSummaryEntity entity = getInsuranceSummaryEntity(banksaladUserId, organizationId, insuNum);
+    entity.setCarSearchTimestamp(carSearchTimestamp);
+    entity.setCarSearchResponseCode(rspCode);
+    insuranceSummaryRepository.save(entity);
+  }
+
+  @Override
+  public void updatePaymentSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String insuNum,
+      long paymentSearchTimestamp, String rspCode) {
+    InsuranceSummaryEntity entity = getInsuranceSummaryEntity(banksaladUserId, organizationId, insuNum);
+    entity.setPaymentSearchTimestamp(paymentSearchTimestamp);
+    entity.setPaymentSearchResponseCode(rspCode);
+    insuranceSummaryRepository.save(entity);
+  }
+
+  @Override
+  public void updateTransactionSyncedAt(long banksaladUserId, String organizationId, String insuNum,
+      LocalDateTime syncedAt) {
+    InsuranceSummaryEntity entity = getInsuranceSummaryEntity(banksaladUserId, organizationId, insuNum);
+    entity.setTransactionSyncedAt(syncedAt);
+    insuranceSummaryRepository.save(entity);
+  }
+
+  public InsuranceSummaryEntity getInsuranceSummaryEntity(long banksaladUserId, String organizationId, String insuNum) {
+    return insuranceSummaryRepository
         .findByBanksaladUserIdAndOrganizationIdAndInsuNum(
             banksaladUserId,
             organizationId,
-            insuranceSummary.getInsuNum()
+            insuNum
         ).orElseThrow(() -> new CollectRuntimeException("No data AccountSummaryEntity"));
-
-    entity.setBasicSearchTimestamp(insuranceSummary.getBasicSearchTimestamp());
-    entity.setCarSearchTimestamp(insuranceSummary.getCarSearchTimestamp());
-    entity.setPaymentSearchTimestamp(insuranceSummary.getPaymentSearchTimestamp());
-    entity.setTransactionSyncedAt(insuranceSummary.getTransactionSyncedAt());
-    entity.setCarInsuranceTransactionSyncedAt(insuranceSummary.getCarInsuranceTransactionSyncedAt());
-    insuranceSummaryRepository.save(entity);
   }
 
   private ListInsuranceSummariesResponse listInsuranceSummariesResponse(ExecutionContext executionContext,
