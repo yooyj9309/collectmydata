@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -87,6 +88,41 @@ public class LoanSummaryServiceImpl implements LoanSummaryService {
         .collect(Collectors.toList());
 
     return responseLoanSummaries;
+  }
+
+  @Override
+  public void updateBasicSearchTimestamp(long banksaladUserId, String organizationId, String accountNum,
+      long searchTimestamp) {
+    LoanSummaryEntity entity = getLoanSummaryEntity(banksaladUserId, organizationId, accountNum);
+
+    entity.setBasicSearchTimestamp(searchTimestamp);
+    loanSummaryRepository.save(entity);
+  }
+
+  @Override
+  public void updateDetailSearchTimestamp(long banksaladUserId, String organizationId, String accountNum,
+      long searchTimestamp) {
+    LoanSummaryEntity entity = getLoanSummaryEntity(banksaladUserId, organizationId, accountNum);
+
+    entity.setDetailSearchTimestamp(searchTimestamp);
+    loanSummaryRepository.save(entity);
+  }
+
+  @Override
+  public void updateTransactionSyncedAt(long banksaladUserId, String organizationId, String accountNum,
+      LocalDateTime transactionSyncedAt) {
+    LoanSummaryEntity entity = getLoanSummaryEntity(banksaladUserId, organizationId, accountNum);
+
+    entity.setTransactionSyncedAt(transactionSyncedAt);
+    loanSummaryRepository.save(entity);
+  }
+
+  private LoanSummaryEntity getLoanSummaryEntity(long banksaladUserId, String organizationId, String accountNum) {
+    return loanSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndAccountNum(
+        banksaladUserId,
+        organizationId,
+        accountNum
+    ).orElseThrow(() -> new CollectRuntimeException("No data LoanSummaryEntity"));
   }
 
   private ListLoanSummariesResponse listLoanSummariesResponse(ExecutionContext executionContext,

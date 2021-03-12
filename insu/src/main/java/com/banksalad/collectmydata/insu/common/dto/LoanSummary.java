@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,4 +28,10 @@ public class LoanSummary {
   private String accountType;
 
   private String accountStatus;
+
+  private long basicSearchTimestamp;
+
+  private long detailSearchTimestamp;
+
+  private LocalDateTime transactionSyncedAt;
 }

@@ -12,7 +12,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -40,10 +39,10 @@ public class LoanBasicHistoryEntity extends BaseTimeAndUserEntity {
   private String accountNum;
 
   @Column(nullable = false)
-  private LocalDate loanStartDate;
+  private String loanStartDate;
 
   @Column(nullable = false)
-  private LocalDate loanEndDate;
+  private String loanExpDate;
 
   @Column(nullable = false)
   private String repayMethod;
