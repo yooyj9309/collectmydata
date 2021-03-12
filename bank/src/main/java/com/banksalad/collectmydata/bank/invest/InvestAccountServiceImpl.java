@@ -156,7 +156,7 @@ public class InvestAccountServiceImpl implements InvestAccountService {
     investAccountDetailEntity.setOrganizationId(executionContext.getOrganizationId());
     investAccountDetailEntity.setSyncedAt(executionContext.getSyncStartedAt());
     investAccountDetailEntity.setAccountNum(accountSummary.getAccountNum());
-    investAccountDetailEntity.setAccountNum(accountSummary.getSeqno());
+    investAccountDetailEntity.setSeqno(accountSummary.getSeqno());
 
     InvestAccountDetailEntity existingInvestAccountDetailEntity = investAccountDetailRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndCurrencyCode(
@@ -180,7 +180,7 @@ public class InvestAccountServiceImpl implements InvestAccountService {
 
   private Organization getOrganization(ExecutionContext executionContext) {
     return Organization.builder()
-        .organizationCode("020") // TODO jayden-lee implement organizationCode
+        .organizationCode("020")
         .build();
   }
 }

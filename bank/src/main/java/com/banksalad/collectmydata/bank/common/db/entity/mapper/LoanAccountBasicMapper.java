@@ -29,5 +29,5 @@ public interface LoanAccountBasicMapper {
           @Mapping(target = "lastOfferedRate", qualifiedByName = "BigDecimalScale3"),
       }
   )
-  LoanAccountBasicEntity dtoToEntity(LoanAccountBasic investAccountBasic);
+  LoanAccountBasicEntity dtoToEntity(LoanAccountBasic loanAccountBasic);
 }

@@ -3,15 +3,21 @@ package com.banksalad.collectmydata.bank.loan;
 import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.bank.common.db.entity.LoanAccountBasicEntity;
+import com.banksalad.collectmydata.bank.common.db.entity.LoanAccountDetailEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.mapper.LoanAccountBasicHistoryMapper;
 import com.banksalad.collectmydata.bank.common.db.entity.mapper.LoanAccountBasicMapper;
+import com.banksalad.collectmydata.bank.common.db.entity.mapper.LoanAccountDetailHistoryMapper;
+import com.banksalad.collectmydata.bank.common.db.entity.mapper.LoanAccountDetailMapper;
 import com.banksalad.collectmydata.bank.common.db.repository.LoanAccountBasicHistoryRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.LoanAccountBasicRepository;
+import com.banksalad.collectmydata.bank.common.db.repository.LoanAccountDetailHistoryRepository;
+import com.banksalad.collectmydata.bank.common.db.repository.LoanAccountDetailRepository;
 import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.bank.common.service.ExternalApiService;
 import com.banksalad.collectmydata.bank.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountBasicResponse;
+import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountDetailResponse;
 import com.banksalad.collectmydata.bank.loan.dto.LoanAccountBasic;
 import com.banksalad.collectmydata.bank.loan.dto.LoanAccountDetail;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
@@ -36,10 +42,16 @@ public class LoanAccountServiceImpl implements LoanAccountService {
 
   private final LoanAccountBasicRepository loanAccountBasicRepository;
   private final LoanAccountBasicHistoryRepository loanAccountBasicHistoryRepository;
+  private final LoanAccountDetailRepository loanAccountDetailRepository;
+  private final LoanAccountDetailHistoryRepository loanAccountDetailHistoryRepository;
 
   private final LoanAccountBasicMapper loanAccountBasicMapper = Mappers.getMapper(LoanAccountBasicMapper.class);
   private final LoanAccountBasicHistoryMapper loanAccountBasicHistoryMapper = Mappers
       .getMapper(LoanAccountBasicHistoryMapper.class);
+
+  private final LoanAccountDetailMapper loanAccountDetailMapper = Mappers.getMapper(LoanAccountDetailMapper.class);
+  private final LoanAccountDetailHistoryMapper loanAccountDetailHistoryMapper = Mappers
+      .getMapper(LoanAccountDetailHistoryMapper.class);
 
   @Override
   public List<LoanAccountBasic> listLoanAccountBasics(ExecutionContext executionContext,
@@ -99,7 +111,57 @@ public class LoanAccountServiceImpl implements LoanAccountService {
   @Override
   public List<LoanAccountDetail> listLoanAccountDetails(ExecutionContext executionContext,
       List<AccountSummary> accountSummaries) {
-    return null;
+    Organization organization = getOrganization(executionContext);
+    List<LoanAccountDetail> loanAccountDetails = new ArrayList<>();
+
+    for (AccountSummary accountSummary : accountSummaries) {
+      GetLoanAccountDetailResponse loanAccountDetailResponse = externalApiService.getLoanAccountDetail(
+          executionContext,
+          accountSummary,
+          organization,
+          accountSummary.getDetailSearchTimestamp());
+
+      LoanAccountDetail loanAccountDetail = loanAccountDetailResponse.getLoanAccountDetail();
+
+      try {
+        saveLoanAccountDetail(executionContext, accountSummary, loanAccountDetail);
+        loanAccountDetails.add(loanAccountDetail);
+        accountSummaryService.updateDetailSearchTimestamp(executionContext.getBanksaladUserId(),
+            executionContext.getOrganizationId(), accountSummary, loanAccountDetail.getSearchTimestamp());
+      } catch (Exception e) {
+        log.error("Failed to save loan account detail", e);
+      }
+    }
+
+    return loanAccountDetails;
+  }
+
+  private void saveLoanAccountDetail(ExecutionContext executionContext, AccountSummary accountSummary,
+      LoanAccountDetail loanAccountDetail) {
+    LoanAccountDetailEntity loanAccountDetailEntity = loanAccountDetailMapper.dtoToEntity(loanAccountDetail);
+    loanAccountDetailEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
+    loanAccountDetailEntity.setOrganizationId(executionContext.getOrganizationId());
+    loanAccountDetailEntity.setSyncedAt(executionContext.getSyncStartedAt());
+    loanAccountDetailEntity.setAccountNum(accountSummary.getAccountNum());
+    loanAccountDetailEntity.setSeqno(accountSummary.getSeqno());
+
+    LoanAccountDetailEntity existingLoanAccountDetailEntity = loanAccountDetailRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            executionContext.getBanksaladUserId(),
+            executionContext.getOrganizationId(),
+            accountSummary.getAccountNum(),
+            accountSummary.getSeqno())
+        .orElse(LoanAccountDetailEntity.builder().build());
+
+    if (existingLoanAccountDetailEntity != null) {
+      loanAccountDetailEntity.setId(existingLoanAccountDetailEntity.getId());
+    }
+
+    if (!ObjectComparator.isSame(loanAccountDetailEntity, existingLoanAccountDetailEntity, EXCLUDE_FIELDS)) {
+      loanAccountDetailRepository.save(loanAccountDetailEntity);
+      loanAccountDetailHistoryRepository
+          .save(loanAccountDetailHistoryMapper.toLoanAccountDetailHistoryEntity(loanAccountDetailEntity));
+    }
   }
 
   private Organization getOrganization(ExecutionContext executionContext) {

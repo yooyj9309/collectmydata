@@ -118,10 +118,15 @@ public class BankApiServiceImpl implements BankApiService {
                 .setInvestAccountTransactions(investAccountTransactions)),
 
         CompletableFuture.supplyAsync(
-            () -> loanAccountService.listLoanAccountBasics(executionContext, investAccountSummaries))
+            () -> loanAccountService.listLoanAccountBasics(executionContext, loanAccountSummaries))
             .thenAccept(loanAccountBasics -> bankApiResponseAtomicReference.get()
-                .setLoanAccountBasics(loanAccountBasics))
-        ).join();
+                .setLoanAccountBasics(loanAccountBasics)),
+
+        CompletableFuture.supplyAsync(
+            () -> loanAccountService.listLoanAccountDetails(executionContext, loanAccountSummaries))
+            .thenAccept(loanAccountDetails -> bankApiResponseAtomicReference.get()
+                .setLoanAccountDetails(loanAccountDetails))
+    ).join();
 
     return bankApiResponseAtomicReference.get();
   }

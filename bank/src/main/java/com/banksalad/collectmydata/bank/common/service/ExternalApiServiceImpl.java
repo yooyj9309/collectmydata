@@ -21,6 +21,7 @@ import com.banksalad.collectmydata.bank.invest.dto.ListInvestAccountTransactions
 import com.banksalad.collectmydata.bank.invest.dto.ListInvestAccountTransactionsResponse;
 import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountBasicRequest;
 import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountBasicResponse;
+import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountDetailRequest;
 import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountDetailResponse;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
@@ -360,6 +361,27 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   @Override
   public GetLoanAccountDetailResponse getLoanAccountDetail(ExecutionContext executionContext,
       AccountSummary accountSummary, Organization organization, long searchTimestamp) {
-    return null;
+    executionContext.generateAndsUpdateExecutionRequestId();
+
+    ExecutionRequest<GetLoanAccountDetailRequest> request = ExecutionRequest.<GetLoanAccountDetailRequest>builder()
+        .headers(Map.of(AUTHORIZATION, executionContext.getAccessToken()))
+        .request(
+            GetLoanAccountDetailRequest.builder()
+                .accountNum(accountSummary.getAccountNum())
+                .orgCode(organization.getOrganizationCode())
+                .seqno(accountSummary.getSeqno())
+                .searchTimestamp(searchTimestamp)
+                .build())
+        .build();
+
+    ExecutionResponse<GetLoanAccountDetailResponse> loanAccountDetailResponseExecutionResponse = collectExecutor
+        .execute(executionContext, Executions.finance_bank_loan_account_detail, request);
+
+    if (loanAccountDetailResponseExecutionResponse.getResponse() == null
+        || loanAccountDetailResponseExecutionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
+      throw new RuntimeException("Loan account detail Status is not OK");
+    }
+
+    return loanAccountDetailResponseExecutionResponse.getResponse();
   }
 }

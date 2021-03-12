@@ -107,7 +107,7 @@ class InvestAccountServiceImplTest {
 
   @Test
   @DisplayName("투자계좌 추가정보 조회")
-  public void step_02_listDepositAccountDetails_success() throws Exception {
+  public void step_02_listInvestAccountDetails_success() throws Exception {
     /* invest account detail mock server */
     setupServerInvestAccountDetail();
 
