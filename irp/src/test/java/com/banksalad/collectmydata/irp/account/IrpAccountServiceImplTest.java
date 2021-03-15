@@ -13,6 +13,7 @@ import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountSummaryEntity;
 import com.banksalad.collectmydata.irp.common.db.entity.mapper.IrpAccountSummaryMapper;
 import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountSummaryRepository;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasicResponse;
+import com.banksalad.collectmydata.irp.common.dto.IrpAccountDetail;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummary;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import lombok.extern.slf4j.Slf4j;
@@ -99,10 +100,43 @@ class IrpAccountServiceImplTest {
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
 
-    List<IrpAccountBasicResponse> depositAccountBasics = irpAccountService
+    List<IrpAccountBasicResponse> irpAccountBasics = irpAccountService
         .getIrpAccountBasics(executionContext, irpAccountSummaries);
 
-    assertThat(depositAccountBasics.size()).isEqualTo(1);
+    assertThat(irpAccountBasics.size()).isEqualTo(1);
+  }
+
+  @Test
+  @DisplayName("IRP계좌 추가정보 조회")
+  public void listIrpAccountDetails() {
+
+    /* irp account detail mock server */
+    setupServerIrpAccountDetailMultiPage();
+
+    /* save mock account summaries */
+    List<IrpAccountSummaryEntity> irpAccountSummaryEntities = getIrpAccountSummaryEntities();
+    irpAccountSummaryRepository.saveAll(irpAccountSummaryEntities);
+
+    List<IrpAccountSummary> irpAccountSummaries = irpAccountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndIsConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true)
+        .stream()
+        .map(irpAccountSummaryMapper::entityToDto)
+        .collect(Collectors.toList());
+
+    /* execution context */
+    ExecutionContext executionContext = ExecutionContext.builder()
+        .banksaladUserId(BANKSALAD_USER_ID)
+        .organizationId(ORGANIZATION_ID)
+        .accessToken("test")
+        .organizationHost(ORGANIZATION_HOST + ":" + wiremock.port())
+        .executionRequestId(UUID.randomUUID().toString())
+        .syncStartedAt(LocalDateTime.now(DateUtil.KST_ZONE_ID))
+        .build();
+
+    List<IrpAccountDetail> irpAccountDetails = irpAccountService
+        .listIrpAccountDetails(executionContext, irpAccountSummaries);
+
+    Assertions.assertThat(irpAccountDetails.size()).isEqualTo(4);
   }
 
   private void setupServerIrpAccountBasic() {
@@ -114,6 +148,29 @@ class IrpAccountServiceImplTest {
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/irp/response/IR02_001_single_page_00.json"))));
+  }
+
+  private void setupServerIrpAccountDetailMultiPage() {
+
+    // 추가정보조회 page 01
+    wiremock.stubFor(post(urlMatching("/irps/detail"))
+        .withRequestBody(equalToJson(readText("classpath:mock/irp/request/IR03_001_multi_page_00.json")))
+        .willReturn(
+            aResponse()
+                .withFixedDelay(1000)
+                .withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+                .withBody(readText("classpath:mock/irp/response/IR03_001_multi_page_00.json"))));
+
+    // 추가정보조회 page 02
+    wiremock.stubFor(post(urlMatching("/irps/detail"))
+        .withRequestBody(equalToJson(readText("classpath:mock/irp/request/IR03_001_multi_page_01.json")))
+        .willReturn(
+            aResponse()
+                .withFixedDelay(1000)
+                .withStatus(HttpStatus.OK.value())
+                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+                .withBody(readText("classpath:mock/irp/response/IR03_001_multi_page_01.json"))));
   }
 
   private List<IrpAccountSummaryEntity> getIrpAccountSummaryEntities() {

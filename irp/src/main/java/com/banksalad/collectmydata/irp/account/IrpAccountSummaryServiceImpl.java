@@ -1,7 +1,6 @@
 package com.banksalad.collectmydata.irp.account;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
@@ -103,23 +102,32 @@ public class IrpAccountSummaryServiceImpl implements IrpAccountSummaryService {
   }
 
   @Override
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional
   public void updateBasicSearchTimestamp(long banksaladUserId, String organizationId, IrpAccountSummary accountSummary,
       long basicSearchTimestamp) {
 
-    IrpAccountSummaryEntity accountSummaryEntity = irpAccountSummaryRepository
+    IrpAccountSummaryEntity irpAccountSummaryEntity = irpAccountSummaryRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
             banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno())
         .orElseThrow(() -> new CollectRuntimeException("No Irp Account Summary Data"));
 
-    accountSummaryEntity.setBasicSearchTimestamp(basicSearchTimestamp);
+    irpAccountSummaryEntity.setBasicSearchTimestamp(basicSearchTimestamp);
 
-    irpAccountSummaryRepository.save(accountSummaryEntity);
+    irpAccountSummaryRepository.save(irpAccountSummaryEntity);
   }
 
   @Override
-  @Transactional(propagation = Propagation.REQUIRED)
+  @Transactional
   public void updateDetailSearchTimestamp(long banksaladUserId, String organizationId, IrpAccountSummary irpAccountSummary,
       long detailSearchTimestamp) {
+
+    IrpAccountSummaryEntity irpAccountSummaryEntity = irpAccountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            banksaladUserId, organizationId, irpAccountSummary.getAccountNum(), irpAccountSummary.getSeqno())
+        .orElseThrow(() -> new CollectRuntimeException("No Irp Account Summary Data"));
+
+    irpAccountSummaryEntity.setDetailSearchTimestamp(detailSearchTimestamp);
+
+    irpAccountSummaryRepository.save(irpAccountSummaryEntity);
   }
 }

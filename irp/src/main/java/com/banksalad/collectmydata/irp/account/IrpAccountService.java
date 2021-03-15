@@ -10,9 +10,8 @@ import java.util.List;
 public interface IrpAccountService {
 
   List<IrpAccountBasicResponse> getIrpAccountBasics(ExecutionContext executionContext,
-      List<IrpAccountSummary> accountSummaries);
+      List<IrpAccountSummary> irpAccountSummaries);
 
   List<IrpAccountDetail> listIrpAccountDetails(ExecutionContext executionContext,
-      List<IrpAccountSummary> accountSummaries);
-
+      List<IrpAccountSummary> irpAccountSummaries);
 }

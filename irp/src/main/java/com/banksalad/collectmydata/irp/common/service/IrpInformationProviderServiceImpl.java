@@ -13,6 +13,8 @@ import com.banksalad.collectmydata.common.organization.Organization;
 import com.banksalad.collectmydata.irp.collect.Executions;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasicRequest;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasicResponse;
+import com.banksalad.collectmydata.irp.common.dto.IrpAccountDetailRequest;
+import com.banksalad.collectmydata.irp.common.dto.IrpAccountDetailsResponse;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummary;
 import com.banksalad.collectmydata.irp.common.dto.ListIrpAccountSummariesRequest;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummariesResponse;
@@ -27,6 +29,7 @@ import java.util.Map;
 public class IrpInformationProviderServiceImpl implements IrpInformationProviderService {
 
   private static final String AUTHORIZATION = "Authorization";
+  private static final int PAGING_MAXIMUM_LIMIT = 500;
   private final CollectExecutor collectExecutor;
 
   @Override
@@ -70,6 +73,61 @@ public class IrpInformationProviderServiceImpl implements IrpInformationProvider
         .build();
 
     return execute(executionContext, Executions.irp_get_basic, executionRequest);
+  }
+
+  @Override
+  public IrpAccountDetailsResponse getAccountDetails(ExecutionContext executionContext, Organization organization,
+      IrpAccountSummary irpAccountSummary) {
+
+    executionContext.generateAndsUpdateExecutionRequestId();
+
+    // paging
+    ExecutionRequest<IrpAccountDetailRequest> pagingExecutionRequest = ExecutionRequest.<IrpAccountDetailRequest>builder()
+        .headers(Map.of(AUTHORIZATION, executionContext.getAccessToken()))
+        .request(
+            IrpAccountDetailRequest.builder()
+                .orgCode(organization.getOrganizationCode())
+                .accountNum(irpAccountSummary.getAccountNum())
+                .seqno(irpAccountSummary.getSeqno())
+                .searchTimestamp(irpAccountSummary.getDetailSearchTimestamp())
+                .limit(PAGING_MAXIMUM_LIMIT)
+                .build())
+        .build();
+
+    IrpAccountDetailsResponse irpAccountDetailsResponse = IrpAccountDetailsResponse.builder()
+        .build();
+
+    do {
+      ExecutionResponse<IrpAccountDetailsResponse> pagingExecutionResponse = collectExecutor
+          .execute(executionContext, Executions.irp_get_detail, pagingExecutionRequest);
+
+      if (pagingExecutionResponse == null || pagingExecutionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
+        throw new RuntimeException("List account details status is not OK");
+      }
+
+      IrpAccountDetailsResponse pagingIrpAccountDetailsResponse = pagingExecutionResponse.getResponse();
+
+      if (pagingIrpAccountDetailsResponse.getIrpCnt() != pagingIrpAccountDetailsResponse
+          .getIrpAccountDetails().size()) {
+        log.error("irp accounts size not equal. cnt: {}, size: {}", pagingIrpAccountDetailsResponse.getIrpCnt(),
+            pagingIrpAccountDetailsResponse.getIrpAccountDetails().size());
+      }
+
+      irpAccountDetailsResponse.setRspCode(pagingIrpAccountDetailsResponse.getRspCode());
+      irpAccountDetailsResponse.setRspMsg(pagingIrpAccountDetailsResponse.getRspMsg());
+      irpAccountDetailsResponse.setSearchTimestamp(pagingIrpAccountDetailsResponse.getSearchTimestamp());
+      irpAccountDetailsResponse.setNextPage(pagingIrpAccountDetailsResponse.getNextPage());
+      irpAccountDetailsResponse
+          .setIrpCnt(
+              irpAccountDetailsResponse.getIrpCnt() + pagingIrpAccountDetailsResponse.getIrpCnt());
+      irpAccountDetailsResponse.getIrpAccountDetails()
+          .addAll(pagingIrpAccountDetailsResponse.getIrpAccountDetails());
+
+      pagingExecutionRequest.getRequest().setNextPage(pagingIrpAccountDetailsResponse.getNextPage());
+
+    } while (pagingExecutionRequest.getRequest().getNextPage() != null);
+
+    return irpAccountDetailsResponse;
   }
 
   private <T, R> R execute(ExecutionContext executionContext, Execution execution,
