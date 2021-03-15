@@ -11,8 +11,8 @@ import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
-import com.banksalad.collectmydata.bank.loan.dto.LoanAccountDetail;
 import com.banksalad.collectmydata.bank.loan.dto.LoanAccountBasic;
+import com.banksalad.collectmydata.bank.loan.dto.LoanAccountDetail;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -83,7 +83,7 @@ class LoanAccountServiceImplTest {
     accountSummaryRepository.saveAll(accountSummaryEntities);
 
     List<AccountSummary> accountSummaries = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndIsConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true)
+        .findByBanksaladUserIdAndOrganizationIdAndConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true)
         .stream()
         .map(accountSummaryMapper::entityToDto)
         .collect(Collectors.toList());
@@ -115,7 +115,7 @@ class LoanAccountServiceImplTest {
     accountSummaryRepository.saveAll(accountSummaryEntities);
 
     List<AccountSummary> accountSummaries = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndIsConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true)
+        .findByBanksaladUserIdAndOrganizationIdAndConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true)
         .stream()
         .map(accountSummaryMapper::entityToDto)
         .collect(Collectors.toList());
@@ -168,8 +168,8 @@ class LoanAccountServiceImplTest {
             .basicSearchTimestamp(0L)
             .detailSearchTimestamp(0L)
             .transactionSyncedAt(null)
-            .isForeignDeposit(false)
-            .isConsent(true)
+            .foreignDeposit(false)
+            .consent(true)
             .prodName("자유입출식 계좌")
             .seqno("1")
             .build(),
@@ -183,8 +183,8 @@ class LoanAccountServiceImplTest {
             .basicSearchTimestamp(0L)
             .detailSearchTimestamp(0L)
             .transactionSyncedAt(null)
-            .isForeignDeposit(false)
-            .isConsent(false)
+            .foreignDeposit(false)
+            .consent(false)
             .prodName("자유입출식 계좌")
             .build()
     );

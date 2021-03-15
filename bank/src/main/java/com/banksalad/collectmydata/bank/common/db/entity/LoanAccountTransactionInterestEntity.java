@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -48,14 +47,14 @@ public class LoanAccountTransactionInterestEntity extends BaseTimeAndUserEntity 
   @Column(nullable = false)
   private String uniqueTransNo;
 
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "tinyint")
   private Integer intNo;
 
   @Column(nullable = false)
-  private LocalDate intStartDate;
+  private String intStartDate;
 
   @Column(nullable = false)
-  private LocalDate intEndDate;
+  private String intEndDate;
 
   @Column(nullable = false, precision = 5, scale = 3)
   private BigDecimal intRate;

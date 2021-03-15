@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -48,9 +47,9 @@ public class LoanAccountBasicHistoryEntity extends BaseTimeAndUserEntity {
   private String holderName;
 
   @Column(nullable = false)
-  private LocalDate issueDate;
+  private String issueDate;
 
-  private LocalDate expDate;
+  private String expDate;
 
   @Column(nullable = false, precision = 5, scale = 3)
   private BigDecimal lastOfferedRate;
@@ -64,5 +63,4 @@ public class LoanAccountBasicHistoryEntity extends BaseTimeAndUserEntity {
 
   @Column(name = "repay_account_num_encrypted")
   private String repayAccountNum;
-
 }

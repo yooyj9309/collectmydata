@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -53,9 +52,9 @@ public class DepositAccountBasicHistoryEntity extends BaseTimeAndUserEntity {
   private String holderName;
 
   @Column(nullable = false)
-  private LocalDate issueDate;
+  private String issueDate;
 
-  private LocalDate expDate;
+  private String expDate;
 
   private BigDecimal commitAmt;
 

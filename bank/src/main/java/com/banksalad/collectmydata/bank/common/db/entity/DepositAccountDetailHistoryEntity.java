@@ -54,5 +54,6 @@ public class DepositAccountDetailHistoryEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false, precision = 7, scale = 5)
   private BigDecimal offeredRate;
 
+  @Column(columnDefinition = "smallint")
   private Integer lastPaidInCnt;
 }

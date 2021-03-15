@@ -79,7 +79,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
 
     for (AccountSummary accountSummary : accountSummaryList) {
       AccountSummaryEntity accountSummaryEntity = accountSummaryRepository
-          .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndIsForeignDeposit(
+          .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndForeignDeposit(
               executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
               accountSummary.getAccountNum(),
               accountSummary.getSeqno(), accountSummary.isForeignDeposit());
@@ -103,7 +103,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
 
   private List<AccountSummary> getRequiringConsentAccountSummaries(ExecutionContext executionContext) {
     List<AccountSummaryEntity> accountListEntities = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndIsConsent(executionContext.getBanksaladUserId(),
+        .findByBanksaladUserIdAndOrganizationIdAndConsent(executionContext.getBanksaladUserId(),
             executionContext.getOrganizationId(), true);
 
     return accountListEntities.stream()
@@ -117,7 +117,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
       long basicSearchTimestamp) {
 
     AccountSummaryEntity accountSummaryEntity = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndIsForeignDeposit(
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndForeignDeposit(
             banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno(),
             accountSummary.isForeignDeposit());
 
@@ -132,7 +132,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
       long detailSearchTimestamp) {
 
     AccountSummaryEntity accountSummaryEntity = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndIsForeignDeposit(
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndForeignDeposit(
             banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno(),
             accountSummary.isForeignDeposit());
 
@@ -147,7 +147,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
       LocalDateTime transactionSyncedAt) {
 
     AccountSummaryEntity accountSummaryEntity = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndIsForeignDeposit(
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndForeignDeposit(
             banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno(),
             accountSummary.isForeignDeposit());
 

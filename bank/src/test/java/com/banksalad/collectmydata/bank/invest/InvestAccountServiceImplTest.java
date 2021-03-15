@@ -84,7 +84,7 @@ class InvestAccountServiceImplTest {
     accountSummaryRepository.saveAll(accountSummaryEntities);
 
     List<AccountSummary> accountSummaries = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndIsConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true)
+        .findByBanksaladUserIdAndOrganizationIdAndConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true)
         .stream()
         .map(accountSummaryMapper::entityToDto)
         .collect(Collectors.toList());
@@ -116,7 +116,7 @@ class InvestAccountServiceImplTest {
     accountSummaryRepository.saveAll(accountSummaryEntities);
 
     List<AccountSummary> accountSummaries = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndIsConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true)
+        .findByBanksaladUserIdAndOrganizationIdAndConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true)
         .stream()
         .map(accountSummaryMapper::entityToDto)
         .collect(Collectors.toList());
@@ -142,7 +142,6 @@ class InvestAccountServiceImplTest {
         .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA05_001_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA05_001_single_page_00.json"))));
@@ -153,7 +152,6 @@ class InvestAccountServiceImplTest {
         .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA06_001_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA06_001_single_page_00.json"))));
@@ -171,8 +169,8 @@ class InvestAccountServiceImplTest {
             .basicSearchTimestamp(0L)
             .detailSearchTimestamp(0L)
             .transactionSyncedAt(null)
-            .isForeignDeposit(false)
-            .isConsent(true)
+            .foreignDeposit(false)
+            .consent(true)
             .prodName("자유입출식 계좌")
             .seqno("1")
             .build(),
@@ -186,8 +184,8 @@ class InvestAccountServiceImplTest {
             .basicSearchTimestamp(0L)
             .detailSearchTimestamp(0L)
             .transactionSyncedAt(null)
-            .isForeignDeposit(false)
-            .isConsent(false)
+            .foreignDeposit(false)
+            .consent(false)
             .prodName("자유입출식 계좌")
             .build()
     );

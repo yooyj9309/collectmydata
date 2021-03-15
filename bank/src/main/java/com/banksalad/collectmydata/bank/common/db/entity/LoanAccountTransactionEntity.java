@@ -52,7 +52,7 @@ public class LoanAccountTransactionEntity extends BaseTimeAndUserEntity {
   private String uniqueTransNo;
 
   @Column(nullable = false)
-  private LocalDateTime transDtime;
+  private String transDtime;
 
   @Column(nullable = false)
   private String transNo;

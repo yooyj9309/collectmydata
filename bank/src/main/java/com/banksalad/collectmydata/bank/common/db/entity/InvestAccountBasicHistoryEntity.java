@@ -13,7 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -50,8 +49,7 @@ public class InvestAccountBasicHistoryEntity extends BaseTimeAndUserEntity {
   private String paidInType;
 
   @Column(nullable = false)
-  private LocalDate issueDate;
+  private String issueDate;
 
-  private LocalDate expDate;
-
+  private String expDate;
 }

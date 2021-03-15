@@ -88,7 +88,7 @@ public class InvestAccountTransactionServiceImplTest {
     accountSummaryRepository.saveAll(getAccountSummaryEntities());
 
     List<AccountSummary> accountSummaries = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndIsConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true)
+        .findByBanksaladUserIdAndOrganizationIdAndConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true)
         .stream()
         .map(accountSummaryMapper::entityToDto)
         .collect(Collectors.toList());
@@ -117,13 +117,13 @@ public class InvestAccountTransactionServiceImplTest {
 
     /* assertions transactionSyncedAt */
     AccountSummaryEntity successAccountSummaryEntity = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndIsForeignDeposit(BANKSALAD_USER_ID,
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndForeignDeposit(BANKSALAD_USER_ID,
             ORGANIZATION_ID, "1234567890", "a123", false);
 
     Assertions.assertThat(successAccountSummaryEntity.getTransactionSyncedAt()).isEqualTo(currentSyncStartedAt);
 
     AccountSummaryEntity failAccountSummaryEntity = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndIsForeignDeposit(BANKSALAD_USER_ID,
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndForeignDeposit(BANKSALAD_USER_ID,
             ORGANIZATION_ID, "414312341242", "ba123", false);
 
     Assertions.assertThat(failAccountSummaryEntity.getTransactionSyncedAt()).isEqualTo(TRANSACTION_SYNCED_AT);
@@ -137,7 +137,6 @@ public class InvestAccountTransactionServiceImplTest {
         .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA07_001_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA07_001_single_page_00.json"))));
@@ -147,7 +146,6 @@ public class InvestAccountTransactionServiceImplTest {
         .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA07_001_single_page_01.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA07_001_single_page_01.json"))));
@@ -157,7 +155,6 @@ public class InvestAccountTransactionServiceImplTest {
         .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA07_001_single_page_02.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA07_001_single_page_01.json"))));
@@ -167,7 +164,6 @@ public class InvestAccountTransactionServiceImplTest {
         .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA07_001_single_page_03.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA07_001_single_page_01.json"))));
@@ -177,7 +173,6 @@ public class InvestAccountTransactionServiceImplTest {
         .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA07_002_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA07_002_single_page_00.json"))));
@@ -195,8 +190,8 @@ public class InvestAccountTransactionServiceImplTest {
             .basicSearchTimestamp(0L)
             .detailSearchTimestamp(0L)
             .transactionSyncedAt(LocalDateTime.of(2020, 03, 27, 0, 0, 0))
-            .isForeignDeposit(false)
-            .isConsent(true)
+            .foreignDeposit(false)
+            .consent(true)
             .prodName("자유입출식 계좌")
             .seqno("a123")
             .build(),
@@ -210,8 +205,8 @@ public class InvestAccountTransactionServiceImplTest {
             .basicSearchTimestamp(0L)
             .detailSearchTimestamp(0L)
             .transactionSyncedAt(TRANSACTION_SYNCED_AT)
-            .isForeignDeposit(false)
-            .isConsent(true)
+            .foreignDeposit(false)
+            .consent(true)
             .prodName("자유입출식 계좌")
             .seqno("ba123")
             .build(),
@@ -225,8 +220,8 @@ public class InvestAccountTransactionServiceImplTest {
             .basicSearchTimestamp(0L)
             .detailSearchTimestamp(0L)
             .transactionSyncedAt(TRANSACTION_SYNCED_AT)
-            .isForeignDeposit(false)
-            .isConsent(false)
+            .foreignDeposit(false)
+            .consent(false)
             .prodName("자유입출식 계좌")
             .build()
     );

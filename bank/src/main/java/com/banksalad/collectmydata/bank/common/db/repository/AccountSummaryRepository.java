@@ -8,10 +8,10 @@ import java.util.List;
 
 public interface AccountSummaryRepository extends JpaRepository<AccountSummaryEntity, Long> {
 
-  AccountSummaryEntity findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndIsForeignDeposit(
-      long banksaladUserId, String organizationId, String accountNum, String seqno, boolean isForeignDeposit);
+  AccountSummaryEntity findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndForeignDeposit(
+      long banksaladUserId, String organizationId, String accountNum, String seqno, boolean foreignDeposit);
 
-  List<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndIsConsent(long banksaladUserId,
-      String organizationId, boolean isConsent);
+  List<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndConsent(long banksaladUserId,
+      String organizationId, boolean consent);
 
 }

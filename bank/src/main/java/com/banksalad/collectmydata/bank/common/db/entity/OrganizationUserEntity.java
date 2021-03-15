@@ -13,7 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -39,5 +38,5 @@ public class OrganizationUserEntity extends BaseTimeAndUserEntity {
   private String organizationId;
 
   @Column(nullable = false)
-  private LocalDate regDate;
+  private String regDate;
 }

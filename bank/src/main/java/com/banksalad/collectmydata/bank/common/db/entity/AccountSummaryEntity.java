@@ -40,13 +40,13 @@ public class AccountSummaryEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false, name = "account_num_encrypted")
   private String accountNum;
 
-  @Column(nullable = false, columnDefinition = "TINYINT")
-  private Boolean isConsent;
+  @Column(nullable = false, name = "is_consent", columnDefinition = "TINYINT")
+  private Boolean consent;
 
   private String seqno;
 
-  @Column(columnDefinition = "TINYINT")
-  private Boolean isForeignDeposit;
+  @Column(name = "is_foreign_deposit", columnDefinition = "TINYINT")
+  private Boolean foreignDeposit;
 
   @Column(nullable = false)
   private String prodName;
@@ -59,7 +59,11 @@ public class AccountSummaryEntity extends BaseTimeAndUserEntity {
 
   private Long basicSearchTimestamp;
 
+  private String basicSearchResponseCode;
+
   private Long detailSearchTimestamp;
+
+  private String detailSearchResponseCode;
 
   private LocalDateTime transactionSyncedAt;
 }

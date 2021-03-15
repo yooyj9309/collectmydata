@@ -68,5 +68,6 @@ public class DepositAccountTransactionEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false)
   private BigDecimal balanceAmt;
 
+  @Column(columnDefinition = "smallint")
   private Integer paidInCnt;
 }

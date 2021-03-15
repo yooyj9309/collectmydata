@@ -3,37 +3,13 @@ package com.banksalad.collectmydata.bank.common.db.entity.mapper;
 import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Mappings;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface AccountSummaryMapper {
 
-  @Mappings(
-      value = {
-          @Mapping(target = "id", ignore = true),
-          @Mapping(target = "banksaladUserId", ignore = true),
-          @Mapping(target = "organizationId", ignore = true),
-          @Mapping(target = "syncedAt", ignore = true),
-          @Mapping(target = "basicSearchTimestamp", ignore = true),
-          @Mapping(target = "detailSearchTimestamp", ignore = true),
-          @Mapping(target = "transactionSyncedAt", ignore = true),
-          @Mapping(target = "createdAt", ignore = true),
-          @Mapping(target = "createdBy", ignore = true),
-          @Mapping(target = "updatedAt", ignore = true),
-          @Mapping(target = "updatedBy", ignore = true),
-          @Mapping(target = "isConsent", source = "consent"),
-          @Mapping(target = "isForeignDeposit", source = "foreignDeposit")
-      }
-  )
   void merge(AccountSummary accountSummary, @MappingTarget AccountSummaryEntity entity);
 
-  @Mappings(
-      value = {
-          @Mapping(target = "consent", source = "isConsent"),
-          @Mapping(target = "foreignDeposit", source = "isForeignDeposit")
-      }
-  )
   AccountSummary entityToDto(AccountSummaryEntity entity);
 }
