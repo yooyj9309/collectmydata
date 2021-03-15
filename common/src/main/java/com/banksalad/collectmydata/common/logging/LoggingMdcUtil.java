@@ -8,6 +8,15 @@ import java.util.Map;
 
 public class LoggingMdcUtil {
 
+  public static void set(String sector, String industry, long banksaladUserId, String organizationId, String syncRequestId) {
+    MDC.put(CollectLogbackJsonLayout.JSON_KEY_SECTOR, sector);
+    MDC.put(CollectLogbackJsonLayout.JSON_KEY_INDUSTRY, industry);
+    MDC.put(CollectLogbackJsonLayout.JSON_KEY_BANKSALAD_USER_ID, String.valueOf(banksaladUserId));
+    MDC.put(CollectLogbackJsonLayout.JSON_KEY_ORGANIZATION_ID, organizationId);
+    MDC.put(CollectLogbackJsonLayout.JSON_KEY_SYNC_REQUEST_ID, syncRequestId);
+  }
+
+  @Deprecated
   public static void set(long banksaladUserId, String organizationId, String syncRequestId) {
     MDC.put(CollectLogbackJsonLayout.JSON_KEY_BANKSALAD_USER_ID, String.valueOf(banksaladUserId));
     MDC.put(CollectLogbackJsonLayout.JSON_KEY_ORGANIZATION_ID, organizationId);

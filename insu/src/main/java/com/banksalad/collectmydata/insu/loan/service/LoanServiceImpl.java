@@ -1,11 +1,5 @@
 package com.banksalad.collectmydata.insu.loan.service;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Service;
-
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
@@ -37,6 +31,13 @@ import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailRequest;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailResponse;
 import com.banksalad.collectmydata.insu.loan.dto.LoanBasic;
 import com.banksalad.collectmydata.insu.loan.dto.LoanDetail;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Service;
+
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +48,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -115,7 +115,7 @@ public class LoanServiceImpl implements LoanService {
   public List<LoanDetail> listLoanDetails(ExecutionContext executionContext, String organizationCode,
       List<LoanSummary> loanSummaries) {
     // FIXME: reference 나오면 수정
-    final ExecutionContext context = executionContext.withExecutionRequestId(UUID.randomUUID().toString());
+//    final ExecutionContext context = executionContext.withExecutionRequestId(UUID.randomUUID().toString());
     final Execution execution = Executions.insurance_get_loan_detail;
     List<LoanDetail> loanDetails = new ArrayList<>(loanSummaries.size());
     AtomicBoolean exceptionOccurred = new AtomicBoolean(false);
@@ -123,7 +123,7 @@ public class LoanServiceImpl implements LoanService {
     // Non-parallel version:
     for (LoanSummary loanSummary : loanSummaries) {
       try {
-        loanDetails.add(processLoanDetail(execution, context, organizationCode, loanSummary));
+        loanDetails.add(processLoanDetail(execution, executionContext, organizationCode, loanSummary));
       } catch (CollectmydataRuntimeException e) {
         log.error(e.getMessage(), e);
         exceptionOccurred.set(true);
@@ -131,12 +131,12 @@ public class LoanServiceImpl implements LoanService {
     }
 
     userSyncStatusService.updateUserSyncStatus(
-        context.getBanksaladUserId(),
-        context.getOrganizationId(),
+        executionContext.getBanksaladUserId(),
+        executionContext.getOrganizationId(),
         execution.getApi().getId(),
-        context.getSyncStartedAt(),
+        executionContext.getSyncStartedAt(),
         null,
-        executionResponseValidateService.isAllResponseResultSuccess(context, exceptionOccurred.get())
+        executionResponseValidateService.isAllResponseResultSuccess(executionContext, exceptionOccurred.get())
     );
     return loanDetails;
   }

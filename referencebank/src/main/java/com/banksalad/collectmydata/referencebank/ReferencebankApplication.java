@@ -2,15 +2,20 @@ package com.banksalad.collectmydata.referencebank;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(exclude = {
-    DataSourceAutoConfiguration.class,
-    DataSourceTransactionManagerAutoConfiguration.class,
-    HibernateJpaAutoConfiguration.class
-})
+@SpringBootApplication(
+    scanBasePackages = {
+        "com.banksalad.collectmydata.finance",
+        "com.banksalad.collectmydata.referencebank"
+    }
+)
+@EnableJpaRepositories(
+    basePackages = {
+        "com.banksalad.collectmydata.finance",
+        "com.banksalad.collectmydata.referencebank"
+    }
+)
 public class ReferencebankApplication {
 
   public static void main(String[] args) {

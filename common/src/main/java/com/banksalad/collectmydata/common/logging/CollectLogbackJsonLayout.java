@@ -12,6 +12,8 @@ import java.util.Map;
 
 public class CollectLogbackJsonLayout extends JsonLayout {
 
+  public static final String JSON_KEY_SECTOR = "sector";
+  public static final String JSON_KEY_INDUSTRY = "industry";
   public static final String JSON_KEY_BANKSALAD_USER_ID = "banksaladUserId";
   public static final String JSON_KEY_ORGANIZATION_ID = "organizationId";
   public static final String JSON_KEY_SYNC_REQUEST_ID = "syncRequestId";

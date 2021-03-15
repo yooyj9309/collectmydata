@@ -9,6 +9,7 @@ import com.banksalad.collectmydata.common.message.SyncCompletedMessage;
 import com.banksalad.collectmydata.referencebank.common.dto.BankApiResponse;
 import com.banksalad.collectmydata.referencebank.common.service.BankMessageService;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
+@Profile("!test")
 public class BankPublishmentRequestedConsumer {
 
   private final ObjectMapper objectMapper;

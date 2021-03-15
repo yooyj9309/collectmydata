@@ -40,6 +40,7 @@ dependencyManagement {
 
 dependencies {
     implementation project(":common")
+    implementation project(":finance")
 
     // idl
     implementation("com.banksalad:idl:${idlVersion}")
@@ -59,6 +60,12 @@ dependencies {
     implementation("com.linecorp.armeria:armeria-spring-boot2-webflux-starter:${armeriaVersion}")
     implementation("com.linecorp.armeria:armeria-grpc:${armeriaVersion}")
 
+    // mapstruct
+    implementation("org.mapstruct:mapstruct:${mapstructVersion}")
+    annotationProcessor("org.mapstruct:mapstruct-processor:${mapstructVersion}")
+
+    // lombok
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
 
     // grpc
     implementation("io.grpc:grpc-context:${grpcVersion}")

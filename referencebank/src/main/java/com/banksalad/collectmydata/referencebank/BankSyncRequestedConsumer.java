@@ -6,9 +6,11 @@ import com.banksalad.collectmydata.common.message.ConsumerGroupId;
 import com.banksalad.collectmydata.common.message.MessageTopic;
 import com.banksalad.collectmydata.common.message.PublishmentRequestedMessage;
 import com.banksalad.collectmydata.common.message.SyncRequestedMessage;
+import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.banksalad.collectmydata.referencebank.common.dto.BankApiResponse;
 import com.banksalad.collectmydata.referencebank.common.service.BankMessageService;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
@@ -16,25 +18,18 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
+@Profile("!test")
+@RequiredArgsConstructor
 public class BankSyncRequestedConsumer {
 
   private final ObjectMapper objectMapper;
   private final BankApiService bankApiService;
   private final BankMessageService bankMessageService;
-
-  public BankSyncRequestedConsumer(
-      ObjectMapper objectMapper,
-      BankApiService bankApiService,
-      BankMessageService bankMessageService
-  ) {
-    this.objectMapper = objectMapper;
-    this.bankApiService = bankApiService;
-    this.bankMessageService = bankMessageService;
-  }
 
   @KafkaListener(
       topics = MessageTopic.bankSyncRequested,
@@ -59,9 +54,18 @@ public class BankSyncRequestedConsumer {
     } catch (JsonProcessingException e) {
       log.error("Fail to deserialize syncRequestedMessage: {}", e.getMessage());
 
+    } catch (ResponseNotOkException e) {
+      log.error("Fail to sync: {}", e.getMessage());
+      // TODO publish result with error code and message
+
     } catch (CollectException e) {
       log.error("Fail to sync: {}", e.getMessage());
       // TODO publish result with error code and message
+
+    } catch (Throwable t) {
+      log.error("Fail to sync: {}", t.getMessage());
+      // TODO publish result with error code and message
+
     } finally {
       LoggingMdcUtil.clear();
     }

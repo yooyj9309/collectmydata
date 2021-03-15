@@ -9,10 +9,10 @@ public class Apis {
     GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS, TRACE, CONNECT
   }
 
-  public static Api finance_bank_accounts =
+  public static Api finance_bank_summaries =
       Api.builder()
           .id("BA01")
-          .name("계좌목록조회")
+          .name("계좌 목록 조회")
           .endpoint(
               "/accounts?org_code={org_code}&search_timestamp={search_timestamp}&next_page={next_page}&limit={limit}")
           .method(HttpMethod.GET.name())
@@ -21,76 +21,72 @@ public class Apis {
               .build())
           .build();
 
-  public static Api finance_bank_accounts_deposit_basic =
+  public static Api finance_bank_deposit_account_basic =
       Api.builder()
           .id("BA02")
-          .name("수신계좌기본정보조회")
+          .name("수신계좌 기본정보 조회")
           .endpoint("/accounts/deposit/basic")
           .method(HttpMethod.POST.name())
           .build();
 
-  public static Api finance_bank_accounts_deposit_detail =
+  public static Api finance_bank_deposit_account_detail =
       Api.builder()
           .id("BA03")
-          .name("수신계좌추가정보조회")
+          .name("수신계좌 추가정보 조회")
           .endpoint("/accounts/deposit/detail")
           .method(HttpMethod.POST.name())
           .build();
 
-
-  public static Api finance_bank_accounts_deposit_transactions =
+  public static Api finance_bank_deposit_account_transaction =
       Api.builder()
           .id("BA04")
-          .name("수신계좌거래정보조회")
+          .name("수신계좌 거래내역 조회")
           .endpoint("/accounts/deposit/transactions")
           .method(HttpMethod.POST.name())
           .build();
 
-  public static Api finance_bank_accounts_invest_basic =
+  //6.2.5 투자상품 계좌 기본 정보 조회
+  public static Api finance_bank_invest_account_basic =
       Api.builder()
-          .id("BA11")
-          .name("투자상품계좌기본정조회")
+          .id("BA05")
+          .name("투자 상품 계좌 기본 정보 조회")
           .endpoint("/accounts/invest/basic")
           .method(HttpMethod.POST.name())
           .build();
 
-  public static Api finance_bank_accounts_invest_detail =
+  //6.2.6 투자상품 계좌 추가 정보 조회
+  public static Api finance_bank_invest_account_detail =
       Api.builder()
-          .id("BA12")
-          .name("투자상품계좌추가정조회")
-          .endpoint("/accounts/deposit/detail")
+          .id("BA06")
+          .name("투자 상품 계좌 추가 정보 조회")
+          .endpoint("/accounts/invest/detail")
           .method(HttpMethod.POST.name())
           .build();
 
-  public static Api finance_bank_accounts_invest_transactions =
+  //6.2.7 투자상품 계좌 거래내역 정보 조회
+  public static Api finance_bank_invest_account_transaction =
       Api.builder()
-          .id("BA13")
-          .name("투자상품계좌거래내역조회")
-          .endpoint("/accounts/deposit/transactions")
+          .id("BA07")
+          .name("투자 상품 계좌 거래내역 조회")
+          .endpoint("/accounts/invest/transactions")
           .method(HttpMethod.POST.name())
           .build();
 
-  public static Api finance_bank_accounts_loan_basic =
+  //6.2.8 대출상품 기본 정보 조회
+  public static Api finance_bank_loan_account_basic =
       Api.builder()
-          .id("BA21")
-          .name("대출상품계좌기본정본조회")
+          .id("BA08")
+          .name("대출 상품 계좌 기본 정보 조회")
           .endpoint("/accounts/loan/basic")
           .method(HttpMethod.POST.name())
           .build();
 
-  public static Api finance_bank_accounts_loan_detail =
+  //6.2.9 대출상품 추가 정보 조회
+  public static Api finance_bank_loan_account_detail =
       Api.builder()
-          .id("BA22")
-          .name("대출상품계좌추가정보조회")
+          .id("BA09")
+          .name("대출 상품 계좌 추가 정보 조회")
           .endpoint("/accounts/loan/detail")
-          .method(HttpMethod.POST.name())
-          .build();
-
-  public static Api finance_bank_accounts_loan_transactions =
-      Api.builder()
-          .id("BA23")
-          .name("대출상품계좌거래내역조회")
-          .endpoint("/accounts/loan/transactions")
           .method(HttpMethod.POST.name())
           .build();
 }

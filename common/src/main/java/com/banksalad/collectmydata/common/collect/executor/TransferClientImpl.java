@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 
 public class TransferClientImpl implements TransferClient {
 
+  // TODO : enhance
+  
   ExchangeStrategies exchangeStrategies = ExchangeStrategies
       .builder()
       .codecs(configurer -> configurer.defaultCodecs()

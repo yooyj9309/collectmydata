@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Deprecated
+// TODO : Do refactoring before use
 public class DateUtil {
 
   public static final ZoneId KST_ZONE_ID = ZoneId.of("Asia/Seoul");

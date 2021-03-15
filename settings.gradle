@@ -1,7 +1,8 @@
 rootProject.name = 'collectmydata'
 
 // common library
-include ":common"
+include ":common",
+        ":finance"
 
 // common service
 include ":collect",

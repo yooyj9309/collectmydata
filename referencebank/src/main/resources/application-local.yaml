@@ -12,10 +12,10 @@ spring:
     hibernate:
       ddl-auto: validate
   datasource:
-    url: jdbc:mysql://collectmydata-bank:3306
+    url: jdbc:mysql://collectmydata-bank.cluster-cejbmksulyv2.ap-northeast-2.rds.amazonaws.com:3306/bank?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true
     driver-class-name: org.mariadb.jdbc.Driver
     username: developer
-    password: ${DEVELOPMENT_COLLECTMYDATA_BANK_DB_PASSWORD}
+    password: ${DEV_COLLECTMYDATA_DB_PASSWORD}
     hikari:
       maximum-pool-size: 20
       connection-timeout: 5000
