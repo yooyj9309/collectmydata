@@ -16,7 +16,8 @@ include ":bank",
         ":card",
         ":efin",
         ":insu",
-        ":invest"
+        ":invest",
+        ":telecoms"
 
 // etc
 include ":kafkamanager",
@@ -25,3 +26,5 @@ include ":kafkamanager",
 include ":referencebank"
 
 include ":irp"
+include 'telecoms'
+
