@@ -5,9 +5,7 @@ import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEn
 
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Mappings;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
@@ -17,18 +15,8 @@ public interface AccountTransactionMapper {
 
   // Update only non-null fields partially with the below @BeanMapping.
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-  @Mappings(value = {
-      // Data types of `transDtime` between two are quite different so advice an explicit formatting.
-      // `syncedAt' is copied smoothly without any directives.
-      @Mapping(source = "accountTransaction.transDtime", target = "transDtime", dateFormat = "yyyyMMddHHmmss")
-  })
-  void updateEntityFromDto(AccountTransaction accountTransaction,
-      @MappingTarget AccountTransactionEntity accountTransactionEntity);
+  void merge(AccountTransaction accountTransaction, @MappingTarget AccountTransactionEntity accountTransactionEntity);
 
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-  @Mappings(value = {
-      @Mapping(target = "intCnt", ignore = true)
-  })
-  void updateDtoFromDto(AccountTransaction sourceAccountTransaction,
-      @MappingTarget AccountTransaction targetAccountTransaction);
+  void merge(AccountTransactionEntity accountTransactionEntity, @MappingTarget AccountTransaction accountTransaction);
 }

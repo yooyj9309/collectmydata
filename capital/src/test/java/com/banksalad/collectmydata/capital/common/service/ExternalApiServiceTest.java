@@ -152,8 +152,12 @@ class ExternalApiServiceTest {
     final ExecutionContext executionContext = getExecutionContext();
     final Organization organization = getOrganization();
     final AccountSummary accountSummary = getAccount();
-    final Long bankSaladUserId = executionContext.getBanksaladUserId();
-    final String organizationId = organization.getOrganizationId();
+    final String orgCode = organization.getOrganizationCode();
+    final String accountNum = accountSummary.getAccountNum();
+    final String seqno = accountSummary.getSeqno();
+    final String fromDate = "20210121";
+    final String toDate = "20210122";
+
     AccountTransactionResponse expectedAccountTransactionResponse = respondAccountTransactionResponseWithTwoPages();
     expectedAccountTransactionResponse.getTransList().forEach(accountTransaction -> {
           accountTransaction.setAccountNum(accountSummary.getAccountNum());
@@ -163,7 +167,7 @@ class ExternalApiServiceTest {
 
     // When
     AccountTransactionResponse actualAccountTransactionResponse = externalApiService
-        .getAccountTransactions(executionContext, organization, accountSummary);
+        .getAccountTransactions(executionContext, orgCode, accountNum, seqno, fromDate, toDate);
 
     // Then
     assertEquals(3, actualAccountTransactionResponse.getTransCnt());

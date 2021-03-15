@@ -19,13 +19,18 @@ public interface AccountTransactionInterestMapper {
   // Update only non-null fields partially with the below @BeanMapping.
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   @Mappings(value = {
-      // Data types of `transDtime` between two are quite different so advice an explicit formatting.
-      @Mapping(source = "accountTransactionInterest.intStartDate", target = "intStartDate", dateFormat = "yyyyMMdd"),
-      @Mapping(source = "accountTransactionInterest.intEndDate", target = "intEndDate", dateFormat = "yyyyMMdd"),
       // Must ignore id from `accountTransactionEntity`.
       @Mapping(target = "id", ignore = true)
   })
-  void updateEntityFromDto(AccountTransactionEntity accountTransactionEntity,
-      int intNo, AccountTransactionInterest accountTransactionInterest,
+  AccountTransactionInterestEntity toEntity(AccountTransactionEntity accountTransactionEntity,
+      AccountTransactionInterest accountTransactionInterest);
+
+  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+  @Mappings(value = {
+      // Must ignore id from `accountTransactionEntity`.
+      @Mapping(target = "id", ignore = true)
+  })
+  void merge(AccountTransactionEntity accountTransactionEntity,
+      AccountTransactionInterest accountTransactionInterest,
       @MappingTarget AccountTransactionInterestEntity accountTransactionInterestEntity);
 }

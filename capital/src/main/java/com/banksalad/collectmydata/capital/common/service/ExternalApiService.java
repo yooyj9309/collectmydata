@@ -26,8 +26,8 @@ public interface ExternalApiService {
       AccountSummary accountSummary);
 
   // 6.7.4
-  AccountTransactionResponse getAccountTransactions(ExecutionContext executionContext, Organization organization,
-      AccountSummary accountSummary);
+  AccountTransactionResponse getAccountTransactions(ExecutionContext executionContext,
+      String orgCode, String accountNum, String seqno, String fromDate, String toDate);
 
   // 6.7.5
   OperatingLeaseBasicResponse getOperatingLeaseBasic(ExecutionContext executionContext, Organization organization,

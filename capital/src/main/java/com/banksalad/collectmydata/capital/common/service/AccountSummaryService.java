@@ -12,5 +12,8 @@ public interface AccountSummaryService {
 
   void updateSearchTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary);
 
+  void updateTransactionSyncedAt(ExecutionContext executionContext, AccountSummary accountSummary);
+
   void updateOperatingLeaseTransactionSyncedAt(ExecutionContext executionContext, AccountSummary accountSummary);
+
 }

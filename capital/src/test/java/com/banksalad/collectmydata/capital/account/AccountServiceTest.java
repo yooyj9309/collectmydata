@@ -1,19 +1,13 @@
 package com.banksalad.collectmydata.capital.account;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-
 import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
-import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
-import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountBasicEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountDetailEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
+import com.banksalad.collectmydata.capital.common.db.repository.AccountBasicRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountDetailRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
-import com.banksalad.collectmydata.capital.common.db.repository.AccountBasicRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionInterestRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionRepository;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
@@ -21,14 +15,17 @@ import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.common.crypto.HashUtil;
-import com.banksalad.collectmydata.common.enums.Industry;
-import com.banksalad.collectmydata.common.enums.MydataSector;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.common.util.DateUtil;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -37,13 +34,20 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import static com.banksalad.collectmydata.capital.common.TestHelper.respondAccountTransactionResponseWithEmptyPages;
-import static com.banksalad.collectmydata.capital.common.TestHelper.respondAccountTransactionResponseWithOnePage;
-import static com.banksalad.collectmydata.capital.common.TestHelper.respondAccountTransactionResponseWithTwoPages;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ACCESS_TOKEN;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ACCOUNT_NUM;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ACCOUNT_STATUS;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ACCOUNT_TYPE;
+import static com.banksalad.collectmydata.capital.common.TestHelper.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.capital.common.TestHelper.INDUSTRY;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ORGANIZATION_CODE;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ORGANIZATION_HOST;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.capital.common.TestHelper.PRODUCT_NAME;
+import static com.banksalad.collectmydata.capital.common.TestHelper.SECTOR;
+import static com.banksalad.collectmydata.capital.common.TestHelper.SEQNO1;
 import static java.lang.Boolean.TRUE;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -51,7 +55,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 
 @Transactional
 @SpringBootTest
@@ -81,31 +84,18 @@ public class AccountServiceTest {
   @Autowired
   private AccountTransactionInterestRepository accountTransactionInterestRepository;
 
-  private long banksaladUserId = 1L;
-  private String organizationId = "shinhancard";
-  private String accountNum = "1234567812345678";
-
-  private static final MydataSector SECTOR = MydataSector.FINANCE;
-  private static final Industry INDUSTRY = Industry.CAPITAL;
-  private static final String ORGANIZATION_ID = "X-loan";
-  private static final String ORGANIZATION_CODE = "10041004";
-  private static final String ORGANIZATION_HOST = "localhost";
-  private static final Long BANKSALAD_USER_ID = 1L;
-  private static final String ACCESS_TOKEN = "abc.def.ghi";
-  private static final String ACCOUNT_NUMBER = "1234567890";
-  private static final Integer SEQNO = 1;
-  private static final String SEQNO1 = "1";
-  private static final String ACCOUNT_TYPE = "3100";
-  private static final String ACCOUNT_STATUS = "01";
-  private static final String PRODUCT_NAME = "X-론 직장인 신용대출";
-
+  @AfterEach
+  void cleanBefore() {
+    accountSummaryRepository.deleteAll();
+  }
+  
   @Test
   @DisplayName("6.7.2 account_basic table 에 row 가 있음 && Data Provider API Response 와 다름")
   void givenExistingAccountBasicDifferedWithApiResponse_whenListAccountBasics_ThenUpdateAccountBasic() {
     // Given
     ExecutionContext executionContext = getExecutionContext();
     Organization organization = getOrganization();
-    AccountSummary accountSummary = getAccount();
+    AccountSummary accountSummary = getAccountSummary();
     AccountBasicResponse accountBasicResponse = getAccountBasicResponse();
 
     AccountSummaryEntity accountSummaryEntity = AccountSummaryEntity.builder()
@@ -159,7 +149,7 @@ public class AccountServiceTest {
     // Given
     ExecutionContext executionContext = getExecutionContext();
     Organization organization = getOrganization();
-    AccountSummary accountSummary = getAccount();
+    AccountSummary accountSummary = getAccountSummary();
     AccountBasicResponse accountBasicResponse = getAccountBasicResponse();
     AccountSummaryEntity accountSummaryEntity = AccountSummaryEntity.builder()
         .syncedAt(LocalDateTime.now())
@@ -202,7 +192,7 @@ public class AccountServiceTest {
     // Given
     ExecutionContext executionContext = getExecutionContext();
     Organization organization = getOrganization();
-    AccountSummary accountSummary = getAccount();
+    AccountSummary accountSummary = getAccountSummary();
     AccountDetailResponse response = getAccountDetailResponse();
 
     AccountSummaryEntity accountSummaryEntity = AccountSummaryEntity.builder()
@@ -251,7 +241,7 @@ public class AccountServiceTest {
     // Given
     ExecutionContext executionContext = getExecutionContext();
     Organization organization = getOrganization();
-    AccountSummary accountSummary = getAccount();
+    AccountSummary accountSummary = getAccountSummary();
     AccountDetailResponse accountDetailResponse = getAccountDetailResponse();
     AccountSummaryEntity accountSummaryEntity = AccountSummaryEntity.builder()
         .syncedAt(LocalDateTime.now())
@@ -289,120 +279,11 @@ public class AccountServiceTest {
   }
 
   @Test
-  @DisplayName("6.7.4 빈 트랜잭션 응답")
-  public void givenRequest_whenListAccountTransactions_thenEmptyPageResponse() {
-    // Given
-    final ExecutionContext executionContext = getExecutionContext();
-    final Organization organization = getOrganization();
-    final AccountSummary accountSummary = getAccount();
-    when(externalApiService.getAccountTransactions(executionContext, organization, accountSummary))
-        .thenReturn(respondAccountTransactionResponseWithEmptyPages());
-
-    // When
-    List<AccountTransaction> response = accountService
-        .listAccountTransactions(executionContext, organization, List.of(accountSummary));
-
-    // Then
-    assertEquals(0, accountTransactionRepository.count());
-    assertEquals(0, accountTransactionInterestRepository.count());
-    assertThat(response).isEmpty();
-    assertThat(accountTransactionRepository.findAll()).isEmpty();
-    assertThat(accountTransactionInterestRepository.findAll()).isEmpty();
-  }
-
-  @Test
-  @DisplayName("6.7.4 새로운 2페이지 짜리 트랜잭션 응답")
-  public void givenRequest_whenListAccountTransactions_thenNewTwoPageResponse() {
-    // Given
-    final ExecutionContext executionContext = getExecutionContext();
-    final Organization organization = getOrganization();
-    final AccountSummary accountSummary = getAccount();
-    final Long bankSaladUserId = executionContext.getBanksaladUserId();
-    final String organizationId = organization.getOrganizationId();
-    AccountTransactionResponse expectedAccountTransactionResponse = respondAccountTransactionResponseWithTwoPages();
-    expectedAccountTransactionResponse.getTransList().forEach(accountTransaction -> {
-          accountTransaction.setAccountNum(accountSummary.getAccountNum());
-          accountTransaction.setSeqno(accountSummary.getSeqno());
-        }
-    );
-    when(externalApiService.getAccountTransactions(executionContext, organization, accountSummary))
-        .thenReturn(expectedAccountTransactionResponse);
-
-    // When
-    List<AccountTransaction> actualAccountTransactions = accountService
-        .listAccountTransactions(executionContext, organization, List.of(accountSummary));
-
-    // Then
-    // Check the new response were inserted.
-    assertEquals(3, accountTransactionRepository.count());
-    assertEquals(3, accountTransactionInterestRepository.count());
-    // Compare API response with modified result from the loan service.
-    assertUniqueTransNo(actualAccountTransactions, bankSaladUserId, organizationId);
-  }
-
-  //  @Test
-  @DisplayName("6.7.4 기존에 있던 1페이지 짜리 트랜잭션 응답")
-  public void givenRequest_whenListAccountTransactions_thenExistingTwoPageResponse() {
-    // Given
-    final ExecutionContext executionContext = getExecutionContext();
-    final Organization organization = getOrganization();
-    final AccountSummary accountSummary = getAccount();
-    final Long bankSaladUserId = executionContext.getBanksaladUserId();
-    final String organizationId = organization.getOrganizationId();
-    AccountTransactionResponse expectedAccountTransactionResponse = respondAccountTransactionResponseWithOnePage();
-    expectedAccountTransactionResponse.getTransList().forEach(accountTransaction -> {
-          accountTransaction.setAccountNum(accountSummary.getAccountNum());
-          accountTransaction.setSeqno(accountSummary.getSeqno());
-        }
-    );
-    when(externalApiService.getAccountTransactions(executionContext, organization, accountSummary))
-        .thenReturn(expectedAccountTransactionResponse);
-
-    // When
-    List<AccountTransaction> actualAccountTransactions = accountService
-        .listAccountTransactions(executionContext, organization, List.of(accountSummary));
-
-    // Then
-    // Check the new response were inserted.
-    assertEquals(1, accountTransactionRepository.count());
-    assertEquals(1, accountTransactionInterestRepository.count());
-    // Compare API response with modified result from the loan service.
-    assertUniqueTransNo(actualAccountTransactions, bankSaladUserId, organizationId);
-  }
-
-  private void assertUniqueTransNo(List<AccountTransaction> actualAccountTransactions, Long bankSaladUserId,
-      String organizationId) {
-    List<String> expectedUniqueTransNoList = actualAccountTransactions.stream()
-        .map(accountTransaction -> HashUtil.hashCat(accountTransaction.getTransDtime(),
-            accountTransaction.getTransNo(), accountTransaction.getBalanceAmt().toString()))
-        .collect(Collectors.toList());
-    List<String> actualUniqueTransNoList = actualAccountTransactions.stream()
-        .map(accountTransaction -> {
-          final String accountNum = accountTransaction.getAccountNum();
-          final String seqno = accountTransaction.getSeqno();
-          final Integer transactionYearMonth = Integer
-              .valueOf(accountTransaction.getTransDtime().substring(0, 6));
-          final String uniqueTransNo = HashUtil.hashCat(accountTransaction.getTransDtime(),
-              accountTransaction.getTransNo(), accountTransaction.getBalanceAmt().toString());
-          return accountTransactionRepository
-              .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransactionYearMonthAndUniqueTransNo(
-                  bankSaladUserId, organizationId, accountNum, seqno, transactionYearMonth, uniqueTransNo
-              )
-              .get()
-              .getUniqueTransNo();
-        })
-        .collect(Collectors.toList());
-    for (int i = 0; i < expectedUniqueTransNoList.size(); i++) {
-      assertEquals(expectedUniqueTransNoList.get(i), actualUniqueTransNoList.get(i));
-    }
-  }
-
-  @Test
   @Transactional
   @DisplayName("updateAccountTimestamp 성공 케이스")
   public void updateAccountTimestamp_success() {
     saveAccountSummaryEntity();
-    accountSummaryService.updateSearchTimestamp(banksaladUserId, organizationId, accountAssembler());
+    accountSummaryService.updateSearchTimestamp(BANKSALAD_USER_ID, ORGANIZATION_ID, accountAssembler());
     assertEquals(1, accountSummaryRepository.findAll().size());
 
     AccountSummaryEntity entity = accountSummaryRepository.findAll().get(0);
@@ -419,7 +300,7 @@ public class AccountServiceTest {
     saveAccountSummaryEntity();
     Exception exception = assertThrows(
         Exception.class,
-        () -> accountSummaryService.updateSearchTimestamp(banksaladUserId, organizationId, null)
+        () -> accountSummaryService.updateSearchTimestamp(BANKSALAD_USER_ID, ORGANIZATION_ID, null)
     );
     assertThat(exception).isInstanceOf(CollectRuntimeException.class);
     assertEquals("Invalid account", exception.getMessage());
@@ -431,7 +312,7 @@ public class AccountServiceTest {
   public void updateAccountTimestamp_nodata() {
     Exception exception = assertThrows(
         Exception.class,
-        () -> accountSummaryService.updateSearchTimestamp(banksaladUserId, organizationId, accountAssembler())
+        () -> accountSummaryService.updateSearchTimestamp(BANKSALAD_USER_ID, ORGANIZATION_ID, accountAssembler())
     );
     assertThat(exception).isInstanceOf(CollectRuntimeException.class);
     assertEquals("No data AccountSummaryEntity", exception.getMessage());
@@ -440,10 +321,10 @@ public class AccountServiceTest {
   private void saveAccountSummaryEntity() {
     accountSummaryRepository.save(
         AccountSummaryEntity.builder()
-            .syncedAt(LocalDateTime.now())
-            .banksaladUserId(banksaladUserId)
-            .organizationId(organizationId)
-            .accountNum(accountNum)
+            .syncedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+            .banksaladUserId(BANKSALAD_USER_ID)
+            .organizationId(ORGANIZATION_ID)
+            .accountNum(ACCOUNT_NUM)
             .seqno(SEQNO1)
             .isConsent(true)
             .prodName("prodName")
@@ -455,7 +336,7 @@ public class AccountServiceTest {
 
   private AccountSummary accountAssembler() {
     return AccountSummary.builder()
-        .accountNum(accountNum)
+        .accountNum(ACCOUNT_NUM)
         .seqno(SEQNO1)
         .basicSearchTimestamp(1000L)
         .detailSearchTimestamp(2000L)
@@ -484,14 +365,16 @@ public class AccountServiceTest {
         .build();
   }
 
-  private AccountSummary getAccount() {
+  private AccountSummary getAccountSummary() {
     return AccountSummary.builder()
-        .accountNum(ACCOUNT_NUMBER)
+        .accountNum(ACCOUNT_NUM)
         .isConsent(TRUE)
         .seqno(SEQNO1)
         .prodName(PRODUCT_NAME)
         .accountType(ACCOUNT_TYPE)
         .accountStatus(ACCOUNT_STATUS)
+        .transactionSyncedAt(DateUtil.toLocalDateTime("20210121", "101010"))
+        .operatingLeaseTransactionSyncedAt(DateUtil.toLocalDateTime("20210121", "101010"))
         .build();
   }
 

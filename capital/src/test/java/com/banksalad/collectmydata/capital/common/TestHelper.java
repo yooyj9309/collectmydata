@@ -42,8 +42,7 @@ public class TestHelper {
   public static final BigDecimal INT_AMT = bigDecimalOf(5L, 3);
   public static final int INT_CNT = 1;
   public static final int INT_NO = 1;
-  public static final String UNIQUE_TRANS_NO = HashUtil
-      .hashCat(TRANS_DTIME, TRANS_NO, BALANCE_AMT.toString());
+  public static final String UNIQUE_TRANS_NO = HashUtil.hashCat(TRANS_DTIME, TRANS_NO, BALANCE_AMT.toString());
   public static final String INT_START_DATE = "20200101";
   public static final String INT_END_DATE = "20200131";
   public static final BigDecimal INT_RATE = bigDecimalOf(3.124, 3);
@@ -52,10 +51,12 @@ public class TestHelper {
   public static final String ACCOUNT_TYPE = "3100";
   public static final String ACCOUNT_STATUS = "01";
   public static final String PRODUCT_NAME = "X-론 직장인 신용대출";
-  public static final int MAX_LIMIT = 2;
+  public static final int LIMIT = 2;
   public static final String REP_CODE_OK = "00000";
   public static final String REP_MSG_OK = "rsp_msg";
   public static final String ACCOUNT_NUMBER = "1234567890";
+  public static final String FROM_DATE = "20210121";
+  public static final String TO_DATE = "20210122";
 
   private static final AccountTransactionMapper accountTransactionMapper = Mappers
       .getMapper(AccountTransactionMapper.class);
@@ -203,16 +204,15 @@ public class TestHelper {
         .seqno(SEQNO1)
         .uniqueTransNo(UNIQUE_TRANS_NO)
         .build();
-    accountTransactionMapper.updateEntityFromDto(generateAccountTransaction(), accountTransactionEntity);
+    accountTransactionMapper.merge(generateAccountTransaction(), accountTransactionEntity);
     return accountTransactionEntity;
   }
 
   public static AccountTransactionInterestEntity createAccountTransactionInterestEntity() {
-    AccountTransactionInterestEntity accountTransactionInterestEntity = AccountTransactionInterestEntity.builder()
-        .build();
-    accountTransactionInterestMapper
-        .updateEntityFromDto(createAccountTransactionEntity(), 1, generateAccountTransaction().getIntList().get(0),
-            accountTransactionInterestEntity);
+    AccountTransactionInterestEntity accountTransactionInterestEntity =
+        accountTransactionInterestMapper
+            .toEntity(createAccountTransactionEntity(), generateAccountTransaction().getIntList().get(0));
+    accountTransactionInterestEntity.setIntNo(1);
     return accountTransactionInterestEntity;
   }
 }

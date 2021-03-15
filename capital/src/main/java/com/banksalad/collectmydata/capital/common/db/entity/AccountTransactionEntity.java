@@ -43,7 +43,7 @@ public class AccountTransactionEntity extends BaseTimeAndUserEntity {
   private String organizationId;
 
   @NotNull
-  @Column(nullable = false, name = "account_num_encrypted")
+  @Column(name = "account_num_encrypted")
   private String accountNum;
 
   private String seqno;
@@ -52,7 +52,8 @@ public class AccountTransactionEntity extends BaseTimeAndUserEntity {
   private String uniqueTransNo;
 
   @NotNull
-  private LocalDateTime transDtime;
+  @Column(length = 14)
+  private String transDtime;
 
   private String transNo;
 

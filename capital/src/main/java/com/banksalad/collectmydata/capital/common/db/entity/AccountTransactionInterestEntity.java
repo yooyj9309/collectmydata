@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -44,7 +43,7 @@ public class AccountTransactionInterestEntity extends BaseTimeAndUserEntity {
   private String organizationId;
 
   @NotNull
-  @Column(nullable = false, name = "account_num_encrypted")
+  @Column(name = "account_num_encrypted")
   private String accountNum;
 
   private String seqno;
@@ -56,10 +55,12 @@ public class AccountTransactionInterestEntity extends BaseTimeAndUserEntity {
   private Integer intNo;
 
   @NotNull
-  private LocalDate intStartDate;
+  @Column(length = 8)
+  private String intStartDate;
 
   @NotNull
-  private LocalDate intEndDate;
+  @Column(length = 8)
+  private String intEndDate;
 
   @NotNull
   @Column(precision = 5, scale = 3)

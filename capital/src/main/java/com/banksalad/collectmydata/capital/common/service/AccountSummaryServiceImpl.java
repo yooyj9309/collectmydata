@@ -1,7 +1,5 @@
 package com.banksalad.collectmydata.capital.common.service;
 
-import org.springframework.stereotype.Service;
-
 import com.banksalad.collectmydata.capital.common.collect.Apis;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OrganizationUserEntity;
@@ -13,7 +11,11 @@ import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
+import com.banksalad.collectmydata.common.exception.CollectmydataRuntimeException;
 import com.banksalad.collectmydata.common.util.DateUtil;
+
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
@@ -121,6 +123,26 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
     entity.setDetailSearchTimestamp(accountSummary.getDetailSearchTimestamp());
     entity.setOperatingLeaseBasicSearchTimestamp(accountSummary.getOperatingLeaseBasicSearchTimestamp());
     accountSummaryRepository.save(entity);
+  }
+
+  @Override
+  public void updateTransactionSyncedAt(ExecutionContext executionContext, AccountSummary accountSummary) {
+    // Make an entity by reading a record from DB.
+    final long banksaladUserId = executionContext.getBanksaladUserId();
+    final String organizationId = executionContext.getOrganizationId();
+    final String accountNum = accountSummary.getAccountNum();
+    final String seqno = accountSummary.getSeqno();
+
+    AccountSummaryEntity accountSummaryEntity = accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            banksaladUserId, organizationId, accountNum, seqno
+        ).orElseThrow(() -> new CollectmydataRuntimeException(String.format(
+            "No record in account_summary table: banksaladUserId=%s, organizationId=%s, accoutNum=%s, seqno=%s",
+            banksaladUserId, organizationId, accountNum, seqno)));
+    // Set the target field.
+    accountSummaryEntity.setTransactionSyncedAt(executionContext.getSyncStartedAt());
+    // Save the modified entity on DB.
+    accountSummaryRepository.save(accountSummaryEntity);
   }
 
   @Override

@@ -67,7 +67,7 @@ public class AccountTransactionEntityMapperTest {
     accountTransaction.setBalanceAmt(BALANCE_AMT.add(BigDecimal.valueOf(10)));
     // At this time, all fields except `transAmt` and `balanceAmt` are in null state.
     // Try to update only with a few non-null fields.
-    accountTransactionMapper.updateEntityFromDto(accountTransaction, accountTransactionEntity);
+    accountTransactionMapper.merge(accountTransaction, accountTransactionEntity);
 
     // Then
     // See `accountTransactionEntity` was updated only with `transAmt` and `balanceAmt`.
@@ -92,7 +92,7 @@ public class AccountTransactionEntityMapperTest {
     AccountTransaction accountTransaction = generateAccountTransaction();
     // At this time, we transfer a fully-packed object to the mapper.
     // Then the mapper will pour `loanAccountTransaction` into `accountTransactionEntity`.
-    accountTransactionMapper.updateEntityFromDto(accountTransaction, accountTransactionEntity);
+    accountTransactionMapper.merge(accountTransaction, accountTransactionEntity);
 
     // Then
     assertThat(accountTransactionEntity).usingRecursiveComparison().isEqualTo(createAccountTransactionEntity());
@@ -118,8 +118,9 @@ public class AccountTransactionEntityMapperTest {
     // Fill `AccountTransactionInterestEntity` object with accountTransactionEntity, interest sequence number,
     // and loanAccountTransactionInterest.
     accountTransactionInterestMapper
-        .updateEntityFromDto(accountTransactionEntity, INT_NO, accountTransactionInterest,
+        .merge(accountTransactionEntity, accountTransactionInterest,
             accountTransactionInterestEntity);
+    accountTransactionInterestEntity.setIntNo(INT_NO);
 
     // Then
     assertThat(accountTransactionInterestEntity).usingRecursiveComparison()

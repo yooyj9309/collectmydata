@@ -4,11 +4,9 @@ import com.banksalad.collectmydata.capital.account.dto.AccountBasicRequest;
 import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailRequest;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
-import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionRequest;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.collect.Executions;
-import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountTransactionMapper;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummaryRequest;
 import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
@@ -24,6 +22,7 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
+import com.banksalad.collectmydata.common.exception.CollectmydataRuntimeException;
 import com.banksalad.collectmydata.common.util.DateUtil;
 
 import org.springframework.http.HttpStatus;
@@ -31,7 +30,6 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -49,9 +47,9 @@ import static com.banksalad.collectmydata.capital.common.collect.Executions.capi
 @RequiredArgsConstructor
 public class ExternalApiServiceImpl implements ExternalApiService {
 
-  private final CollectExecutor collectExecutor;
   private static final String AUTHORIZATION = "Authorization";
-  private static final int MAX_LIMIT = 2;
+  private static final int LIMIT = 2; // FIXME: from an external property
+  private final CollectExecutor collectExecutor;
 
   @Override
   public AccountSummaryResponse getAccounts(ExecutionContext executionContext, String orgCode, long searchTimeStamp) {
@@ -110,19 +108,23 @@ public class ExternalApiServiceImpl implements ExternalApiService {
     return execute(executionContext, capital_get_account_detail, executionRequest);
   }
 
+  /**
+   * 6.7.4 대출상품계좌 거래내역 조회
+   */
   @Override
   public AccountTransactionResponse getAccountTransactions(ExecutionContext executionContext,
-      Organization organization, AccountSummary accountSummary) {
+      String orgCode, String accountNum, String seqno, String fromDate, String toDate) {
+
+    final Execution execution = Executions.capital_get_account_transactions;
     // executionId 생성.
-    executionContext.generateAndsUpdateExecutionRequestId();
     Map<String, String> header = Map.of("Authorization", executionContext.getAccessToken());
     AccountTransactionRequest request = AccountTransactionRequest.builder()
-        .orgCode(organization.getOrganizationCode())
-        .accountNum(accountSummary.getAccountNum())
-        .seqno(accountSummary.getSeqno())
-        .fromDate("20210121") // fixme : user_sync_stat.synced_at
-        .toDate("20210122") // fixme : kstCurrentDatetime(); // a new method of util.DateUtil
-        .limit(MAX_LIMIT)
+        .orgCode(orgCode)
+        .accountNum(accountNum)
+        .seqno(seqno)
+        .fromDate(fromDate)
+        .toDate(toDate)
+        .limit(LIMIT)
         .build();
     ExecutionRequest<AccountTransactionRequest> executionRequest = ExecutionUtil
         .executionRequestAssembler(header, request);
@@ -131,28 +133,32 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         .transCnt(0)
         .transList(new ArrayList<>())
         .build();
-    final AccountTransaction defaultTransaction = AccountTransaction.builder()
-        .accountNum(accountSummary.getAccountNum())
-        .seqno(accountSummary.getSeqno())
-        .build();
-    final AccountTransactionMapper accountTransactionMapper = Mappers.getMapper(AccountTransactionMapper.class);
-
     //TODO
     //  Change to flex-like instead of do-while.
     do {
-      AccountTransactionResponse page = execute(executionContext, Executions.capital_get_account_transactions,
-          executionRequest);
-      response.setRspCode(page.getRspCode());
-      response.setRspMsg(page.getRspMsg());
-      response.setNextPage(page.getNextPage());
-      response.setTransCnt(response.getTransCnt() + page.getTransCnt());
-      response.getTransList().addAll(
-          page.getTransList().stream()
-              .peek(accountTransaction -> accountTransactionMapper
-                  .updateDtoFromDto(defaultTransaction, accountTransaction))
-              .collect(Collectors.toList())
-      );
-      executionRequest.getRequest().setNextPage(page.getNextPage());
+      AccountTransactionResponse page = null;
+      try {
+        page = execute(executionContext, execution, executionRequest);
+        response.setRspCode(page.getRspCode());
+        response.setRspMsg(page.getRspMsg());
+        response.setNextPage(page.getNextPage());
+        response.setTransCnt(response.getTransCnt() + page.getTransCnt());
+        response.getTransList().addAll(
+            page.getTransList().stream()
+                .peek(accountTransaction -> {
+                  accountTransaction.setAccountNum(accountNum);
+                  accountTransaction.setSeqno(seqno);
+                })
+                .collect(Collectors.toList())
+        );
+        executionRequest.getRequest().setNextPage(page.getNextPage());
+      } catch (CollectRuntimeException e) {
+        if (page == null) {
+          throw new AssertionError();
+        }
+        throw new CollectmydataRuntimeException(
+            String.format("Mydata API is not OK: rspCode = %s, rspMsg = %s", page.getRspCode(), page.getRspMsg()), e);
+      }
     } while (response.getNextPage() != null);
     return response;
   }
@@ -192,7 +198,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         .seqno(accountSummary.getSeqno())
         .fromDate(DateUtil.toDateString(fromDate))
         .toDate(DateUtil.toDateString(toDate))
-        .limit(MAX_LIMIT)
+        .limit(LIMIT)
         .build();
     do {
       ExecutionRequest<OperatingLeaseTransactionRequest> executionRequest = ExecutionUtil
