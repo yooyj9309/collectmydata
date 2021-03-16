@@ -1,7 +1,7 @@
 package com.banksalad.collectmydata.telecom.collect;
 
 import com.banksalad.collectmydata.common.collect.execution.Execution;
-import com.banksalad.collectmydata.telecom.common.dto.ListTelecomSummariesResponse;
+import com.banksalad.collectmydata.telecom.summary.dto.ListTelecomSummariesResponse;
 import com.banksalad.collectmydata.telecom.telecom.dto.ListTelecomBillsResponse;
 import com.banksalad.collectmydata.telecom.telecom.dto.ListTelecomPaidTransactionsResponse;
 import com.banksalad.collectmydata.telecom.telecom.dto.ListTelecomTransactionsResponse;

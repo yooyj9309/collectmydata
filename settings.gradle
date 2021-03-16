@@ -28,5 +28,3 @@ include ":kafkamanager",
 include ":referencebank"
 
 include ":irp"
-include 'telecoms'
-

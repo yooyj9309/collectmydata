@@ -11,11 +11,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -38,11 +40,11 @@ public class TelecomSummaryEntity extends BaseTimeAndUserEntity {
   @Column(nullable = false)
   private String mgmtId;
 
-  @Column(nullable = false, name = "is_consent", columnDefinition = "BIT", length = 1)
+  @Column(nullable = false, name = "is_consent", columnDefinition = "BOOLEAN")
   private Boolean consent;
 
   @Column(nullable = false, name = "telecom_num_masked_encrypted")
-  private String telecomNumMasked;
+  private String telecomNum;
 
   @Column(nullable = false)
   private String type;

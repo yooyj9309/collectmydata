@@ -1,7 +1,7 @@
 package com.banksalad.collectmydata.telecom.telecom.service;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.telecom.common.dto.TelecomSummary;
+import com.banksalad.collectmydata.telecom.summary.dto.TelecomSummary;
 import com.banksalad.collectmydata.telecom.telecom.dto.TelecomPaidTransaction;
 import com.banksalad.collectmydata.telecom.telecom.dto.TelecomTransaction;
 
