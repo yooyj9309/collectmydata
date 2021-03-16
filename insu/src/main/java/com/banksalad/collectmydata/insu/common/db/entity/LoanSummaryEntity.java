@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.insu.common.db.entity;
 
+import com.banksalad.collectmydata.finance.common.db.entity.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,7 +23,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "loan_summary")
-public class LoanSummaryEntity extends BaseTimeAndUserEntity {
+public class LoanSummaryEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,11 +55,11 @@ public class LoanSummaryEntity extends BaseTimeAndUserEntity {
 
   private Long basicSearchTimestamp;
 
-  private String basicSearchResponseCode;
+  private String basicResponseCode;
 
   private Long detailSearchTimestamp;
 
-  private String detailSearchResponseCode;
+  private String detailResponseCode;
 
   private LocalDateTime transactionSyncedAt;
 }

@@ -10,7 +10,7 @@ import com.banksalad.collectmydata.common.organization.Organization;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
-import com.banksalad.collectmydata.insu.collect.Apis;
+import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.db.entity.LoanTransactionEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.LoanTransactionInterestEntity;
@@ -18,10 +18,8 @@ import com.banksalad.collectmydata.insu.common.db.mapper.LoanTransactionInterest
 import com.banksalad.collectmydata.insu.common.db.mapper.LoanTransactionMapper;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanTransactionInterestRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanTransactionRepository;
-import com.banksalad.collectmydata.insu.common.dto.LoanSummary;
-import com.banksalad.collectmydata.insu.common.service.ExecutionResponseValidateService;
+import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
 import com.banksalad.collectmydata.insu.common.service.LoanSummaryService;
-import com.banksalad.collectmydata.insu.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.insu.loan.dto.ListLoanTransactionRequest;
 import com.banksalad.collectmydata.insu.loan.dto.ListLoanTransactionResponse;
 import com.banksalad.collectmydata.insu.loan.dto.LoanTransaction;
@@ -47,7 +45,6 @@ public class LoanTransactionServiceImpl implements LoanTransactionService {
   private final LoanSummaryService loanSummaryService;
   private final UserSyncStatusService userSyncStatusService;
   private final LoanTransactionRepository loanTransactionRepository;
-  private final ExecutionResponseValidateService executionResponseValidateService;
   private final LoanTransactionInterestRepository loanTransactionInterestRepository;
 
   private final LoanTransactionMapper loanTransactionMapper = Mappers.getMapper(LoanTransactionMapper.class);
@@ -78,10 +75,10 @@ public class LoanTransactionServiceImpl implements LoanTransactionService {
       }
     }
 
-    userSyncStatusService
-        .updateUserSyncStatus(executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
-            Apis.insurance_get_loan_transactions.getId(), executionContext.getSyncStartedAt(), null,
-            executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred));
+//    userSyncStatusService
+//        .updateUserSyncStatus(executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
+//            Apis.insurance_get_loan_transactions.getId(), executionContext.getSyncStartedAt(), null,
+//            executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred));
 
     return loanTransactions;
   }

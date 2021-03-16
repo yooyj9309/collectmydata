@@ -1,7 +1,7 @@
 package com.banksalad.collectmydata.insu.common.service;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.insu.common.dto.InsuranceSummary;
+import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 
 import java.time.LocalDateTime;
 import java.util.List;

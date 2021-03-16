@@ -10,8 +10,7 @@ import com.banksalad.collectmydata.insu.common.db.entity.InsuranceSummaryEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceTransactionEntity;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceSummaryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceTransactionRepository;
-import com.banksalad.collectmydata.insu.common.db.repository.UserSyncStatusRepository;
-import com.banksalad.collectmydata.insu.common.dto.InsuranceSummary;
+import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.common.util.TestHelper;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceTransaction;
 import com.banksalad.collectmydata.insu.insurance.service.InsuranceTransactionService;
@@ -50,8 +49,8 @@ public class InsuranceTransactionServiceTest {
   @Autowired
   private InsuranceSummaryRepository insuranceSummaryRepository;
 
-  @Autowired
-  private UserSyncStatusRepository userSyncStatusRepository;
+//  @Autowired
+//  private UserSyncStatusRepository userSyncStatusRepository;
   
   private static WireMockServer wireMockServer;
 
@@ -66,7 +65,7 @@ public class InsuranceTransactionServiceTest {
   private void after() {
     insuranceTransactionRepository.deleteAll();
     insuranceSummaryRepository.deleteAll();
-    userSyncStatusRepository.deleteAll();
+//    userSyncStatusRepository.deleteAll();
   }
 
   @Test

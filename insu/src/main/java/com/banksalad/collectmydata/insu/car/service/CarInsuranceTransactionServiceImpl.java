@@ -9,20 +9,17 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.common.organization.Organization;
-import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.insu.car.dto.CarInsurance;
 import com.banksalad.collectmydata.insu.car.dto.CarInsuranceTransaction;
 import com.banksalad.collectmydata.insu.car.dto.GetCarInsuranceRequest;
-import com.banksalad.collectmydata.insu.car.dto.GetCarInsuranceResponse;
 import com.banksalad.collectmydata.insu.car.dto.ListCarInsuranceTransactionsRequest;
 import com.banksalad.collectmydata.insu.car.dto.ListCarInsuranceTransactionsResponse;
 import com.banksalad.collectmydata.insu.collect.Executions;
-import com.banksalad.collectmydata.insu.common.dto.InsuranceSummary;
+import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 

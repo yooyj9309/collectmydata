@@ -21,8 +21,7 @@ import com.banksalad.collectmydata.insu.common.db.repository.InsuranceContractRe
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceSummaryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuredHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuredRepository;
-import com.banksalad.collectmydata.insu.common.db.repository.UserSyncStatusRepository;
-import com.banksalad.collectmydata.insu.common.dto.InsuranceSummary;
+import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceBasic;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceContract;
 import com.banksalad.collectmydata.insu.insurance.dto.Insured;
@@ -80,8 +79,8 @@ public class InsuranceServiceTest {
   @Autowired
   private InsuranceContractHistoryRepository insuranceContractHistoryRepository;
 
-  @Autowired
-  private UserSyncStatusRepository userSyncStatusRepository;
+//  @Autowired
+//  private UserSyncStatusRepository userSyncStatusRepository;
 
   private static WireMockServer wireMockServer;
 
@@ -94,7 +93,7 @@ public class InsuranceServiceTest {
 
   @AfterEach
   private void after() {
-    userSyncStatusRepository.deleteAll();
+//    userSyncStatusRepository.deleteAll();
     insuranceBasicRepository.deleteAll();
     insuranceBasicHistoryRepository.deleteAll();
     insuranceSummaryRepository.deleteAll();

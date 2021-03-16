@@ -9,14 +9,15 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.common.util.ExecutionUtil;
+import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.insu.collect.Apis;
 import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceSummaryEntity;
 import com.banksalad.collectmydata.insu.common.db.mapper.InsuranceSummaryMapper;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceSummaryRepository;
-import com.banksalad.collectmydata.insu.common.dto.InsuranceSummary;
-import com.banksalad.collectmydata.insu.common.dto.ListInsuranceSummariesRequest;
-import com.banksalad.collectmydata.insu.common.dto.ListInsuranceSummariesResponse;
+import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
+import com.banksalad.collectmydata.insu.summary.dto.ListInsuranceSummariesRequest;
+import com.banksalad.collectmydata.insu.summary.dto.ListInsuranceSummariesResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
@@ -31,7 +32,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
 
-  private final ExecutionResponseValidateService executionResponseValidateService;
   private final UserSyncStatusService userSyncStatusService;
   private final InsuranceSummaryRepository insuranceSummaryRepository;
   private final CollectExecutor collectExecutor;
@@ -71,15 +71,15 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
       insuranceSummaryRepository.save(insuranceSummaryEntity);
     }
 
-    userSyncStatusService
-        .updateUserSyncStatus(
-            banksaladUserId,
-            organizationId,
-            Apis.insurance_get_summaries.getId(),
-            executionContext.getSyncStartedAt(),
-            insuranceSummariesResponse.getSearchTimestamp(),
-            executionResponseValidateService.isAllResponseResultSuccess(executionContext, false)
-        );
+//    userSyncStatusService
+//        .updateUserSyncStatus(
+//            banksaladUserId,
+//            organizationId,
+//            Apis.insurance_get_summaries.getId(),
+//            executionContext.getSyncStartedAt(),
+//            insuranceSummariesResponse.getSearchTimestamp(),
+//            executionResponseValidateService.isAllResponseResultSuccess(executionContext, false)
+//        );
 
     List<InsuranceSummaryEntity> insuranceSummaryEntities = insuranceSummaryRepository
         .findByBanksaladUserIdAndOrganizationId(banksaladUserId, organizationId);
@@ -96,7 +96,7 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
       long basicSearchTimestamp, String rspCode) {
     InsuranceSummaryEntity entity = getInsuranceSummaryEntity(banksaladUserId, organizationId, insuNum);
     entity.setBasicSearchTimestamp(basicSearchTimestamp);
-    entity.setBasicSearchResponseCode(rspCode);
+    entity.setBasicResponseCode(rspCode);
     insuranceSummaryRepository.save(entity);
   }
 
@@ -105,7 +105,7 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
       long carSearchTimestamp, String rspCode) {
     InsuranceSummaryEntity entity = getInsuranceSummaryEntity(banksaladUserId, organizationId, insuNum);
     entity.setCarSearchTimestamp(carSearchTimestamp);
-    entity.setCarSearchResponseCode(rspCode);
+    entity.setCarResponseCode(rspCode);
     insuranceSummaryRepository.save(entity);
   }
 
@@ -114,7 +114,7 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
       long paymentSearchTimestamp, String rspCode) {
     InsuranceSummaryEntity entity = getInsuranceSummaryEntity(banksaladUserId, organizationId, insuNum);
     entity.setPaymentSearchTimestamp(paymentSearchTimestamp);
-    entity.setPaymentSearchResponseCode(rspCode);
+    entity.setPaymentResponseCode(rspCode);
     insuranceSummaryRepository.save(entity);
   }
 

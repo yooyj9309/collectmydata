@@ -14,7 +14,7 @@ import com.banksalad.collectmydata.insu.car.dto.CarInsurance;
 import com.banksalad.collectmydata.insu.car.dto.GetCarInsuranceRequest;
 import com.banksalad.collectmydata.insu.car.dto.GetCarInsuranceResponse;
 import com.banksalad.collectmydata.insu.collect.Executions;
-import com.banksalad.collectmydata.insu.common.dto.InsuranceSummary;
+import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

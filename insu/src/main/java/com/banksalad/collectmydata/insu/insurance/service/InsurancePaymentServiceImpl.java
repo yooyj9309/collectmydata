@@ -11,17 +11,15 @@ import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.common.organization.Organization;
 import com.banksalad.collectmydata.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
-import com.banksalad.collectmydata.insu.collect.Apis;
+import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.db.entity.InsurancePaymentEntity;
 import com.banksalad.collectmydata.insu.common.db.mapper.InsurancePaymentHistoryMapper;
 import com.banksalad.collectmydata.insu.common.db.mapper.InsurancePaymentMapper;
 import com.banksalad.collectmydata.insu.common.db.repository.InsurancePaymentHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsurancePaymentRepository;
-import com.banksalad.collectmydata.insu.common.dto.InsuranceSummary;
-import com.banksalad.collectmydata.insu.common.service.ExecutionResponseValidateService;
+import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.common.service.InsuranceSummaryService;
-import com.banksalad.collectmydata.insu.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsurancePaymentRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsurancePaymentResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.InsurancePayment;
@@ -45,7 +43,6 @@ public class InsurancePaymentServiceImpl implements InsurancePaymentService {
   private final CollectExecutor collectExecutor;
   private final InsuranceSummaryService insuranceSummaryService;
   private final UserSyncStatusService userSyncStatusService;
-  private final ExecutionResponseValidateService executionResponseValidateService;
   private final InsurancePaymentRepository insurancePaymentRepository;
   private final InsurancePaymentHistoryRepository insurancePaymentHistoryRepository;
 
@@ -86,13 +83,13 @@ public class InsurancePaymentServiceImpl implements InsurancePaymentService {
       }
     }
 
-    userSyncStatusService.updateUserSyncStatus(
-        banksaladUserId,
-        organizationId,
-        Apis.insurance_get_payment.getId(),
-        executionContext.getSyncStartedAt(),
-        null,
-        executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred));
+//    userSyncStatusService.updateUserSyncStatus(
+//        banksaladUserId,
+//        organizationId,
+//        Apis.insurance_get_payment.getId(),
+//        executionContext.getSyncStartedAt(),
+//        null,
+//        executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred));
 
     return insurancePayments;
   }

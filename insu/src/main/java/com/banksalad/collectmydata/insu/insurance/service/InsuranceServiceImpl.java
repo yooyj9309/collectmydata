@@ -12,6 +12,7 @@ import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
+import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.insu.collect.Apis;
 import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceBasicEntity;
@@ -31,10 +32,8 @@ import com.banksalad.collectmydata.insu.common.db.repository.InsuranceContractHi
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceContractRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuredHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuredRepository;
-import com.banksalad.collectmydata.insu.common.dto.InsuranceSummary;
-import com.banksalad.collectmydata.insu.common.service.ExecutionResponseValidateService;
+import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.common.service.InsuranceSummaryService;
-import com.banksalad.collectmydata.insu.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractRequest;
@@ -63,7 +62,6 @@ public class InsuranceServiceImpl implements InsuranceService {
   private final CollectExecutor collectExecutor;
   private final InsuranceSummaryService insuranceSummaryService;
   private final UserSyncStatusService userSyncStatusService;
-  private final ExecutionResponseValidateService executionResponseValidateService;
   private final InsuranceBasicRepository insuranceBasicRepository;
   private final InsuranceBasicHistoryRepository insuranceBasicHistoryRepository;
   private final InsuredRepository insuredRepository;
@@ -108,15 +106,15 @@ public class InsuranceServiceImpl implements InsuranceService {
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
 
-    userSyncStatusService
-        .updateUserSyncStatus(
-            executionContext.getBanksaladUserId(),
-            executionContext.getOrganizationId(),
-            Apis.insurance_get_basic.getId(),
-            executionContext.getSyncStartedAt(),
-            null,
-            executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred.get())
-        );
+//    userSyncStatusService
+//        .updateUserSyncStatus(
+//            executionContext.getBanksaladUserId(),
+//            executionContext.getOrganizationId(),
+//            Apis.insurance_get_basic.getId(),
+//            executionContext.getSyncStartedAt(),
+//            null,
+//            executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred.get())
+//        );
 
     return insuranceBasics;
   }
@@ -141,15 +139,15 @@ public class InsuranceServiceImpl implements InsuranceService {
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
 
-    userSyncStatusService
-        .updateUserSyncStatus(
-            executionContext.getBanksaladUserId(),
-            executionContext.getOrganizationId(),
-            Apis.insurance_get_contract.getId(),
-            executionContext.getSyncStartedAt(),
-            null,
-            executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred.get())
-        );
+//    userSyncStatusService
+//        .updateUserSyncStatus(
+//            executionContext.getBanksaladUserId(),
+//            executionContext.getOrganizationId(),
+//            Apis.insurance_get_contract.getId(),
+//            executionContext.getSyncStartedAt(),
+//            null,
+//            executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred.get())
+//        );
 
     return insuranceContracts;
   }

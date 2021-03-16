@@ -2,7 +2,7 @@ package com.banksalad.collectmydata.insu.car.service;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.insu.car.dto.CarInsurance;
-import com.banksalad.collectmydata.insu.common.dto.InsuranceSummary;
+import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 
 import java.util.List;
 

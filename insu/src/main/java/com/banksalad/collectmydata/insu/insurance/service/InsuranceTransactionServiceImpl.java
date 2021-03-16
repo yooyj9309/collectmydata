@@ -12,15 +12,13 @@ import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.common.util.ExecutionUtil;
-import com.banksalad.collectmydata.insu.collect.Apis;
+import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceTransactionEntity;
 import com.banksalad.collectmydata.insu.common.db.mapper.InsuranceTransactionMapper;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceTransactionRepository;
-import com.banksalad.collectmydata.insu.common.dto.InsuranceSummary;
-import com.banksalad.collectmydata.insu.common.service.ExecutionResponseValidateService;
+import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.common.service.InsuranceSummaryService;
-import com.banksalad.collectmydata.insu.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceTransaction;
 import com.banksalad.collectmydata.insu.insurance.dto.ListInsuranceTransactionsRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.ListInsuranceTransactionsResponse;
@@ -45,7 +43,6 @@ import java.util.stream.Collectors;
 public class InsuranceTransactionServiceImpl implements InsuranceTransactionService {
 
   private final InsuranceSummaryService insuranceSummaryService;
-  private final ExecutionResponseValidateService executionResponseValidateService;
   private final UserSyncStatusService userSyncStatusService;
   private final InsuranceTransactionRepository insuranceTransactionRepository;
   private final CollectExecutor collectExecutor;
@@ -77,15 +74,15 @@ public class InsuranceTransactionServiceImpl implements InsuranceTransactionServ
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
 
-    userSyncStatusService
-        .updateUserSyncStatus(
-            executionContext.getBanksaladUserId(),
-            executionContext.getOrganizationId(),
-            Apis.insurance_get_transactions.getId(),
-            executionContext.getSyncStartedAt(),
-            null,
-            executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred.get())
-        );
+//    userSyncStatusService
+//        .updateUserSyncStatus(
+//            executionContext.getBanksaladUserId(),
+//            executionContext.getOrganizationId(),
+//            Apis.insurance_get_transactions.getId(),
+//            executionContext.getSyncStartedAt(),
+//            null,
+//            executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred.get())
+//        );
     return insuranceTransactions;
   }
 

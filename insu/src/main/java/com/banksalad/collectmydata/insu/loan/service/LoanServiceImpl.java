@@ -9,7 +9,7 @@ import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.common.exception.CollectmydataRuntimeException;
 import com.banksalad.collectmydata.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
-import com.banksalad.collectmydata.insu.collect.Apis;
+import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.db.entity.LoanBasicEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.LoanDetailEntity;
@@ -21,10 +21,8 @@ import com.banksalad.collectmydata.insu.common.db.repository.LoanBasicHistoryRep
 import com.banksalad.collectmydata.insu.common.db.repository.LoanBasicRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanDetailHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanDetailRepository;
-import com.banksalad.collectmydata.insu.common.dto.LoanSummary;
-import com.banksalad.collectmydata.insu.common.service.ExecutionResponseValidateService;
+import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
 import com.banksalad.collectmydata.insu.common.service.LoanSummaryService;
-import com.banksalad.collectmydata.insu.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicRequest;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicResponse;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailRequest;
@@ -63,7 +61,6 @@ public class LoanServiceImpl implements LoanService {
   private final CollectExecutor collectExecutor;
   private final LoanSummaryService loanSummaryService;
   private final UserSyncStatusService userSyncStatusService;
-  private final ExecutionResponseValidateService executionResponseValidateService;
   private final LoanBasicRepository loanBasicRepository;
   private final LoanBasicHistoryRepository loanBasicHistoryRepository;
   private final LoanDetailRepository loanDetailRepository;
@@ -97,15 +94,15 @@ public class LoanServiceImpl implements LoanService {
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
 
-    userSyncStatusService
-        .updateUserSyncStatus(
-            executionContext.getBanksaladUserId(),
-            executionContext.getOrganizationId(),
-            Apis.insurance_get_loan_basic.getId(),
-            executionContext.getSyncStartedAt(),
-            null,
-            executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred.get())
-        );
+//    userSyncStatusService
+//        .updateUserSyncStatus(
+//            executionContext.getBanksaladUserId(),
+//            executionContext.getOrganizationId(),
+//            Apis.insurance_get_loan_basic.getId(),
+//            executionContext.getSyncStartedAt(),
+//            null,
+//            executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred.get())
+//        );
 
     return loanBasics;
 
@@ -130,14 +127,14 @@ public class LoanServiceImpl implements LoanService {
       }
     }
 
-    userSyncStatusService.updateUserSyncStatus(
-        executionContext.getBanksaladUserId(),
-        executionContext.getOrganizationId(),
-        execution.getApi().getId(),
-        executionContext.getSyncStartedAt(),
-        null,
-        executionResponseValidateService.isAllResponseResultSuccess(executionContext, exceptionOccurred.get())
-    );
+//    userSyncStatusService.updateUserSyncStatus(
+//        executionContext.getBanksaladUserId(),
+//        executionContext.getOrganizationId(),
+//        execution.getApi().getId(),
+//        executionContext.getSyncStartedAt(),
+//        null,
+//        executionResponseValidateService.isAllResponseResultSuccess(executionContext, exceptionOccurred.get())
+//    );
     return loanDetails;
   }
 

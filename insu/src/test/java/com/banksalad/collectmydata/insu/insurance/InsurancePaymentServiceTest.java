@@ -12,7 +12,7 @@ import com.banksalad.collectmydata.insu.common.db.entity.InsurancePaymentEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceSummaryEntity;
 import com.banksalad.collectmydata.insu.common.db.repository.InsurancePaymentRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceSummaryRepository;
-import com.banksalad.collectmydata.insu.common.dto.InsuranceSummary;
+import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.insurance.service.InsurancePaymentService;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.persistence.EntityExistsException;
@@ -25,9 +25,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import static com.banksalad.collectmydata.common.enums.Industry.*;

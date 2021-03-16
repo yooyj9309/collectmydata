@@ -12,14 +12,12 @@ import com.banksalad.collectmydata.insu.collect.Apis;
 import com.banksalad.collectmydata.insu.common.db.entity.LoanBasicEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.LoanBasicHistoryEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.LoanSummaryEntity;
-import com.banksalad.collectmydata.insu.common.db.entity.UserSyncStatusEntity;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanBasicHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanBasicRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanDetailHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanDetailRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanSummaryRepository;
-import com.banksalad.collectmydata.insu.common.db.repository.UserSyncStatusRepository;
-import com.banksalad.collectmydata.insu.common.dto.LoanSummary;
+import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
 import com.banksalad.collectmydata.insu.loan.dto.LoanBasic;
 import com.banksalad.collectmydata.insu.loan.dto.LoanDetail;
 import com.banksalad.collectmydata.insu.loan.service.LoanService;
@@ -74,8 +72,8 @@ public class LoanServiceTest {
   @Autowired
   private LoanDetailHistoryRepository loanDetailHistoryRepository;
 
-  @Autowired
-  private UserSyncStatusRepository userSyncStatusRepository;
+//  @Autowired
+//  private UserSyncStatusRepository userSyncStatusRepository;
 
   @Autowired
   private LoanService loanService;
@@ -90,7 +88,7 @@ public class LoanServiceTest {
   @AfterEach
   public void afterEach() {
     loanSummaryRepository.deleteAll();
-    userSyncStatusRepository.deleteAll();
+//    userSyncStatusRepository.deleteAll();
     loanBasicRepository.deleteAll();
     loanBasicHistoryRepository.deleteAll();
     loanDetailRepository.deleteAll();
@@ -184,10 +182,10 @@ public class LoanServiceTest {
                 .build()
         );
 
-    UserSyncStatusEntity userSyncStatusEntity = userSyncStatusRepository
-        .findByBanksaladUserIdAndOrganizationIdAndApiId(BANKSALAD_USER_ID, ORGANIZATION_ID,
-            Apis.insurance_get_loan_basic.getId()).get();
-    assertEquals(executionContext.getSyncStartedAt(), userSyncStatusEntity.getSyncedAt());
+//    UserSyncStatusEntity userSyncStatusEntity = userSyncStatusRepository
+//        .findByBanksaladUserIdAndOrganizationIdAndApiId(BANKSALAD_USER_ID, ORGANIZATION_ID,
+//            Apis.insurance_get_loan_basic.getId()).get();
+//    assertEquals(executionContext.getSyncStartedAt(), userSyncStatusEntity.getSyncedAt());
   }
 
   @Test
@@ -224,11 +222,11 @@ public class LoanServiceTest {
     long actualDetailSearchTimestamp = loanSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndAccountNum(
         BANKSALAD_USER_ID, ORGANIZATION_ID, ACCOUNT_NUM).get().getDetailSearchTimestamp();
     assertThat(actualDetailSearchTimestamp).isEqualTo(1000L);
-    assertThat(userSyncStatusRepository.count()).isEqualTo(1);
-    LocalDateTime actualSyncedAt = userSyncStatusRepository.findByBanksaladUserIdAndOrganizationIdAndApiId(
-        BANKSALAD_USER_ID, ORGANIZATION_ID, Apis.insurance_get_loan_detail.getId()).get().getSyncedAt();
-    assertThat(actualSyncedAt)
-        .isCloseTo(executionContext.getSyncStartedAt(), Assertions.within(1, ChronoUnit.MILLIS));
+//    assertThat(userSyncStatusRepository.count()).isEqualTo(1);
+//    LocalDateTime actualSyncedAt = userSyncStatusRepository.findByBanksaladUserIdAndOrganizationIdAndApiId(
+//        BANKSALAD_USER_ID, ORGANIZATION_ID, Apis.insurance_get_loan_detail.getId()).get().getSyncedAt();
+//    assertThat(actualSyncedAt)
+//        .isCloseTo(executionContext.getSyncStartedAt(), Assertions.within(1, ChronoUnit.MILLIS));
   }
 
   @Test
@@ -268,7 +266,7 @@ public class LoanServiceTest {
     long actualDetailSearchTimestamp = loanSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndAccountNum(
         BANKSALAD_USER_ID, ORGANIZATION_ID, ACCOUNT_NUM).get().getDetailSearchTimestamp();
     assertThat(actualDetailSearchTimestamp).isEqualTo(1000L);
-    assertThat(userSyncStatusRepository.count()).isEqualTo(0);
+//    assertThat(userSyncStatusRepository.count()).isEqualTo(0);
 //    LocalDateTime actualSyncedAt = userSyncStatusRepository.findByBanksaladUserIdAndOrganizationIdAndApiId(
 //        BANKSALAD_USER_ID, ORGANIZATION_ID, Apis.insurance_get_loan_detail.getId()).get().getSyncedAt();
 //    Assertions.assertThat(actualSyncedAt).isEqualTo(executionContext.getSyncStartedAt());

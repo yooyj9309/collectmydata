@@ -5,8 +5,8 @@ import com.banksalad.collectmydata.common.enums.Industry;
 import com.banksalad.collectmydata.common.enums.MydataSector;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.common.util.NumberUtil;
-import com.banksalad.collectmydata.insu.common.dto.ListLoanSummariesResponse;
-import com.banksalad.collectmydata.insu.common.dto.LoanSummary;
+import com.banksalad.collectmydata.insu.summary.dto.ListLoanSummariesResponse;
+import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailResponse;
 import com.banksalad.collectmydata.insu.loan.dto.LoanDetail;
 
