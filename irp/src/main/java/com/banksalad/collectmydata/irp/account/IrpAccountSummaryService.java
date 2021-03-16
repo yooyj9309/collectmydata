@@ -1,13 +1,14 @@
 package com.banksalad.collectmydata.irp.account;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummary;
 
 import java.util.List;
 
 public interface IrpAccountSummaryService {
 
-  List<IrpAccountSummary> listAccountSummaries(ExecutionContext executionContext);
+  List<IrpAccountSummary> listAccountSummaries(ExecutionContext executionContext) throws ResponseNotOkException;
 
   void updateBasicSearchTimestamp(long banksaladUserId, String organizationId, IrpAccountSummary irpAccountSummary,
       long basicSearchTimestamp);

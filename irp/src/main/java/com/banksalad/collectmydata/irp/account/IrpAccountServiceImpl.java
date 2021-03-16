@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.organization.Organization;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
+import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.irp.collect.Apis;
 import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountBasicEntity;
 import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountDetailEntity;
@@ -21,7 +22,6 @@ import com.banksalad.collectmydata.irp.common.dto.IrpAccountDetail;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountDetailsResponse;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummary;
 import com.banksalad.collectmydata.irp.common.service.IrpInformationProviderService;
-import com.banksalad.collectmydata.irp.common.service.UserSyncStatusService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.javers.core.Javers;
@@ -91,7 +91,7 @@ public class IrpAccountServiceImpl implements IrpAccountService {
                 executionContext.getOrganizationId(),
                 Apis.irp_get_basic.getId(),
                 executionContext.getSyncStartedAt(),
-                true
+                irpAccountBasicResponse.getSearchTimestamp()
             );
       } catch (Exception e) {
         log.error("Failed to save irp account basic", e);
@@ -133,7 +133,7 @@ public class IrpAccountServiceImpl implements IrpAccountService {
                 executionContext.getOrganizationId(),
                 Apis.irp_get_detail.getId(),
                 executionContext.getSyncStartedAt(),
-                true
+                irpAccountDetailsResponse.getSearchTimestamp()
             );
       } catch (Exception e) {
         log.error("Failed to save irp account detail", e);

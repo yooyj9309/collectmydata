@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
+import com.banksalad.collectmydata.irp.TestConfig;
 import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountSummaryEntity;
 import com.banksalad.collectmydata.irp.common.db.entity.mapper.IrpAccountSummaryMapper;
 import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountSummaryRepository;
@@ -40,7 +41,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = TestConfig.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayName("계좌 기본 및 추가정보 조회 테스트")
 @Transactional
 class IrpAccountServiceImplTest {
