@@ -1,6 +1,6 @@
 package com.banksalad.collectmydata.bank.common.service;
 
-import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
+import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 
 import java.time.LocalDateTime;

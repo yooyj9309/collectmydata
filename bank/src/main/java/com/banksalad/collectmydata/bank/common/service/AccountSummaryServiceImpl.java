@@ -8,18 +8,17 @@ import com.banksalad.collectmydata.bank.common.collect.Apis;
 import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
-import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
-import com.banksalad.collectmydata.bank.common.dto.ListAccountSummariesResponse;
-import com.banksalad.collectmydata.bank.common.dto.UserSyncStatus;
+import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
+import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.organization.Organization;
+import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -62,13 +61,9 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
   }
 
   private long getSearchTimestamp(ExecutionContext executionContext) {
-    UserSyncStatus userSyncStatus = userSyncStatusService
-        .getUserSyncStatus(executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
-            Apis.finance_bank_accounts.getId());
-
-    return Optional.ofNullable(userSyncStatus)
-        .map(UserSyncStatus::getSearchTimestamp)
-        .orElse(0L);
+    return userSyncStatusService
+        .getSearchTimestamp(executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
+            Apis.finance_bank_accounts);
   }
 
 

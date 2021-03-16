@@ -12,10 +12,9 @@ import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountBasicH
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountBasicRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountDetailHistoryRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountDetailRepository;
-import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
+import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.bank.common.service.ExternalApiService;
-import com.banksalad.collectmydata.bank.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailResponse;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountBasic;
@@ -37,7 +36,6 @@ public class InvestAccountServiceImpl implements InvestAccountService {
 
   private static final String[] EXCLUDE_FIELDS = {"syncedAt", "createdAt", "updatedAt", "createdBy", "updatedBy"};
   private final AccountSummaryService accountSummaryService;
-  private final UserSyncStatusService userSyncStatusService;
   private final ExternalApiService externalApiService;
   private final InvestAccountBasicRepository investAccountBasicRepository;
   private final InvestAccountBasicHistoryRepository investAccountBasicHistoryRepository;

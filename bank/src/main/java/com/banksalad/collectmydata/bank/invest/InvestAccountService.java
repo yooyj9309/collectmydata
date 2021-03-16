@@ -1,6 +1,6 @@
 package com.banksalad.collectmydata.bank.invest;
 
-import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
+import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountBasic;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountDetail;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;

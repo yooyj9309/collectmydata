@@ -1,7 +1,7 @@
 package com.banksalad.collectmydata.bank.common.db.entity.mapper;
 
 import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
-import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
+import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

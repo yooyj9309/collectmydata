@@ -13,10 +13,9 @@ import com.banksalad.collectmydata.bank.common.db.repository.DepositAccountBasic
 import com.banksalad.collectmydata.bank.common.db.repository.DepositAccountBasicRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.DepositAccountDetailHistoryRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.DepositAccountDetailRepository;
-import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
+import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.bank.common.service.ExternalApiService;
-import com.banksalad.collectmydata.bank.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountBasic;
 import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountDetail;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicResponse;
@@ -38,7 +37,6 @@ import java.util.stream.Collectors;
 public class DepositAccountServiceImpl implements DepositAccountService {
 
   private final AccountSummaryService accountSummaryService;
-  private final UserSyncStatusService userSyncStatusService;
   private final ExternalApiService externalApiService;
 
   private final DepositAccountBasicRepository depositAccountBasicRepository;

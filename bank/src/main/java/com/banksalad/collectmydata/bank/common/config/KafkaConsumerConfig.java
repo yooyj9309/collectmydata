@@ -6,8 +6,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.ContainerProperties.AckMode;
 
-import com.banksalad.collectmydata.common.message.ConsumerGroupId;
+import com.banksalad.collectmydata.common.message.MessageTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
@@ -31,12 +32,18 @@ public class KafkaConsumerConfig {
   private ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory(String groupId) {
     ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
     factory.setConsumerFactory(consumerFactory(groupId));
+    factory.getContainerProperties().setAckMode(AckMode.BATCH);
 
     return factory;
   }
 
   @Bean
   public ConcurrentKafkaListenerContainerFactory<String, String> bankSyncRequestedKafkaListenerContainerFactory() {
-    return kafkaListenerContainerFactory(ConsumerGroupId.collectmydataFinanceBank);
+    return kafkaListenerContainerFactory(MessageTopic.bankSyncRequested);
+  }
+
+  @Bean
+  public ConcurrentKafkaListenerContainerFactory<String, String> bankPublishmentRequestedKafkaListenerContainerFactory() {
+    return kafkaListenerContainerFactory(MessageTopic.bankPublishmentRequested);
   }
 }

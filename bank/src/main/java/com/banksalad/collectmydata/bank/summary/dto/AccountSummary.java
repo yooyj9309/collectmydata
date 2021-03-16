@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.bank.common.dto;
+package com.banksalad.collectmydata.bank.summary.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;

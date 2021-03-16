@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountTransactionEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.mapper.InvestAccountTransactionMapper;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountTransactionRepository;
-import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
+import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.bank.common.service.ExternalApiService;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountTransaction;
@@ -25,7 +25,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.banksalad.collectmydata.common.util.DateUtil.utcLocalDateTimeToKstLocalDateTime;
 

@@ -12,10 +12,9 @@ import com.banksalad.collectmydata.bank.common.db.repository.LoanAccountBasicHis
 import com.banksalad.collectmydata.bank.common.db.repository.LoanAccountBasicRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.LoanAccountDetailHistoryRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.LoanAccountDetailRepository;
-import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
+import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.bank.common.service.ExternalApiService;
-import com.banksalad.collectmydata.bank.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountBasicResponse;
 import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountDetailResponse;
 import com.banksalad.collectmydata.bank.loan.dto.LoanAccountBasic;
@@ -37,7 +36,6 @@ public class LoanAccountServiceImpl implements LoanAccountService {
 
   private static final String[] EXCLUDE_FIELDS = {"syncedAt", "createdAt", "updatedAt", "createdBy", "updatedBy"};
   private final AccountSummaryService accountSummaryService;
-  private final UserSyncStatusService userSyncStatusService;
   private final ExternalApiService externalApiService;
 
   private final LoanAccountBasicRepository loanAccountBasicRepository;

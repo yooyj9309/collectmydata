@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.bank.common.collect.Executions;
-import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
-import com.banksalad.collectmydata.bank.common.dto.ListAccountSummariesRequest;
-import com.banksalad.collectmydata.bank.common.dto.ListAccountSummariesResponse;
+import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
+import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesRequest;
+import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicRequest;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountDetailRequest;

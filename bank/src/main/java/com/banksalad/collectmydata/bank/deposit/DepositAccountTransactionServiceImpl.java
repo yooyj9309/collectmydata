@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import com.banksalad.collectmydata.bank.common.db.entity.DepositAccountTransactionEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.mapper.DepositAccountTransactionMapper;
 import com.banksalad.collectmydata.bank.common.db.repository.DepositAccountTransactionRepository;
-import com.banksalad.collectmydata.bank.common.dto.AccountSummary;
+import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.bank.common.service.ExternalApiService;
 import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountTransaction;
