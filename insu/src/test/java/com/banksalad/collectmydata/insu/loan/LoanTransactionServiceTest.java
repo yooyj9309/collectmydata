@@ -13,7 +13,6 @@ import com.banksalad.collectmydata.insu.common.db.repository.LoanSummaryReposito
 import com.banksalad.collectmydata.insu.common.db.repository.LoanTransactionInterestRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanTransactionRepository;
 import com.banksalad.collectmydata.insu.common.dto.LoanSummary;
-import com.banksalad.collectmydata.insu.common.util.TestHelper;
 import com.banksalad.collectmydata.insu.loan.dto.LoanTransaction;
 import com.banksalad.collectmydata.insu.loan.dto.LoanTransactionInterest;
 import com.banksalad.collectmydata.insu.loan.service.LoanTransactionServiceImpl;
@@ -27,8 +26,10 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.UUID;
 
 import static com.banksalad.collectmydata.insu.common.util.FileUtil.readText;
+import static com.banksalad.collectmydata.insu.common.util.TestHelper.ACCESS_TOKEN;
 import static com.banksalad.collectmydata.insu.common.util.TestHelper.BANKSALAD_USER_ID;
 import static com.banksalad.collectmydata.insu.common.util.TestHelper.INDUSTRY;
 import static com.banksalad.collectmydata.insu.common.util.TestHelper.ORGANIZATION_CODE;
@@ -74,7 +75,7 @@ class LoanTransactionServiceTest {
   @DisplayName("6.5.11 Data Provider API Response : DB 에 없는 거래내역 01, DB 데이터와 동일한 거래내역 02")
   void givenLoanTransactions_whenListLoanTransactions_ThenInsertLonTransactionAndInterest() {
     // Given
-    ExecutionContext executionContext = TestHelper.getExecutionContext(wireMockServer.port());
+    ExecutionContext executionContext = getExecutionContext();
     Organization organization = getOrganization();
     LoanSummary loanSummary = getLoanSummary();
 
@@ -114,6 +115,17 @@ class LoanTransactionServiceTest {
     assertEquals(2, loanTransactionInterestRepository.count());
   }
 
+  private ExecutionContext getExecutionContext() {
+    return ExecutionContext.builder()
+        .organizationHost("http://" + ORGANIZATION_HOST + ":" + wireMockServer.port())
+        .accessToken(ACCESS_TOKEN)
+        .banksaladUserId(BANKSALAD_USER_ID)
+        .organizationId(ORGANIZATION_ID)
+        .executionRequestId(UUID.randomUUID().toString())
+        .syncStartedAt(LocalDateTime.of(2021, 3, 16, 0, 0))
+        .build();
+  }
+
   private Organization getOrganization() {
     return Organization.builder()
         .sector(SECTOR)
@@ -131,7 +143,7 @@ class LoanTransactionServiceTest {
         .consent(true)
         .accountType("3245")
         .accountStatus("01")
-        .transactionSyncedAt(LocalDateTime.now().minusDays(1))
+        .transactionSyncedAt(LocalDateTime.of(2021, 3, 15, 0, 0))
         .build();
   }
 
