@@ -71,10 +71,10 @@ public class DepositAccountBasicInfoResponseHelper implements AccountInfoRespons
   }
 
   @Override
-  public void saveSearchTimestamp(ExecutionContext executionContext, AccountSummary accountSummary, long searchTimeastamp) {
+  public void saveSearchTimestamp(ExecutionContext executionContext, AccountSummary accountSummary, long searchTimestamp) {
     accountSummaryService
         .updateBasicSearchTimestamp(executionContext.getBanksaladUserId(), executionContext.getOrganizationId(), accountSummary,
-            searchTimeastamp);
+            searchTimestamp);
   }
 
   @Override

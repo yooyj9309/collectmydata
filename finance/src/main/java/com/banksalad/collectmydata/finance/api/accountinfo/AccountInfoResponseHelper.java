@@ -7,10 +7,10 @@ public interface AccountInfoResponseHelper<Summary, Account> {
 
   Account getAccountFromResponse(AccountResponse accountResponse);
 
-  void saveAccountAndHistory(ExecutionContext executionContext, Summary summaryDto, Account account);
+  void saveAccountAndHistory(ExecutionContext executionContext, Summary summary, Account account);
 
-  void saveSearchTimestamp(ExecutionContext executionContext, Summary summaryDto, long searchTimestamp);
+  void saveSearchTimestamp(ExecutionContext executionContext, Summary summary, long searchTimestamp);
 
-  void saveResponseCode(ExecutionContext executionContext, Summary summaryDto, String responseCode);
+  void saveResponseCode(ExecutionContext executionContext, Summary summary, String responseCode);
   
 }
