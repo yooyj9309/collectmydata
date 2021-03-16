@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.capital.common.db.entity;
 
+import com.banksalad.collectmydata.finance.common.db.entity.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -24,7 +25,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "account_transaction_interest")
-public class AccountTransactionInterestEntity extends BaseTimeAndUserEntity {
+public class AccountTransactionInterestEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

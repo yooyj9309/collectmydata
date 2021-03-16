@@ -1,21 +1,21 @@
 package com.banksalad.collectmydata.capital.common.service;
 
-import com.banksalad.collectmydata.capital.common.collect.Apis;
+import org.springframework.stereotype.Service;
+
+import com.banksalad.collectmydata.capital.collect.Apis;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OrganizationUserEntity;
-import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountSummaryMapper;
+import com.banksalad.collectmydata.capital.common.db.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OrganizationUserRepository;
-import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
-import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
+import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
+import com.banksalad.collectmydata.capital.summary.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.common.exception.CollectmydataRuntimeException;
 import com.banksalad.collectmydata.common.util.DateUtil;
-
-import org.springframework.stereotype.Service;
-
+import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
@@ -83,15 +83,15 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
     }
 
     // userSyncStatus table update
-    userSyncStatusService
-        .updateUserSyncStatus(
-            banksaladUserId,
-            organizationId,
-            Apis.capital_get_accounts.getId(),
-            executionContext.getSyncStartedAt(),
-            accountSummaryResponse.getSearchTimestamp(),
-            true //목록조회에서는 실패시 throw를 하기에 true값 전달
-        );
+//    userSyncStatusService
+//        .updateUserSyncStatus(
+//            banksaladUserId,
+//            organizationId,
+//            Apis.capital_get_accounts.getId(),
+//            executionContext.getSyncStartedAt(),
+//            accountSummaryResponse.getSearchTimestamp(),
+//            true //목록조회에서는 실패시 throw를 하기에 true값 전달
+//        );
 
     // db에 적재되어있는 항목을 꺼내어 리턴
     List<AccountSummaryEntity> accountListEntities = accountSummaryRepository

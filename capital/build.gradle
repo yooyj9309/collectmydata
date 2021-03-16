@@ -40,6 +40,8 @@ dependencyManagement {
 
 dependencies {
     implementation project(":common")
+    implementation project(":finance")
+
     // idl
     implementation("com.banksalad:idl:${idlVersion}")
 
@@ -52,7 +54,7 @@ dependencies {
 
     // kafka
     implementation("org.springframework.kafka:spring-kafka:${springKafkaVersion}")
-    
+
     // armeria
     implementation platform("com.linecorp.armeria:armeria-bom:${armeriaVersion}")
     implementation platform('io.netty:netty-bom:4.1.54.Final')

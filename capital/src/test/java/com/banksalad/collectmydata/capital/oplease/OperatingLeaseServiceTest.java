@@ -2,7 +2,6 @@ package com.banksalad.collectmydata.capital.oplease;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 
@@ -10,20 +9,17 @@ import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseHistoryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseTransactionEntity;
-import com.banksalad.collectmydata.capital.common.db.entity.UserSyncStatusEntity;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseHistoryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseTransactionRepository;
-import com.banksalad.collectmydata.capital.common.db.repository.UserSyncStatusRepository;
-import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
-import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLease;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
-import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
+import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
+import com.banksalad.collectmydata.finance.common.db.repository.UserSyncStatusRepository;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterEach;
@@ -38,6 +34,21 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
+import static com.banksalad.collectmydata.capital.common.TestHelper.ACCESS_TOKEN;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ACCOUNT_NUMBER;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ACCOUNT_STATUS;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ACCOUNT_TYPE;
+import static com.banksalad.collectmydata.capital.common.TestHelper.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.capital.common.TestHelper.INDUSTRY;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ORGANIZATION_CODE;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ORGANIZATION_HOST;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.capital.common.TestHelper.PRODUCT_NAME;
+import static com.banksalad.collectmydata.capital.common.TestHelper.SECTOR;
+import static com.banksalad.collectmydata.capital.common.TestHelper.SEQNO1;
+import static com.banksalad.collectmydata.capital.common.TestHelper.TRANS_AMT;
+import static com.banksalad.collectmydata.capital.common.TestHelper.TRANS_NO;
+import static com.banksalad.collectmydata.capital.common.TestHelper.TRANS_TYPE;
 import static com.banksalad.collectmydata.capital.util.FileUtil.readText;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -46,9 +57,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static java.lang.Boolean.TRUE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import static com.banksalad.collectmydata.capital.common.TestHelper.*;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @DisplayName("OperatingLeaseService Test")
@@ -246,10 +254,6 @@ public class OperatingLeaseServiceTest {
                 .nextRepayDate("20211114")
                 .build()
         );
-
-    List<UserSyncStatusEntity> userSyncStatusEntities = userSyncStatusRepository.findAll();
-    assertEquals(1, userSyncStatusEntities.size());
-    assertEquals(recentTime, userSyncStatusEntities.get(0).getSyncedAt());
   }
 
   private List<OperatingLeaseTransaction> getOperatingLeaseTransactions(LocalDate fromDate) {

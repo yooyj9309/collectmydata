@@ -7,12 +7,10 @@ import org.springframework.http.HttpStatus;
 
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OrganizationUserEntity;
-import com.banksalad.collectmydata.capital.common.db.entity.UserSyncStatusEntity;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OrganizationUserRepository;
-import com.banksalad.collectmydata.capital.common.db.repository.UserSyncStatusRepository;
-import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
+import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -43,9 +41,6 @@ public class AccountSummaryServiceTest {
   private AccountSummaryRepository accountSummaryRepository;
 
   @Autowired
-  private UserSyncStatusRepository userSyncStatusRepository;
-
-  @Autowired
   private OrganizationUserRepository organizationUserRepository;
 
   private static WireMockServer wireMockServer;
@@ -74,11 +69,8 @@ public class AccountSummaryServiceTest {
     List<AccountSummary> accountSummaries = accountSummaryService.listAccountSummaries(context, organization);
 
     List<AccountSummaryEntity> accountListEntities = accountSummaryRepository.findAll(); // 검증
-    List<UserSyncStatusEntity> userSyncStatusEntities = userSyncStatusRepository.findAll(); // 검증
 
     assertEquals(2, accountListEntities.size());
-    assertEquals(1, userSyncStatusEntities.size());
-
     assertThat(accountListEntities.get(0)).usingRecursiveComparison()
         .ignoringFields("id", "syncedAt", "createdAt", "createdBy", "updatedAt", "updatedBy")
         .isEqualTo(
@@ -119,9 +111,6 @@ public class AccountSummaryServiceTest {
                 .operatingLeaseBasicSearchTimestamp(0L)
                 .build()
         );
-
-    assertEquals(now, userSyncStatusEntities.get(0).getSyncedAt());
-    assertEquals(1000, userSyncStatusEntities.get(0).getSearchTimestamp());
   }
 
   @Test

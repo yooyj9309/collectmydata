@@ -1,8 +1,8 @@
-package com.banksalad.collectmydata.capital.common.db.entity.mapper;
+package com.banksalad.collectmydata.capital.common.db.mapper;
 
+import com.banksalad.collectmydata.capital.account.dto.AccountDetail;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountDetailEntity;
-import com.banksalad.collectmydata.capital.account.dto.AccountDetail;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;

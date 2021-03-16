@@ -4,16 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 
-import com.banksalad.collectmydata.capital.common.db.entity.ApiLogEntity;
-import com.banksalad.collectmydata.capital.common.db.repository.ApiLogRepository;
 import com.banksalad.collectmydata.capital.common.dto.ApiLogTestDto;
-import com.banksalad.collectmydata.capital.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.common.collect.api.Api;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.util.DateUtil;
+import com.banksalad.collectmydata.common.util.ExecutionUtil;
+import com.banksalad.collectmydata.finance.common.db.entity.ApiLogEntity;
+import com.banksalad.collectmydata.finance.common.db.repository.ApiLogRepository;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.AfterAll;
@@ -28,7 +28,7 @@ import java.util.Map;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
@@ -85,9 +85,9 @@ public class ApiLogServiceTest {
         .build();
 
     ExecutionRequest<Object> executionRequest = ExecutionUtil
-        .executionRequestAssembler(Map.of("token", "token"), new Object());
+        .assembleExecutionRequest(Map.of("token", "token"), new Object());
     collectExecutor.execute(context, apiLogTestExecution, executionRequest);
-    
+
     List<ApiLogEntity> entities = apiLogRepository.findAll();
 
     assertEquals(1, entities.size());

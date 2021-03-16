@@ -3,11 +3,11 @@ package com.banksalad.collectmydata.capital.common.service;
 import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
-import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
-import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
+import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
+import com.banksalad.collectmydata.capital.summary.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 
 import java.time.LocalDate;

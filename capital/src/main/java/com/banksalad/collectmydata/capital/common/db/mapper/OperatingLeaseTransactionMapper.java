@@ -1,8 +1,8 @@
-package com.banksalad.collectmydata.capital.common.db.entity.mapper;
+package com.banksalad.collectmydata.capital.common.db.mapper;
 
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseTransactionEntity;
-import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
+import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

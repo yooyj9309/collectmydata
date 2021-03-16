@@ -5,12 +5,11 @@ import com.banksalad.collectmydata.capital.account.dto.AccountTransactionInteres
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionInterestEntity;
-import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountTransactionInterestMapper;
-import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountTransactionMapper;
+import com.banksalad.collectmydata.capital.common.db.mapper.AccountTransactionInterestMapper;
+import com.banksalad.collectmydata.capital.common.db.mapper.AccountTransactionMapper;
 import com.banksalad.collectmydata.common.crypto.HashUtil;
 import com.banksalad.collectmydata.common.enums.Industry;
 import com.banksalad.collectmydata.common.enums.MydataSector;
-
 import org.mapstruct.factory.Mappers;
 
 import java.math.BigDecimal;

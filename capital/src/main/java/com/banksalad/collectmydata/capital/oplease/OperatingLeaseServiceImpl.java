@@ -3,29 +3,27 @@ package com.banksalad.collectmydata.capital.oplease;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
-import com.banksalad.collectmydata.capital.common.collect.Apis;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseHistoryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseTransactionEntity;
-import com.banksalad.collectmydata.capital.common.db.entity.mapper.OperatingLeaseHistoryMapper;
-import com.banksalad.collectmydata.capital.common.db.entity.mapper.OperatingLeaseMapper;
-import com.banksalad.collectmydata.capital.common.db.entity.mapper.OperatingLeaseTransactionMapper;
+import com.banksalad.collectmydata.capital.common.db.mapper.OperatingLeaseHistoryMapper;
+import com.banksalad.collectmydata.capital.common.db.mapper.OperatingLeaseMapper;
+import com.banksalad.collectmydata.capital.common.db.mapper.OperatingLeaseTransactionMapper;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseHistoryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseTransactionRepository;
-import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.AccountSummaryService;
-import com.banksalad.collectmydata.capital.common.service.ExecutionResponseValidateService;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
-import com.banksalad.collectmydata.capital.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLease;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
+import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
+import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
@@ -47,7 +45,6 @@ public class OperatingLeaseServiceImpl implements OperatingLeaseService {
   private final AccountSummaryService accountSummaryService;
   private final ExternalApiService externalApiService;
   private final UserSyncStatusService userSyncStatusService;
-  private final ExecutionResponseValidateService executionResponseValidateService;
   private final OperatingLeaseRepository operatingLeaseRepository;
   private final OperatingLeaseHistoryRepository operatingLeaseHistoryRepository;
   private final OperatingLeaseTransactionRepository operatingLeaseTransactionRepository;
@@ -85,15 +82,15 @@ public class OperatingLeaseServiceImpl implements OperatingLeaseService {
         .collect(Collectors.toList());
 
     // userSyncStatus table update
-    userSyncStatusService
-        .updateUserSyncStatus(
-            banksaladUserId,
-            organizationId,
-            Apis.capital_get_operating_lease_basic.getId(),
-            executionContext.getSyncStartedAt(),
-            null,
-            executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred.get())
-        );
+//    userSyncStatusService
+//        .updateUserSyncStatus(
+//            banksaladUserId,
+//            organizationId,
+//            Apis.capital_get_operating_lease_basic.getId(),
+//            executionContext.getSyncStartedAt(),
+//            null,
+//            executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred.get())
+//        );
 
     return operatingLeases;
   }
@@ -193,10 +190,10 @@ public class OperatingLeaseServiceImpl implements OperatingLeaseService {
 
     /* update userSyncStatus */
     if (!isExceptionOccurred.get()) {
-      userSyncStatusService
+/*      userSyncStatusService
           .updateUserSyncStatus(executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
               Apis.capital_get_operating_lease_transactions.getId(), executionContext.getSyncStartedAt(), null,
-              executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred.get()));
+              executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred.get()));*/
     }
     return filteredOperatingLeaseTransactions;
   }

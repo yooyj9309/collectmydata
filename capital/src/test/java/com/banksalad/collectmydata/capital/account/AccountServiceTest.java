@@ -1,5 +1,9 @@
 package com.banksalad.collectmydata.capital.account;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
 import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountBasicEntity;
@@ -10,18 +14,13 @@ import com.banksalad.collectmydata.capital.common.db.repository.AccountDetailRep
 import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionInterestRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionRepository;
-import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
+import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.common.util.DateUtil;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
@@ -88,7 +87,7 @@ public class AccountServiceTest {
   void cleanBefore() {
     accountSummaryRepository.deleteAll();
   }
-  
+
   @Test
   @DisplayName("6.7.2 account_basic table 에 row 가 있음 && Data Provider API Response 와 다름")
   void givenExistingAccountBasicDifferedWithApiResponse_whenListAccountBasics_ThenUpdateAccountBasic() {

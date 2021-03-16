@@ -1,10 +1,10 @@
 package com.banksalad.collectmydata.capital.account;
 
 import com.banksalad.collectmydata.capital.account.dto.AccountBasic;
-import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
-import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
-import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetail;
+import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
+import com.banksalad.collectmydata.capital.common.dto.Organization;
+import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 
 import java.util.List;

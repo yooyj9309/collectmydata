@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.capital.common.collect;
+package com.banksalad.collectmydata.capital.collect;
 
 import com.banksalad.collectmydata.common.collect.api.Api;
 import com.banksalad.collectmydata.common.collect.api.Pagination;

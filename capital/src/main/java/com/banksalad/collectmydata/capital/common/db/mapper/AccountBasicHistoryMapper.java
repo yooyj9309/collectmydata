@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.capital.common.db.entity.mapper;
+package com.banksalad.collectmydata.capital.common.db.mapper;
 
 import com.banksalad.collectmydata.capital.common.db.entity.AccountBasicEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountBasicHistoryEntity;

@@ -1,9 +1,8 @@
-package com.banksalad.collectmydata.capital.common.db.entity.mapper;
+package com.banksalad.collectmydata.capital.common.db.mapper;
 
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionInterest;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionInterestEntity;
-
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

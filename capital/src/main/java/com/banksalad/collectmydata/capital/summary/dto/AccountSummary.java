@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.capital.common.dto;
+package com.banksalad.collectmydata.capital.summary.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter

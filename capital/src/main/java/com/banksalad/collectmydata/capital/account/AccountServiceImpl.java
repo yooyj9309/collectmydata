@@ -1,23 +1,25 @@
 package com.banksalad.collectmydata.capital.account;
 
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Service;
+
 import com.banksalad.collectmydata.capital.account.dto.AccountBasic;
 import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetail;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
-import com.banksalad.collectmydata.capital.common.collect.Apis;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountBasicEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountDetailEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionInterestEntity;
-import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountBasicHistoryMapper;
-import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountBasicMapper;
-import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountDetailHistoryMapper;
-import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountDetailMapper;
-import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountTransactionInterestMapper;
-import com.banksalad.collectmydata.capital.common.db.entity.mapper.AccountTransactionMapper;
+import com.banksalad.collectmydata.capital.common.db.mapper.AccountBasicHistoryMapper;
+import com.banksalad.collectmydata.capital.common.db.mapper.AccountBasicMapper;
+import com.banksalad.collectmydata.capital.common.db.mapper.AccountDetailHistoryMapper;
+import com.banksalad.collectmydata.capital.common.db.mapper.AccountDetailMapper;
+import com.banksalad.collectmydata.capital.common.db.mapper.AccountTransactionInterestMapper;
+import com.banksalad.collectmydata.capital.common.db.mapper.AccountTransactionMapper;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountBasicHistoryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountBasicRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountDetailHistoryRepository;
@@ -25,20 +27,15 @@ import com.banksalad.collectmydata.capital.common.db.repository.AccountDetailRep
 import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionInterestRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionRepository;
-import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.AccountSummaryService;
-import com.banksalad.collectmydata.capital.common.service.ExecutionResponseValidateService;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
-import com.banksalad.collectmydata.capital.common.service.UserSyncStatusService;
+import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.crypto.HashUtil;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
-
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Service;
-
+import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +62,6 @@ public class AccountServiceImpl implements AccountService {
 
   private final ExternalApiService externalApiService;
   private final UserSyncStatusService userSyncStatusService;
-  private final ExecutionResponseValidateService executionResponseValidateService;
   private final AccountSummaryRepository accountSummaryRepository;
   private final AccountSummaryService accountSummaryService;
   private final AccountBasicRepository accountBasicRepository;
@@ -105,13 +101,13 @@ public class AccountServiceImpl implements AccountService {
       }
     }
 
-    userSyncStatusService.updateUserSyncStatus(
-        executionContext.getBanksaladUserId(),
-        executionContext.getOrganizationId(),
-        Apis.capital_get_account_basic.getId(),
-        executionContext.getSyncStartedAt(),
-        null,
-        executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred));
+//    userSyncStatusService.updateUserSyncStatus(
+//        executionContext.getBanksaladUserId(),
+//        executionContext.getOrganizationId(),
+//        Apis.capital_get_account_basic.getId(),
+//        executionContext.getSyncStartedAt(),
+//        null,
+//        executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred));
 
     return accountBasics;
   }
@@ -177,13 +173,13 @@ public class AccountServiceImpl implements AccountService {
       }
     }
 
-    userSyncStatusService.updateUserSyncStatus(
-        executionContext.getBanksaladUserId(),
-        executionContext.getOrganizationId(),
-        Apis.capital_get_account_detail.getId(),
-        executionContext.getSyncStartedAt(),
-        null,
-        executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred));
+//    userSyncStatusService.updateUserSyncStatus(
+//        executionContext.getBanksaladUserId(),
+//        executionContext.getOrganizationId(),
+//        Apis.capital_get_account_detail.getId(),
+//        executionContext.getSyncStartedAt(),
+//        null,
+//        executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred));
 
     return accountDetails;
   }
@@ -266,14 +262,14 @@ public class AccountServiceImpl implements AccountService {
         .flatMap(Collection::stream)
         .collect(Collectors.toList());
     // Save the start time on `user_sync_status` table in case of no error.
-    userSyncStatusService.updateUserSyncStatus(
-        banksaladUserId,
-        organizationId,
-        Apis.capital_get_account_transactions.getId(),
-        executionContext.getSyncStartedAt(),
-        null,
-        executionResponseValidateService.isAllResponseResultSuccess(executionContext, exceptionOccurred.get())
-    );
+//    userSyncStatusService.updateUserSyncStatus(
+//        banksaladUserId,
+//        organizationId,
+//        Apis.capital_get_account_transactions.getId(),
+//        executionContext.getSyncStartedAt(),
+//        null,
+//        executionResponseValidateService.isAllResponseResultSuccess(executionContext, exceptionOccurred.get())
+//    );
     return accountTransactions;
   }
 

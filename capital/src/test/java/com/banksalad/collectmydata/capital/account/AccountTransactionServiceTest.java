@@ -1,22 +1,21 @@
 package com.banksalad.collectmydata.capital.account;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
 import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionInterestRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionRepository;
-import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
+import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.crypto.HashUtil;
 import com.banksalad.collectmydata.common.util.DateUtil;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

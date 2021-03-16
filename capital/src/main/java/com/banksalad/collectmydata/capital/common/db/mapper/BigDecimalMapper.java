@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.capital.common.db.entity.mapper;
+package com.banksalad.collectmydata.capital.common.db.mapper;
 
 import org.mapstruct.Mapper;
 

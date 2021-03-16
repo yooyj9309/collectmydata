@@ -1,21 +1,23 @@
 package com.banksalad.collectmydata.capital.common.service;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import com.banksalad.collectmydata.capital.account.dto.AccountBasicRequest;
 import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailRequest;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionRequest;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
-import com.banksalad.collectmydata.capital.common.collect.Executions;
-import com.banksalad.collectmydata.capital.common.dto.AccountSummary;
-import com.banksalad.collectmydata.capital.common.dto.AccountSummaryRequest;
-import com.banksalad.collectmydata.capital.common.dto.AccountSummaryResponse;
+import com.banksalad.collectmydata.capital.collect.Executions;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
-import com.banksalad.collectmydata.capital.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicRequest;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionRequest;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
+import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
+import com.banksalad.collectmydata.capital.summary.dto.AccountSummaryRequest;
+import com.banksalad.collectmydata.capital.summary.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
@@ -24,10 +26,7 @@ import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.common.exception.CollectmydataRuntimeException;
 import com.banksalad.collectmydata.common.util.DateUtil;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
+import com.banksalad.collectmydata.common.util.ExecutionUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,10 +36,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.banksalad.collectmydata.capital.common.collect.Executions.capital_get_account_detail;
-import static com.banksalad.collectmydata.capital.common.collect.Executions.capital_get_accounts;
-import static com.banksalad.collectmydata.capital.common.collect.Executions.capital_get_operating_lease_basic;
-import static com.banksalad.collectmydata.capital.common.collect.Executions.capital_get_operating_lease_transactions;
+import static com.banksalad.collectmydata.capital.collect.Executions.capital_get_account_detail;
+import static com.banksalad.collectmydata.capital.collect.Executions.capital_get_accounts;
+import static com.banksalad.collectmydata.capital.collect.Executions.capital_get_operating_lease_basic;
+import static com.banksalad.collectmydata.capital.collect.Executions.capital_get_operating_lease_transactions;
 
 @Slf4j
 @Service
@@ -63,7 +62,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         .build();
 
     ExecutionRequest<AccountSummaryRequest> executionRequest = ExecutionUtil
-        .executionRequestAssembler(headers, accountSummaryRequest);
+        .assembleExecutionRequest(headers, accountSummaryRequest);
 
     return execute(executionContext, capital_get_accounts, executionRequest);
   }
@@ -83,7 +82,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         .build();
 
     ExecutionRequest<AccountBasicRequest> executionRequest = ExecutionUtil
-        .executionRequestAssembler(headers, request);
+        .assembleExecutionRequest(headers, request);
 
     return execute(executionContext, Executions.capital_get_account_basic, executionRequest);
   }
@@ -103,7 +102,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         .build();
 
     ExecutionRequest<AccountDetailRequest> executionRequest = ExecutionUtil
-        .executionRequestAssembler(headers, accountDetailRequest);
+        .assembleExecutionRequest(headers, accountDetailRequest);
 
     return execute(executionContext, capital_get_account_detail, executionRequest);
   }
@@ -127,7 +126,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         .limit(LIMIT)
         .build();
     ExecutionRequest<AccountTransactionRequest> executionRequest = ExecutionUtil
-        .executionRequestAssembler(header, request);
+        .assembleExecutionRequest(header, request);
     AccountTransactionResponse response = AccountTransactionResponse.builder()
         .nextPage(null)
         .transCnt(0)
@@ -178,7 +177,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         .build();
 
     ExecutionRequest<OperatingLeaseBasicRequest> executionRequest = ExecutionUtil
-        .executionRequestAssembler(headers, request);
+        .assembleExecutionRequest(headers, request);
 
     return execute(executionContext, capital_get_operating_lease_basic, executionRequest);
   }
@@ -202,7 +201,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         .build();
     do {
       ExecutionRequest<OperatingLeaseTransactionRequest> executionRequest = ExecutionUtil
-          .executionRequestAssembler(headers, request);
+          .assembleExecutionRequest(headers, request);
       OperatingLeaseTransactionResponse pageResponse = execute(executionContext,
           capital_get_operating_lease_transactions, executionRequest);
 
