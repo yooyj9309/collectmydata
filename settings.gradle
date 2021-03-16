@@ -18,7 +18,8 @@ include ":bank",
         ":efin",
         ":insu",
         ":invest",
-        ":telecom"
+        ":telecom",
+        ":ginsu"
 
 // etc
 include ":kafkamanager",
