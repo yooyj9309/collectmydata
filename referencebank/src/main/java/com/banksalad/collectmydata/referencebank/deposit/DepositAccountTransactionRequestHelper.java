@@ -8,7 +8,7 @@ import com.banksalad.collectmydata.referencebank.common.db.repository.AccountSum
 import com.banksalad.collectmydata.referencebank.common.enums.BankAccountType;
 import com.banksalad.collectmydata.referencebank.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.referencebank.deposit.dto.ListDepositAccountTransactionsRequest;
-import com.banksalad.collectmydata.referencebank.summaries.dto.AccountSummary;
+import com.banksalad.collectmydata.referencebank.summary.dto.AccountSummary;
 
 import org.springframework.stereotype.Component;
 
@@ -52,14 +52,14 @@ public class DepositAccountTransactionRequestHelper implements
 
   @Override
   public ListDepositAccountTransactionsRequest make(ExecutionContext executionContext, AccountSummary accountSummary,
-      LocalDate fromDateTime, LocalDate nowDate, String nextPage) {
+      LocalDate fromDate, LocalDate toDate, String nextPage) {
 
     return ListDepositAccountTransactionsRequest.builder()
         .orgCode(executionContext.getOrganizationCode())
         .accountNum(accountSummary.getAccountNum())
         .seqno(accountSummary.getSeqno())
-        .fromDate(dateFormatter.format(fromDateTime))
-        .toDate(dateFormatter.format(executionContext.getSyncStartedAt()))
+        .fromDate(dateFormatter.format(fromDate))
+        .toDate(dateFormatter.format(toDate))
         .nextPage(null)
         .limit(DEFAULT_LIMIT)
         .build();

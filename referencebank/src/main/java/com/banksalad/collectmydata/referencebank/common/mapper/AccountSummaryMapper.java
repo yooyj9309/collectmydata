@@ -1,7 +1,7 @@
 package com.banksalad.collectmydata.referencebank.common.mapper;
 
 import com.banksalad.collectmydata.referencebank.common.db.entity.AccountSummaryEntity;
-import com.banksalad.collectmydata.referencebank.summaries.dto.AccountSummary;
+import com.banksalad.collectmydata.referencebank.summary.dto.AccountSummary;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

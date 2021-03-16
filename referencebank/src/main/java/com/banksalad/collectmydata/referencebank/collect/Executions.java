@@ -4,7 +4,7 @@ import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.referencebank.deposit.dto.GetDepositAccountBasicResponse;
 import com.banksalad.collectmydata.referencebank.deposit.dto.GetDepositAccountDetailResponse;
 import com.banksalad.collectmydata.referencebank.deposit.dto.ListDepositAccountTransactionsResponse;
-import com.banksalad.collectmydata.referencebank.summaries.dto.ListAccountSummariesResponse;
+import com.banksalad.collectmydata.referencebank.summary.dto.ListAccountSummariesResponse;
 
 public class Executions {
 
@@ -31,5 +31,5 @@ public class Executions {
           .exchange(Apis.finance_bank_deposit_account_transaction)
           .as(ListDepositAccountTransactionsResponse.class)
           .build();
-  
+
 }

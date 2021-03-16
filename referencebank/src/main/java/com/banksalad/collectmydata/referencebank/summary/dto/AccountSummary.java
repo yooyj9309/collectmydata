@@ -1,7 +1,6 @@
-package com.banksalad.collectmydata.referencebank.summaries.dto;
+package com.banksalad.collectmydata.referencebank.summary.dto;
 
-import com.banksalad.collectmydata.finance.api.summary.dto.SummaryResponse;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
@@ -11,23 +10,27 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ListAccountSummariesResponse implements SummaryResponse {
+public class AccountSummary {
 
-  private String rspCode;
-  private String rspMsg;
-  private long searchTimestamp;
-  private String regDate;
-  private int nextPage;
+  private String accountNum;
 
-  private int accountCnt;
-  private List<AccountSummary> accountList;
+  @JsonProperty("is_consent")
+  private boolean consent;
 
+  private String seqno;
+
+  @JsonProperty("is_foreign_deposit")
+  private boolean foreignDeposit;
+
+  private String prodName;
+
+  private String accountType;
+
+  private String accountStatus;
 }

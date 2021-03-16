@@ -11,7 +11,7 @@ import com.banksalad.collectmydata.referencebank.common.mapper.DepositAccountTra
 import com.banksalad.collectmydata.referencebank.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.referencebank.deposit.dto.DepositAccountTransaction;
 import com.banksalad.collectmydata.referencebank.deposit.dto.ListDepositAccountTransactionsResponse;
-import com.banksalad.collectmydata.referencebank.summaries.dto.AccountSummary;
+import com.banksalad.collectmydata.referencebank.summary.dto.AccountSummary;
 
 import org.springframework.stereotype.Component;
 

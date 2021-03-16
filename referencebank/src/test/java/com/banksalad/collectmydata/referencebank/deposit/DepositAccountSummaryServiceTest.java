@@ -8,8 +8,8 @@ import com.banksalad.collectmydata.finance.api.summary.SummaryService;
 import com.banksalad.collectmydata.referencebank.collect.Executions;
 import com.banksalad.collectmydata.referencebank.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.referencebank.common.db.repository.AccountSummaryRepository;
-import com.banksalad.collectmydata.referencebank.summaries.dto.AccountSummary;
-import com.banksalad.collectmydata.referencebank.summaries.dto.ListAccountSummariesRequest;
+import com.banksalad.collectmydata.referencebank.summary.dto.AccountSummary;
+import com.banksalad.collectmydata.referencebank.summary.dto.ListAccountSummariesRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -5,6 +5,7 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
+import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 
@@ -51,9 +52,10 @@ public class TransactionApiServiceImpl<Summary, TransactionRequest, Transaction>
       ExecutionContext executionContextLocal = executionContext.copyWith(ExecutionContext.generateExecutionRequestId());
 
       LocalDateTime fromDateTime = requestHelper.getTransactionSyncedAt(executionContext, summary);
-      LocalDateTime endDateTime = executionContext.getSyncStartedAt();
+      LocalDateTime toDateTime = DateUtil.utcLocalDateTimeToKstLocalDateTime(executionContext.getSyncStartedAt());
 
       String nextPage = null;
+      boolean isAllPaginationResponseOk = true;
 
       do {
         executionResponse = collectExecutor.execute(
@@ -62,7 +64,7 @@ public class TransactionApiServiceImpl<Summary, TransactionRequest, Transaction>
             ExecutionRequest.builder()
                 .headers(Map.of(AUTHORIZATION, executionContext.getAccessToken()))
                 .request(requestHelper
-                    .make(executionContext, summary, fromDateTime.toLocalDate(), endDateTime.toLocalDate(), nextPage))
+                    .make(executionContext, summary, fromDateTime.toLocalDate(), toDateTime.toLocalDate(), nextPage))
                 .build());
 
         /* populate response */
@@ -71,6 +73,7 @@ public class TransactionApiServiceImpl<Summary, TransactionRequest, Transaction>
         /* validate response and break pagination */
         if (executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
           responseHelper.saveResponseCode(executionContext, summary, transactionResponse.getRspCode());
+          isAllPaginationResponseOk = false;
           break;
         }
 
@@ -84,7 +87,9 @@ public class TransactionApiServiceImpl<Summary, TransactionRequest, Transaction>
       } while (executionResponse.getNextPage() != null && executionResponse.getNextPage().length() > 0);
 
       /* update transaction_synced_at, response_code */
-      responseHelper.saveTransactionSyncedAt(executionContext, summary, executionContext.getSyncStartedAt());
+      if (isAllPaginationResponseOk) {
+        responseHelper.saveTransactionSyncedAt(executionContext, summary, executionContext.getSyncStartedAt());
+      }
     }
 
     userSyncStatusService.updateUserSyncStatus(

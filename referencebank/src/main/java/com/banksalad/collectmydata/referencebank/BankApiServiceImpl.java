@@ -21,8 +21,8 @@ import com.banksalad.collectmydata.referencebank.deposit.dto.DepositAccountTrans
 import com.banksalad.collectmydata.referencebank.deposit.dto.GetDepositAccountBasicRequest;
 import com.banksalad.collectmydata.referencebank.deposit.dto.GetDepositAccountDetailRequest;
 import com.banksalad.collectmydata.referencebank.deposit.dto.ListDepositAccountTransactionsRequest;
-import com.banksalad.collectmydata.referencebank.summaries.dto.AccountSummary;
-import com.banksalad.collectmydata.referencebank.summaries.dto.ListAccountSummariesRequest;
+import com.banksalad.collectmydata.referencebank.summary.dto.AccountSummary;
+import com.banksalad.collectmydata.referencebank.summary.dto.ListAccountSummariesRequest;
 
 import org.springframework.stereotype.Service;
 

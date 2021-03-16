@@ -12,7 +12,7 @@ import com.banksalad.collectmydata.referencebank.common.enums.BankAccountType;
 import com.banksalad.collectmydata.referencebank.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.referencebank.deposit.dto.DepositAccountDetail;
 import com.banksalad.collectmydata.referencebank.deposit.dto.GetDepositAccountDetailRequest;
-import com.banksalad.collectmydata.referencebank.summaries.dto.AccountSummary;
+import com.banksalad.collectmydata.referencebank.summary.dto.AccountSummary;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

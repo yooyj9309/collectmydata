@@ -12,6 +12,6 @@ public interface TransactionRequestHelper<Summary, TransactionRequest> {
 
   LocalDateTime getTransactionSyncedAt(ExecutionContext executionContext, Summary summary);
 
-  TransactionRequest make(ExecutionContext executionContext, Summary summary, LocalDate fromDateTime, LocalDate nowDate,
+  TransactionRequest make(ExecutionContext executionContext, Summary summary, LocalDate fromDate, LocalDate toDate,
       String nextPage);
 }

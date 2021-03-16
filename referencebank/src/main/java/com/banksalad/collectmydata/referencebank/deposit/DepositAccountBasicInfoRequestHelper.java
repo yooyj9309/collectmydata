@@ -7,7 +7,7 @@ import com.banksalad.collectmydata.referencebank.common.db.repository.AccountSum
 import com.banksalad.collectmydata.referencebank.common.enums.BankAccountType;
 import com.banksalad.collectmydata.referencebank.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.referencebank.deposit.dto.GetDepositAccountBasicRequest;
-import com.banksalad.collectmydata.referencebank.summaries.dto.AccountSummary;
+import com.banksalad.collectmydata.referencebank.summary.dto.AccountSummary;
 
 import org.springframework.stereotype.Component;
 

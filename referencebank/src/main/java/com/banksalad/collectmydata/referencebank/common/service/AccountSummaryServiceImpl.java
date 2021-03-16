@@ -3,7 +3,7 @@ package com.banksalad.collectmydata.referencebank.common.service;
 import com.banksalad.collectmydata.referencebank.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.referencebank.common.enums.BankAccountType;
 import com.banksalad.collectmydata.referencebank.common.mapper.AccountSummaryMapper;
-import com.banksalad.collectmydata.referencebank.summaries.dto.AccountSummary;
+import com.banksalad.collectmydata.referencebank.summary.dto.AccountSummary;
 
 import org.springframework.stereotype.Service;
 

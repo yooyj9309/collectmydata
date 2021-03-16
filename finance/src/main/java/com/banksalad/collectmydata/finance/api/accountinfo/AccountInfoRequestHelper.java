@@ -8,6 +8,6 @@ public interface AccountInfoRequestHelper<AccountRequest, Summary> {
 
   List<Summary> listSummaries(ExecutionContext executionContext);
 
-  AccountRequest make(ExecutionContext executionContext, Summary summaryDto);
+  AccountRequest make(ExecutionContext executionContext, Summary summary);
 
 }

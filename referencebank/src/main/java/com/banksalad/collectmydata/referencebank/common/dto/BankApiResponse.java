@@ -26,7 +26,7 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class BankApiResponse {
 
-  private List<DepositAccountBasic> depositAccountBasicss;
+  private List<DepositAccountBasic> depositAccountBasics;
 
   private List<DepositAccountDetail> depositAccountDetails;
 

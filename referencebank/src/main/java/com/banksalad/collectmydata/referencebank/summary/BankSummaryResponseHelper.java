@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.referencebank.summaries;
+package com.banksalad.collectmydata.referencebank.summary;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.summary.SummaryResponseHelper;
@@ -8,8 +8,8 @@ import com.banksalad.collectmydata.referencebank.common.db.entity.OrganizationUs
 import com.banksalad.collectmydata.referencebank.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.referencebank.common.db.repository.OrganizationUserRepository;
 import com.banksalad.collectmydata.referencebank.common.mapper.AccountSummaryMapper;
-import com.banksalad.collectmydata.referencebank.summaries.dto.AccountSummary;
-import com.banksalad.collectmydata.referencebank.summaries.dto.ListAccountSummariesResponse;
+import com.banksalad.collectmydata.referencebank.summary.dto.AccountSummary;
+import com.banksalad.collectmydata.referencebank.summary.dto.ListAccountSummariesResponse;
 
 import org.springframework.stereotype.Component;
 
@@ -34,7 +34,7 @@ public class BankSummaryResponseHelper implements SummaryResponseHelper<AccountS
   }
 
   @Override
-  public void saveOragnizationUser(ExecutionContext executionContext, SummaryResponse response) {
+  public void saveOrganizationUser(ExecutionContext executionContext, SummaryResponse response) {
     ListAccountSummariesResponse listAccountSummariesResponse = (ListAccountSummariesResponse) response;
 
     OrganizationUserEntity organizationUserEntity = organizationUserRepository

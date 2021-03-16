@@ -67,7 +67,7 @@ public class SummaryServiceImpl<SummaryRequest, Summary> implements SummaryServi
       nextPage = executionResponse.getNextPage();
 
       /* upsert organization user */
-      responseHelper.saveOragnizationUser(executionContext, summaryResponse);
+      responseHelper.saveOrganizationUser(executionContext, summaryResponse);
 
       /* upsert detail */
       Iterator<Summary> iterator = responseHelper.iterator(summaryResponse);

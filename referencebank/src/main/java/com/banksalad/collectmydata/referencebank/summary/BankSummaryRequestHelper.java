@@ -1,8 +1,8 @@
-package com.banksalad.collectmydata.referencebank.summaries;
+package com.banksalad.collectmydata.referencebank.summary;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.summary.SummaryRequestHelper;
-import com.banksalad.collectmydata.referencebank.summaries.dto.ListAccountSummariesRequest;
+import com.banksalad.collectmydata.referencebank.summary.dto.ListAccountSummariesRequest;
 
 import org.springframework.stereotype.Component;
 
