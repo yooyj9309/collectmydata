@@ -3,6 +3,7 @@ package com.banksalad.collectmydata.invest.service;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
@@ -25,6 +26,7 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,11 +61,23 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
     List<AccountSummaryEntity> accountSummaryEntities = accountSummaryRepository
         .findByBanksaladUserIdAndOrganizationIdAndConsent(banksaladUserId, organizationId, true);
 
-    List<AccountSummary> accountSummaries = accountSummaryEntities.stream()
+    return accountSummaryEntities.stream()
         .map(accountSummaryMapper::entityToDto)
         .collect(Collectors.toList());
+  }
 
-    return accountSummaries;
+  @Override
+  @Transactional
+  public void updateBasicSearchTimestamp(long banksaladUserId, String organizationId, String accountNum,
+      long basicSearchTimestamp) {
+
+    AccountSummaryEntity accountSummaryEntity = accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNum(banksaladUserId, organizationId, accountNum)
+        .orElseThrow(() -> new CollectRuntimeException("account summary does not exist"));
+
+    accountSummaryEntity.setBasicSearchTimestamp(basicSearchTimestamp);
+
+    accountSummaryRepository.save(accountSummaryEntity);
   }
 
   private ListAccountSummariesResponse listAccountSummariesResponse(ExecutionContext executionContext, String orgCode, long searchTimeStamp) {

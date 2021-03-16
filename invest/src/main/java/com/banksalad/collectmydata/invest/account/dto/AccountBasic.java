@@ -20,6 +20,12 @@ import java.math.BigDecimal;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class AccountBasic {
 
+  private String rspCode;
+
+  private String rspMsg;
+
+  private long searchTimestamp;
+
   private String issueDate;
 
   @JsonProperty("is_tax_benefits")

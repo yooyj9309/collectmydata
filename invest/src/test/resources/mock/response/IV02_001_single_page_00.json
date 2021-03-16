@@ -1,0 +1,11 @@
+{
+  "rsp_code": "000",
+  "rsp_msg": "rsp_msg",
+  "search_timestamp": 1000,
+  "issue_date": "20200204",
+  "is_tax_benefits": "true",
+  "withholdings_amt": "1234567.123",
+  "credit_loan_amt": "2345678.123",
+  "mortgage_amt": "3456789.123",
+  "currency_code": "KRW"
+}
