@@ -7,14 +7,17 @@ import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEn
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionInterestEntity;
 import com.banksalad.collectmydata.capital.common.db.mapper.AccountTransactionInterestMapper;
 import com.banksalad.collectmydata.capital.common.db.mapper.AccountTransactionMapper;
+import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.crypto.HashUtil;
 import com.banksalad.collectmydata.common.enums.Industry;
 import com.banksalad.collectmydata.common.enums.MydataSector;
+import com.banksalad.collectmydata.common.util.DateUtil;
 import org.mapstruct.factory.Mappers;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static com.banksalad.collectmydata.common.util.NumberUtil.bigDecimalOf;
 
@@ -56,11 +59,36 @@ public class TestHelper {
   public static final String ACCOUNT_NUMBER = "1234567890";
   public static final String FROM_DATE = "20210121";
   public static final String TO_DATE = "20210122";
-
+  public static final String[] ENTITY_IGNORE_FIELD = {"id", "syncedAt", "createdAt", "createdBy", "updatedAt",
+      "updatedBy"};
   private static final AccountTransactionMapper accountTransactionMapper = Mappers
       .getMapper(AccountTransactionMapper.class);
   private static final AccountTransactionInterestMapper accountTransactionInterestMapper = Mappers
       .getMapper(AccountTransactionInterestMapper.class);
+
+  public static ExecutionContext getExecutionContext(int port) {
+    return ExecutionContext.builder()
+        .syncRequestId(UUID.randomUUID().toString())
+        .banksaladUserId(BANKSALAD_USER_ID)
+        .organizationId(ORGANIZATION_ID)
+        .executionRequestId(UUID.randomUUID().toString())
+        .organizationCode(ORGANIZATION_CODE)
+        .organizationHost("http://" + ORGANIZATION_HOST + ":" + port)
+        .accessToken("test")
+        .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+        .build();
+  }
+
+  public static ExecutionContext getExecutionContext(int port, LocalDateTime now) {
+    return ExecutionContext.builder()
+        .organizationHost("http://" + ORGANIZATION_HOST + ":" + port)
+        .accessToken(ACCESS_TOKEN)
+        .banksaladUserId(BANKSALAD_USER_ID)
+        .organizationId(ORGANIZATION_ID)
+        .executionRequestId(UUID.randomUUID().toString())
+        .syncStartedAt(now)
+        .build();
+  }
 
   public static AccountTransaction generateAccountTransaction() {
     return AccountTransaction.builder()

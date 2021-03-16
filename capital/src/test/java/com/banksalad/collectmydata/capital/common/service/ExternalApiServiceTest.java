@@ -13,7 +13,7 @@ import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicRespon
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
 import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
-import com.banksalad.collectmydata.capital.summary.dto.AccountSummaryResponse;
+import com.banksalad.collectmydata.capital.summary.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -77,24 +77,6 @@ class ExternalApiServiceTest {
   @AfterAll
   static void tearDown() {
     wireMockServer.shutdown();
-  }
-
-  @Test
-  @DisplayName("6.7.1 계좌 목록 조회")
-  public void givenExecutionContextAndOrganization_whenGetAccounts_thenEquals() {
-    // Given
-    ExecutionContext executionContext = getExecutionContext();
-    Organization organization = getOrganization();
-    AccountSummaryResponse expectedAccountSummaryResponse = getAccountResponse();
-
-    // When
-    AccountSummaryResponse actualAccountSummaryResponse = externalApiService
-        .getAccounts(executionContext, organization.getOrganizationCode(), 0l);
-
-    // Then
-    assertEquals(2, actualAccountSummaryResponse.getAccountCnt());
-    assertThat(actualAccountSummaryResponse.getAccountSummaries()).usingRecursiveComparison()
-        .isEqualTo(expectedAccountSummaryResponse.getAccountSummaries());
   }
 
   @Test
@@ -272,8 +254,8 @@ class ExternalApiServiceTest {
         .build();
   }
 
-  private AccountSummaryResponse getAccountResponse() {
-    return AccountSummaryResponse.builder()
+  private ListAccountSummariesResponse getAccountResponse() {
+    return ListAccountSummariesResponse.builder()
         .rspCode("200")
         .rspMsg("success")
         .searchTimestamp(0L)

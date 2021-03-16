@@ -7,15 +7,12 @@ import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
 import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
-import com.banksalad.collectmydata.capital.summary.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 
 import java.time.LocalDate;
 
+@Deprecated
 public interface ExternalApiService {
-
-  // 6.7.1
-  AccountSummaryResponse getAccounts(ExecutionContext executionContext, String orgCode, long searchTimeStamp);
 
   // 6.7.2
   AccountBasicResponse getAccountBasic(ExecutionContext executionContext, Organization organization,

@@ -16,8 +16,6 @@ import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicRespon
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionRequest;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
 import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
-import com.banksalad.collectmydata.capital.summary.dto.AccountSummaryRequest;
-import com.banksalad.collectmydata.capital.summary.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
@@ -37,10 +35,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.banksalad.collectmydata.capital.collect.Executions.capital_get_account_detail;
-import static com.banksalad.collectmydata.capital.collect.Executions.capital_get_accounts;
 import static com.banksalad.collectmydata.capital.collect.Executions.capital_get_operating_lease_basic;
 import static com.banksalad.collectmydata.capital.collect.Executions.capital_get_operating_lease_transactions;
 
+@Deprecated
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -49,23 +47,6 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   private static final String AUTHORIZATION = "Authorization";
   private static final int LIMIT = 2; // FIXME: from an external property
   private final CollectExecutor collectExecutor;
-
-  @Override
-  public AccountSummaryResponse getAccounts(ExecutionContext executionContext, String orgCode, long searchTimeStamp) {
-    // executionId 생성.
-    executionContext.generateAndsUpdateExecutionRequestId();
-
-    Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
-    AccountSummaryRequest accountSummaryRequest = AccountSummaryRequest.builder()
-        .searchTimestamp(searchTimeStamp)
-        .orgCode(orgCode)
-        .build();
-
-    ExecutionRequest<AccountSummaryRequest> executionRequest = ExecutionUtil
-        .assembleExecutionRequest(headers, accountSummaryRequest);
-
-    return execute(executionContext, capital_get_accounts, executionRequest);
-  }
 
   @Override
   public AccountBasicResponse getAccountBasic(ExecutionContext executionContext, Organization organization,

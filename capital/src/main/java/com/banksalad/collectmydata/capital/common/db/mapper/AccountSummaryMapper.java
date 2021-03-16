@@ -17,7 +17,7 @@ public interface AccountSummaryMapper {
           @Mapping(target = "operatingLeaseBasicSearchTimestamp", ignore = true)
       }
   )
-  void merge(AccountSummary accountSummary, @MappingTarget AccountSummaryEntity entity);
+  void mergeDtoToEntity(AccountSummary accountSummary, @MappingTarget AccountSummaryEntity entity);
 
   AccountSummary entityToDto(AccountSummaryEntity entity);
 }

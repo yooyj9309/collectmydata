@@ -14,10 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -51,42 +49,42 @@ public class CapitalApiServiceImpl implements CapitalApiService {
         .syncStartedAt(LocalDateTime.now())
         .build();
 
-    List<AccountSummary> accountSummaries = accountSummaryService.listAccountSummaries(executionContext, organization);
-    List<AccountSummary> leaseAccountSummaries = accountSummaries.stream()
-        .filter(account -> OPERATING_LEASE_ACCOUNT_TYPE.equals(account.getAccountType()) && account.getIsConsent())
-        .collect(Collectors.toList());
-    List<AccountSummary> otherAccountSummaries = accountSummaries.stream()
-        .filter(account -> !OPERATING_LEASE_ACCOUNT_TYPE.equals(account.getAccountType()) && account.getIsConsent())
-        .collect(Collectors.toList());
+    //TODO service 제거, getAccountType따라 서비스 가져오도록 수정.
+//    List<AccountSummary> leaseAccountSummaries = accountSummaries.stream()
+//        .filter(account -> OPERATING_LEASE_ACCOUNT_TYPE.equals(account.getAccountType()) && account.getIsConsent())
+//        .collect(Collectors.toList());
+//    List<AccountSummary> otherAccountSummaries = accountSummaries.stream()
+//        .filter(account -> !OPERATING_LEASE_ACCOUNT_TYPE.equals(account.getAccountType()) && account.getIsConsent())
+//        .collect(Collectors.toList());
 
     AtomicReference<CapitalApiResponse> atomicReference = new AtomicReference<>();
     atomicReference.set(CapitalApiResponse.builder().build());
 
     CompletableFuture.allOf(
-        CompletableFuture
-            .supplyAsync(
-                () -> accountService.listAccountBasics(executionContext, organization, otherAccountSummaries))
-            .thenAccept(atomicReference.get()::setAccountBasics),
-
-        CompletableFuture
-            .supplyAsync(
-                () -> accountService.listAccountDetails(executionContext, organization, otherAccountSummaries))
-            .thenAccept(atomicReference.get()::setAccountDetails),
-
-        CompletableFuture
-            .supplyAsync(
-                () -> accountService.listAccountTransactions(executionContext, organization, otherAccountSummaries))
-            .thenAccept(atomicReference.get()::setAccountTransactions),
-
-        CompletableFuture
-            .supplyAsync(
-                () -> operatingLeaseService.listOperatingLeases(executionContext, organization, leaseAccountSummaries))
-            .thenAccept(atomicReference.get()::setOperatingLeases),
-
-        CompletableFuture
-            .supplyAsync(() -> operatingLeaseService
-                .listOperatingLeaseTransactions(executionContext, organization, leaseAccountSummaries))
-            .thenAccept(atomicReference.get()::setOperatingLeasesTransactions)
+//        CompletableFuture
+//            .supplyAsync(
+//                () -> accountService.listAccountBasics(executionContext, organization, otherAccountSummaries))
+//            .thenAccept(atomicReference.get()::setAccountBasics),
+//
+//        CompletableFuture
+//            .supplyAsync(
+//                () -> accountService.listAccountDetails(executionContext, organization, otherAccountSummaries))
+//            .thenAccept(atomicReference.get()::setAccountDetails),
+//
+//        CompletableFuture
+//            .supplyAsync(
+//                () -> accountService.listAccountTransactions(executionContext, organization, otherAccountSummaries))
+//            .thenAccept(atomicReference.get()::setAccountTransactions),
+//
+//        CompletableFuture
+//            .supplyAsync(
+//                () -> operatingLeaseService.listOperatingLeases(executionContext, organization, leaseAccountSummaries))
+//            .thenAccept(atomicReference.get()::setOperatingLeases),
+//
+//        CompletableFuture
+//            .supplyAsync(() -> operatingLeaseService
+//                .listOperatingLeaseTransactions(executionContext, organization, leaseAccountSummaries))
+//            .thenAccept(atomicReference.get()::setOperatingLeasesTransactions)
     ).join();
 
     return atomicReference.get();
