@@ -1,5 +1,5 @@
 package com.banksalad.collectmydata.telecom.telecom.dto;
 
-public class ListTelecomPaidTransactionRequest {
+public class ListTelecomPaidTransactionsRequest {
 
 }
