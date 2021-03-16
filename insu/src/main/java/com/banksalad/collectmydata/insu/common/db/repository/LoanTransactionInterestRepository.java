@@ -6,4 +6,9 @@ import com.banksalad.collectmydata.insu.common.db.entity.LoanTransactionInterest
 
 public interface LoanTransactionInterestRepository extends JpaRepository<LoanTransactionInterestEntity, Long> {
 
+
+  void deleteByBanksaladUserIdAndOrganizationIdAndAccountNumAndTransDtimeAndTransNoAndTransactionYearMonth(
+      long banksaladUserId, String organizationId, String accountNum, String transDtime, String transNo,
+      Integer transactionYearMonth
+  );
 }

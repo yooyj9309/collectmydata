@@ -11,13 +11,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -27,6 +28,9 @@ public class LoanTransactionInterestEntity extends BaseTimeAndUserEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Column(nullable = false)
+  private Integer transactionYearMonth;
 
   @Column(nullable = false)
   private LocalDateTime syncedAt;
@@ -41,7 +45,7 @@ public class LoanTransactionInterestEntity extends BaseTimeAndUserEntity {
   private String accountNum;
 
   @Column(nullable = false)
-  private LocalDateTime transDtime;
+  private String transDtime;
 
   @Column(nullable = false)
   private String transNo;
@@ -50,10 +54,10 @@ public class LoanTransactionInterestEntity extends BaseTimeAndUserEntity {
   private Integer intNo;
 
   @Column(nullable = false)
-  private LocalDate intStartDate;
+  private String intStartDate;
 
   @Column(nullable = false)
-  private LocalDate intEndDate;
+  private String intEndDate;
 
   @Column(nullable = false, precision = 5, scale = 3)
   private BigDecimal intRate;

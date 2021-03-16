@@ -23,7 +23,8 @@ public class LoanTransaction {
 
   private String transNo;
   private String transDtime;
-  private String currencyCode;
+  @Builder.Default
+  private String currencyCode = "KRW";
   private BigDecimal loanPaidAmt;
   private BigDecimal intPaidAmt;
   private int intCnt;
