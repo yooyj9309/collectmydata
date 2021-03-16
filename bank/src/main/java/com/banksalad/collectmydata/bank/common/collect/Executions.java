@@ -4,18 +4,20 @@ import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesResponse
 import com.banksalad.collectmydata.bank.deposit.dto.ListDepositAccountTransactionsResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountDetailResponse;
-import com.banksalad.collectmydata.bank.invest.dto.ListInvestAccountTransactionsResponse;
+import com.banksalad.collectmydata.bank.deposit.dto.ListDepositAccountTransactionsResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailResponse;
+import com.banksalad.collectmydata.bank.invest.dto.ListInvestAccountTransactionsResponse;
 import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountBasicResponse;
 import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountDetailResponse;
+import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 
 public class Executions {
 
-  public static final Execution finance_bank_accounts =
+  public static final Execution finance_bank_summaries =
       Execution.create()
-          .exchange(Apis.finance_bank_accounts)
+          .exchange(Apis.finance_bank_summaries)
           .as(ListAccountSummariesResponse.class)
           .build();
 

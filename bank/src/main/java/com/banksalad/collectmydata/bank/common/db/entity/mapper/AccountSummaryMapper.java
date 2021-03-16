@@ -9,7 +9,7 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface AccountSummaryMapper {
 
-  void merge(AccountSummary accountSummary, @MappingTarget AccountSummaryEntity entity);
+  void mergeDtoToEntity(AccountSummary accountSummary, @MappingTarget AccountSummaryEntity entity);
 
   AccountSummary entityToDto(AccountSummaryEntity entity);
 }

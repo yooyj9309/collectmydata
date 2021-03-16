@@ -11,8 +11,8 @@ import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountTransactio
 import com.banksalad.collectmydata.bank.common.db.entity.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountTransactionRepository;
-import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountTransaction;
+import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -37,6 +37,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+
 @Disabled
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -118,14 +119,14 @@ public class InvestAccountTransactionServiceImplTest {
 
     /* assertions transactionSyncedAt */
     AccountSummaryEntity successAccountSummaryEntity = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndForeignDeposit(BANKSALAD_USER_ID,
-            ORGANIZATION_ID, "1234567890", "a123", false);
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(BANKSALAD_USER_ID, ORGANIZATION_ID,
+            "1234567890", "a123").get();
 
     Assertions.assertThat(successAccountSummaryEntity.getTransactionSyncedAt()).isEqualTo(currentSyncStartedAt);
 
     AccountSummaryEntity failAccountSummaryEntity = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndForeignDeposit(BANKSALAD_USER_ID,
-            ORGANIZATION_ID, "414312341242", "ba123", false);
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(BANKSALAD_USER_ID, ORGANIZATION_ID,
+            "414312341242", "ba123").get();
 
     Assertions.assertThat(failAccountSummaryEntity.getTransactionSyncedAt()).isEqualTo(TRANSACTION_SYNCED_AT);
   }

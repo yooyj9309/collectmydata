@@ -4,9 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.bank.common.collect.Executions;
-import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
-import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesRequest;
-import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicRequest;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountDetailRequest;
@@ -23,7 +20,9 @@ import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountBasicRequest;
 import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountBasicResponse;
 import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountDetailRequest;
 import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountDetailResponse;
-
+import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
+import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesRequest;
+import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
@@ -37,6 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDate;
 import java.util.Map;
 
+@Deprecated
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -67,7 +67,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
     do {
       ExecutionResponse<ListAccountSummariesResponse> pagingExecutionResponse = collectExecutor
-          .execute(executionContext, Executions.finance_bank_accounts, pagingExecutionRequest);
+          .execute(executionContext, Executions.finance_bank_summaries, pagingExecutionRequest);
 
       if (pagingExecutionResponse.getResponse() == null || HttpStatus.OK.value() != pagingExecutionResponse
           .getHttpStatusCode()) {
@@ -77,9 +77,9 @@ public class ExternalApiServiceImpl implements ExternalApiService {
       ListAccountSummariesResponse pagingListAccountSummariesResponse = pagingExecutionResponse.getResponse();
 
       if (pagingListAccountSummariesResponse.getAccountCnt() != pagingListAccountSummariesResponse
-          .getAccountSummaries().size()) {
+          .getAccountList().size()) {
         log.error("accounts size not equal. cnt: {}, size: {}", pagingListAccountSummariesResponse.getAccountCnt(),
-            pagingListAccountSummariesResponse.getAccountSummaries().size());
+            pagingListAccountSummariesResponse.getAccountList().size());
       }
 
       listAccountSummariesResponse.setRspCode(pagingListAccountSummariesResponse.getRspCode());
@@ -90,8 +90,8 @@ public class ExternalApiServiceImpl implements ExternalApiService {
       listAccountSummariesResponse
           .setAccountCnt(
               listAccountSummariesResponse.getAccountCnt() + pagingListAccountSummariesResponse.getAccountCnt());
-      listAccountSummariesResponse.getAccountSummaries()
-          .addAll(pagingListAccountSummariesResponse.getAccountSummaries());
+      listAccountSummariesResponse.getAccountList()
+          .addAll(pagingListAccountSummariesResponse.getAccountList());
 
       pagingExecutionRequest.getRequest().setNextPage(pagingListAccountSummariesResponse.getNextPage());
 
@@ -330,7 +330,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
     return listInvestAccountTransactionsResponse;
   }
-  
+
 
   public GetLoanAccountBasicResponse getLoanAccountBasic(ExecutionContext executionContext,
       AccountSummary accountSummary, Organization organization, long searchTimestamp) {

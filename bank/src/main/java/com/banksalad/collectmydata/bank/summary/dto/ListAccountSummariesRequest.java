@@ -18,7 +18,10 @@ import lombok.Setter;
 public class ListAccountSummariesRequest {
 
   private String orgCode;
+
   private long searchTimestamp;
+
   private String nextPage;
+
   private int limit;
 }

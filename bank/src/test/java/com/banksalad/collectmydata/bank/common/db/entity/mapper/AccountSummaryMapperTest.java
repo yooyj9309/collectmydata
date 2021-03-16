@@ -47,7 +47,7 @@ class AccountSummaryMapperTest {
     AccountSummaryEntity actualAccountSummaryEntity = AccountSummaryEntity.builder()
         .build();
 
-    accountSummaryMapper.merge(accountSummary, actualAccountSummaryEntity);
+    accountSummaryMapper.mergeDtoToEntity(accountSummary, actualAccountSummaryEntity);
 
     assertThat(ObjectComparator.isSame(actualAccountSummaryEntity, expectedAccountSummaryEntity)).isEqualTo(true);
   }

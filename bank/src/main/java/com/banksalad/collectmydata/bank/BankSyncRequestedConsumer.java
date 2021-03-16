@@ -7,12 +7,15 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import com.banksalad.collectmydata.bank.common.dto.BankApiResponse;
 import com.banksalad.collectmydata.bank.common.service.BankMessageService;
+import com.banksalad.collectmydata.common.enums.Industry;
+import com.banksalad.collectmydata.common.enums.Sector;
 import com.banksalad.collectmydata.common.exception.CollectException;
 import com.banksalad.collectmydata.common.logging.LoggingMdcUtil;
 import com.banksalad.collectmydata.common.message.ConsumerGroupId;
 import com.banksalad.collectmydata.common.message.MessageTopic;
 import com.banksalad.collectmydata.common.message.PublishmentRequestedMessage;
 import com.banksalad.collectmydata.common.message.SyncRequestedMessage;
+import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +39,9 @@ public class BankSyncRequestedConsumer {
     try {
       SyncRequestedMessage message = objectMapper.readValue(source, SyncRequestedMessage.class);
 
-      LoggingMdcUtil.set(message.getBanksaladUserId(), message.getOrganizationId(), message.getSyncRequestId());
+      LoggingMdcUtil.set(Sector.FINANCE.name(), Industry.BANK.name(), message.getBanksaladUserId(),
+          message.getOrganizationId(), message.getSyncRequestId());
+
       log.info("Consume SyncRequestedMessage. syncRequestId: {} ", message.getSyncRequestId());
 
       BankApiResponse bankApiResponse = bankApiService.requestApi(message.getBanksaladUserId(),
@@ -46,10 +51,19 @@ public class BankSyncRequestedConsumer {
           message.getSyncRequestId(), bankApiResponse);
 
     } catch (JsonProcessingException e) {
-      log.error("Fail to deserialize SyncRequestedMessage. exception: {}", e.getMessage(), e);
+      log.error("Fail to deserialize syncRequestedMessage: {}", e.getMessage(), e);
 
-    } catch (Exception e) {
-      log.error("Fail to sync. exception: {}", e.getMessage(), e);
+    } catch (ResponseNotOkException e) {
+      log.error("Fail to sync: {}", e.getMessage(), e);
+      // TODO publish result with error code and message
+
+    } catch (CollectException e) {
+      log.error("Fail to sync: {}", e.getMessage(), e);
+      // TODO publish result with error code and message
+
+    } catch (Throwable t) {
+      log.error("Fail to sync: {}", t.getMessage(), t);
+      // TODO publish result with error code and message
 
     } finally {
       LoggingMdcUtil.clear();

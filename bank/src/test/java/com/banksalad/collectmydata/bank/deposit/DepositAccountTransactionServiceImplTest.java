@@ -11,8 +11,8 @@ import com.banksalad.collectmydata.bank.common.db.entity.DepositAccountTransacti
 import com.banksalad.collectmydata.bank.common.db.entity.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.DepositAccountTransactionRepository;
-import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountTransaction;
+import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -119,14 +119,14 @@ class DepositAccountTransactionServiceImplTest {
 
     /* assertions transactionSyncedAt */
     AccountSummaryEntity successAccountSummaryEntity = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndForeignDeposit(BANKSALAD_USER_ID,
-            ORGANIZATION_ID, "1234567890", "a123", false);
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(BANKSALAD_USER_ID, ORGANIZATION_ID,
+            "1234567890", "a123").get();
 
     Assertions.assertThat(successAccountSummaryEntity.getTransactionSyncedAt()).isEqualTo(currentSyncStartedAt);
 
     AccountSummaryEntity failAccountSummaryEntity = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndForeignDeposit(BANKSALAD_USER_ID,
-            ORGANIZATION_ID, "414312341242", "ba123", false);
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(BANKSALAD_USER_ID, ORGANIZATION_ID,
+            "414312341242", "ba123").get();
 
     Assertions.assertThat(failAccountSummaryEntity.getTransactionSyncedAt()).isEqualTo(TRANSACTION_SYNCED_AT);
   }

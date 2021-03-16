@@ -9,7 +9,7 @@ public class Apis {
     GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS, TRACE, CONNECT
   }
 
-  public static Api finance_bank_accounts =
+  public static Api finance_bank_summaries =
       Api.builder()
           .id("BA01")
           .name("계좌 목록 조회")
