@@ -15,17 +15,13 @@ import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.invest.account.dto.AccountBasic;
 import com.banksalad.collectmydata.invest.account.dto.GetAccountBasicRequest;
 import com.banksalad.collectmydata.invest.account.dto.GetAccountBasicResponse;
-import com.banksalad.collectmydata.invest.collect.Apis;
 import com.banksalad.collectmydata.invest.collect.Executions;
 import com.banksalad.collectmydata.invest.common.db.entity.AccountBasicEntity;
 import com.banksalad.collectmydata.invest.common.db.entity.mapper.AccountBasicHistoryMapper;
 import com.banksalad.collectmydata.invest.common.db.entity.mapper.AccountBasicMapper;
 import com.banksalad.collectmydata.invest.common.db.repository.AccountBasicHistoryRepository;
 import com.banksalad.collectmydata.invest.common.db.repository.AccountBasicRepository;
-import com.banksalad.collectmydata.invest.common.dto.AccountSummary;
-import com.banksalad.collectmydata.invest.service.AccountSummaryService;
-import com.banksalad.collectmydata.invest.service.ExecutionResponseValidateService;
-import com.banksalad.collectmydata.invest.service.UserSyncStatusService;
+import com.banksalad.collectmydata.invest.summary.dto.AccountSummary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
@@ -40,9 +36,6 @@ import java.util.stream.Collectors;
 public class AccountServiceImpl implements AccountService {
 
   private final CollectExecutor collectExecutor;
-  private final AccountSummaryService accountSummaryService;
-  private final UserSyncStatusService userSyncStatusService;
-  private final ExecutionResponseValidateService executionResponseValidateService;
   private final AccountBasicRepository accountBasicRepository;
   private final AccountBasicHistoryRepository accountBasicHistoryRepository;
 
@@ -64,9 +57,9 @@ public class AccountServiceImpl implements AccountService {
       try {
         saveAccountBasic(executionContext, accountSummary, accountBasic);
 
-        accountSummaryService
-            .updateBasicSearchTimestamp(executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
-                accountSummary.getAccountNum(), accountBasic.getSearchTimestamp());
+//        accountSummaryService
+//            .updateBasicSearchTimestamp(executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
+//                accountSummary.getAccountNum(), accountBasic.getSearchTimestamp());
 
       } catch (Exception e) {
         isExceptionOccurred = true;
@@ -74,10 +67,10 @@ public class AccountServiceImpl implements AccountService {
       }
     }
 
-    userSyncStatusService
-        .updateUserSyncStatus(executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
-            Apis.finance_invest_account_basic.getId(), executionContext.getSyncStartedAt(), null,
-            executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred));
+//    userSyncStatusService
+//        .updateUserSyncStatus(executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
+//            Apis.finance_invest_account_basic.getId(), executionContext.getSyncStartedAt(), null,
+//            executionResponseValidateService.isAllResponseResultSuccess(executionContext, isExceptionOccurred));
 
     List<AccountBasicEntity> accountBasicEntities = accountBasicRepository
         .findByBanksaladUserIdAndOrganizationId(executionContext.getBanksaladUserId(),

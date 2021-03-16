@@ -1,5 +1,6 @@
-package com.banksalad.collectmydata.invest.common.dto;
+package com.banksalad.collectmydata.invest.summary.dto;
 
+import com.banksalad.collectmydata.finance.api.summary.dto.SummaryResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -10,7 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,22 +19,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class AccountSummary {
+public class ListAccountSummariesResponse implements SummaryResponse {
 
-  private String accountNum;
+  private String rspCode;
 
-  @JsonProperty("is_consent")
-  private boolean consent;
+  private String rspMsg;
 
-  private String accountName;
+  private long searchTimestamp;
 
-  private String accountType;
+  private String regDate;
 
-  private String accountStatus;
+  private int accountCnt;
 
-  private long basicSearchTimestamp;
-
-  private LocalDateTime transactionSyncedAt;
-
-  private long productSearchTimestamp;
+  @JsonProperty("account_list")
+  private List<AccountSummary> accountSummaries;
 }

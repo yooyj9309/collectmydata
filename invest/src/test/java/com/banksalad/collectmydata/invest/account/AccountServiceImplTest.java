@@ -13,7 +13,7 @@ import com.banksalad.collectmydata.invest.account.dto.AccountBasic;
 import com.banksalad.collectmydata.invest.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.invest.common.db.entity.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.invest.common.db.repository.AccountSummaryRepository;
-import com.banksalad.collectmydata.invest.common.dto.AccountSummary;
+import com.banksalad.collectmydata.invest.summary.dto.AccountSummary;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;

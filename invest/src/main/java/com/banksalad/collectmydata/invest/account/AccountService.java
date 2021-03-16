@@ -3,7 +3,7 @@ package com.banksalad.collectmydata.invest.account;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.organization.Organization;
 import com.banksalad.collectmydata.invest.account.dto.AccountBasic;
-import com.banksalad.collectmydata.invest.common.dto.AccountSummary;
+import com.banksalad.collectmydata.invest.summary.dto.AccountSummary;
 
 import java.util.List;
 

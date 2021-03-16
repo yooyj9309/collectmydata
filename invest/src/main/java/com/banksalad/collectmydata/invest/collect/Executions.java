@@ -2,7 +2,8 @@ package com.banksalad.collectmydata.invest.collect;
 
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.invest.account.dto.GetAccountBasicResponse;
-import com.banksalad.collectmydata.invest.common.dto.ListAccountSummariesResponse;
+import com.banksalad.collectmydata.invest.summary.dto.ListAccountSummariesResponse;
+
 
 public class Executions {
 
