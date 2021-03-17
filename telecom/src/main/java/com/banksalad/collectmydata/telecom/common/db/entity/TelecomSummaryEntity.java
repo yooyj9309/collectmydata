@@ -55,4 +55,9 @@ public class TelecomSummaryEntity extends BaseTimeAndUserEntity {
   private LocalDateTime transactionSyncedAt;
 
   private LocalDateTime paidTransactionSyncedAt;
+
+  // DB 명세서 추가 전이지만 미리 만들어 둠.
+  private String transactionResponseCode;
+
+  private String paidTransactionResponseCode;
 }
