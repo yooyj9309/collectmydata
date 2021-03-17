@@ -57,7 +57,7 @@ public class InvestAccountDetailInfoResponseHelper implements
             accountSummary.getAccountNum(),
             accountSummary.getSeqno(),
             investAccountDetail.getCurrencyCode()
-        );
+        ).orElse(null);
 
     if (existingInvestAccountDetailEntity != null) {
       investAccountDetailEntity.setId(existingInvestAccountDetailEntity.getId());

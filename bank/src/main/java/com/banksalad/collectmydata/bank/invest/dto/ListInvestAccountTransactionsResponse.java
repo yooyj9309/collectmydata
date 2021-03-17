@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.bank.invest.dto;
 
+import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -19,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ListInvestAccountTransactionsResponse {
+public class ListInvestAccountTransactionsResponse implements TransactionResponse {
 
   private String rspCode;
 

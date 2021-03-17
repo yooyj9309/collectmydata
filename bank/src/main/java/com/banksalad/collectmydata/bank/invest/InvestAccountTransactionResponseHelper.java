@@ -94,18 +94,18 @@ public class InvestAccountTransactionResponseHelper implements
     );
   }
 
-  private int generateTransactionYearMonth(InvestAccountTransaction depositAccountTransaction) {
-    String transDtime = depositAccountTransaction.getTransDtime();
+  private int generateTransactionYearMonth(InvestAccountTransaction investAccountTransaction) {
+    String transDtime = investAccountTransaction.getTransDtime();
     String yearMonthString = transDtime.substring(0, 6);
 
     return Integer.valueOf(yearMonthString);
   }
 
-  private String generateUniqueTransNo(InvestAccountTransaction depositAccountTransaction) {
-    String transDtime = depositAccountTransaction.getTransDtime();
-    String transType = depositAccountTransaction.getTransType();
-    String transAmtString = depositAccountTransaction.getTransAmt().toString();
-    String balanceAmtString = depositAccountTransaction.getBalanceAmt().toString();
+  private String generateUniqueTransNo(InvestAccountTransaction investAccountTransaction) {
+    String transDtime = investAccountTransaction.getTransDtime();
+    String transType = investAccountTransaction.getTransType();
+    String transAmtString = investAccountTransaction.getTransAmt().toString();
+    String balanceAmtString = investAccountTransaction.getBalanceAmt().toString();
 
     return HashUtil.hashCat(transDtime, transType, transAmtString, balanceAmtString);
   }

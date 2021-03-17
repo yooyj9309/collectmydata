@@ -45,7 +45,7 @@ public class InvestAccountTransactionRequestHelper implements
             executionContext.getOrganizationId(),
             accountSummary.getAccountNum(), accountSummary.getSeqno())
         .map(AccountSummaryEntity::getTransactionSyncedAt)
-        .orElse(LocalDateTime.now(DateUtil.KST_ZONE_ID).minusYears(MINUS_YEAR));
+        .orElse(executionContext.getSyncStartedAt().minusYears(MINUS_YEAR));
   }
 
   @Override
@@ -57,7 +57,7 @@ public class InvestAccountTransactionRequestHelper implements
         .seqno(accountSummary.getSeqno())
         .fromDate(DateUtil.toDateString(fromDate))
         .toDate(DateUtil.toDateString(toDate))
-        .nextPage(null)
+        .nextPage(nextPage)
         .limit(DEFAULT_LIMIT)
         .build();
   }

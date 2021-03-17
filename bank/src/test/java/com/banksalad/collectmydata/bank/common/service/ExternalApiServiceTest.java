@@ -89,9 +89,7 @@ class ExternalApiServiceTest {
     ExecutionContext executionContext = getExecutionContext();
     Organization organization = getOrganization();
     GetInvestAccountBasicResponse expectedInvestAccountBasicResponse = GetInvestAccountBasicResponse.builder()
-        .investAccountBasic(InvestAccountBasic.builder().rspCode("000")
-            .rspMsg("rsp_msg")
-            .searchTimestamp(1000)
+        .investAccountBasic(InvestAccountBasic.builder()
             .standardFundCode("standard_101")
             .paidInType("01")
             .issueDate("20200101")
@@ -127,9 +125,6 @@ class ExternalApiServiceTest {
     Organization organization = getOrganization();
     GetInvestAccountDetailResponse expectedInvestAccountDetailResponse = GetInvestAccountDetailResponse.builder()
         .investAccountDetail(InvestAccountDetail.builder()
-            .rspCode("000")
-            .rspMsg("rsp_msg")
-            .searchTimestamp(1000)
             .currencyCode("KRW")
             .balanceAmt(new BigDecimal("1928393.123"))
             .evalAmt(new BigDecimal("12345.678"))

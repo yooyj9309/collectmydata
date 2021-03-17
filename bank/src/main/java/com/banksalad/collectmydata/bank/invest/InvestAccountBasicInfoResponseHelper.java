@@ -55,7 +55,7 @@ public class InvestAccountBasicInfoResponseHelper implements
             executionContext.getOrganizationId(),
             accountSummary.getAccountNum(),
             accountSummary.getSeqno()
-        );
+        ).orElse(null);
 
     if (existingInvestAccountBasicEntity != null) {
       investAccountBasicEntity.setId(existingInvestAccountBasicEntity.getId());

@@ -19,12 +19,6 @@ import java.math.BigDecimal;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class InvestAccountDetail {
 
-  private String rspCode;
-
-  private String rspMsg;
-
-  private long searchTimestamp;
-
   @Builder.Default
   private String currencyCode = "KRW";
 
