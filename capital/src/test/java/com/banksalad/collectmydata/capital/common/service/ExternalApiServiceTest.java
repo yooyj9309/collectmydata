@@ -5,7 +5,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 
-import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
@@ -78,36 +77,7 @@ class ExternalApiServiceTest {
   static void tearDown() {
     wireMockServer.shutdown();
   }
-
-  @Test
-  @DisplayName("6.7.2 대출상품계좌 기본정보 조회")
-  public void givenExecutionContextAndOrganizationAndAccount_whenGetAccountBasic_thenEquals() {
-    // given
-    ExecutionContext executionContext = getExecutionContext();
-    Organization organization = getOrganization();
-    AccountSummary accountSummary = getAccount();
-
-    // when
-    AccountBasicResponse accountBasicResponse = externalApiService
-        .getAccountBasic(executionContext, organization, accountSummary);
-
-    // then
-    assertThat(accountBasicResponse).usingRecursiveComparison().isEqualTo(
-        AccountBasicResponse.builder()
-            .rspCode("000")
-            .rspMsg("rep_msg")
-            .searchTimestamp(1000)
-            .holderName("대출차주명")
-            .issueDate("20210210")
-            .expDate("20221231")
-            .lastOfferedRate(BigDecimal.valueOf(2.117))
-            .repayDate("03")
-            .repayMethod("01")
-            .repayOrgCode("B01")
-            .repayAccountNum("11022212345")
-            .build()
-    );
-  }
+  
 
   @Test
   @DisplayName("6.7.3 대출 상품 계좌 추가 정보 조회")

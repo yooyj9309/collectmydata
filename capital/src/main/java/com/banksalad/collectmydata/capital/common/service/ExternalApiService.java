@@ -1,6 +1,5 @@
 package com.banksalad.collectmydata.capital.common.service;
 
-import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
@@ -13,11 +12,7 @@ import java.time.LocalDate;
 
 @Deprecated
 public interface ExternalApiService {
-
-  // 6.7.2
-  AccountBasicResponse getAccountBasic(ExecutionContext executionContext, Organization organization,
-      AccountSummary accountSummary);
-
+  
   // 6.7.3
   AccountDetailResponse getAccountDetail(ExecutionContext executionContext, Organization organization,
       AccountSummary accountSummary);

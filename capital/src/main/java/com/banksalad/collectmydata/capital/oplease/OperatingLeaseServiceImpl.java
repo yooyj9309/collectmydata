@@ -127,7 +127,6 @@ public class OperatingLeaseServiceImpl implements OperatingLeaseService {
 
     // accountList timestamp update
     accountSummary.setOperatingLeaseBasicSearchTimestamp(response.getSearchTimestamp());
-    accountSummaryService.updateSearchTimestamp(banksaladUserId, organizationId, accountSummary);
 
     return operatingLeaseMapper.operatingLeaseAssembler(response, accountSummary);
   }
@@ -174,7 +173,7 @@ public class OperatingLeaseServiceImpl implements OperatingLeaseService {
 
           /* update accountSummary OperatingLeaseTransactionSyncedAt */
           if (!isExceptionOccurred.get()) {
-            accountSummaryService.updateOperatingLeaseTransactionSyncedAt(executionContext, accountSummary);
+//            accountSummaryService.updateOperatingLeaseTransactionSyncedAt(executionContext, accountSummary);
           }
 
           return operatingLeaseTransactions;

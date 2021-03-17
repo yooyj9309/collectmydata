@@ -1,5 +1,7 @@
 package com.banksalad.collectmydata.capital.account.dto;
 
+import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
@@ -13,10 +15,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class AccountBasicRequest {
+public class GetAccountBasicResponse implements AccountResponse {
 
-  private String orgCode;
-  private String accountNum;
-  private String seqno;
+  private String rspCode;
+  private String rspMsg;
   private long searchTimestamp;
+  @JsonUnwrapped
+  private AccountBasic accountBasic;
 }

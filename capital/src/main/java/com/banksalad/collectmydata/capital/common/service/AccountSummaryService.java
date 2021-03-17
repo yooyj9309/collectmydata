@@ -1,14 +1,17 @@
 package com.banksalad.collectmydata.capital.common.service;
 
 import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
-import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+
+import java.util.List;
 
 public interface AccountSummaryService {
-  
-  void updateSearchTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary);
 
-  void updateTransactionSyncedAt(ExecutionContext executionContext, AccountSummary accountSummary);
+  List<AccountSummary> listSummariesConsented(long banksaladUserId, String organizationId,
+      boolean isOperatingLeaseAccount);
 
-  void updateOperatingLeaseTransactionSyncedAt(ExecutionContext executionContext, AccountSummary accountSummary);
+  void updateBasicSearchTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      long detailSearchTimestamp);
 
+  void updateBasicResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      String responseCode);
 }

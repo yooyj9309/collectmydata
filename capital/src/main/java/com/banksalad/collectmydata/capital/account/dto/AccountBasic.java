@@ -6,14 +6,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PRIVATE)
@@ -23,8 +24,8 @@ public class AccountBasic {
   private String accountNum;
   private String seqno;
   private String holderName;
-  private LocalDate issueDate;
-  private LocalDate expDate;
+  private String issueDate;
+  private String expDate;
   private BigDecimal lastOfferedRate;
   private String repayDate;
   private String repayMethod;

@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -49,10 +48,10 @@ public class AccountBasicEntity extends BaseEntity {
   private String holderName;
 
   @Column(nullable = false)
-  private LocalDate issueDate;
+  private String issueDate;
 
   @Column(nullable = false)
-  private LocalDate expDate;
+  private String expDate;
 
   @Column(nullable = false)
   private BigDecimal lastOfferedRate;

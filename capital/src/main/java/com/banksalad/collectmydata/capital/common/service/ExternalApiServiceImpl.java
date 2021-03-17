@@ -3,8 +3,6 @@ package com.banksalad.collectmydata.capital.common.service;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.banksalad.collectmydata.capital.account.dto.AccountBasicRequest;
-import com.banksalad.collectmydata.capital.account.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailRequest;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionRequest;
@@ -47,26 +45,6 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   private static final String AUTHORIZATION = "Authorization";
   private static final int LIMIT = 2; // FIXME: from an external property
   private final CollectExecutor collectExecutor;
-
-  @Override
-  public AccountBasicResponse getAccountBasic(ExecutionContext executionContext, Organization organization,
-      AccountSummary accountSummary) {
-    // executionId 생성.
-    executionContext.generateAndsUpdateExecutionRequestId();
-
-    Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
-    AccountBasicRequest request = AccountBasicRequest.builder()
-        .orgCode(organization.getOrganizationCode())
-        .accountNum(accountSummary.getAccountNum())
-        .seqno(accountSummary.getSeqno())
-        .searchTimestamp(0L) // TODO
-        .build();
-
-    ExecutionRequest<AccountBasicRequest> executionRequest = ExecutionUtil
-        .assembleExecutionRequest(headers, request);
-
-    return execute(executionContext, Executions.capital_get_account_basic, executionRequest);
-  }
 
   @Override
   public AccountDetailResponse getAccountDetail(ExecutionContext executionContext, Organization organization,

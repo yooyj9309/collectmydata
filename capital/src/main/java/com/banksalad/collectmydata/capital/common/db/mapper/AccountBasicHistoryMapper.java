@@ -9,5 +9,5 @@ import org.mapstruct.Mapping;
 public interface AccountBasicHistoryMapper {
 
   @Mapping(target = "id", ignore = true)
-  AccountBasicHistoryEntity toAccountBasicHistoryEntityFrom(AccountBasicEntity accountBasicEntity);
+  AccountBasicHistoryEntity toHistoryEntity(AccountBasicEntity accountBasicEntity);
 }
