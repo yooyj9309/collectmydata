@@ -2,7 +2,6 @@ package com.banksalad.collectmydata.irp.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import com.github.banksalad.idl.apis.v1.cipher.CipherGrpc;
 import com.github.banksalad.idl.apis.v1.cipher.CipherGrpc.CipherBlockingStub;

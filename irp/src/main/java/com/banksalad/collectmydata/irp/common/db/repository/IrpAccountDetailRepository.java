@@ -14,5 +14,6 @@ public interface IrpAccountDetailRepository extends JpaRepository<IrpAccountDeta
   void deleteByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(Long banksaladUserId, String organizationId,
       String accountNum, String seqno);
 
-  List<IrpAccountDetailEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(Long banksaladUserId, String organizationId, String accountNum, String seqno);
+  List<IrpAccountDetailEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(Long banksaladUserId,
+      String organizationId, String accountNum, String seqno);
 }

@@ -5,6 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
@@ -13,7 +14,7 @@ import com.banksalad.collectmydata.irp.TestConfig;
 import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountSummaryEntity;
 import com.banksalad.collectmydata.irp.common.db.entity.mapper.IrpAccountSummaryMapper;
 import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountSummaryRepository;
-import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasicResponse;
+import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasic;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountDetail;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummary;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -37,28 +38,29 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
+@ActiveProfiles("test")
 @SpringBootTest(classes = TestConfig.class, webEnvironment = WebEnvironment.RANDOM_PORT)
-@DisplayName("계좌 기본 및 추가정보 조회 테스트")
+@DisplayName("6.1.4 개인형 IRP 계좌 기본정보 조회")
 @Transactional
 class IrpAccountServiceImplTest {
 
   private static final Long BANKSALAD_USER_ID = 1L;
   private static final String ORGANIZATION_ID = "organizationId";
   private static final String ORGANIZATION_HOST = "http://localhost";
-
+  public static WireMockServer wiremock = new WireMockServer(WireMockSpring.options().dynamicPort());
   @Autowired
   private IrpAccountService irpAccountService;
-
   @Autowired
   private IrpAccountSummaryRepository irpAccountSummaryRepository;
-
   private IrpAccountSummaryMapper irpAccountSummaryMapper = Mappers.getMapper(IrpAccountSummaryMapper.class);
 
-  public static WireMockServer wiremock = new WireMockServer(WireMockSpring.options().dynamicPort());
+  @AfterAll
+  public static void clean() {
+    wiremock.shutdown();
+  }
 
   @BeforeEach
   public void setupClass() {
@@ -70,11 +72,7 @@ class IrpAccountServiceImplTest {
     wiremock.resetAll();
   }
 
-  @AfterAll
-  public static void clean() {
-    wiremock.shutdown();
-  }
-
+  @DisplayName("개인형 IRP 계좌 기본정보 조회 성공")
   @Test
   void getIrpAccountBasics() {
 
@@ -85,14 +83,9 @@ class IrpAccountServiceImplTest {
     List<IrpAccountSummaryEntity> irpAccountSummaryEntities = getIrpAccountSummaryEntities();
     irpAccountSummaryRepository.saveAll(irpAccountSummaryEntities);
 
-    List<IrpAccountSummary> irpAccountSummaries = irpAccountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndIsConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true)
-        .stream()
-        .map(irpAccountSummaryMapper::entityToDto)
-        .collect(Collectors.toList());
-
     /* execution context */
     ExecutionContext executionContext = ExecutionContext.builder()
+        .syncRequestId(UUID.randomUUID().toString())
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
         .accessToken("test")
@@ -101,14 +94,13 @@ class IrpAccountServiceImplTest {
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
 
-    List<IrpAccountBasicResponse> irpAccountBasics = irpAccountService
-        .getIrpAccountBasics(executionContext, irpAccountSummaries);
+    List<IrpAccountBasic> irpAccountBasics = irpAccountService.getIrpAccountBasics(executionContext);
 
     assertThat(irpAccountBasics.size()).isEqualTo(1);
   }
 
+  @DisplayName("개인형 IRP 계좌 추가정보 조회 성공")
   @Test
-  @DisplayName("IRP계좌 추가정보 조회")
   public void listIrpAccountDetails() {
 
     /* irp account detail mock server */
@@ -179,7 +171,7 @@ class IrpAccountServiceImplTest {
         IrpAccountSummaryEntity.builder()
             .banksaladUserId(BANKSALAD_USER_ID)
             .organizationId(ORGANIZATION_ID)
-            .syncedAt(LocalDateTime.now(DateUtil.KST_ZONE_ID))
+            .syncedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
             .accountNum("100246541123")
             .accountStatus("01")
             .basicSearchTimestamp(0L)
@@ -192,7 +184,7 @@ class IrpAccountServiceImplTest {
         IrpAccountSummaryEntity.builder()
             .banksaladUserId(BANKSALAD_USER_ID)
             .organizationId(ORGANIZATION_ID)
-            .syncedAt(LocalDateTime.now(DateUtil.KST_ZONE_ID))
+            .syncedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
             .accountNum("234246541143")
             .accountStatus("01")
             .basicSearchTimestamp(0L)
@@ -200,6 +192,7 @@ class IrpAccountServiceImplTest {
             .transactionSyncedAt(null)
             .isConsent(false)
             .prodName("개인형 IRP 계좌2")
+            .seqno("a124")
             .build()
     );
   }

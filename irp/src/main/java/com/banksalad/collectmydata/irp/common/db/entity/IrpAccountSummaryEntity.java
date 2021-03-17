@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.irp.common.db.entity;
 
+import com.banksalad.collectmydata.finance.common.db.entity.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,7 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "irp_account_summary")
-public class IrpAccountSummaryEntity extends BaseTimeAndUserEntity {
+public class IrpAccountSummaryEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,9 +56,9 @@ public class IrpAccountSummaryEntity extends BaseTimeAndUserEntity {
 
   private Long detailSearchTimestamp;
 
-  private LocalDate transactionSyncedAt;
+  private LocalDateTime transactionSyncedAt;
 
-  private String basicSearchResponseCode;
+  private String basicResponseCode;
 
-  private String detailSearchResponseCode;
+  private String detailResponseCode;
 }

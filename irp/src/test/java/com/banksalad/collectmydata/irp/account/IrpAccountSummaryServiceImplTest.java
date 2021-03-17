@@ -5,6 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
@@ -14,6 +15,7 @@ import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.irp.TestConfig;
 import com.banksalad.collectmydata.irp.collect.Apis;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummary;
+import com.banksalad.collectmydata.irp.summary.IrpAccountSummaryService;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
@@ -39,24 +41,26 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
+@ActiveProfiles("test")
 @SpringBootTest(classes = TestConfig.class, webEnvironment = WebEnvironment.RANDOM_PORT)
-@DisplayName("계좌 목록 조회 테스트")
+@DisplayName("6.1.3 개인형 IRP 계좌 목록 조회")
 @Transactional
 public class IrpAccountSummaryServiceImplTest {
 
   private static final Long BANKSALAD_USER_ID = 1L;
   private static final String ORGANIZATION_ID = "organizationId";
   private static final String ORGANIZATION_HOST = "http://localhost";
-
+  public static WireMockServer wiremock = new WireMockServer(WireMockSpring.options().dynamicPort());
   @Autowired
   private IrpAccountSummaryService irpAccountSummaryService;
-
   @Autowired
   private UserSyncStatusService userSyncStatusService;
-
-  public static WireMockServer wiremock = new WireMockServer(WireMockSpring.options().dynamicPort());
-
   private List<IrpAccountSummary> expectedIrpAccountSummaries;
+
+  @AfterAll
+  public static void clean() {
+    wiremock.shutdown();
+  }
 
   @BeforeEach
   public void setupClass() {
@@ -86,12 +90,7 @@ public class IrpAccountSummaryServiceImplTest {
     wiremock.resetAll();
   }
 
-  @AfterAll
-  public static void clean() {
-    wiremock.shutdown();
-  }
-
-  @DisplayName("계좌목록조회 - 단일")
+  @DisplayName("단일계좌목록조회")
   @Test
   void getAccountSummaries() throws ResponseNotOkException {
 
@@ -109,14 +108,19 @@ public class IrpAccountSummaryServiceImplTest {
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
 
-    List<IrpAccountSummary> actualIrpAccountSummaries = irpAccountSummaryService.listAccountSummaries(executionContext);
+    irpAccountSummaryService.saveAccountSummaries(executionContext);
 
-    assertThat(actualIrpAccountSummaries.get(0)).usingRecursiveComparison().ignoringFields().isEqualTo(expectedIrpAccountSummaries.get(0));
+    List<IrpAccountSummary> actualIrpAccountSummaries = irpAccountSummaryService
+        .listConsentedAccountSummaries(executionContext.getBanksaladUserId(),
+            executionContext.getOrganizationId());
+
+    assertThat(actualIrpAccountSummaries.get(0)).usingRecursiveComparison().ignoringFields()
+        .isEqualTo(expectedIrpAccountSummaries.get(0));
     assertThat(userSyncStatusService.getSearchTimestamp(BANKSALAD_USER_ID, ORGANIZATION_ID,
         Apis.irp_get_accounts)).isEqualTo(1000);
   }
 
-  @DisplayName("계좌목록조회 - 목록")
+  @DisplayName("복수계좌목록조회")
   @Test
   void listAccountSummaries() throws ResponseNotOkException {
 
@@ -134,11 +138,14 @@ public class IrpAccountSummaryServiceImplTest {
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
 
-    List<IrpAccountSummary> actualIrpAccountSummaries = irpAccountSummaryService.listAccountSummaries(executionContext);
+    irpAccountSummaryService.saveAccountSummaries(executionContext);
+    List<IrpAccountSummary> actualIrpAccountSummaries = irpAccountSummaryService.listConsentedAccountSummaries(
+        executionContext.getBanksaladUserId(), executionContext.getOrganizationId());
 
     Javers javers = JaversBuilder.javers()
         .withListCompareAlgorithm(ListCompareAlgorithm.LEVENSHTEIN_DISTANCE).build();
-    Diff diff = javers.compareCollections(expectedIrpAccountSummaries, actualIrpAccountSummaries, IrpAccountSummary.class);
+    Diff diff = javers
+        .compareCollections(expectedIrpAccountSummaries, actualIrpAccountSummaries, IrpAccountSummary.class);
 
     assertThat(diff.getChanges().size()).isEqualTo(0);
     assertThat(userSyncStatusService.getSearchTimestamp(BANKSALAD_USER_ID, ORGANIZATION_ID,

@@ -1,7 +1,5 @@
 package com.banksalad.collectmydata.irp.common.dto;
 
-import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
@@ -10,17 +8,19 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class IrpAccountBasicResponse implements AccountResponse {
+public class IrpAccountBasic {
 
-  private String rspCode;
-  private String rspMsg;
-  private long searchTimestamp;
-
-  @JsonUnwrapped
-  private IrpAccountBasic irpAccountBasic;
+  private BigDecimal accumAmt;
+  private BigDecimal evalAmt;
+  private BigDecimal employerAmt;
+  private BigDecimal employeeAmt;
+  private String issueDate;
+  private String firstDepositDate;
 }

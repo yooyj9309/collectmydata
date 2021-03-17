@@ -2,7 +2,7 @@ package com.banksalad.collectmydata.irp.common.db.entity.mapper;
 
 import com.banksalad.collectmydata.common.mapper.BigDecimalMapper;
 import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountBasicEntity;
-import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasicResponse;
+import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasic;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -11,15 +11,12 @@ import org.mapstruct.Mappings;
 public interface IrpAccountBasicMapper {
 
   @Mappings(value = {
-      @Mapping(target = "rspCode", ignore = true),
-      @Mapping(target = "rspMsg", ignore = true),
-      @Mapping(target = "searchTimestamp", ignore = true),
       @Mapping(target = "accumAmt", qualifiedByName = "BigDecimalScale3"),
       @Mapping(target = "evalAmt", qualifiedByName = "BigDecimalScale3"),
       @Mapping(target = "employerAmt", qualifiedByName = "BigDecimalScale3"),
       @Mapping(target = "employeeAmt", qualifiedByName = "BigDecimalScale3")
   })
-  IrpAccountBasicResponse entityToDto(IrpAccountBasicEntity entity);
+  IrpAccountBasic entityToDto(IrpAccountBasicEntity entity);
 
   @Mappings(
       value = {
@@ -35,5 +32,5 @@ public interface IrpAccountBasicMapper {
           @Mapping(target = "employeeAmt", qualifiedByName = "BigDecimalScale3")
       }
   )
-  IrpAccountBasicEntity dtoToEntity(IrpAccountBasicResponse irpAccountBasicResponse);
+  IrpAccountBasicEntity dtoToEntity(IrpAccountBasic irpAccountBasic);
 }

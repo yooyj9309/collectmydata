@@ -9,7 +9,8 @@ import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummary;
 
 public interface IrpInformationProviderService {
 
-  IrpAccountSummariesResponse getIrpAccountSummaries(ExecutionContext executionContext, String orgCode, long searchTimeStamp);
+  IrpAccountSummariesResponse getIrpAccountSummaries(ExecutionContext executionContext, String orgCode,
+      long searchTimeStamp);
 
   IrpAccountBasicResponse getAccountBasic(ExecutionContext executionContext, Organization organization,
       IrpAccountSummary irpAccountSummary);

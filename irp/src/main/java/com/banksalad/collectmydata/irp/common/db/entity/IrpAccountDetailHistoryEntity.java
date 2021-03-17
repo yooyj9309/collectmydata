@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.irp.common.db.entity;
 
+import com.banksalad.collectmydata.finance.common.db.entity.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,7 +24,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "irp_account_detail_history")
-public class IrpAccountDetailHistoryEntity extends BaseTimeAndUserEntity {
+public class IrpAccountDetailHistoryEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,7 +45,7 @@ public class IrpAccountDetailHistoryEntity extends BaseTimeAndUserEntity {
   private String seqno;
 
   @Column(nullable = false)
-  private Integer irpDetailNo;
+  private Short irpDetailNo;
 
   @Column(nullable = false)
   private String irpName;

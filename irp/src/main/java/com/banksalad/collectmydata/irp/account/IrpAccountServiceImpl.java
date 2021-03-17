@@ -4,24 +4,24 @@ import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.organization.Organization;
-import com.banksalad.collectmydata.common.util.ObjectComparator;
+import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
+import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
+import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.irp.collect.Apis;
-import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountBasicEntity;
+import com.banksalad.collectmydata.irp.collect.Executions;
 import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountDetailEntity;
-import com.banksalad.collectmydata.irp.common.db.entity.mapper.IrpAccountBasicHistoryMapper;
-import com.banksalad.collectmydata.irp.common.db.entity.mapper.IrpAccountBasicMapper;
 import com.banksalad.collectmydata.irp.common.db.entity.mapper.IrpAccountDetailHistoryMapper;
 import com.banksalad.collectmydata.irp.common.db.entity.mapper.IrpAccountDetailMapper;
-import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountBasicHistoryRepository;
-import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountBasicRepository;
 import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountDetailHistoryRepository;
 import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountDetailRepository;
-import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasicResponse;
+import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasic;
+import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasicRequest;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountDetail;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountDetailsResponse;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummary;
 import com.banksalad.collectmydata.irp.common.service.IrpInformationProviderService;
+import com.banksalad.collectmydata.irp.summary.IrpAccountSummaryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.javers.core.Javers;
@@ -40,25 +40,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class IrpAccountServiceImpl implements IrpAccountService {
 
+  private final AccountInfoService<IrpAccountSummary, IrpAccountBasicRequest, IrpAccountBasic> accountBasicAccountInfoService;
+
+  private final AccountInfoRequestHelper<IrpAccountBasicRequest, IrpAccountSummary> accountInfoRequestHelper;
+
+  private final AccountInfoResponseHelper<IrpAccountSummary, IrpAccountBasic> accountInfoResponseHelper;
+
   private final IrpInformationProviderService irpInformationProviderService;
 
   private final IrpAccountSummaryService irpAccountSummaryService;
-
-  private final IrpAccountBasicRepository irpAccountBasicRepository;
-
-  private final IrpAccountBasicHistoryRepository irpAccountBasicHistoryRepository;
 
   private final IrpAccountDetailRepository irpAccountDetailRepository;
 
   private final IrpAccountDetailHistoryRepository irpAccountDetailHistoryRepository;
 
   private final UserSyncStatusService userSyncStatusService;
-
-  private final IrpAccountBasicMapper irpAccountBasicMapper = Mappers
-      .getMapper(IrpAccountBasicMapper.class);
-
-  private final IrpAccountBasicHistoryMapper irpAccountBasicHistoryMapper = Mappers
-      .getMapper(IrpAccountBasicHistoryMapper.class);
 
   private final IrpAccountDetailMapper irpAccountDetailMapper = Mappers
       .getMapper(IrpAccountDetailMapper.class);
@@ -67,44 +63,10 @@ public class IrpAccountServiceImpl implements IrpAccountService {
       .getMapper(IrpAccountDetailHistoryMapper.class);
 
   @Override
-  public List<IrpAccountBasicResponse> getIrpAccountBasics(ExecutionContext executionContext,
-      List<IrpAccountSummary> irpAccountSummaries) {
-
-    Organization organization = getOrganization(executionContext);
-
-    for (IrpAccountSummary irpAccountSummary : irpAccountSummaries) {
-
-      IrpAccountBasicResponse irpAccountBasicResponse = irpInformationProviderService.getAccountBasic(
-          executionContext, organization, irpAccountSummary);
-
-      try {
-
-        saveIrpAccountBasic(executionContext, irpAccountSummary, irpAccountBasicResponse);
-
-        irpAccountSummaryService.updateBasicSearchTimestamp(executionContext.getBanksaladUserId(),
-            executionContext.getOrganizationId(), irpAccountSummary, irpAccountBasicResponse.getSearchTimestamp());
-
-        // Api 200 Ok
-        userSyncStatusService
-            .updateUserSyncStatus(
-                executionContext.getBanksaladUserId(),
-                executionContext.getOrganizationId(),
-                Apis.irp_get_basic.getId(),
-                executionContext.getSyncStartedAt(),
-                irpAccountBasicResponse.getSearchTimestamp()
-            );
-      } catch (Exception e) {
-        log.error("Failed to save irp account basic", e);
-      }
-    }
-
-    List<IrpAccountBasicEntity> irpAccountBasicEntities = irpAccountBasicRepository
-        .findByBanksaladUserIdAndOrganizationId(executionContext.getBanksaladUserId(),
-            executionContext.getOrganizationId());
-
-    return irpAccountBasicEntities.stream()
-        .map(irpAccountBasicMapper::entityToDto)
-        .collect(Collectors.toList());
+  public List<IrpAccountBasic> getIrpAccountBasics(ExecutionContext executionContext) {
+    return accountBasicAccountInfoService
+        .listAccountInfos(executionContext, Executions.irp_get_basic, accountInfoRequestHelper,
+            accountInfoResponseHelper);
   }
 
   @Override
@@ -155,37 +117,6 @@ public class IrpAccountServiceImpl implements IrpAccountService {
         .build();
   }
 
-  private void saveIrpAccountBasic(ExecutionContext executionContext, IrpAccountSummary irpAccountSummary,
-      IrpAccountBasicResponse irpAccountBasicResponse) {
-
-    // convert to entity
-    IrpAccountBasicEntity irpAccountBasicEntity = irpAccountBasicMapper.dtoToEntity(irpAccountBasicResponse);
-    irpAccountBasicEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
-    irpAccountBasicEntity.setOrganizationId(executionContext.getOrganizationId());
-    irpAccountBasicEntity.setSyncedAt(executionContext.getSyncStartedAt());
-    irpAccountBasicEntity.setAccountNum(irpAccountSummary.getAccountNum());
-    irpAccountBasicEntity.setSeqno(irpAccountSummary.getSeqno());
-
-    // load existing account entity
-    IrpAccountBasicEntity existingIrpAccountBasicEntity = irpAccountBasicRepository
-        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
-            executionContext.getBanksaladUserId(), executionContext.getOrganizationId(), irpAccountSummary.getAccountNum(),
-            irpAccountSummary.getSeqno()).orElseGet(() -> IrpAccountBasicEntity.builder().build());
-
-    // copy PK for update
-    if (existingIrpAccountBasicEntity != null) {
-      irpAccountBasicEntity.setId(existingIrpAccountBasicEntity.getId());
-    }
-
-    // upsert irp account basic and insert history if needed
-    if (!ObjectComparator.isSame(irpAccountBasicEntity, existingIrpAccountBasicEntity, "syncedAt")) {
-
-      irpAccountBasicRepository.save(irpAccountBasicEntity);
-      irpAccountBasicHistoryRepository.save(
-          irpAccountBasicHistoryMapper.toHistoryEntity(irpAccountBasicEntity));
-    }
-  }
-
   private void deleteAndSaveIrpAccountDetail(ExecutionContext executionContext, IrpAccountSummary irpAccountSummary,
       List<IrpAccountDetail> apiIrpAccountDetails) {
 
@@ -208,11 +139,13 @@ public class IrpAccountServiceImpl implements IrpAccountService {
 
     if (diff.getChanges().size() > 0) {
 
-      irpAccountDetailRepository.deleteByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(executionContext.getBanksaladUserId(), executionContext.getOrganizationId(), irpAccountSummary.getAccountNum(),
-        irpAccountSummary.getSeqno());
+      irpAccountDetailRepository
+          .deleteByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(executionContext.getBanksaladUserId(),
+              executionContext.getOrganizationId(), irpAccountSummary.getAccountNum(),
+              irpAccountSummary.getSeqno());
     }
 
-    int irpDetailNo = 0;
+    short irpDetailNo = 0;
     for (IrpAccountDetail irpAccountDetail : originalApiIrpAccountDetails) {
 
       // convert to entity

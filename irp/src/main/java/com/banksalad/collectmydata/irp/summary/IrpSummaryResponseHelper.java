@@ -35,17 +35,17 @@ public class IrpSummaryResponseHelper implements SummaryResponseHelper<IrpAccoun
   @Override
   public void saveSummary(ExecutionContext executionContext, IrpAccountSummary irpAccountSummary) {
 
-      IrpAccountSummaryEntity irpAccountSummaryEntity = irpAccountSummaryRepository
-          .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
-              executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
-              irpAccountSummary.getAccountNum(),
-              irpAccountSummary.getSeqno()).orElseGet(() -> IrpAccountSummaryEntity.builder().build());
+    IrpAccountSummaryEntity irpAccountSummaryEntity = irpAccountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
+            irpAccountSummary.getAccountNum(),
+            irpAccountSummary.getSeqno()).orElseGet(() -> IrpAccountSummaryEntity.builder().build());
 
-      irpAccountSummaryMapper.merge(irpAccountSummary, irpAccountSummaryEntity);
+    irpAccountSummaryMapper.merge(irpAccountSummary, irpAccountSummaryEntity);
 
-      irpAccountSummaryEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
-      irpAccountSummaryEntity.setOrganizationId(executionContext.getOrganizationId());
-      irpAccountSummaryEntity.setSyncedAt(executionContext.getSyncStartedAt());
-      irpAccountSummaryRepository.save(irpAccountSummaryEntity);
+    irpAccountSummaryEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
+    irpAccountSummaryEntity.setOrganizationId(executionContext.getOrganizationId());
+    irpAccountSummaryEntity.setSyncedAt(executionContext.getSyncStartedAt());
+    irpAccountSummaryRepository.save(irpAccountSummaryEntity);
   }
 }

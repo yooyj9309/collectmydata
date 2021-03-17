@@ -15,9 +15,9 @@ import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasicRequest;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasicResponse;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountDetailRequest;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountDetailsResponse;
+import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummariesResponse;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummary;
 import com.banksalad.collectmydata.irp.common.dto.ListIrpAccountSummariesRequest;
-import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummariesResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,7 +33,8 @@ public class IrpInformationProviderServiceImpl implements IrpInformationProvider
   private final CollectExecutor collectExecutor;
 
   @Override
-  public IrpAccountSummariesResponse getIrpAccountSummaries(ExecutionContext executionContext, String orgCode, long searchTimeStamp) {
+  public IrpAccountSummariesResponse getIrpAccountSummaries(ExecutionContext executionContext, String orgCode,
+      long searchTimeStamp) {
 
     // executionId 생성.
     executionContext.generateAndsUpdateExecutionRequestId();

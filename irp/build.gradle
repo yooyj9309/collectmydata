@@ -122,6 +122,8 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
 
     testImplementation("io.projectreactor:reactor-test:3.4.2")
+
+    testImplementation("com.integralblue:log4jdbc-spring-boot-starter:2.0.0")
 }
 
 test {
