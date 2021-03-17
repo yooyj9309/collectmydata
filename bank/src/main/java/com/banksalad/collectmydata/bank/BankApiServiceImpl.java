@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.bank.common.collect.Executions;
 import com.banksalad.collectmydata.bank.common.dto.BankApiResponse;
+import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountBasic;
+import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicRequest;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicRequest;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailRequest;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountBasic;
@@ -43,6 +45,11 @@ public class BankApiServiceImpl implements BankApiService {
   private final SummaryResponseHelper<AccountSummary> summaryResponseHelper;
 
   // DEPOSIT
+  private final AccountInfoService<AccountSummary, GetDepositAccountBasicRequest, DepositAccountBasic> depositAccountBasicApiService;
+
+  private final AccountInfoRequestHelper<GetDepositAccountBasicRequest, AccountSummary> depositAccountBasicInfoRequestHelper;
+  private final AccountInfoResponseHelper<AccountSummary, DepositAccountBasic> depositAccountInfoBasicResponseHelper;
+
   // INVEST
   private final AccountInfoService<AccountSummary, GetInvestAccountBasicRequest, InvestAccountBasic> investAccountBasicApiService;
   private final AccountInfoService<AccountSummary, GetInvestAccountDetailRequest, InvestAccountDetail> investAccountDetailApiService;
@@ -58,6 +65,7 @@ public class BankApiServiceImpl implements BankApiService {
   private final TransactionResponseHelper<AccountSummary, InvestAccountTransaction> investAccountTransactionResponseHelper;
 
   // LOAN
+
   @Override
   public BankApiResponse requestApi(long banksaladUserId, String organizationId, String syncRequestId,
       SyncRequestType syncRequestType) throws ResponseNotOkException {
@@ -84,15 +92,21 @@ public class BankApiServiceImpl implements BankApiService {
         CompletableFuture.supplyAsync(() -> investAccountBasicApiService.listAccountInfos(
             executionContext, Executions.finance_bank_invest_account_basic, investAccountBasicInfoRequestHelper,
             investAccountInfoBasicResponseHelper)),
+
         CompletableFuture.supplyAsync(() -> investAccountDetailApiService.listAccountInfos(
             executionContext, Executions.finance_bank_invest_account_detail, investAccountDetailInfoRequestHelper,
             investAccountDetailInfoResponseHelper)),
+
         CompletableFuture.supplyAsync(
             () -> investTransactionApiService.listTransactions(
                 executionContext, Executions.finance_bank_invest_account_transaction,
                 investAccountTransactionRequestHelper, investAccountTransactionResponseHelper))
             .thenAccept(investAccountTransactions -> bankApiResponseAtomicReference.get()
-                .setInvestAccountTransactions(investAccountTransactions))
+                .setInvestAccountTransactions(investAccountTransactions)),
+
+        CompletableFuture.supplyAsync(() -> depositAccountBasicApiService.listAccountInfos(
+            executionContext, Executions.finance_bank_deposit_account_basic, depositAccountBasicInfoRequestHelper,
+            depositAccountInfoBasicResponseHelper))
     ).join();
 
     return bankApiResponseAtomicReference.get();

@@ -4,21 +4,21 @@ import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountBasicEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountDetailEntity;
-import com.banksalad.collectmydata.bank.common.db.entity.mapper.InvestAccountBasicHistoryMapper;
-import com.banksalad.collectmydata.bank.common.db.entity.mapper.InvestAccountBasicMapper;
-import com.banksalad.collectmydata.bank.common.db.entity.mapper.InvestAccountDetailHistoryMapper;
-import com.banksalad.collectmydata.bank.common.db.entity.mapper.InvestAccountDetailMapper;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountBasicHistoryRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountBasicRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountDetailHistoryRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountDetailRepository;
-import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
+import com.banksalad.collectmydata.bank.common.mapper.InvestAccountBasicHistoryMapper;
+import com.banksalad.collectmydata.bank.common.mapper.InvestAccountBasicMapper;
+import com.banksalad.collectmydata.bank.common.mapper.InvestAccountDetailHistoryMapper;
+import com.banksalad.collectmydata.bank.common.mapper.InvestAccountDetailMapper;
 import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.bank.common.service.ExternalApiService;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailResponse;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountBasic;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountDetail;
+import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.organization.Organization;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class InvestAccountServiceImpl implements InvestAccountService {
 
-  private static final String[] EXCLUDE_FIELDS = {"syncedAt", "createdAt", "updatedAt", "createdBy", "updatedBy"};
+  private static final String[] EXCLUDE_FIELDS = {"syncedAt", "createdAt", "updatedAt", "createdBy", "updatedBy" };
   private final AccountSummaryService accountSummaryService;
   private final ExternalApiService externalApiService;
   private final InvestAccountBasicRepository investAccountBasicRepository;

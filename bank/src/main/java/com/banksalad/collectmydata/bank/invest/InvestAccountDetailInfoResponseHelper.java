@@ -3,10 +3,10 @@ package com.banksalad.collectmydata.bank.invest;
 import org.springframework.stereotype.Component;
 
 import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountDetailEntity;
-import com.banksalad.collectmydata.bank.common.db.entity.mapper.InvestAccountDetailHistoryMapper;
-import com.banksalad.collectmydata.bank.common.db.entity.mapper.InvestAccountDetailMapper;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountDetailHistoryRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountDetailRepository;
+import com.banksalad.collectmydata.bank.common.mapper.InvestAccountDetailHistoryMapper;
+import com.banksalad.collectmydata.bank.common.mapper.InvestAccountDetailMapper;
 import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailResponse;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountDetail;

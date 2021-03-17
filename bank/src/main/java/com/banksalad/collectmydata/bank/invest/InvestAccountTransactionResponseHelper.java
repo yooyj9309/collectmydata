@@ -3,8 +3,8 @@ package com.banksalad.collectmydata.bank.invest;
 import org.springframework.stereotype.Component;
 
 import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountTransactionEntity;
-import com.banksalad.collectmydata.bank.common.db.entity.mapper.InvestAccountTransactionMapper;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountTransactionRepository;
+import com.banksalad.collectmydata.bank.common.mapper.InvestAccountTransactionMapper;
 import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountTransaction;
 import com.banksalad.collectmydata.bank.invest.dto.ListInvestAccountTransactionsResponse;

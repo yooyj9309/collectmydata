@@ -8,9 +8,9 @@ import org.springframework.http.HttpStatus;
 
 import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountTransactionEntity;
-import com.banksalad.collectmydata.bank.common.db.entity.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountTransactionRepository;
+import com.banksalad.collectmydata.bank.common.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountTransaction;
 import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;

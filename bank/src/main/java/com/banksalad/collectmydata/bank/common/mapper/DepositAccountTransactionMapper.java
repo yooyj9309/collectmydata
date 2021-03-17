@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.bank.common.db.entity.mapper;
+package com.banksalad.collectmydata.bank.common.mapper;
 
 import com.banksalad.collectmydata.bank.common.db.entity.DepositAccountTransactionEntity;
 import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountTransaction;

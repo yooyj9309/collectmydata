@@ -19,12 +19,6 @@ import java.math.BigDecimal;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class DepositAccountBasic {
 
-  private String rspCode;
-
-  private String rspMsg;
-
-  private long searchTimestamp;
-
   private String savingMethod;
 
   private String holderName;

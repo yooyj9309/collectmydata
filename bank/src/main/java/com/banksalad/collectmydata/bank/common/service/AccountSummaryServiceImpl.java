@@ -2,9 +2,9 @@ package com.banksalad.collectmydata.bank.common.service;
 
 import org.springframework.stereotype.Service;
 
-import com.banksalad.collectmydata.bank.common.db.entity.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.bank.common.enums.BankAccountType;
+import com.banksalad.collectmydata.bank.common.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

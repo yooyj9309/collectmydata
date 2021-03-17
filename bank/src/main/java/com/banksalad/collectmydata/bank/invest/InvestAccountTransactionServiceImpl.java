@@ -3,13 +3,13 @@ package com.banksalad.collectmydata.bank.invest;
 import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountTransactionEntity;
-import com.banksalad.collectmydata.bank.common.db.entity.mapper.InvestAccountTransactionMapper;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountTransactionRepository;
-import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
+import com.banksalad.collectmydata.bank.common.mapper.InvestAccountTransactionMapper;
 import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.bank.common.service.ExternalApiService;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountTransaction;
 import com.banksalad.collectmydata.bank.invest.dto.ListInvestAccountTransactionsResponse;
+import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.crypto.HashUtil;
 import com.banksalad.collectmydata.common.organization.Organization;
@@ -33,7 +33,7 @@ import static com.banksalad.collectmydata.common.util.DateUtil.utcLocalDateTimeT
 @RequiredArgsConstructor
 public class InvestAccountTransactionServiceImpl implements InvestAccountTransactionService {
 
-  private static final String[] EXCLUDE_FIELDS = {"syncedAt", "createdAt", "updatedAt", "createdBy", "updatedBy"};
+  private static final String[] EXCLUDE_FIELDS = {"syncedAt", "createdAt", "updatedAt", "createdBy", "updatedBy" };
 
   private static final int MINUS_YEAR = 1; // TODO yooyj9309 최초 조회 시 5년으로 설정 할지 논의 필요 (동적으로 변경하도록 작성?)
   private static final int INTERVAL_MONTH = 3; // TODO yooyj9309 거래내역 요청 시 월별 간격 논의 필요 (동적으로 변경하도록 작성?)

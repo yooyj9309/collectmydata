@@ -4,9 +4,9 @@ import org.springframework.stereotype.Component;
 
 import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.OrganizationUserEntity;
-import com.banksalad.collectmydata.bank.common.db.entity.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.OrganizationUserRepository;
+import com.banksalad.collectmydata.bank.common.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
@@ -47,7 +47,6 @@ public class BankSummaryResponseHelper implements SummaryResponseHelper<AccountS
                 .regDate(listAccountSummariesResponse.getRegDate())
                 .build());
 
-    // TODO jayden-lee 매번 저장하는게 좋을지? DB 조회 시 있으면 skip 하는게 좋을지?
     organizationUserRepository.save(organizationUserEntity);
   }
 
