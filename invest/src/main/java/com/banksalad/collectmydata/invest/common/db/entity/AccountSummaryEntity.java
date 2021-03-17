@@ -54,7 +54,11 @@ public class AccountSummaryEntity extends BaseEntity {
 
   private Long basicSearchTimestamp;
 
+  private String basicResponseCode;
+
   private LocalDateTime transactionSyncedAt;
 
   private Long productSearchTimestamp;
+
+  private String productResponseCode;
 }

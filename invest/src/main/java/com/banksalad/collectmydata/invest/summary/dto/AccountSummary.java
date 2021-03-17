@@ -30,10 +30,4 @@ public class AccountSummary {
   private String accountType;
 
   private String accountStatus;
-
-  private long basicSearchTimestamp;
-
-  private LocalDateTime transactionSyncedAt;
-
-  private long productSearchTimestamp;
 }

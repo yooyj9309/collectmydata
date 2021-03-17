@@ -40,7 +40,7 @@ public class AccountProductEntity extends BaseEntity {
   @Column(nullable = false, name = "account_num_encrypted")
   private String accountNum;
 
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "SMALLINT")
   private Integer prodNo;
 
   @Column(nullable = false)

@@ -76,5 +76,5 @@ public class AccountTransactionEntity extends BaseEntity {
   private BigDecimal balanceAmt;
 
   @Column(nullable = false)
-  private BigDecimal currencyCode;
+  private String currencyCode;
 }
