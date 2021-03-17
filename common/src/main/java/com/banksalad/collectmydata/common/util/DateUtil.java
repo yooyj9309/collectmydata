@@ -20,7 +20,7 @@ public class DateUtil {
 
   public static final String ASIA_SEOUL_ZONEOFFSET = "+09:00";
 
-
+  private static final DateTimeFormatter yearMonthFormatter = DateTimeFormatter.ofPattern("yyyyMM");
   private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
   private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmmss");
   private static final DateTimeFormatter datetimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
@@ -104,6 +104,11 @@ public class DateUtil {
   public static String utcLocalDateTimeToKstDateString(LocalDateTime localDateTime) {
     return localDateTime.atZone(UTC_ZONE_ID).withZoneSameInstant(DateUtil.KST_ZONE_ID).format(dateFormatter);
   }
+
+  public static String utcLocalDateTimeToKstYearMonthString(LocalDateTime localDateTime) {
+    return localDateTime.atZone(UTC_ZONE_ID).withZoneSameInstant(DateUtil.KST_ZONE_ID).format(yearMonthFormatter);
+  }
+
 
   public static LocalDate toLocalDate(LocalDateTime localDateTime) {
     return localDateTime.toLocalDate();
