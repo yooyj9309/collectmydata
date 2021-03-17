@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.irp.common.config;
+package com.banksalad.collectmydata.finance.common.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
