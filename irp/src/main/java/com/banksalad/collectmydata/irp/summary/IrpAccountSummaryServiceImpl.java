@@ -4,8 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
-import com.banksalad.collectmydata.common.organization.Organization;
 import com.banksalad.collectmydata.finance.api.summary.SummaryRequestHelper;
 import com.banksalad.collectmydata.finance.api.summary.SummaryResponseHelper;
 import com.banksalad.collectmydata.finance.api.summary.SummaryService;
@@ -20,7 +18,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -57,24 +57,14 @@ public class IrpAccountSummaryServiceImpl implements IrpAccountSummaryService {
         .collect(Collectors.toList());
   }
 
-  private Organization getOrganization(ExecutionContext executionContext) {
-
-    // TODO: Organization
-    return Organization.builder()
-        .organizationCode("020")
-        .build();
-  }
-
   @Override
   @Transactional
-  public void updateBasicSearchTimestamp(long banksaladUserId, String organizationId, IrpAccountSummary accountSummary,
+  public void updateBasicSearchTimestamp(long banksaladUserId, String organizationId,
+      IrpAccountSummary irpAccountSummary,
       long basicSearchTimestamp) {
 
-    getIrpAccountSummaryEntity(banksaladUserId, organizationId, accountSummary)
-        .setBasicSearchTimestamp(basicSearchTimestamp);
-
-    irpAccountSummaryRepository.save(getIrpAccountSummaryEntity(banksaladUserId, organizationId,
-        accountSummary));
+    updateIrpAccountSummaryEntity(banksaladUserId, organizationId, irpAccountSummary,
+        irpAccountSummaryEntity -> irpAccountSummaryEntity.setBasicSearchTimestamp(basicSearchTimestamp));
   }
 
   @Override
@@ -83,38 +73,52 @@ public class IrpAccountSummaryServiceImpl implements IrpAccountSummaryService {
       IrpAccountSummary irpAccountSummary,
       long detailSearchTimestamp) {
 
-    IrpAccountSummaryEntity irpAccountSummaryEntity = getIrpAccountSummaryEntity(banksaladUserId, organizationId,
-        irpAccountSummary);
-
-    irpAccountSummaryEntity.setDetailSearchTimestamp(detailSearchTimestamp);
-
-    irpAccountSummaryRepository.save(irpAccountSummaryEntity);
+    updateIrpAccountSummaryEntity(banksaladUserId, organizationId, irpAccountSummary,
+        irpAccountSummaryEntity -> irpAccountSummaryEntity.setDetailSearchTimestamp(detailSearchTimestamp));
   }
 
   @Override
-  public void updateBasicResponseCode(long banksaladUserId, String organizationId, IrpAccountSummary accountSummary,
-      String responseCode) {
+  public void updateTransactionSyncedAt(long banksaladUserId, String organizationId,
+      IrpAccountSummary irpAccountSummary, LocalDateTime transactionSyncedAt) {
 
-    IrpAccountSummaryEntity irpAccountSummaryEntity = getIrpAccountSummaryEntity(banksaladUserId, organizationId,
-        accountSummary);
-
-    irpAccountSummaryEntity.setBasicResponseCode(responseCode);
-
-    irpAccountSummaryRepository.save(irpAccountSummaryEntity);
+    updateIrpAccountSummaryEntity(banksaladUserId, organizationId, irpAccountSummary,
+        irpAccountSummaryEntity -> irpAccountSummaryEntity.setTransactionSyncedAt(transactionSyncedAt));
   }
 
   @Override
-  public void updateDetailResponseCode(long banksaladUserId, String organizationId, IrpAccountSummary accountSummary,
+  public void updateBasicResponseCode(long banksaladUserId, String organizationId, IrpAccountSummary irpAccountSummary,
       String responseCode) {
 
+    updateIrpAccountSummaryEntity(banksaladUserId, organizationId, irpAccountSummary,
+        irpAccountSummaryEntity -> irpAccountSummaryEntity.setBasicResponseCode(responseCode));
   }
 
-  private IrpAccountSummaryEntity getIrpAccountSummaryEntity(long banksaladUserId, String organizationId,
-      IrpAccountSummary accountSummary) {
+  @Override
+  public void updateDetailResponseCode(long banksaladUserId, String organizationId, IrpAccountSummary irpAccountSummary,
+      String responseCode) {
 
-    return irpAccountSummaryRepository
+    updateIrpAccountSummaryEntity(banksaladUserId, organizationId, irpAccountSummary,
+        irpAccountSummaryEntity -> irpAccountSummaryEntity.setDetailResponseCode(responseCode));
+  }
+
+  @Override
+  public void updateTransactionResponseCode(long banksaladUserId, String organizationId,
+      IrpAccountSummary irpAccountSummary, String responseCode) {
+
+    updateIrpAccountSummaryEntity(banksaladUserId, organizationId, irpAccountSummary,
+        irpAccountSummaryEntity -> irpAccountSummaryEntity.setTransactionResponseCode(responseCode));
+  }
+
+  private void updateIrpAccountSummaryEntity(long banksaladUserId, String organizationId,
+      IrpAccountSummary accountSummary, Consumer<IrpAccountSummaryEntity> consumer) {
+
+    irpAccountSummaryRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
             banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno())
-        .orElseThrow(() -> new CollectRuntimeException("No Irp Account Summary Data"));
+        .ifPresent(irpAccountSummaryEntity -> {
+
+          consumer.accept(irpAccountSummaryEntity);
+          irpAccountSummaryRepository.save(irpAccountSummaryEntity);
+        });
   }
 }

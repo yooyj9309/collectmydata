@@ -40,8 +40,11 @@ public class IrpAccountSummary {
   private LocalDate transactionSyncedAt;
 
   @JsonIgnore
-  private String basicSearchResponseCode;
+  private String basicResponseCode;
 
   @JsonIgnore
-  private String detailSearchResponseCode;
+  private String detailResponseCode;
+
+  @JsonIgnore
+  private String transactionResponseCode;
 }

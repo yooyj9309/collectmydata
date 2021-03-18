@@ -61,4 +61,6 @@ public class IrpAccountSummaryEntity extends BaseEntity {
   private String basicResponseCode;
 
   private String detailResponseCode;
+
+  private String transactionResponseCode;
 }

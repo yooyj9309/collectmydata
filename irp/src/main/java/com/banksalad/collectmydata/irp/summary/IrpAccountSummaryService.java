@@ -4,6 +4,7 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummary;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IrpAccountSummaryService {
@@ -18,9 +19,15 @@ public interface IrpAccountSummaryService {
   void updateDetailSearchTimestamp(long banksaladUserId, String organizationId, IrpAccountSummary irpAccountSummary,
       long detailSearchTimestamp);
 
-  void updateBasicResponseCode(long banksaladUserId, String organizationId, IrpAccountSummary accountSummary,
+  void updateTransactionSyncedAt(long banksaladUserId, String organizationId, IrpAccountSummary irpAccountSummary,
+      LocalDateTime transactionSyncedAt);
+
+  void updateBasicResponseCode(long banksaladUserId, String organizationId, IrpAccountSummary irpAccountSummary,
       String responseCode);
 
-  void updateDetailResponseCode(long banksaladUserId, String organizationId, IrpAccountSummary accountSummary,
+  void updateDetailResponseCode(long banksaladUserId, String organizationId, IrpAccountSummary irpAccountSummary,
+      String responseCode);
+
+  void updateTransactionResponseCode(long banksaladUserId, String organizationId, IrpAccountSummary irpAccountSummary,
       String responseCode);
 }

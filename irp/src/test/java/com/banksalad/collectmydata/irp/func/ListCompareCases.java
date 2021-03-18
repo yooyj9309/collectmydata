@@ -24,6 +24,71 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ListCompareCases {
 
   @Test
+  @DisplayName("Compare the equality of the elements in two lists objects as set because of ignoring order")
+  void diffElementsInTwoLists_AsSet_Same() {
+
+    //given
+    Javers javers = JaversBuilder.javers()
+        .withListCompareAlgorithm(ListCompareAlgorithm.AS_SET).build();
+
+    List<IrpAccountDetail> oldIrpAccountDetails = new ArrayList<>();
+    oldIrpAccountDetails.add(IrpAccountDetail.builder()
+        .irpName("가나다a")
+        .irpType("01")
+        .evalAmt(new BigDecimal("100000.123"))
+        .invPrincipal(new BigDecimal("99999.999"))
+        .fundNum(5)
+        .openDate("20200222")
+        .expDate("20210330")
+        .intRate(new BigDecimal("3333.123"))
+        .build());
+    oldIrpAccountDetails.add(IrpAccountDetail.builder()
+        .irpName("가나다ab")
+        .irpType("01")
+        .evalAmt(new BigDecimal("100000.123"))
+        .invPrincipal(new BigDecimal("99999.999"))
+        .fundNum(5)
+        .openDate("20200222")
+        .expDate("20210330")
+        .intRate(new BigDecimal("3333.121"))
+        .build());
+
+    List<IrpAccountDetail> newIrpAccountDetails = new ArrayList<>();
+    newIrpAccountDetails.add(
+        IrpAccountDetail.builder()
+            .irpName("가나다ab")
+            .irpType("01")
+            .evalAmt(new BigDecimal("100000.123"))
+            .invPrincipal(new BigDecimal("99999.999"))
+            .fundNum(5)
+            .openDate("20200222")
+            .expDate("20210330")
+            .intRate(new BigDecimal("3333.121"))
+            .build());
+    newIrpAccountDetails.add(
+        IrpAccountDetail.builder()
+            .irpName("가나다a")
+            .irpType("01")
+            .evalAmt(new BigDecimal("100000.123"))
+            .invPrincipal(new BigDecimal("99999.999"))
+            .fundNum(5)
+            .openDate("20200222")
+            .expDate("20210330")
+            .intRate(new BigDecimal("3333.123"))
+            .build());
+
+    //when
+    Diff diff = javers.compareCollections(oldIrpAccountDetails, newIrpAccountDetails, IrpAccountDetail.class);
+
+    //then
+    assertThat(diff.getChanges()).hasSize(0);
+
+    System.out.println(diff);
+    System.out.println(javers.getJsonConverter().toJson(diff));
+    diff.getChanges().forEach(change -> System.out.println("- " + change));
+  }
+
+  @Test
   @DisplayName("Compare the equality of the elements in two lists objects")
   void diffElementsInTwoLists_Same() {
 
