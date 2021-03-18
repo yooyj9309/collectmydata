@@ -8,12 +8,11 @@ import java.util.List;
 
 public interface InsuranceSummaryService {
 
+  List<InsuranceSummary> listSummariesConsented(long banksaladUserId, String organizationId);
+
   List<InsuranceSummary> listInsuranceSummaries(ExecutionContext executionContext, String organizationCode);
 
   void updateBasicSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String insuNum,
-      long basicSearchTimestamp, String rspCode);
-
-  void updateCarSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String insuNum,
       long basicSearchTimestamp, String rspCode);
 
   void updatePaymentSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String insuNum,
@@ -22,4 +21,9 @@ public interface InsuranceSummaryService {
   void updateTransactionSyncedAt(long banksaladUserId, String organizationId, String insuNum,
       LocalDateTime syncedAt);
 
+  void updateCarSearchTimestamp(long banksaladUserId, String organizationId, InsuranceSummary insuranceSummary,
+      long searchTimestamp);
+
+  void updateCarResponseCode(long banksaladUserId, String organizationId, InsuranceSummary insuranceSummary,
+      String responseCode);
 }

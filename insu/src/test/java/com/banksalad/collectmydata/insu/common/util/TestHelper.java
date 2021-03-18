@@ -37,6 +37,7 @@ public class TestHelper {
         .accessToken(ACCESS_TOKEN)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
+        .organizationCode(ORGANIZATION_CODE)
         .executionRequestId(UUID.randomUUID().toString())
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
@@ -48,6 +49,7 @@ public class TestHelper {
         .accessToken(ACCESS_TOKEN)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
+        .organizationCode(ORGANIZATION_CODE)
         .executionRequestId(UUID.randomUUID().toString())
         .syncStartedAt(now)
         .build();

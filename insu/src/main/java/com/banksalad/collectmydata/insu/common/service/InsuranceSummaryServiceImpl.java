@@ -13,7 +13,7 @@ import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.insu.collect.Apis;
 import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceSummaryEntity;
-import com.banksalad.collectmydata.insu.common.db.mapper.InsuranceSummaryMapper;
+import com.banksalad.collectmydata.insu.common.mapper.InsuranceSummaryMapper;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceSummaryRepository;
 import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.summary.dto.ListInsuranceSummariesRequest;
@@ -40,19 +40,25 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
   private static final InsuranceSummaryMapper insuranceSummaryMapper = Mappers.getMapper(InsuranceSummaryMapper.class);
 
   @Override
+  public List<InsuranceSummary> listSummariesConsented(long banksaladUserId, String organizationId) {
+    // TODO : insurance 업권도 조회 시 insu_type 포함하여 조회해야 하는가? (parameter 추가 및 jpa query method 변경)
+    return insuranceSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndConsentIsTrue(banksaladUserId, organizationId)
+        .stream()
+        .map(insuranceSummaryMapper::entityToDto)
+        .collect(Collectors.toList());
+  }
+
+  @Override
   public List<InsuranceSummary> listInsuranceSummaries(ExecutionContext executionContext, String organizationCode) {
     long banksaladUserId = executionContext.getBanksaladUserId();
     String organizationId = executionContext.getOrganizationId();
 
-    long searchTimestamp = userSyncStatusService.getSearchTimestamp(
-        banksaladUserId,
-        organizationCode,
-        Apis.insurance_get_summaries
-    );
+    long searchTimestamp = userSyncStatusService
+        .getSearchTimestamp(banksaladUserId, organizationCode, Apis.insurance_get_summaries);
 
     ListInsuranceSummariesResponse insuranceSummariesResponse = listInsuranceSummariesResponse(executionContext,
-        organizationCode,
-        searchTimestamp);
+        organizationCode, searchTimestamp);
 
     // db 적재
     for (InsuranceSummary insuranceSummary : insuranceSummariesResponse.getInsuList()) {
@@ -101,15 +107,6 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
   }
 
   @Override
-  public void updateCarSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String insuNum,
-      long carSearchTimestamp, String rspCode) {
-    InsuranceSummaryEntity entity = getInsuranceSummaryEntity(banksaladUserId, organizationId, insuNum);
-    entity.setCarSearchTimestamp(carSearchTimestamp);
-    entity.setCarResponseCode(rspCode);
-    insuranceSummaryRepository.save(entity);
-  }
-
-  @Override
   public void updatePaymentSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String insuNum,
       long paymentSearchTimestamp, String rspCode) {
     InsuranceSummaryEntity entity = getInsuranceSummaryEntity(banksaladUserId, organizationId, insuNum);
@@ -124,6 +121,32 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
     InsuranceSummaryEntity entity = getInsuranceSummaryEntity(banksaladUserId, organizationId, insuNum);
     entity.setTransactionSyncedAt(syncedAt);
     insuranceSummaryRepository.save(entity);
+  }
+
+  @Override
+  public void updateCarSearchTimestamp(long banksaladUserId, String organizationId, InsuranceSummary insuranceSummary,
+      long carSearchTimestamp) {
+
+    insuranceSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndInsuNum(
+            banksaladUserId, organizationId, insuranceSummary.getInsuNum())
+        .ifPresent(insuranceSummaryEntity -> {
+          insuranceSummaryEntity.setCarSearchTimestamp(carSearchTimestamp);
+          insuranceSummaryRepository.save(insuranceSummaryEntity);
+        });
+  }
+
+  @Override
+  public void updateCarResponseCode(long banksaladUserId, String organizationId, InsuranceSummary insuranceSummary,
+      String responseCode) {
+
+    insuranceSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndInsuNum(
+            banksaladUserId, organizationId, insuranceSummary.getInsuNum())
+        .ifPresent(insuranceSummaryEntity -> {
+          insuranceSummaryEntity.setCarResponseCode(responseCode);
+          insuranceSummaryRepository.save(insuranceSummaryEntity);
+        });
   }
 
   public InsuranceSummaryEntity getInsuranceSummaryEntity(long banksaladUserId, String organizationId, String insuNum) {

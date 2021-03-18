@@ -13,7 +13,7 @@ import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.insu.collect.Apis;
 import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.db.entity.LoanSummaryEntity;
-import com.banksalad.collectmydata.insu.common.db.mapper.LoanSummaryMapper;
+import com.banksalad.collectmydata.insu.common.mapper.LoanSummaryMapper;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanSummaryRepository;
 import com.banksalad.collectmydata.insu.summary.dto.ListLoanSummariesRequest;
 import com.banksalad.collectmydata.insu.summary.dto.ListLoanSummariesResponse;

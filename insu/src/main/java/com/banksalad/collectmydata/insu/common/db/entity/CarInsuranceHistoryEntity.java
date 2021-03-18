@@ -14,7 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -53,10 +52,10 @@ public class CarInsuranceHistoryEntity extends BaseEntity {
   private String carName;
 
   @Column(nullable = false)
-  private LocalDate startDate;
+  private String startDate;
 
   @Column(nullable = false)
-  private LocalDate endDate;
+  private String endDate;
 
   @Column(nullable = false)
   private String contractAge;
@@ -64,8 +63,8 @@ public class CarInsuranceHistoryEntity extends BaseEntity {
   @Column(nullable = false)
   private String contractDriver;
 
-  @Column(nullable = false, columnDefinition = "BIT", length = 1)
-  private Boolean isOwnDmgCoverage;
+  @Column(nullable = false, name = "is_own_dmg_coverage", columnDefinition = "BIT", length = 1)
+  private Boolean ownDmgCoverage;
 
   @Column(nullable = false)
   private String selfPayRate;
@@ -74,4 +73,6 @@ public class CarInsuranceHistoryEntity extends BaseEntity {
   private BigDecimal selfPayAmt;
 
   private LocalDateTime transactionSyncedAt;
+
+  private String transactionResponseCode;
 }

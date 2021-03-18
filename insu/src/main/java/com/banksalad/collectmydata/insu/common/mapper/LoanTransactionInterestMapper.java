@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.insu.common.db.mapper;
+package com.banksalad.collectmydata.insu.common.mapper;
 
 import com.banksalad.collectmydata.insu.common.db.entity.LoanTransactionInterestEntity;
 import com.banksalad.collectmydata.insu.loan.dto.LoanTransactionInterest;

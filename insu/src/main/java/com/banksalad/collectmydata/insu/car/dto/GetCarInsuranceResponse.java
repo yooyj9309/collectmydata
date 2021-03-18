@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.insu.car.dto;
 
+import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -17,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class GetCarInsuranceResponse {
+public class GetCarInsuranceResponse implements AccountResponse {
 
   private String rspCode;
   private String rspMsg;

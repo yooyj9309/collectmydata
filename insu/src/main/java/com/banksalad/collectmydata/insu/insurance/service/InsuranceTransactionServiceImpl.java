@@ -15,7 +15,7 @@ import com.banksalad.collectmydata.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceTransactionEntity;
-import com.banksalad.collectmydata.insu.common.db.mapper.InsuranceTransactionMapper;
+import com.banksalad.collectmydata.insu.common.mapper.InsuranceTransactionMapper;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceTransactionRepository;
 import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.common.service.InsuranceSummaryService;

@@ -14,4 +14,6 @@ public interface InsuranceSummaryRepository extends JpaRepository<InsuranceSumma
 
   List<InsuranceSummaryEntity> findByBanksaladUserIdAndOrganizationId(Long banksaladUserId,
       String organizationId);
+
+  List<InsuranceSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndConsentIsTrue(long banksaladUserId, String organizationId);
 }
