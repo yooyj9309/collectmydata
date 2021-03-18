@@ -7,24 +7,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
 
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class OperatingLease {
+public class GetOperatingLeaseBasicRequest {
 
+  private String orgCode;
   private String accountNum;
   private String seqno;
-  private String holderName;
-  private String issueDate;
-  private String expDate;
-  private String repayDate;
-  private String repayMethod;
-  private String repayOrgCode;
-  private String repayAccountNum;
-  private String nextRepayDate;
+  private long searchTimestamp;
 }

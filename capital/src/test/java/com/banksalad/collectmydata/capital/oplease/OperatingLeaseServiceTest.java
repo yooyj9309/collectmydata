@@ -6,15 +6,12 @@ import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
-import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseEntity;
-import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseHistoryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseTransactionEntity;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseHistoryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseTransactionRepository;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
-import com.banksalad.collectmydata.capital.oplease.dto.OperatingLease;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
 import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
@@ -30,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,7 +52,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static java.lang.Boolean.TRUE;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @DisplayName("OperatingLeaseService Test")
@@ -100,54 +95,7 @@ public class OperatingLeaseServiceTest {
     accountSummaryRepository.deleteAll();
     userSyncStatusRepository.deleteAll();
   }
-
-  @Test
-  @DisplayName("6.7.5 운용리스 기본정보 조회 서비스 로직 성공케이스")
-  public void getOperatingLeaseBasic_firstInflow() {
-
-    LocalDateTime firstTime = LocalDateTime.now();
-    ExecutionContext context = generateExecutionContext(firstTime);
-
-    Organization organization = Organization.builder()
-        .organizationCode("10041004").build();
-
-    AccountSummary accountSummary = AccountSummary.builder()
-        .accountNum(accountNum)
-        .seqno("1")
-        .build();
-
-    accountSummaryRepository.save(
-        AccountSummaryEntity.builder()
-            .syncedAt(LocalDateTime.now())
-            .banksaladUserId(banksaladUserId)
-            .organizationId(organizationId)
-            .accountNum(accountNum)
-            .seqno("1")
-            .isConsent(true)
-            .prodName("prodName")
-            .accountType("")
-            .accountStatus("")
-            .build()
-    );
-
-    List<AccountSummary> accountSummaries = List.of(accountSummary);
-    List<OperatingLease> operatingLeases = operatingLeaseService
-        .listOperatingLeases(context, organization, accountSummaries);
-
-    List<OperatingLeaseEntity> operatingLeaseEntities = operatingLeaseRepository.findAll();
-    List<OperatingLeaseHistoryEntity> operatingLeaseHistoryEntities = operatingLeaseHistoryRepository.findAll();
-    validateResult(firstTime, firstTime, operatingLeaseEntities, operatingLeaseHistoryEntities, operatingLeases);
-
-    // 재조회시 히스토리 중첩여부 테스트
-    LocalDateTime recentTime = LocalDateTime.now();
-    context = generateExecutionContext(recentTime);
-    operatingLeases = operatingLeaseService.listOperatingLeases(context, organization, accountSummaries);
-
-    operatingLeaseEntities = operatingLeaseRepository.findAll();
-    operatingLeaseHistoryEntities = operatingLeaseHistoryRepository.findAll();
-    validateResult(firstTime, recentTime, operatingLeaseEntities, operatingLeaseHistoryEntities, operatingLeases);
-  }
-
+  
   @Test
   @DisplayName("6.7.6 운용리스 거래내역 조회 성공")
   void givenRequest_whenListOperatingLeaseTransactions_thenSuccess() {
@@ -191,69 +139,6 @@ public class OperatingLeaseServiceTest {
                 generateTransactionYearMonth(operatingLeaseTransactions.get(0)))
             .orElse(OperatingLeaseTransactionEntity.builder().build())
     );
-  }
-
-  private void validateResult(LocalDateTime firstTime, LocalDateTime recentTime,
-      List<OperatingLeaseEntity> operatingLeaseEntities,
-      List<OperatingLeaseHistoryEntity> operatingLeaseHistoryEntities, List<OperatingLease> operatingLeases) {
-    assertEquals(1, operatingLeaseEntities.size());
-    assertThat(operatingLeaseEntities.get(0)).usingRecursiveComparison()
-        .ignoringFields("id", "createdAt", "updatedAt", "syncedAt")
-        .isEqualTo(
-            OperatingLeaseEntity.builder()
-                .syncedAt(firstTime)
-                .banksaladUserId(banksaladUserId)
-                .organizationId(organizationId)
-                .accountNum(accountNum)
-                .seqno("1")
-                .holderName("김뱅셀")
-                .issueDate(LocalDate.parse("20210210", DateTimeFormatter.ofPattern("yyyyMMdd")))
-                .expDate(LocalDate.parse("20221231", DateTimeFormatter.ofPattern("yyyyMMdd")))
-                .repayDate("03")
-                .repayMethod("01")
-                .repayOrgCode("B01")
-                .repayAccountNum("11022212345")
-                .nextRepayDate(LocalDate.parse("20211114", DateTimeFormatter.ofPattern("yyyyMMdd")))
-                .build()
-        );
-
-    assertEquals(1, operatingLeaseHistoryEntities.size());
-    assertThat(operatingLeaseHistoryEntities.get(0)).usingRecursiveComparison()
-        .ignoringFields("id", "createdAt", "updatedAt", "syncedAt")
-        .isEqualTo(
-            OperatingLeaseHistoryEntity.builder()
-                .syncedAt(firstTime)
-                .banksaladUserId(banksaladUserId)
-                .organizationId(organizationId)
-                .accountNum(accountNum)
-                .seqno("1")
-                .holderName("김뱅셀")
-                .issueDate(LocalDate.parse("20210210", DateTimeFormatter.ofPattern("yyyyMMdd")))
-                .expDate(LocalDate.parse("20221231", DateTimeFormatter.ofPattern("yyyyMMdd")))
-                .repayDate("03")
-                .repayMethod("01")
-                .repayOrgCode("B01")
-                .repayAccountNum("11022212345")
-                .nextRepayDate(LocalDate.parse("20211114", DateTimeFormatter.ofPattern("yyyyMMdd")))
-                .build()
-        );
-
-    assertEquals(1, operatingLeases.size());
-    assertThat(operatingLeases.get(0)).usingRecursiveComparison()
-        .isEqualTo(
-            OperatingLease.builder()
-                .accountNum(accountNum)
-                .seqno("1")
-                .holderName("김뱅셀")
-                .issueDate("20210210")
-                .expDate("20221231")
-                .repayDate("03")
-                .repayMethod("01")
-                .repayOrgCode("B01")
-                .repayAccountNum("11022212345")
-                .nextRepayDate("20211114")
-                .build()
-        );
   }
 
   private List<OperatingLeaseTransaction> getOperatingLeaseTransactions(LocalDate fromDate) {

@@ -13,7 +13,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -46,10 +45,10 @@ public class OperatingLeaseHistoryEntity extends BaseEntity {
   private String holderName;
 
   @Column(nullable = false)
-  private LocalDate issueDate;
+  private String issueDate;
 
   @Column(nullable = false)
-  private LocalDate expDate;
+  private String expDate;
 
   @Column(nullable = false)
   private String repayDate;
@@ -63,5 +62,5 @@ public class OperatingLeaseHistoryEntity extends BaseEntity {
   private String repayAccountNum;
 
   @Column(nullable = false)
-  private LocalDate nextRepayDate;
+  private String nextRepayDate;
 }

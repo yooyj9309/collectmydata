@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
-import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
 import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
@@ -77,7 +76,6 @@ class ExternalApiServiceTest {
   static void tearDown() {
     wireMockServer.shutdown();
   }
-  
 
   @Test
   @DisplayName("6.7.3 대출 상품 계좌 추가 정보 조회")
@@ -125,23 +123,6 @@ class ExternalApiServiceTest {
     assertEquals(3, actualAccountTransactionResponse.getTransList().size());
     assertThat(actualAccountTransactionResponse).usingRecursiveComparison()
         .isEqualTo(expectedAccountTransactionResponse);
-  }
-
-  @Test
-  @DisplayName("6.7.5 운용 리스 기본 정보 조회")
-  void givenExecutionContextAndOrganizationAndAccount_whenGetLeaseBasic_thenEquals() {
-    // Given
-    ExecutionContext executionContext = getExecutionContext();
-    Organization organization = getOrganization();
-    AccountSummary accountSummary = getAccount();
-    OperatingLeaseBasicResponse expectedLeaseBasicResponse = getOperatingLeaseBasicResponse();
-
-    // When
-    OperatingLeaseBasicResponse actualLeaseBasicResponseResponse = externalApiService
-        .getOperatingLeaseBasic(executionContext, organization, accountSummary);
-
-    // Then
-    assertThat(actualLeaseBasicResponseResponse).usingRecursiveComparison().isEqualTo(expectedLeaseBasicResponse);
   }
 
   @Test
@@ -263,22 +244,6 @@ class ExternalApiServiceTest {
         .build();
   }
 
-  private OperatingLeaseBasicResponse getOperatingLeaseBasicResponse() {
-    return OperatingLeaseBasicResponse.builder()
-        .rspCode("00000")
-        .rspMsg("rep_msg")
-        .searchTimestamp(1000L)
-        .holderName("김뱅셀")
-        .issueDate("20210210")
-        .expDate("20221231")
-        .repayDate("03")
-        .repayMethod("01")
-        .repayOrgCode("B01")
-        .repayAccountNum("11022212345")
-        .nextRepayDate("20211114")
-        .build();
-  }
-
   private static void setupMockServer() {
     // 6.7.1 계좌목록 조회
     wireMockServer.stubFor(get(urlMatching("/loans.*"))
@@ -332,17 +297,6 @@ class ExternalApiServiceTest {
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/CP04_003.json"))));
-
-    // 6.7.5 운용리스 기본정보 조회
-    wireMockServer.stubFor(post(urlMatching("/loans/oplease/basic"))
-        .withRequestBody(
-            equalToJson(readText("classpath:mock/request/CP05_001.json")))
-        .willReturn(
-            aResponse()
-                .withFixedDelay(1000)
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/CP05_001.json"))));
 
     // 6.7.6 운용리스 거래내역 조회 : 응답 페이지가 둘인 경우 - 첫번째 페이지(1/2) (요청 next_page : null, 응답 next_page : 2)
     wireMockServer.stubFor(post(urlMatching("/loans/oplease/transactions"))

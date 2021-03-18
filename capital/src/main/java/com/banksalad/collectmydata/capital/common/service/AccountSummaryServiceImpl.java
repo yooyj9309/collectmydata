@@ -26,8 +26,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
       boolean demandOperatingLeaseAccount) {
 
     List<AccountSummaryEntity> response = null;
-
-    // TODO dusang, if else 걷어내고 그냥 리턴으로 할까..?
+    // TODO dusang, if else 걷어내고 그냥 리턴으로 할지 고민이됩니다.
     if (demandOperatingLeaseAccount) {
       response = accountSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndIsConsent(
           banksaladUserId, organizationId, true)
@@ -41,7 +40,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
           .filter(accountSummaryEntity -> !OPERATING_LEASE_ACCOUNT_TYPE.equals(accountSummaryEntity.getAccountType()))
           .collect(Collectors.toList());
     }
-
+    
     return response.stream().map(accountSummaryMapper::entityToDto).collect(Collectors.toList());
   }
 
@@ -65,6 +64,30 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
             banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno())
         .ifPresent(accountSummaryEntity -> {
           accountSummaryEntity.setBasicResponseCode(responseCode);
+          accountSummaryRepository.save(accountSummaryEntity);
+        });
+  }
+
+  @Override
+  public void updateOperatingLeaseBasicSearchTimestamp(long banksaladUserId, String organizationId,
+      AccountSummary accountSummary, long operatingLeaseBasicSearchTimestamp) {
+    accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno())
+        .ifPresent(accountSummaryEntity -> {
+          accountSummaryEntity.setOperatingLeaseBasicSearchTimestamp(operatingLeaseBasicSearchTimestamp);
+          accountSummaryRepository.save(accountSummaryEntity);
+        });
+  }
+
+  @Override
+  public void updateOperatingLeaseBasicResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      String responseCode) {
+    accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno())
+        .ifPresent(accountSummaryEntity -> {
+          accountSummaryEntity.setOperatingLeaseBasicResponseCode(responseCode);
           accountSummaryRepository.save(accountSummaryEntity);
         });
   }

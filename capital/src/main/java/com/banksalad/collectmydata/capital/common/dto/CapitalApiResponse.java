@@ -3,9 +3,8 @@ package com.banksalad.collectmydata.capital.common.dto;
 import com.banksalad.collectmydata.capital.account.dto.AccountBasic;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetail;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
-import com.banksalad.collectmydata.capital.oplease.dto.OperatingLease;
+import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasic;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +27,7 @@ public class CapitalApiResponse {
 
   private List<AccountTransaction> accountTransactions;
 
-  private List<OperatingLease> operatingLeases;
+  private List<OperatingLeaseBasic> operatingLeaseBasics;
 
   private List<OperatingLeaseTransaction> operatingLeasesTransactions;
 }

@@ -9,8 +9,6 @@ import com.banksalad.collectmydata.capital.account.dto.AccountTransactionRequest
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.collect.Executions;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
-import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicRequest;
-import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionRequest;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
 import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
@@ -33,7 +31,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.banksalad.collectmydata.capital.collect.Executions.capital_get_account_detail;
-import static com.banksalad.collectmydata.capital.collect.Executions.capital_get_operating_lease_basic;
 import static com.banksalad.collectmydata.capital.collect.Executions.capital_get_operating_lease_transactions;
 
 @Deprecated
@@ -119,26 +116,6 @@ public class ExternalApiServiceImpl implements ExternalApiService {
       }
     } while (response.getNextPage() != null);
     return response;
-  }
-
-  @Override
-  public OperatingLeaseBasicResponse getOperatingLeaseBasic(ExecutionContext executionContext,
-      Organization organization, AccountSummary accountSummary) {
-    // executionId 생성.
-    executionContext.generateAndsUpdateExecutionRequestId();
-
-    Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
-    OperatingLeaseBasicRequest request = OperatingLeaseBasicRequest.builder()
-        .orgCode(organization.getOrganizationCode())
-        .accountNum(accountSummary.getAccountNum())
-        .seqno(accountSummary.getSeqno())
-        .searchTimestamp(accountSummary.getOperatingLeaseBasicSearchTimestamp())
-        .build();
-
-    ExecutionRequest<OperatingLeaseBasicRequest> executionRequest = ExecutionUtil
-        .assembleExecutionRequest(headers, request);
-
-    return execute(executionContext, capital_get_operating_lease_basic, executionRequest);
   }
 
   @Override

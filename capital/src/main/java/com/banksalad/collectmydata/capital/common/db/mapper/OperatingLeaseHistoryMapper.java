@@ -8,5 +8,5 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface OperatingLeaseHistoryMapper {
 
-  OperatingLeaseHistoryEntity toOperatingLeaseHistoryEntity(OperatingLeaseEntity operatingLeaseEntity);
+  OperatingLeaseHistoryEntity toHistoryEntity(OperatingLeaseEntity operatingLeaseEntity);
 }

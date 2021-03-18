@@ -7,17 +7,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class OperatingLeaseBasicResponse {
+public class OperatingLeaseBasic {
 
-  private String rspCode;
-  private String rspMsg;
-  private long searchTimestamp;
   private String holderName;        // 고객명
   private String issueDate;         // 대출일              TODO : Type Check
   private String expDate;           // 만기일              TODO : Type Check

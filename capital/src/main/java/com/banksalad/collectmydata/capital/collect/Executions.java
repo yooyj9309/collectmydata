@@ -3,7 +3,7 @@ package com.banksalad.collectmydata.capital.collect;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.account.dto.GetAccountBasicResponse;
-import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasicResponse;
+import com.banksalad.collectmydata.capital.oplease.dto.GetOperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
 import com.banksalad.collectmydata.capital.summary.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
@@ -42,7 +42,7 @@ public class Executions {
   public static final Execution capital_get_operating_lease_basic =
       Execution.create()
           .exchange(Apis.capital_get_operating_lease_basic)
-          .as(OperatingLeaseBasicResponse.class)
+          .as(GetOperatingLeaseBasicResponse.class)
           .build();
 
   // 6.7.6 운용리스 거래내역 조회

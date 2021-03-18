@@ -7,11 +7,17 @@ import java.util.List;
 public interface AccountSummaryService {
 
   List<AccountSummary> listSummariesConsented(long banksaladUserId, String organizationId,
-      boolean isOperatingLeaseAccount);
+      boolean demandOperatingLeaseAccount);
 
   void updateBasicSearchTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary,
       long detailSearchTimestamp);
 
   void updateBasicResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      String responseCode);
+
+  void updateOperatingLeaseBasicSearchTimestamp(long banksaladUserId, String organizationId,
+      AccountSummary accountSummary, long operatingLeaseBasicSearchTimestamp);
+
+  void updateOperatingLeaseBasicResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
       String responseCode);
 }
