@@ -8,10 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.bank.common.collect.Executions;
 import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
+import com.banksalad.collectmydata.bank.common.db.entity.DepositAccountDetailEntity;
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
-import com.banksalad.collectmydata.bank.common.mapper.AccountSummaryMapper;
+import com.banksalad.collectmydata.bank.common.db.repository.DepositAccountDetailRepository;
 import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountBasic;
+import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountDetail;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicRequest;
+import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountDetailRequest;
 import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
@@ -26,12 +29,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static com.banksalad.collectmydata.bank.testutil.FileUtil.readText;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -55,12 +56,22 @@ class DepositAccountServiceImplTest {
   private AccountInfoRequestHelper<GetDepositAccountBasicRequest, AccountSummary> depositAccountBasicInfoRequestHelper;
 
   @Autowired
-  private AccountInfoResponseHelper<AccountSummary, DepositAccountBasic> depositAccountInfoBasicResponseHelper;
+  private AccountInfoResponseHelper<AccountSummary, DepositAccountBasic> depositAccountBasicInfoResponseHelper;
+
+  @Autowired
+  private AccountInfoService<AccountSummary, GetDepositAccountDetailRequest, List<DepositAccountDetail>> depositAccountDetailApiService;
+
+  @Autowired
+  private AccountInfoRequestHelper<GetDepositAccountDetailRequest, AccountSummary> depositAccountDetailInfoRequestHelper;
+
+  @Autowired
+  private AccountInfoResponseHelper<AccountSummary, List<DepositAccountDetail>> depositAccountDetailInfoResponseHelper;
 
   @Autowired
   private AccountSummaryRepository accountSummaryRepository;
 
-  private AccountSummaryMapper accountSummaryMapper = Mappers.getMapper(AccountSummaryMapper.class);
+  @Autowired
+  private DepositAccountDetailRepository depositAccountDetailRepository;
 
   public static WireMockServer wiremock = new WireMockServer(WireMockSpring.options().dynamicPort());
 
@@ -103,7 +114,7 @@ class DepositAccountServiceImplTest {
 
     List<DepositAccountBasic> depositAccountBasics = depositAccountBasicApiService.listAccountInfos(executionContext,
         Executions.finance_bank_deposit_account_basic, depositAccountBasicInfoRequestHelper,
-        depositAccountInfoBasicResponseHelper);
+        depositAccountBasicInfoResponseHelper);
 
     Assertions.assertThat(depositAccountBasics.size()).isEqualTo(1);
   }
@@ -118,21 +129,26 @@ class DepositAccountServiceImplTest {
     List<AccountSummaryEntity> accountSummaryEntities = getAccountSummaryEntities();
     accountSummaryRepository.saveAll(accountSummaryEntities);
 
-    List<AccountSummary> accountSummaries = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true)
-        .stream()
-        .map(accountSummaryMapper::entityToDto)
-        .collect(Collectors.toList());
-
     /* execution context */
     ExecutionContext executionContext = ExecutionContext.builder()
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
-        .accessToken("test")
-        .organizationHost(ORGANIZATION_HOST + ":" + wiremock.port())
+        .syncRequestId(UUID.randomUUID().toString())
         .executionRequestId(UUID.randomUUID().toString())
+        .accessToken("test")
+        .organizationCode("020")
+        .organizationHost(ORGANIZATION_HOST + ":" + wiremock.port())
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
+
+    depositAccountDetailApiService.listAccountInfos(executionContext,
+        Executions.finance_bank_deposit_account_detail, depositAccountDetailInfoRequestHelper,
+        depositAccountDetailInfoResponseHelper);
+
+    List<DepositAccountDetailEntity> depositAccountDetailEntities = depositAccountDetailRepository
+        .findByBanksaladUserIdAndOrganizationId(BANKSALAD_USER_ID, ORGANIZATION_ID);
+
+    Assertions.assertThat(depositAccountDetailEntities.size()).isEqualTo(2);
   }
 
   private void setupServerDepositAccountBasic() throws Exception {

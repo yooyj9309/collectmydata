@@ -12,5 +12,5 @@ public interface AccountInfoResponseHelper<Summary, Account> {
   void saveSearchTimestamp(ExecutionContext executionContext, Summary summary, long searchTimestamp);
 
   void saveResponseCode(ExecutionContext executionContext, Summary summary, String responseCode);
-  
+
 }
