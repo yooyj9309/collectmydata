@@ -26,4 +26,13 @@ public class Apis {
           .method(HttpMethod.POST.name())
           .build();
 
+  // 6.4.3 계좌 거래내역 조회 API
+  public static Api finance_invest_account_transactions =
+      Api.builder()
+          .id("IV03")
+          .name("6.4.3 계좌 거래내역 조회")
+          .endpoint("/accounts/transactions")
+          .method(HttpMethod.POST.name())
+          .build();
+
 }

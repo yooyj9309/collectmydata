@@ -8,6 +8,7 @@ import com.banksalad.collectmydata.invest.summary.dto.AccountSummary;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,30 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
     accountSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndAccountNum(banksaladUserId, organizationId, accountNum)
         .ifPresent(accountSummaryEntity -> {
           accountSummaryEntity.setBasicResponseCode(responseCode);
+          accountSummaryRepository.save(accountSummaryEntity);
+        });
+  }
+
+  @Override
+  public void updateTransactionSyncedAt(long banksaladUserId, String organizationId, String accountNum,
+      LocalDateTime transactionSyncedAt) {
+
+    accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNum(banksaladUserId, organizationId, accountNum)
+        .ifPresent(accountSummaryEntity -> {
+          accountSummaryEntity.setTransactionSyncedAt(transactionSyncedAt);
+          accountSummaryRepository.save(accountSummaryEntity);
+        });
+  }
+
+  @Override
+  public void updateTransactionResponseCode(long banksaladUserId, String organizationId, String accountNum,
+      String responseCode) {
+
+    accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNum(banksaladUserId, organizationId, accountNum)
+        .ifPresent(accountSummaryEntity -> {
+          accountSummaryEntity.setTransactionResponseCode(responseCode);
           accountSummaryRepository.save(accountSummaryEntity);
         });
   }

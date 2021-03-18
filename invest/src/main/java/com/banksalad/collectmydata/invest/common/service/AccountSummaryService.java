@@ -2,6 +2,7 @@ package com.banksalad.collectmydata.invest.common.service;
 
 import com.banksalad.collectmydata.invest.summary.dto.AccountSummary;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AccountSummaryService {
@@ -11,4 +12,8 @@ public interface AccountSummaryService {
   void updateBasicSearchTimestamp(long banksaladUserId, String organizationId, String accountNum, long basicSearchTimestamp);
 
   void updateBasicResponseCode(long banksaladUserId, String organizationId, String accountNum, String responseCode);
+
+  void updateTransactionSyncedAt(long banksaladUserId, String organizationId, String accountNum, LocalDateTime transactionSyncedAt);
+
+  void updateTransactionResponseCode(long banksaladUserId, String organizationId, String accountNum, String responseCode);
 }

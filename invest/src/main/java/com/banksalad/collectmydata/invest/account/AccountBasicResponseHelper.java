@@ -7,7 +7,6 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
-import com.banksalad.collectmydata.finance.common.constant.FinanceConstant;
 import com.banksalad.collectmydata.invest.account.dto.AccountBasic;
 import com.banksalad.collectmydata.invest.account.dto.GetAccountBasicResponse;
 import com.banksalad.collectmydata.invest.common.db.entity.AccountBasicEntity;
@@ -19,6 +18,8 @@ import com.banksalad.collectmydata.invest.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.invest.summary.dto.AccountSummary;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
+
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
 @Component
 @RequiredArgsConstructor
@@ -57,7 +58,7 @@ public class AccountBasicResponseHelper implements AccountInfoResponseHelper<Acc
     }
 
     if (!ObjectComparator
-        .isSame(accountBasicEntity, existingAccountBasicEntity, FinanceConstant.ENTITY_EXCLUDE_FIELD)) {
+        .isSame(accountBasicEntity, existingAccountBasicEntity, ENTITY_EXCLUDE_FIELD)) {
       accountBasicRepository.save(accountBasicEntity);
       accountBasicHistoryRepository.save(accountBasicHistoryMapper.toHistoryEntity(accountBasicEntity));
     }

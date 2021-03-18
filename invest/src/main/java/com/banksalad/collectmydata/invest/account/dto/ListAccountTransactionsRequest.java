@@ -13,9 +13,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class GetAccountBasicRequest {
+public class ListAccountTransactionsRequest {
 
   private String orgCode;
   private String accountNum;
-  private long searchTimestamp;
+  private String fromDate;
+  private String toDate;
+  private String nextPage;
+  private int limit;
 }

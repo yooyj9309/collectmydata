@@ -14,6 +14,11 @@ public abstract class BigDecimalMapper {
     return NumberUtil.setScale(bigDecimal, 3);
   }
 
+  @Named("BigDecimalScale4")
+  public BigDecimal convertBigDecimalScale4(BigDecimal bigDecimal) {
+    return NumberUtil.setScale(bigDecimal, 4);
+  }
+
   @Named("BigDecimalScale5")
   public BigDecimal convertBigDecimalScale5(BigDecimal bigDecimal) {
     return NumberUtil.setScale(bigDecimal, 5);
