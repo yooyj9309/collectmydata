@@ -6,8 +6,10 @@ import com.banksalad.collectmydata.bank.common.collect.Executions;
 import com.banksalad.collectmydata.bank.common.dto.BankApiResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountBasic;
 import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountDetail;
+import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountTransaction;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicRequest;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountDetailRequest;
+import com.banksalad.collectmydata.bank.deposit.dto.ListDepositAccountTransactionsRequest;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicRequest;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailRequest;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountBasic;
@@ -50,12 +52,16 @@ public class BankApiServiceImpl implements BankApiService {
   // DEPOSIT
   private final AccountInfoService<AccountSummary, GetDepositAccountBasicRequest, DepositAccountBasic> depositAccountBasicApiService;
   private final AccountInfoService<AccountSummary, GetDepositAccountDetailRequest, List<DepositAccountDetail>> depositAccountDetailApiService;
+  private final TransactionApiService<AccountSummary, ListDepositAccountTransactionsRequest, DepositAccountTransaction> depositTransactionApiService;
 
   private final AccountInfoRequestHelper<GetDepositAccountBasicRequest, AccountSummary> depositAccountBasicInfoRequestHelper;
   private final AccountInfoResponseHelper<AccountSummary, DepositAccountBasic> depositAccountBasicInfoResponseHelper;
 
   private final AccountInfoRequestHelper<GetDepositAccountDetailRequest, AccountSummary> depositAccountDetailInfoRequestHelper;
   private final AccountInfoResponseHelper<AccountSummary, List<DepositAccountDetail>> depositAccountDetailInfoResponseHelper;
+
+  private final TransactionRequestHelper<AccountSummary, ListDepositAccountTransactionsRequest> depositAccountTransactionRequestHelper;
+  private final TransactionResponseHelper<AccountSummary, DepositAccountTransaction> depositAccountTransactionResponseHelper;
 
   // INVEST
   private final AccountInfoService<AccountSummary, GetInvestAccountBasicRequest, InvestAccountBasic> investAccountBasicApiService;
@@ -117,7 +123,11 @@ public class BankApiServiceImpl implements BankApiService {
 
         CompletableFuture.supplyAsync(() -> depositAccountDetailApiService.listAccountInfos(
             executionContext, Executions.finance_bank_deposit_account_detail, depositAccountDetailInfoRequestHelper,
-            depositAccountDetailInfoResponseHelper))
+            depositAccountDetailInfoResponseHelper)),
+
+        CompletableFuture.supplyAsync(() -> depositTransactionApiService.listTransactions(executionContext,
+            Executions.finance_bank_deposit_account_transaction, depositAccountTransactionRequestHelper,
+            depositAccountTransactionResponseHelper))
     ).join();
 
     return bankApiResponseAtomicReference.get();

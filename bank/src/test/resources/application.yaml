@@ -12,7 +12,6 @@ spring:
       show-sql: true
 
 logging:
-  config: classpath:logback/logback-${spring.profiles.active}.xml
   level:
     com.zaxxer.hikari.HikariConfig: INFO
     com.zaxxer.hikari: INFO

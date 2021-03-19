@@ -8,7 +8,6 @@ import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicReques
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountDetailRequest;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountDetailResponse;
-import com.banksalad.collectmydata.bank.deposit.dto.ListDepositAccountTransactionsRequest;
 import com.banksalad.collectmydata.bank.deposit.dto.ListDepositAccountTransactionsResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicRequest;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicResponse;
@@ -165,58 +164,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   public ListDepositAccountTransactionsResponse listDepositAccountTransactions(ExecutionContext executionContext,
       String orgCode, String accountNum, String seqno, LocalDate fromDate, LocalDate toDate) {
 
-    executionContext.generateAndsUpdateExecutionRequestId();
-
-    ExecutionRequest<ListDepositAccountTransactionsRequest> pagingExecutionRequest = ExecutionRequest.<ListDepositAccountTransactionsRequest>builder()
-        .headers(Map.of(AUTHORIZATION, executionContext.getAccessToken()))
-        .request(
-            ListDepositAccountTransactionsRequest.builder()
-                .orgCode(orgCode)
-                .accountNum(accountNum)
-                .seqno(seqno)
-                .fromDate(DateUtil.toDateString(fromDate))
-                .toDate(DateUtil.toDateString(toDate))
-                .limit(PAGING_MAXIMUM_LIMIT)
-                .build())
-        .build();
-
-    ListDepositAccountTransactionsResponse listDepositAccountTransactionsResponse = ListDepositAccountTransactionsResponse
-        .builder()
-        .build();
-
-    do {
-      ExecutionResponse<ListDepositAccountTransactionsResponse> pagingExecutionResponse = collectExecutor
-          .execute(executionContext, Executions.finance_bank_deposit_account_transaction, pagingExecutionRequest);
-
-      if (pagingExecutionResponse.getResponse() == null ||
-          HttpStatus.OK.value() != pagingExecutionResponse.getHttpStatusCode()) {
-        throw new RuntimeException("List deposit account transactions status is not OK");
-      }
-
-      ListDepositAccountTransactionsResponse pagingListDepositAccountTransactionsResponse = pagingExecutionResponse
-          .getResponse();
-
-      if (pagingListDepositAccountTransactionsResponse.getTransCnt() != pagingListDepositAccountTransactionsResponse
-          .getDepositAccountTransactions().size()) {
-        log.error("transactions size not equal. cnt: {}, size: {}",
-            pagingListDepositAccountTransactionsResponse.getTransCnt(),
-            pagingListDepositAccountTransactionsResponse.getDepositAccountTransactions().size());
-      }
-
-      listDepositAccountTransactionsResponse.setRspCode(pagingListDepositAccountTransactionsResponse.getRspCode());
-      listDepositAccountTransactionsResponse.setRspMsg(pagingListDepositAccountTransactionsResponse.getRspMsg());
-      listDepositAccountTransactionsResponse.setNextPage(pagingListDepositAccountTransactionsResponse.getNextPage());
-      listDepositAccountTransactionsResponse.setTransCnt(
-          listDepositAccountTransactionsResponse.getTransCnt() + pagingListDepositAccountTransactionsResponse
-              .getTransCnt());
-      listDepositAccountTransactionsResponse.getDepositAccountTransactions()
-          .addAll(pagingListDepositAccountTransactionsResponse.getDepositAccountTransactions());
-
-      pagingExecutionRequest.getRequest().setNextPage(pagingListDepositAccountTransactionsResponse.getNextPage());
-
-    } while (pagingExecutionRequest.getRequest().getNextPage() != null);
-
-    return listDepositAccountTransactionsResponse;
+    return ListDepositAccountTransactionsResponse.builder().build();
   }
 
   @Override

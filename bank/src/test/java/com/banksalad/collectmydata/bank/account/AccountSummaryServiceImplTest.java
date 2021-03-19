@@ -151,7 +151,7 @@ public class AccountSummaryServiceImplTest {
         .withQueryParam("limit", equalTo("500"))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
+                .withFixedDelay(API_RESPONSE_FIXED_DELAY)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA01_001_single_page_00.json"))));

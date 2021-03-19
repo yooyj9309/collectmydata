@@ -1,5 +1,8 @@
 package com.banksalad.collectmydata.finance.api.transaction;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
@@ -8,10 +11,6 @@ import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,7 +50,8 @@ public class TransactionApiServiceImpl<Summary, TransactionRequest, Transaction>
       /* copy ExecutionContext for new executionRequestId */
       ExecutionContext executionContextLocal = executionContext.copyWith(ExecutionContext.generateExecutionRequestId());
 
-      LocalDateTime fromDateTime = requestHelper.getTransactionSyncedAt(executionContext, summary);
+      LocalDateTime fromDateTime = DateUtil
+          .utcLocalDateTimeToKstLocalDateTime(requestHelper.getTransactionSyncedAt(executionContext, summary));
       LocalDateTime toDateTime = DateUtil.utcLocalDateTimeToKstLocalDateTime(executionContext.getSyncStartedAt());
 
       String nextPage = null;

@@ -34,7 +34,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LoanAccountServiceImpl implements LoanAccountService {
 
-  private static final String[] EXCLUDE_FIELDS = {"syncedAt", "createdAt", "updatedAt", "createdBy", "updatedBy" };
+  private static final String[] EXCLUDE_FIELDS = {"syncedAt", "createdAt", "updatedAt", "createdBy", "updatedBy"};
   private final AccountSummaryService accountSummaryService;
   private final ExternalApiService externalApiService;
 

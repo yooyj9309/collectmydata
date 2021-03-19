@@ -9,7 +9,6 @@ import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.builder.EqualsExclude;
 
 import java.time.LocalDateTime;
 
@@ -19,18 +18,14 @@ import java.time.LocalDateTime;
 @Setter
 public class BaseEntity {
 
-  @EqualsExclude
   @CreatedDate
   @Column(updatable = false)
   private LocalDateTime createdAt;
 
-  @EqualsExclude
   private String createdBy;
 
-  @EqualsExclude
   @LastModifiedDate
   private LocalDateTime updatedAt;
 
-  @EqualsExclude
   private String updatedBy;
 }

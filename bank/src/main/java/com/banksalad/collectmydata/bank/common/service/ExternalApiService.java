@@ -1,7 +1,5 @@
 package com.banksalad.collectmydata.bank.common.service;
 
-import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
-import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountDetailResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.ListDepositAccountTransactionsResponse;
@@ -10,13 +8,15 @@ import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailRespons
 import com.banksalad.collectmydata.bank.invest.dto.ListInvestAccountTransactionsResponse;
 import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountBasicResponse;
 import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountDetailResponse;
-
+import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
+import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.organization.Organization;
 import com.banksalad.collectmydata.common.util.DateRange;
 
 import java.time.LocalDate;
 
+@Deprecated
 public interface ExternalApiService {
 
   ListAccountSummariesResponse listAccountSummaries(ExecutionContext executionContext, String orgCode,
