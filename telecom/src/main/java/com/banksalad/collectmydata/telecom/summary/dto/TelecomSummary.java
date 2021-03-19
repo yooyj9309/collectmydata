@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Builder
@@ -28,4 +30,8 @@ public class TelecomSummary {
   private String type;
 
   private String status;
+
+  private LocalDateTime transactionSyncedAt;
+
+  private LocalDateTime paidTransactionSyncedAt;
 }
