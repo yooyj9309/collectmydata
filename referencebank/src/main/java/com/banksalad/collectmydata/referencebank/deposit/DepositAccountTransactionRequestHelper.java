@@ -47,7 +47,7 @@ public class DepositAccountTransactionRequestHelper implements
             executionContext.getOrganizationId(),
             accountSummary.getAccountNum(), accountSummary.getSeqno())
         .map(AccountSummaryEntity::getTransactionSyncedAt)
-        .orElse(LocalDateTime.now(DateUtil.KST_ZONE_ID).minusYears(MINUS_YEAR));
+        .orElseGet(() -> executionContext.getSyncStartedAt().minusYears(MINUS_YEAR));
   }
 
   @Override
