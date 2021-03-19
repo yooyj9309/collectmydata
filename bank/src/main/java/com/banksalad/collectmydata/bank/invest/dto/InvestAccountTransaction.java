@@ -7,12 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -25,8 +23,7 @@ public class InvestAccountTransaction {
 
   private String transType;
 
-  @Builder.Default
-  private String currencyCode = "KRW";
+  private String currencyCode;
 
   private BigDecimal baseAmt;
 

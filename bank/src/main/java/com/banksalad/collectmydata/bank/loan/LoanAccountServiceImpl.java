@@ -69,7 +69,7 @@ public class LoanAccountServiceImpl implements LoanAccountService {
             executionContext.getBanksaladUserId(),
             executionContext.getOrganizationId(),
             accountSummary,
-            loanAccountBasic.getSearchTimestamp());
+            0L);
       } catch (Exception e) {
         log.error("Failed to save loan account basic", e);
       }
@@ -125,7 +125,7 @@ public class LoanAccountServiceImpl implements LoanAccountService {
         saveLoanAccountDetail(executionContext, accountSummary, loanAccountDetail);
         loanAccountDetails.add(loanAccountDetail);
         accountSummaryService.updateDetailSearchTimestamp(executionContext.getBanksaladUserId(),
-            executionContext.getOrganizationId(), accountSummary, loanAccountDetail.getSearchTimestamp());
+            executionContext.getOrganizationId(), accountSummary, 0L);
       } catch (Exception e) {
         log.error("Failed to save loan account detail", e);
       }

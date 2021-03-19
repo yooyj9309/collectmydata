@@ -20,6 +20,7 @@ import org.mapstruct.factory.Mappers;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.CURRENCY_KRW;
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
 @Component
@@ -51,6 +52,11 @@ public class InvestAccountTransactionResponseHelper implements
       investAccountTransactionEntity.setAccountNum(accountSummary.getAccountNum());
       investAccountTransactionEntity.setSeqno(accountSummary.getSeqno());
       investAccountTransactionEntity.setUniqueTransNo(generateUniqueTransNo(investAccountTransaction));
+
+      if (investAccountTransactionEntity.getCurrencyCode() == null
+          || investAccountTransactionEntity.getCurrencyCode().length() == 0) {
+        investAccountTransactionEntity.setCurrencyCode(CURRENCY_KRW);
+      }
 
       InvestAccountTransactionEntity existingInvestAccountTransactionEntity = investAccountTransactionRepository
           .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndUniqueTransNoAndTransactionYearMonth(

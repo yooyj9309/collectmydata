@@ -89,4 +89,13 @@ public class Apis {
           .endpoint("/accounts/loan/detail")
           .method(HttpMethod.POST.name())
           .build();
+
+  //6.2.10 대출상품 계좌 거래내역 정보 조회
+  public static Api finance_bank_loan_account_transaction =
+      Api.builder()
+          .id("BA10")
+          .name("대출 상품 계좌 거래내역 조회")
+          .endpoint("/accounts/loan/transactions")
+          .method(HttpMethod.POST.name())
+          .build();
 }

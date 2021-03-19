@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.bank.invest.dto;
+package com.banksalad.collectmydata.bank.loan.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -13,14 +13,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class InvestAccountBasic {
+public class ListLoanAccountTransactionsRequest {
 
-  private String standardFundCode;
+  private String orgCode;
 
-  private String paidInType;
+  private String accountNum;
 
-  private String issueDate;
+  private String seqno;
 
-  private String expDate;
+  private String fromDate;
 
+  private String toDate;
+
+  private String nextPage;
+
+  private int limit;
 }

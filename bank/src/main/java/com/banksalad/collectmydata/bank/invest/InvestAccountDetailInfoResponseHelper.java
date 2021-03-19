@@ -18,6 +18,7 @@ import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.CURRENCY_KRW;
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
 @Component
@@ -49,6 +50,11 @@ public class InvestAccountDetailInfoResponseHelper implements
     investAccountDetailEntity.setSyncedAt(executionContext.getSyncStartedAt());
     investAccountDetailEntity.setAccountNum(accountSummary.getAccountNum());
     investAccountDetailEntity.setSeqno(accountSummary.getSeqno());
+
+    if (investAccountDetailEntity.getCurrencyCode() == null
+        || investAccountDetailEntity.getCurrencyCode().length() == 0) {
+      investAccountDetailEntity.setCurrencyCode(CURRENCY_KRW);
+    }
 
     InvestAccountDetailEntity existingInvestAccountDetailEntity = investAccountDetailRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndCurrencyCode(

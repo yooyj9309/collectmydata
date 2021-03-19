@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.bank.invest.dto;
+package com.banksalad.collectmydata.bank.loan.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -7,20 +7,23 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.math.BigDecimal;
 
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class InvestAccountBasic {
+public class LoanAccountTransactionInterest {
 
-  private String standardFundCode;
+  private String intStartDate;
 
-  private String paidInType;
+  private String intEndDate;
 
-  private String issueDate;
+  private BigDecimal intRate;
 
-  private String expDate;
+  private String intType;
 
 }

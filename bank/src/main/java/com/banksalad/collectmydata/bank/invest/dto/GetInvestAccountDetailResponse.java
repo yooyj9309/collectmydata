@@ -9,10 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -24,6 +22,7 @@ public class GetInvestAccountDetailResponse implements AccountResponse {
   private String rspMsg;
 
   private long searchTimestamp;
+
   @JsonUnwrapped
   private InvestAccountDetail investAccountDetail;
 

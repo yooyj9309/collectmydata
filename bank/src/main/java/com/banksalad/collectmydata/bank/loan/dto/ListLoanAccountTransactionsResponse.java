@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.bank.invest.dto;
+package com.banksalad.collectmydata.bank.loan.dto;
 
 import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,17 +9,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.List;
 
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ListInvestAccountTransactionsResponse implements TransactionResponse {
+public class ListLoanAccountTransactionsResponse implements TransactionResponse {
 
   private String rspCode;
 
@@ -30,5 +28,5 @@ public class ListInvestAccountTransactionsResponse implements TransactionRespons
   private int transCnt;
 
   @JsonProperty(value = "trans_list")
-  private List<InvestAccountTransaction> investAccountTransactions;
+  private List<LoanAccountTransaction> loanAccountTransactions;
 }

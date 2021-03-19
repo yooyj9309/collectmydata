@@ -1,7 +1,5 @@
 package com.banksalad.collectmydata.bank.common.collect;
 
-import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesResponse;
-import com.banksalad.collectmydata.bank.deposit.dto.ListDepositAccountTransactionsResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountDetailResponse;
 import com.banksalad.collectmydata.bank.deposit.dto.ListDepositAccountTransactionsResponse;
@@ -10,6 +8,7 @@ import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailRespons
 import com.banksalad.collectmydata.bank.invest.dto.ListInvestAccountTransactionsResponse;
 import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountBasicResponse;
 import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountDetailResponse;
+import com.banksalad.collectmydata.bank.loan.dto.ListLoanAccountTransactionsResponse;
 import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 
@@ -67,5 +66,11 @@ public class Executions {
       Execution.create()
           .exchange(Apis.finance_bank_loan_account_detail)
           .as(GetLoanAccountDetailResponse.class)
+          .build();
+
+  public static final Execution finance_bank_loan_account_transaction =
+      Execution.create()
+          .exchange(Apis.finance_bank_loan_account_transaction)
+          .as(ListLoanAccountTransactionsResponse.class)
           .build();
 }
