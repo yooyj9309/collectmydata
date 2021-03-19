@@ -54,9 +54,9 @@ public class LoanAccountBasicInfoResponseHelper implements AccountInfoResponseHe
             executionContext.getOrganizationId(),
             accountSummary.getAccountNum(),
             accountSummary.getSeqno()
-        ).orElse(LoanAccountBasicEntity.builder().build());
+        ).orElse(null);
 
-    if (existingLoanAccountBasicEntity.getId() != null) {
+    if (existingLoanAccountBasicEntity != null) {
       loanAccountBasicEntity.setId(existingLoanAccountBasicEntity.getId());
     }
 
