@@ -64,7 +64,7 @@ public class TestHelper {
         .rspCode("00000")
         .rspMsg("성공")
         .searchTimestamp(1000L)
-        .loan_cnt(1)
+        .loanCnt(1)
         .loanList(List.of(
             LoanSummary.builder()
                 .prodName("좋은 보험대출")

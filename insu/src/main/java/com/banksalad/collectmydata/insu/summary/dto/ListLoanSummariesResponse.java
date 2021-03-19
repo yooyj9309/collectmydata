@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.insu.summary.dto;
 
+import com.banksalad.collectmydata.finance.api.summary.dto.SummaryResponse;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
@@ -15,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ListLoanSummariesResponse {
+public class ListLoanSummariesResponse implements SummaryResponse {
 
   private String rspCode;
 
@@ -23,7 +24,7 @@ public class ListLoanSummariesResponse {
 
   private long searchTimestamp;
 
-  private int loan_cnt;
+  private int loanCnt;
 
   private List<LoanSummary> loanList;
 }

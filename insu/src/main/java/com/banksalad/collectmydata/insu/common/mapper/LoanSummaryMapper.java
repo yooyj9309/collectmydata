@@ -17,7 +17,7 @@ public interface LoanSummaryMapper {
           @Mapping(target = "transactionSyncedAt", ignore = true)
       }
   )
-  void merge(LoanSummary loanSummary, @MappingTarget LoanSummaryEntity loanSummaryEntity);
+  void mergeDtoToEntity(LoanSummary loanSummary, @MappingTarget LoanSummaryEntity loanSummaryEntity);
 
   LoanSummary entityToDto(LoanSummaryEntity entity);
 }

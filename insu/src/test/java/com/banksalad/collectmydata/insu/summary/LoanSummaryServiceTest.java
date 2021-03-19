@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.insu.common.service;
+package com.banksalad.collectmydata.insu.summary;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -6,10 +6,15 @@ import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+import com.banksalad.collectmydata.finance.api.summary.SummaryRequestHelper;
+import com.banksalad.collectmydata.finance.api.summary.SummaryResponseHelper;
+import com.banksalad.collectmydata.finance.api.summary.SummaryService;
+import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
+import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.db.entity.LoanSummaryEntity;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanSummaryRepository;
+import com.banksalad.collectmydata.insu.summary.dto.ListLoanSummariesRequest;
 import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
-import com.banksalad.collectmydata.insu.common.util.TestHelper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
@@ -25,6 +30,7 @@ import static com.banksalad.collectmydata.insu.common.util.TestHelper.BANKSALAD_
 import static com.banksalad.collectmydata.insu.common.util.TestHelper.ENTITY_IGNORE_FIELD;
 import static com.banksalad.collectmydata.insu.common.util.TestHelper.ORGANIZATION_CODE;
 import static com.banksalad.collectmydata.insu.common.util.TestHelper.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.insu.common.util.TestHelper.getExecutionContext;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -36,14 +42,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class LoanSummaryServiceTest {
 
   @Autowired
-  private LoanSummaryService loanSummaryService;
-
+  private SummaryService<ListLoanSummariesRequest, LoanSummary> loanSummaryService;
+  @Autowired
+  private SummaryRequestHelper<ListLoanSummariesRequest> requestHelper;
+  @Autowired
+  private SummaryResponseHelper<LoanSummary> responseHelper;
   @Autowired
   private LoanSummaryRepository loanSummaryRepository;
-
-//  @Autowired
-//  private UserSyncStatusRepository userSyncStatusRepository;
-
   private static WireMockServer wireMockServer;
 
   @BeforeAll
@@ -61,27 +66,13 @@ public class LoanSummaryServiceTest {
   @Test
   @Transactional
   @DisplayName("6.5.8 대출 목록정보 조회 테스트 : 성공 케이스")
-  public void getLoanSummariesTest_case1() {
-    ExecutionContext context = TestHelper.getExecutionContext(wireMockServer.port());
-    List<LoanSummary> insuranceSummaries = loanSummaryService
-        .listLoanSummaries(context, ORGANIZATION_CODE);
+  public void getLoanSummariesTest_case1() throws ResponseNotOkException {
+    ExecutionContext context = getExecutionContext(wireMockServer.port());
+    loanSummaryService
+        .listAccountSummaries(context, Executions.insurance_get_loan_summaries, requestHelper, responseHelper);
 
     List<LoanSummaryEntity> loanSummaryEntities = loanSummaryRepository.findAll();
-
-    assertEquals(1, insuranceSummaries.size());
     assertEquals(1, loanSummaryEntities.size());
-
-    assertThat(insuranceSummaries.get(0)).usingRecursiveComparison()
-        .isEqualTo(
-            LoanSummary.builder()
-                .prodName("보금자리론")
-                .accountNum("123456789")
-                .consent(true)
-                .accountType("3245")
-                .accountStatus("01")
-                .build()
-        );
-
     assertThat(loanSummaryEntities.get(0)).usingRecursiveComparison()
         .ignoringFields(ENTITY_IGNORE_FIELD)
         .isEqualTo(
@@ -95,21 +86,6 @@ public class LoanSummaryServiceTest {
                 .accountStatus("01")
                 .build()
         );
-
-//    UserSyncStatusEntity userSyncStatusEntity = userSyncStatusRepository
-//        .findByBanksaladUserIdAndOrganizationIdAndApiId(BANKSALAD_USER_ID, ORGANIZATION_ID,
-//            Apis.insurance_get_loan_summaries.getId()).get();
-//
-//    assertThat(userSyncStatusEntity).usingRecursiveComparison()
-//        .ignoringFields(ENTITY_IGNORE_FIELD)
-//        .isEqualTo(
-//            UserSyncStatusEntity.builder()
-//                .banksaladUserId(BANKSALAD_USER_ID)
-//                .organizationId(ORGANIZATION_ID)
-//                .searchTimestamp(1000L)
-//                .apiId(Apis.insurance_get_loan_summaries.getId())
-//                .build()
-//        );
   }
 
   private static void setupMockServer() {

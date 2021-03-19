@@ -18,12 +18,6 @@ import com.banksalad.collectmydata.insu.car.dto.GetCarInsuranceResponse;
 import com.banksalad.collectmydata.insu.car.dto.ListCarInsuranceTransactionsRequest;
 import com.banksalad.collectmydata.insu.car.dto.ListCarInsuranceTransactionsResponse;
 import com.banksalad.collectmydata.insu.collect.Executions;
-import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
-import com.banksalad.collectmydata.insu.summary.dto.ListInsuranceSummariesRequest;
-import com.banksalad.collectmydata.insu.summary.dto.ListInsuranceSummariesResponse;
-import com.banksalad.collectmydata.insu.summary.dto.ListLoanSummariesRequest;
-import com.banksalad.collectmydata.insu.summary.dto.ListLoanSummariesResponse;
-import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractRequest;
@@ -37,11 +31,16 @@ import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicRequest;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicResponse;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailRequest;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailResponse;
-
 import com.banksalad.collectmydata.insu.loan.dto.ListLoanTransactionRequest;
 import com.banksalad.collectmydata.insu.loan.dto.ListLoanTransactionResponse;
 import com.banksalad.collectmydata.insu.loan.dto.LoanTransaction;
 import com.banksalad.collectmydata.insu.loan.dto.LoanTransactionInterest;
+import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
+import com.banksalad.collectmydata.insu.summary.dto.ListInsuranceSummariesRequest;
+import com.banksalad.collectmydata.insu.summary.dto.ListInsuranceSummariesResponse;
+import com.banksalad.collectmydata.insu.summary.dto.ListLoanSummariesRequest;
+import com.banksalad.collectmydata.insu.summary.dto.ListLoanSummariesResponse;
+import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
@@ -337,27 +336,27 @@ public class ExecutionTest {
     ListCarInsuranceTransactionsResponse response = executionResponse.getResponse();
 
     assertThat(response).usingRecursiveComparison().isEqualTo(
-      ListCarInsuranceTransactionsResponse.builder()
-          .rspCode("00000")
-          .rspMsg("success")
-          .nextPage("2")
-          .transCnt(2)
-          .carInsuranceTransactions(
-              List.of(
-                  CarInsuranceTransaction.builder()
-                      .faceAmt(BigDecimal.valueOf(900000))
-                      .transNo(2)
-                      .paidAmt(BigDecimal.valueOf(450000))
-                      .payMethod("02")
-                      .build(),
-                  CarInsuranceTransaction.builder()
-                      .faceAmt(BigDecimal.valueOf(100000))
-                      .transNo(3)
-                      .paidAmt(BigDecimal.valueOf(70000))
-                      .payMethod("04")
-                      .build()
-              ))
-          .build()
+        ListCarInsuranceTransactionsResponse.builder()
+            .rspCode("00000")
+            .rspMsg("success")
+            .nextPage("2")
+            .transCnt(2)
+            .carInsuranceTransactions(
+                List.of(
+                    CarInsuranceTransaction.builder()
+                        .faceAmt(BigDecimal.valueOf(900000))
+                        .transNo(2)
+                        .paidAmt(BigDecimal.valueOf(450000))
+                        .payMethod("02")
+                        .build(),
+                    CarInsuranceTransaction.builder()
+                        .faceAmt(BigDecimal.valueOf(100000))
+                        .transNo(3)
+                        .paidAmt(BigDecimal.valueOf(70000))
+                        .payMethod("04")
+                        .build()
+                ))
+            .build()
     );
   }
 
@@ -383,7 +382,7 @@ public class ExecutionTest {
                 .rspCode("00000")
                 .rspMsg("success")
                 .searchTimestamp(1000L)
-                .loan_cnt(1)
+                .loanCnt(1)
                 .loanList(
                     List.of(
                         LoanSummary.builder()
