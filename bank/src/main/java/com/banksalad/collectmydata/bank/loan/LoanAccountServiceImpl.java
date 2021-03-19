@@ -29,6 +29,7 @@ import org.mapstruct.factory.Mappers;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 @Slf4j
 @Service
 @RequiredArgsConstructor

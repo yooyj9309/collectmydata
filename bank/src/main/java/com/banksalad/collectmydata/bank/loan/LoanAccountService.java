@@ -7,6 +7,7 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 
 import java.util.List;
 
+@Deprecated
 public interface LoanAccountService {
 
   List<LoanAccountBasic> listLoanAccountBasics(ExecutionContext executionContext,
