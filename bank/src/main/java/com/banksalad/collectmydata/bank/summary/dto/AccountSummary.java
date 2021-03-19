@@ -38,11 +38,11 @@ public class AccountSummary {
 
   private long basicSearchTimestamp;
 
-  private String basicSearchResponseCode;
+  private String basicResponseCode;
 
   private long detailSearchTimestamp;
 
-  private String detailSearchResponseCode;
+  private String detailResponseCode;
 
   private LocalDateTime transactionSyncedAt;
 }
