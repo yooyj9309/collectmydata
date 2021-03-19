@@ -10,7 +10,6 @@ import com.github.banksalad.idl.apis.v1.collectschedule.CollectScheduleProto.Reg
 import com.github.banksalad.idl.apis.v1.collectschedule.CollectScheduleProto.UnregisterScheduledSyncRequest;
 import com.github.banksalad.idl.apis.v1.collectschedule.CollectScheduleProto.UnregisterScheduledSyncResponse;
 import io.grpc.internal.testing.StreamRecorder;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -25,14 +24,13 @@ import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.times;
 
 @SpringBootTest
-@Disabled
 class ScheduledSyncGrpcServiceTest {
-
-  @InjectMocks
-  private ScheduledSyncGrpcService scheduledSyncGrpcService;
 
   @Mock
   private ScheduledSyncRepository scheduledSyncRepository;
+
+  @InjectMocks
+  private ScheduledSyncGrpcService scheduledSyncGrpcService;
 
   @Test
   @DisplayName("gRPC Call Success Test : registerScheduledSync")
@@ -78,7 +76,8 @@ class ScheduledSyncGrpcServiceTest {
 
     // Then
     assertNull(streamRecorder.getError());
-    then(scheduledSyncRepository).should(times(1)).save(any());
+    then(scheduledSyncRepository).should(times(1))
+        .deleteByBanksaladUserIdAndSectorAndIndustryAndOrganizationId(any(), any(), any(), any());
   }
 
   @Test
@@ -87,7 +86,9 @@ class ScheduledSyncGrpcServiceTest {
     // Given
     UnregisterScheduledSyncRequest unregisterScheduledSyncRequest = getUnregisterScheduledSyncRequest();
     StreamRecorder<UnregisterScheduledSyncResponse> streamRecorder = StreamRecorder.create();
-    willThrow(new RuntimeException("Test Message")).given(scheduledSyncRepository).save(any());
+
+    willThrow(new RuntimeException("Test Message")).given(scheduledSyncRepository)
+        .deleteByBanksaladUserIdAndSectorAndIndustryAndOrganizationId(any(), any(), any(), any());
 
     // When
     scheduledSyncGrpcService.unregisterScheduledSync(unregisterScheduledSyncRequest, streamRecorder);

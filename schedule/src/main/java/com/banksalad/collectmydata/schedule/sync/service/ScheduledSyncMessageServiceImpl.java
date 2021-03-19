@@ -5,9 +5,8 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
-import com.banksalad.collectmydata.schedule.common.db.entity.ScheduledSyncEntity;
-import com.banksalad.collectmydata.schedule.common.enums.SyncType;
-import com.banksalad.collectmydata.schedule.sync.dto.ScheduledSyncMessage;
+import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
+import com.banksalad.collectmydata.common.message.SyncRequestedMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -20,53 +19,33 @@ public class ScheduledSyncMessageServiceImpl implements ScheduledSyncMessageServ
 
   private final ObjectMapper objectMapper;
   private final KafkaTemplate<String, String> kafkaTemplate;
-  private static final String TOPIC_PREFIX = "collectmydata-";
-
 
   @Override
-  public void produce(ScheduledSyncEntity scheduledSyncEntity, SyncType syncType) {
-    String topic = getTopicNameFrom(scheduledSyncEntity);
-    String message = getMessageFrom(scheduledSyncEntity, syncType);
+  public void produceSyncRequest(SyncRequestedMessage syncRequestedMessage, String topic) {
+    final String message;
+    try {
+      message = objectMapper.writeValueAsString(syncRequestedMessage);
+    } catch (JsonProcessingException e) {
+      throw new CollectRuntimeException("Fail to serialize message", e); // FIXME
+    }
     if (message == null) {
       return;
     }
 
     kafkaTemplate
-        .send(topic, message)
+        .send(topic, String.valueOf(syncRequestedMessage.getBanksaladUserId()), message)
         .addCallback(new ListenableFutureCallback<>() {
           @Override
           public void onSuccess(SendResult<String, String> result) {
-            log.info("Produce Success, Result : {}", result);
+            log.info("[collectmydata-schedule] produce SyncRequestedMessage, syncRequestId: {}",
+                syncRequestedMessage.getSyncRequestId());
           }
 
           @Override
-          public void onFailure(Throwable e) {
-            log.error("Produce Fail, Exception : {}", e.getMessage());
+          public void onFailure(Throwable t) {
+            log.error("[collectmydata-schedule] fail to produce SyncRequestedMessage, syncRequestId: {}, exception: {}",
+                syncRequestedMessage.getSyncRequestId(), t.getMessage());
           }
         });
-  }
-
-  private String getTopicNameFrom(ScheduledSyncEntity scheduledSyncEntity) {
-    return TOPIC_PREFIX + scheduledSyncEntity.getIndustry();
-  }
-
-  private String getMessageFrom(ScheduledSyncEntity scheduledSyncEntity, SyncType syncType) {
-    String message = null;
-
-    try {
-      ScheduledSyncMessage scheduledSyncMessage = ScheduledSyncMessage.builder()
-          .banksaladUserId(scheduledSyncEntity.getBanksaladUserId())
-          .sector(scheduledSyncEntity.getSector())
-          .industry(scheduledSyncEntity.getIndustry())
-          .organizationId(scheduledSyncEntity.getOrganizationId())
-          .syncType(syncType)
-          .build();
-
-      message = objectMapper.writeValueAsString(scheduledSyncMessage);
-    } catch (JsonProcessingException e) {
-      log.error("ScheduledSync Serialization Fail, Exception : {}", e.getMessage());
-    }
-
-    return message;
   }
 }

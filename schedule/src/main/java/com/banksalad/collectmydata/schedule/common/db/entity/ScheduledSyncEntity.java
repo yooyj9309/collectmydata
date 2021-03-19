@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.schedule.common.db.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -9,13 +10,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 import static javax.persistence.GenerationType.*;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -24,15 +25,19 @@ public class ScheduledSyncEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
-  private Long scheduledSyncId;
+  private Long id;
 
+  @Column(nullable = false)
+  private LocalDateTime syncedAt;
+
+  @Column(nullable = false)
   private Long banksaladUserId;
 
-  private String sector;
+  @Column(nullable = false)
+  private String sector;    // TODO : Refactor to ENUM
 
-  private String industry;
+  @Column(nullable = false)
+  private String industry;  // TODO : Refactor to ENUM
 
   private String organizationId;
-
-  private Boolean isDeleted;
 }

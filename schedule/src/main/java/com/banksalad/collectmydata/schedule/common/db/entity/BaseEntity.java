@@ -22,10 +22,13 @@ public abstract class BaseEntity {
   @Column(updatable = false)
   private LocalDateTime createdAt;
 
+  @Column(updatable = false)
   private String createdBy;
 
   @LastModifiedDate
+  @Column(updatable = false)
   private LocalDateTime updatedAt;
 
+  @Column(updatable = false)
   private String updatedBy;
 }

@@ -12,12 +12,11 @@ import com.github.banksalad.idl.apis.v1.collectschedule.CollectScheduleProto.Unr
 import com.github.banksalad.idl.apis.v1.collectschedule.CollectScheduleProto.UnregisterScheduledSyncResponse;
 import com.github.banksalad.idl.apis.v1.collectschedule.CollectscheduleGrpc.CollectscheduleImplBase;
 import io.grpc.stub.StreamObserver;
-import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
+import java.time.LocalDateTime;
+
 
 // TODO : - How to validate request parameters
 //        - RegisterScheduledSyncRequest, UnregisterScheduledSyncRequest
@@ -32,11 +31,11 @@ public class ScheduledSyncGrpcService extends CollectscheduleImplBase {
       StreamObserver<RegisterScheduledSyncResponse> responseObserver) {
     try {
       ScheduledSyncEntity scheduledSyncEntity = ScheduledSyncEntity.builder()
+          .syncedAt(LocalDateTime.now())
           .banksaladUserId(Long.valueOf(request.getBanksaladUserId()))
           .sector(request.getSector())
           .industry(request.getIndustry())
           .organizationId(request.getOrganizationId())
-          .isDeleted(FALSE)
           .build();
 
       scheduledSyncRepository.save(scheduledSyncEntity);
@@ -53,14 +52,10 @@ public class ScheduledSyncGrpcService extends CollectscheduleImplBase {
   public void unregisterScheduledSync(UnregisterScheduledSyncRequest request,
       StreamObserver<UnregisterScheduledSyncResponse> responseObserver) {
     try {
-      ScheduledSyncEntity scheduledSyncEntity = scheduledSyncRepository
-          .findByBanksaladUserIdAndSectorAndIndustryAndOrganizationIdAndIsDeleted(
-              request.getBanksaladUserId(), request.getSector(),
-              request.getIndustry(), request.getOrganizationId(), FALSE)
-          .orElseThrow(EntityNotFoundException::new);
-      scheduledSyncEntity.setIsDeleted(TRUE);
-
-      scheduledSyncRepository.save(scheduledSyncEntity);
+      scheduledSyncRepository
+          .deleteByBanksaladUserIdAndSectorAndIndustryAndOrganizationId(
+              Long.valueOf(request.getBanksaladUserId()), request.getSector(),
+              request.getIndustry(), request.getOrganizationId());
 
       UnregisterScheduledSyncResponse response = UnregisterScheduledSyncResponse.newBuilder().build();
       responseObserver.onNext(response);
