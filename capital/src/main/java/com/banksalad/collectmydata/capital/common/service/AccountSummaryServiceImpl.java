@@ -9,6 +9,7 @@ import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,6 +70,18 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
   }
 
   @Override
+  public void updateTransactionSyncedAt(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      LocalDateTime syncedAt) {
+    accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno())
+        .ifPresent(accountSummaryEntity -> {
+          accountSummaryEntity.setTransactionSyncedAt(syncedAt);
+          accountSummaryRepository.save(accountSummaryEntity);
+        });
+  }
+  
+  @Override
   public void updateOperatingLeaseBasicSearchTimestamp(long banksaladUserId, String organizationId,
       AccountSummary accountSummary, long operatingLeaseBasicSearchTimestamp) {
     accountSummaryRepository
@@ -81,6 +94,18 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
   }
 
   @Override
+  public void updateTransactionResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      String responseCode) {
+    accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno())
+        .ifPresent(accountSummaryEntity -> {
+          accountSummaryEntity.setTransactionResponseCode(responseCode);
+          accountSummaryRepository.save(accountSummaryEntity);
+        });
+  }
+  
+  @Override                                   
   public void updateOperatingLeaseBasicResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
       String responseCode) {
     accountSummaryRepository

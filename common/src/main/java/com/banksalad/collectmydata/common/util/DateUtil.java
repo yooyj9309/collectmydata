@@ -108,8 +108,7 @@ public class DateUtil {
   public static String utcLocalDateTimeToKstYearMonthString(LocalDateTime localDateTime) {
     return localDateTime.atZone(UTC_ZONE_ID).withZoneSameInstant(DateUtil.KST_ZONE_ID).format(yearMonthFormatter);
   }
-
-
+  
   public static LocalDate toLocalDate(LocalDateTime localDateTime) {
     return localDateTime.toLocalDate();
   }

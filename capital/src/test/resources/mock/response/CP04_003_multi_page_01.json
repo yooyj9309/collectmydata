@@ -7,10 +7,10 @@
       "trans_dtime": "20210121221000",
       "trans_no": "trans#3",
       "trans_type": "99",
-      "trans_amt": 0.000,
-      "balance_amt": 18000.700,
-      "principal_amt": 20000.000,
-      "int_amt": 0.000,
+      "trans_amt": 0.0,
+      "balance_amt": 18000.7,
+      "principal_amt": 20000.0,
+      "int_amt": 0.0,
       "int_cnt": 0,
       "int_list": [
       ]

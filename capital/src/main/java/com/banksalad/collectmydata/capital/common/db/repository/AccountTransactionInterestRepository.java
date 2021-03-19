@@ -1,18 +1,12 @@
 package com.banksalad.collectmydata.capital.common.db.repository;
 
-import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionInterestEntity;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionInterestEntity;
 
 public interface AccountTransactionInterestRepository extends JpaRepository<AccountTransactionInterestEntity, Long> {
 
-  void deleteByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransactionYearMonthAndUniqueTransNoIn(
-      long banksaladUserId, String organizationId, String accountNum, String seqno, Integer transactionYearMonth,
-      List<String> uniqueTransNo);
-
-  void deleteByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransactionYearMonthAndUniqueTransNo(
+  void deleteAllByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransactionYearMonthAndUniqueTransNo(
       long banksaladUserId, String organizationId, String accountNum, String seqno, Integer transactionYearMonth,
       String uniqueTransNo);
 }

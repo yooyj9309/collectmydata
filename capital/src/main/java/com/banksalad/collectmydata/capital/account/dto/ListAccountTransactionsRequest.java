@@ -17,7 +17,7 @@ import lombok.ToString;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @ToString
-public class AccountTransactionRequest {
+public class ListAccountTransactionsRequest {
 
   private String orgCode;
   private String accountNum;

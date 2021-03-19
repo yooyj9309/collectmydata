@@ -2,9 +2,7 @@ package com.banksalad.collectmydata.capital.common;
 
 import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionInterest;
-import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
-import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEntity;
-import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionInterestEntity;
+import com.banksalad.collectmydata.capital.account.dto.ListAccountTransactionsResponse;
 import com.banksalad.collectmydata.capital.common.db.mapper.AccountTransactionInterestMapper;
 import com.banksalad.collectmydata.capital.common.db.mapper.AccountTransactionMapper;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
@@ -81,11 +79,13 @@ public class TestHelper {
 
   public static ExecutionContext getExecutionContext(int port, LocalDateTime now) {
     return ExecutionContext.builder()
-        .organizationHost("http://" + ORGANIZATION_HOST + ":" + port)
-        .accessToken(ACCESS_TOKEN)
+        .syncRequestId(UUID.randomUUID().toString())
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
         .executionRequestId(UUID.randomUUID().toString())
+        .organizationCode(ORGANIZATION_CODE)
+        .organizationHost("http://" + ORGANIZATION_HOST + ":" + port)
+        .accessToken("test")
         .syncStartedAt(now)
         .build();
   }
@@ -189,8 +189,8 @@ public class TestHelper {
     return HashUtil.hashCat("20210121221000", "trans#3", bigDecimalOf(18000.7, 3).toString());
   }
 
-  public static AccountTransactionResponse respondAccountTransactionResponseWithEmptyPages() {
-    return AccountTransactionResponse.builder()
+  public static ListAccountTransactionsResponse respondAccountTransactionResponseWithEmptyPages() {
+    return ListAccountTransactionsResponse.builder()
         .rspCode(REP_CODE_OK)
         .rspMsg(REP_MSG_OK)
         .nextPage("0")
@@ -199,8 +199,8 @@ public class TestHelper {
         .build();
   }
 
-  public static AccountTransactionResponse respondAccountTransactionResponseWithOnePage() {
-    return AccountTransactionResponse.builder()
+  public static ListAccountTransactionsResponse respondAccountTransactionResponseWithOnePage() {
+    return ListAccountTransactionsResponse.builder()
         .rspCode(REP_CODE_OK)
         .rspMsg(REP_MSG_OK)
         .transCnt(1)
@@ -208,8 +208,8 @@ public class TestHelper {
         .build();
   }
 
-  public static AccountTransactionResponse respondAccountTransactionResponseWithTwoPages() {
-    return AccountTransactionResponse.builder()
+  public static ListAccountTransactionsResponse respondAccountTransactionResponseWithTwoPages() {
+    return ListAccountTransactionsResponse.builder()
         .rspCode(REP_CODE_OK)
         .rspMsg(REP_MSG_OK)
         .transCnt(3)
@@ -219,27 +219,5 @@ public class TestHelper {
             generateAccountTransaction3()
         ))
         .build();
-  }
-
-  public static AccountTransactionEntity createAccountTransactionEntity() {
-    AccountTransactionEntity accountTransactionEntity = AccountTransactionEntity.builder()
-        .transactionYearMonth(TRANSACTION_YEAR_MONTH)
-        .syncedAt(SYNCED_AT)
-        .banksaladUserId(BANKSALAD_USER_ID)
-        .organizationId(ORGANIZATION_ID)
-        .accountNum(ACCOUNT_NUM)
-        .seqno(SEQNO1)
-        .uniqueTransNo(UNIQUE_TRANS_NO)
-        .build();
-    accountTransactionMapper.merge(generateAccountTransaction(), accountTransactionEntity);
-    return accountTransactionEntity;
-  }
-
-  public static AccountTransactionInterestEntity createAccountTransactionInterestEntity() {
-    AccountTransactionInterestEntity accountTransactionInterestEntity =
-        accountTransactionInterestMapper
-            .toEntity(createAccountTransactionEntity(), generateAccountTransaction().getIntList().get(0));
-    accountTransactionInterestEntity.setIntNo(1);
-    return accountTransactionInterestEntity;
   }
 }

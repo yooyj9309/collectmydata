@@ -50,6 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.BDDMockito.given;
 
+@Deprecated
 @Transactional
 @SpringBootTest
 public class AccountServiceTest {
@@ -82,7 +83,7 @@ public class AccountServiceTest {
   void cleanBefore() {
     accountSummaryRepository.deleteAll();
   }
-  
+
   @Test
   @DisplayName("6.7.3 account_detail table 에 row 가 있음 && Data Provider API Response 와 다름")
   void givenExistingAccountDetailDifferedWithApiResponse_whenListAccountDetails_ThenUpdateAccountDetail() {

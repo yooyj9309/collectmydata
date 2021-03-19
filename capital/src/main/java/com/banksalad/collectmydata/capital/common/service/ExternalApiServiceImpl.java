@@ -5,9 +5,6 @@ import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailRequest;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
-import com.banksalad.collectmydata.capital.account.dto.AccountTransactionRequest;
-import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
-import com.banksalad.collectmydata.capital.collect.Executions;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionRequest;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
@@ -18,17 +15,14 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
-import com.banksalad.collectmydata.common.exception.CollectmydataRuntimeException;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.common.util.ExecutionUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static com.banksalad.collectmydata.capital.collect.Executions.capital_get_account_detail;
 import static com.banksalad.collectmydata.capital.collect.Executions.capital_get_operating_lease_transactions;
@@ -61,61 +55,6 @@ public class ExternalApiServiceImpl implements ExternalApiService {
         .assembleExecutionRequest(headers, accountDetailRequest);
 
     return execute(executionContext, capital_get_account_detail, executionRequest);
-  }
-
-  /**
-   * 6.7.4 대출상품계좌 거래내역 조회
-   */
-  @Override
-  public AccountTransactionResponse getAccountTransactions(ExecutionContext executionContext,
-      String orgCode, String accountNum, String seqno, String fromDate, String toDate) {
-
-    final Execution execution = Executions.capital_get_account_transactions;
-    // executionId 생성.
-    Map<String, String> header = Map.of("Authorization", executionContext.getAccessToken());
-    AccountTransactionRequest request = AccountTransactionRequest.builder()
-        .orgCode(orgCode)
-        .accountNum(accountNum)
-        .seqno(seqno)
-        .fromDate(fromDate)
-        .toDate(toDate)
-        .limit(LIMIT)
-        .build();
-    ExecutionRequest<AccountTransactionRequest> executionRequest = ExecutionUtil
-        .assembleExecutionRequest(header, request);
-    AccountTransactionResponse response = AccountTransactionResponse.builder()
-        .nextPage(null)
-        .transCnt(0)
-        .transList(new ArrayList<>())
-        .build();
-    //TODO
-    //  Change to flex-like instead of do-while.
-    do {
-      AccountTransactionResponse page = null;
-      try {
-        page = execute(executionContext, execution, executionRequest);
-        response.setRspCode(page.getRspCode());
-        response.setRspMsg(page.getRspMsg());
-        response.setNextPage(page.getNextPage());
-        response.setTransCnt(response.getTransCnt() + page.getTransCnt());
-        response.getTransList().addAll(
-            page.getTransList().stream()
-                .peek(accountTransaction -> {
-                  accountTransaction.setAccountNum(accountNum);
-                  accountTransaction.setSeqno(seqno);
-                })
-                .collect(Collectors.toList())
-        );
-        executionRequest.getRequest().setNextPage(page.getNextPage());
-      } catch (CollectRuntimeException e) {
-        if (page == null) {
-          throw new AssertionError();
-        }
-        throw new CollectmydataRuntimeException(
-            String.format("Mydata API is not OK: rspCode = %s, rspMsg = %s", page.getRspCode(), page.getRspMsg()), e);
-      }
-    } while (response.getNextPage() != null);
-    return response;
   }
 
   @Override

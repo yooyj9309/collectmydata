@@ -2,57 +2,54 @@ package com.banksalad.collectmydata.capital.account;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
 
 import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
-import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
+import com.banksalad.collectmydata.capital.account.dto.ListAccountTransactionsRequest;
+import com.banksalad.collectmydata.capital.collect.Executions;
+import com.banksalad.collectmydata.capital.common.TestHelper;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
+import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEntity;
+import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionInterestEntity;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionInterestRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountTransactionRepository;
-import com.banksalad.collectmydata.capital.common.dto.Organization;
-import com.banksalad.collectmydata.capital.common.service.ExternalApiService;
 import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.common.crypto.HashUtil;
-import com.banksalad.collectmydata.common.util.DateUtil;
+import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
+import com.banksalad.collectmydata.finance.api.transaction.TransactionRequestHelper;
+import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import javax.transaction.Transactional;
+import org.apache.http.entity.ContentType;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
-import static com.banksalad.collectmydata.capital.common.TestHelper.ACCESS_TOKEN;
 import static com.banksalad.collectmydata.capital.common.TestHelper.ACCOUNT_NUM;
-import static com.banksalad.collectmydata.capital.common.TestHelper.ACCOUNT_STATUS;
-import static com.banksalad.collectmydata.capital.common.TestHelper.ACCOUNT_TYPE;
 import static com.banksalad.collectmydata.capital.common.TestHelper.BANKSALAD_USER_ID;
-import static com.banksalad.collectmydata.capital.common.TestHelper.INDUSTRY;
-import static com.banksalad.collectmydata.capital.common.TestHelper.ORGANIZATION_CODE;
-import static com.banksalad.collectmydata.capital.common.TestHelper.ORGANIZATION_HOST;
+import static com.banksalad.collectmydata.capital.common.TestHelper.ENTITY_IGNORE_FIELD;
 import static com.banksalad.collectmydata.capital.common.TestHelper.ORGANIZATION_ID;
-import static com.banksalad.collectmydata.capital.common.TestHelper.PRODUCT_NAME;
-import static com.banksalad.collectmydata.capital.common.TestHelper.SECTOR;
 import static com.banksalad.collectmydata.capital.common.TestHelper.SEQNO1;
-import static com.banksalad.collectmydata.capital.common.TestHelper.respondAccountTransactionResponseWithEmptyPages;
-import static com.banksalad.collectmydata.capital.common.TestHelper.respondAccountTransactionResponseWithOnePage;
-import static com.banksalad.collectmydata.capital.common.TestHelper.respondAccountTransactionResponseWithTwoPages;
-import static java.lang.Boolean.TRUE;
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static com.banksalad.collectmydata.capital.util.FileUtil.readText;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class AccountTransactionServiceTest {
 
-  @MockBean
-  private ExternalApiService externalApiService;
-
-  @Autowired
-  private AccountService accountService;
+  private static WireMockServer wireMockServer;
 
   @Autowired
   private AccountSummaryRepository accountSummaryRepository;
@@ -63,6 +60,16 @@ public class AccountTransactionServiceTest {
   @Autowired
   private AccountTransactionInterestRepository accountTransactionInterestRepository;
 
+  @Autowired
+  private TransactionApiService<AccountSummary, ListAccountTransactionsRequest, AccountTransaction> accountTransactionService;
+
+  @Autowired
+  private TransactionRequestHelper<AccountSummary, ListAccountTransactionsRequest> requestHelper;
+
+  @Autowired
+  private TransactionResponseHelper<AccountSummary, AccountTransaction> responseHelper;
+
+
   @AfterEach
   void cleanBefore() {
     accountSummaryRepository.deleteAll();
@@ -70,183 +77,192 @@ public class AccountTransactionServiceTest {
     accountTransactionInterestRepository.deleteAll();
   }
 
-  @Test
-  @DisplayName("6.7.4 (1) 빈 트랜잭션 응답")
-  public void givenRequest_whenListAccountTransactions_thenEmptyPageResponse() {
-    // Given
-    final ExecutionContext executionContext = getExecutionContext();
-    final Organization organization = getOrganization();
-    final AccountSummary accountSummary = getAccountSummary();
-    final String orgCode = organization.getOrganizationCode();
-    final String accountNum = accountSummary.getAccountNum();
-    final String seqno = accountSummary.getSeqno();
-
-    saveAccountSummaryEntity();
-    when(externalApiService.getAccountTransactions(executionContext, orgCode, accountNum, seqno,
-        DateUtil.utcLocalDateTimeToKstDateString(accountSummary.getTransactionSyncedAt()),
-        DateUtil.utcLocalDateTimeToKstDateString(executionContext.getSyncStartedAt())))
-        .thenReturn(respondAccountTransactionResponseWithEmptyPages());
-
-    // When
-    List<AccountTransaction> response = accountService
-        .listAccountTransactions(executionContext, organization, List.of(accountSummary));
-
-    // Then
-    assertEquals(0, accountTransactionRepository.count());
-    assertEquals(0, accountTransactionInterestRepository.count());
-    assertThat(response).isEmpty();
-    assertThat(accountTransactionRepository.findAll()).isEmpty();
-    assertThat(accountTransactionInterestRepository.findAll()).isEmpty();
+  @BeforeAll
+  static void setup() {
+    wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
+    wireMockServer.start();
+    setupMockServer();
   }
 
-  @Test
-  @DisplayName("6.7.4 (2) 새로운 2페이지 짜리 트랜잭션 응답")
-  public void givenRequest_whenListAccountTransactions_thenNewTwoPageResponse() {
-    // Given
-    final ExecutionContext executionContext = getExecutionContext();
-    final Organization organization = getOrganization();
-    final AccountSummary accountSummary = getAccountSummary();
-    final Long bankSaladUserId = executionContext.getBanksaladUserId();
-    final String organizationId = organization.getOrganizationId();
-    final String orgCode = organization.getOrganizationCode();
-    final String accountNum = accountSummary.getAccountNum();
-    final String seqno = accountSummary.getSeqno();
-
-    saveAccountSummaryEntity();
-    AccountTransactionResponse expectedAccountTransactionResponse = respondAccountTransactionResponseWithTwoPages();
-    expectedAccountTransactionResponse.getTransList().forEach(accountTransaction -> {
-          accountTransaction.setAccountNum(accountSummary.getAccountNum());
-          accountTransaction.setSeqno(accountSummary.getSeqno());
-        }
-    );
-    when(externalApiService.getAccountTransactions(executionContext, orgCode, accountNum, seqno,
-        DateUtil.utcLocalDateTimeToKstDateString(accountSummary.getTransactionSyncedAt()),
-        DateUtil.utcLocalDateTimeToKstDateString(executionContext.getSyncStartedAt())))
-        .thenReturn(expectedAccountTransactionResponse);
-
-    // When
-    List<AccountTransaction> actualAccountTransactions = accountService
-        .listAccountTransactions(executionContext, organization, List.of(accountSummary));
-
-    // Then
-    // Check the new response were inserted.
-    assertEquals(3, accountTransactionRepository.count());
-    assertEquals(3, accountTransactionInterestRepository.count());
-    // Compare API response with modified result from the loan service.
-    assertUniqueTransNo(actualAccountTransactions, bankSaladUserId, organizationId);
+  @AfterAll
+  static void tearDown() {
+    wireMockServer.shutdown();
   }
 
-  @Test
-  @DisplayName("6.7.4 (3) 기존에 있던 1페이지 짜리 트랜잭션 응답")
-  public void givenRequest_whenListAccountTransactions_thenExistingTwoPageResponse() {
-    // Given
-    final ExecutionContext executionContext = getExecutionContext();
-    final Organization organization = getOrganization();
-    final AccountSummary accountSummary = getAccountSummary();
-    final Long bankSaladUserId = executionContext.getBanksaladUserId();
-    final String organizationId = organization.getOrganizationId();
-    final String orgCode = organization.getOrganizationCode();
-    final String accountNum = accountSummary.getAccountNum();
-    final String seqno = accountSummary.getSeqno();
-
-    saveAccountSummaryEntity();
-    AccountTransactionResponse expectedAccountTransactionResponse = respondAccountTransactionResponseWithOnePage();
-    expectedAccountTransactionResponse.getTransList().forEach(accountTransaction -> {
-          accountTransaction.setAccountNum(accountSummary.getAccountNum());
-          accountTransaction.setSeqno(accountSummary.getSeqno());
-        }
-    );
-    when(externalApiService.getAccountTransactions(executionContext, orgCode, accountNum, seqno,
-        DateUtil.utcLocalDateTimeToKstDateString(accountSummary.getTransactionSyncedAt()),
-        DateUtil.utcLocalDateTimeToKstDateString(executionContext.getSyncStartedAt())))
-        .thenReturn(expectedAccountTransactionResponse);
-
-    // When
-    List<AccountTransaction> actualAccountTransactions = accountService
-        .listAccountTransactions(executionContext, organization, List.of(accountSummary));
-
-    // Then
-    // Check the new response were inserted.
-    assertEquals(1, accountTransactionRepository.count());
-    assertEquals(1, accountTransactionInterestRepository.count());
-    // Compare API response with modified result from the loan service.
-    assertUniqueTransNo(actualAccountTransactions, bankSaladUserId, organizationId);
-  }
-
-  private void assertUniqueTransNo(List<AccountTransaction> actualAccountTransactions, Long bankSaladUserId,
-      String organizationId) {
-    List<String> expectedUniqueTransNoList = actualAccountTransactions.stream()
-        .map(accountTransaction -> HashUtil.hashCat(accountTransaction.getTransDtime(),
-            accountTransaction.getTransNo(), accountTransaction.getBalanceAmt().toString()))
-        .collect(Collectors.toList());
-    List<String> actualUniqueTransNoList = actualAccountTransactions.stream()
-        .map(accountTransaction -> {
-          final String accountNum = accountTransaction.getAccountNum();
-          final String seqno = accountTransaction.getSeqno();
-          final Integer transactionYearMonth = Integer
-              .valueOf(accountTransaction.getTransDtime().substring(0, 6));
-          final String uniqueTransNo = HashUtil.hashCat(accountTransaction.getTransDtime(),
-              accountTransaction.getTransNo(), accountTransaction.getBalanceAmt().toString());
-          return accountTransactionRepository
-              .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransactionYearMonthAndUniqueTransNo(
-                  bankSaladUserId, organizationId, accountNum, seqno, transactionYearMonth, uniqueTransNo
-              )
-              .get()
-              .getUniqueTransNo();
-        })
-        .collect(Collectors.toList());
-    for (int i = 0; i < expectedUniqueTransNoList.size(); i++) {
-      assertEquals(expectedUniqueTransNoList.get(i), actualUniqueTransNoList.get(i));
+  private static void setupMockServer() {
+    // 6.7.6 운용리스 거래내역 조회 :
+    String[] fileNames = {
+        "CP04_001_single_page_00.json",
+        "CP04_002_single_page_00.json",
+        "CP04_003_multi_page_00.json",
+        "CP04_003_multi_page_01.json"
+    };
+    for (String fileName : fileNames) {
+      wireMockServer.stubFor(post(urlMatching("/loans/transactions"))
+          .withRequestBody(
+              equalToJson(readText("classpath:mock/request/" + fileName)))
+          .willReturn(
+              aResponse()
+                  .withFixedDelay(500)
+                  .withStatus(HttpStatus.OK.value())
+                  .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+                  .withBody(readText("classpath:mock/response/" + fileName))));
     }
   }
 
-  private void saveAccountSummaryEntity() {
+  @Test
+  @Transactional
+  @DisplayName("6.7.4 거래내역 조회 단일페이지 성공케이스 - 데이터가 없는경우 ")
+  public void listTransaction_single1_success() {
+    ExecutionContext context = TestHelper.getExecutionContext(
+        wireMockServer.port(),
+        LocalDateTime.of(2021, 01, 02, 10, 00)
+    );
+    saveAccountSummary(LocalDateTime.of(2021, 01, 01, 10, 00));
+
+    List<AccountTransaction> accountTransactions = accountTransactionService
+        .listTransactions(context, Executions.capital_get_account_transactions, requestHelper, responseHelper);
+
+    List<AccountTransactionEntity> accountTransactionEntities = accountTransactionRepository.findAll();
+    List<AccountTransactionInterestEntity> accountTransactionInterestEntities = accountTransactionInterestRepository
+        .findAll();
+    assertEquals(0, accountTransactions.size());
+    assertEquals(0, accountTransactionEntities.size());
+    assertEquals(0, accountTransactionInterestEntities.size());
+  }
+
+  @Test
+  @Transactional
+  @DisplayName("6.7.4 거래내역 조회 단일페이지 성공케이스 - 데이터 있는 경우")
+  public void listTransaction_single2_success() {
+    ExecutionContext context = TestHelper.getExecutionContext(
+        wireMockServer.port(),
+        LocalDateTime.of(2021, 03, 01, 10, 00)
+    );
+    saveAccountSummary(LocalDateTime.of(2021, 02, 01, 10, 00));
+
+    List<AccountTransaction> accountTransactions = accountTransactionService
+        .listTransactions(context, Executions.capital_get_account_transactions, requestHelper, responseHelper);
+    List<AccountTransactionEntity> accountTransactionEntities = accountTransactionRepository.findAll();
+    List<AccountTransactionInterestEntity> accountTransactionInterestEntities = accountTransactionInterestRepository
+        .findAll();
+
+    assertEquals(2, accountTransactions.size());
+    assertEquals(2, accountTransactionEntities.size());
+    assertEquals(3, accountTransactionInterestEntities.size());
+
+    assertThat(accountTransactionEntities.get(0)).usingRecursiveComparison()
+        .ignoringFields(ENTITY_IGNORE_FIELD)
+        .isEqualTo(
+            AccountTransactionEntity.builder()
+                .transactionYearMonth(202101)
+                .banksaladUserId(BANKSALAD_USER_ID)
+                .organizationId(ORGANIZATION_ID)
+                .accountNum(ACCOUNT_NUM)
+                .seqno(SEQNO1)
+                .uniqueTransNo("6fae7b0455d3ad49ced012942bd051a6ac631fdb53839f5d29f61d40c334e370")
+                .transDtime("20210121103000")
+                .transNo("trans#2")
+                .transType("03")
+                .transAmt(new BigDecimal("1000.300"))
+                .balanceAmt(new BigDecimal("18000.700"))
+                .principalAmt(new BigDecimal("20000.000"))
+                .intAmt(new BigDecimal("100.000"))
+                .build()
+        );
+
+    assertThat(accountTransactionInterestEntities.get(0)).usingRecursiveComparison()
+        .ignoringFields(ENTITY_IGNORE_FIELD)
+        .isEqualTo(
+            AccountTransactionInterestEntity.builder()
+                .transactionYearMonth(202101)
+                .banksaladUserId(BANKSALAD_USER_ID)
+                .organizationId(ORGANIZATION_ID)
+                .accountNum(ACCOUNT_NUM)
+                .seqno(SEQNO1)
+                .uniqueTransNo("6fae7b0455d3ad49ced012942bd051a6ac631fdb53839f5d29f61d40c334e370")
+                .intNo(1)
+                .intStartDate("20201201")
+                .intEndDate("20201231")
+                .intRate(new BigDecimal("4.125"))
+                .intType("02")
+                .build()
+        );
+  }
+
+  @Test
+  @Transactional
+  @DisplayName("6.7.4 거래내역 조회 멀티페이지")
+  public void listTransaction_multi_page_success() {
+    ExecutionContext context = TestHelper.getExecutionContext(
+        wireMockServer.port(),
+        LocalDateTime.of(2021, 04, 01, 10, 00)
+    );
+    saveAccountSummary(LocalDateTime.of(2021, 03, 01, 10, 00));
+
+    List<AccountTransaction> accountTransactions = accountTransactionService
+        .listTransactions(context, Executions.capital_get_account_transactions, requestHelper, responseHelper);
+    List<AccountTransactionEntity> accountTransactionEntities = accountTransactionRepository.findAll();
+    List<AccountTransactionInterestEntity> accountTransactionInterestEntities = accountTransactionInterestRepository
+        .findAll();
+
+    assertEquals(3, accountTransactions.size());
+    assertEquals(3, accountTransactionEntities.size());
+    assertEquals(3, accountTransactionInterestEntities.size());
+
+    assertThat(accountTransactionEntities.get(0)).usingRecursiveComparison()
+        .ignoringFields(ENTITY_IGNORE_FIELD)
+        .isEqualTo(
+            AccountTransactionEntity.builder()
+                .transactionYearMonth(202101)
+                .banksaladUserId(BANKSALAD_USER_ID)
+                .organizationId(ORGANIZATION_ID)
+                .accountNum(ACCOUNT_NUM)
+                .seqno(SEQNO1)
+                .uniqueTransNo("c71b4b5922141cf6b6eae3159e789b1e30835bf3030acad793da490e109cc28d")
+                .transDtime("20210121103000")
+                .transNo("trans#2")
+                .transType("03")
+                .transAmt(new BigDecimal("1000.3"))
+                .balanceAmt(new BigDecimal("18000.7"))
+                .principalAmt(new BigDecimal("20000.0"))
+                .intAmt(new BigDecimal("100.3"))
+                .build()
+        );
+
+    assertThat(accountTransactionInterestEntities.get(0)).usingRecursiveComparison()
+        .ignoringFields(ENTITY_IGNORE_FIELD)
+        .isEqualTo(
+            AccountTransactionInterestEntity.builder()
+                .transactionYearMonth(202101)
+                .banksaladUserId(BANKSALAD_USER_ID)
+                .organizationId(ORGANIZATION_ID)
+                .accountNum(ACCOUNT_NUM)
+                .seqno(SEQNO1)
+                .uniqueTransNo("c71b4b5922141cf6b6eae3159e789b1e30835bf3030acad793da490e109cc28d")
+                .intNo(1)
+                .intStartDate("20201201")
+                .intEndDate("20201231")
+                .intRate(new BigDecimal("4.125"))
+                .intType("02")
+                .build()
+        );
+  }
+
+  public void saveAccountSummary(LocalDateTime fromDateTime) {
     accountSummaryRepository.save(
         AccountSummaryEntity.builder()
-            .syncedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+            .syncedAt(LocalDateTime.now())
             .banksaladUserId(BANKSALAD_USER_ID)
             .organizationId(ORGANIZATION_ID)
             .accountNum(ACCOUNT_NUM)
             .seqno(SEQNO1)
             .isConsent(true)
-            .prodName("prodName")
+            .prodName("")
             .accountType("")
             .accountStatus("")
+            .transactionSyncedAt(fromDateTime)
             .build()
     );
-  }
-
-  private ExecutionContext getExecutionContext() {
-    return ExecutionContext.builder()
-        .organizationHost("http://" + ORGANIZATION_HOST)
-        .accessToken(ACCESS_TOKEN)
-        .banksaladUserId(BANKSALAD_USER_ID)
-        .organizationId(ORGANIZATION_ID)
-        .executionRequestId(UUID.randomUUID().toString())
-        .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
-        .build();
-  }
-
-  private Organization getOrganization() {
-    return Organization.builder()
-        .sector(SECTOR)
-        .industry(INDUSTRY)
-        .organizationId(ORGANIZATION_ID)
-        .organizationCode(ORGANIZATION_CODE)
-        .domain(ORGANIZATION_HOST)
-        .build();
-  }
-
-  private AccountSummary getAccountSummary() {
-    return AccountSummary.builder()
-        .accountNum(ACCOUNT_NUM)
-        .isConsent(TRUE)
-        .seqno(SEQNO1)
-        .prodName(PRODUCT_NAME)
-        .accountType(ACCOUNT_TYPE)
-        .accountStatus(ACCOUNT_STATUS)
-        .transactionSyncedAt(DateUtil.toLocalDateTime("20210121", "101010"))
-        .operatingLeaseTransactionSyncedAt(DateUtil.toLocalDateTime("20210121", "101010"))
-        .build();
   }
 }

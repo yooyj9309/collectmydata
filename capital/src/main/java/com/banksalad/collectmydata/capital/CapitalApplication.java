@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 )
 @EnableJpaRepositories(
     basePackages = {
-        "com.banksalad.collectmydata.finance.common.db",
+        "com.banksalad.collectmydata.finance",
         "com.banksalad.collectmydata.capital"
     }
 )

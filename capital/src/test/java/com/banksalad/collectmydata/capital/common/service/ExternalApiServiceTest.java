@@ -6,7 +6,6 @@ import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 
 import com.banksalad.collectmydata.capital.account.dto.AccountDetailResponse;
-import com.banksalad.collectmydata.capital.account.dto.AccountTransactionResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
@@ -42,18 +41,15 @@ import static com.banksalad.collectmydata.capital.common.TestHelper.PRODUCT_NAME
 import static com.banksalad.collectmydata.capital.common.TestHelper.SECTOR;
 import static com.banksalad.collectmydata.capital.common.TestHelper.SEQNO1;
 import static com.banksalad.collectmydata.capital.common.TestHelper.SEQNO2;
-import static com.banksalad.collectmydata.capital.common.TestHelper.respondAccountTransactionResponseWithTwoPages;
 import static com.banksalad.collectmydata.capital.util.FileUtil.readText;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static java.lang.Boolean.TRUE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Deprecated
 @SpringBootTest
 @Transactional
 @DisplayName("ExternalApiService Test")
@@ -94,36 +90,6 @@ class ExternalApiServiceTest {
     assertThat(actualAccountDetailResponse).usingRecursiveComparison().isEqualTo(expectedAccountDetailResponse);
   }
 
-  @Test
-  @DisplayName("6.7.4 대출상품계좌 거래내역 조회: 2개 페이지 결합하기 (seqno 없는 경우)")
-  public void givenExecutionContextAndRequest_whenGetTransactions_thenTwoPages() {
-    // Given
-    final ExecutionContext executionContext = getExecutionContext();
-    final Organization organization = getOrganization();
-    final AccountSummary accountSummary = getAccount();
-    final String orgCode = organization.getOrganizationCode();
-    final String accountNum = accountSummary.getAccountNum();
-    final String seqno = accountSummary.getSeqno();
-    final String fromDate = "20210121";
-    final String toDate = "20210122";
-
-    AccountTransactionResponse expectedAccountTransactionResponse = respondAccountTransactionResponseWithTwoPages();
-    expectedAccountTransactionResponse.getTransList().forEach(accountTransaction -> {
-          accountTransaction.setAccountNum(accountSummary.getAccountNum());
-          accountTransaction.setSeqno(accountSummary.getSeqno());
-        }
-    );
-
-    // When
-    AccountTransactionResponse actualAccountTransactionResponse = externalApiService
-        .getAccountTransactions(executionContext, orgCode, accountNum, seqno, fromDate, toDate);
-
-    // Then
-    assertEquals(3, actualAccountTransactionResponse.getTransCnt());
-    assertEquals(3, actualAccountTransactionResponse.getTransList().size());
-    assertThat(actualAccountTransactionResponse).usingRecursiveComparison()
-        .isEqualTo(expectedAccountTransactionResponse);
-  }
 
   @Test
   @DisplayName("6.7.6 운용리스 거래내역 조회 : 여러 페이지 조회 - 2개의 페이지 결합")
@@ -245,26 +211,6 @@ class ExternalApiServiceTest {
   }
 
   private static void setupMockServer() {
-    // 6.7.1 계좌목록 조회
-    wireMockServer.stubFor(get(urlMatching("/loans.*"))
-        .withQueryParam("org_code", equalTo(ORGANIZATION_CODE))
-        .withQueryParam("search_timestamp", equalTo("0"))
-        .willReturn(
-            aResponse()
-                .withFixedDelay(1000)
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/CP01_001.json"))));
-
-    // 6.7.2 대출상품계좌 기본정보 조회
-    wireMockServer.stubFor(post(urlMatching("/loans/basic"))
-        .willReturn(
-            aResponse()
-                .withFixedDelay(1000)
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/CP02_001.json"))));
-
     // 6.7.3 대출상품계좌 추가정보 조회
     wireMockServer.stubFor(post(urlMatching("/loans/detail"))
         .withRequestBody(
@@ -275,28 +221,6 @@ class ExternalApiServiceTest {
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/CP03_001.json"))));
-
-    // 6.7.4 대출상품계좌 거래내역 조회: 첫번째 페이지 (next_page를 요청에 설정하지 않음)
-    wireMockServer.stubFor(post(urlMatching("/loans/transactions"))
-        .withRequestBody(
-            equalToJson(readText("classpath:mock/request/CP04_001.json")))
-        .willReturn(
-            aResponse()
-                .withFixedDelay(500)
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/CP04_002.json"))));
-
-    // 6.7.4 대출상품계좌 거래내역 조회: 두번째 페이지 (응답에 next_page가 없음)
-    wireMockServer.stubFor(post(urlMatching("/loans/transactions"))
-        .withRequestBody(
-            equalToJson(readText("classpath:mock/request/CP04_002.json")))
-        .willReturn(
-            aResponse()
-                .withFixedDelay(500)
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/CP04_003.json"))));
 
     // 6.7.6 운용리스 거래내역 조회 : 응답 페이지가 둘인 경우 - 첫번째 페이지(1/2) (요청 next_page : null, 응답 next_page : 2)
     wireMockServer.stubFor(post(urlMatching("/loans/oplease/transactions"))
