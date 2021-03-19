@@ -24,6 +24,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.banksalad.collectmydata.capital.common.TestHelper.ACCOUNT_NUM;
 import static com.banksalad.collectmydata.capital.common.TestHelper.BANKSALAD_USER_ID;
 import static com.banksalad.collectmydata.capital.common.TestHelper.ENTITY_IGNORE_FIELD;
 import static com.banksalad.collectmydata.capital.common.TestHelper.ORGANIZATION_ID;
@@ -63,11 +65,15 @@ public class AccountBasicServiceTest {
   private AccountInfoResponseHelper<AccountSummary, AccountBasic> accountBasicResponseHelper;
 
   @BeforeAll
-
   static void setup() {
     wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
     wireMockServer.start();
     setupMockServer();
+  }
+
+  @AfterEach
+  void cleanBefore() {
+    accountSummaryRepository.deleteAll();
   }
 
   @AfterAll
@@ -84,7 +90,7 @@ public class AccountBasicServiceTest {
         .syncedAt(LocalDateTime.now())
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
-        .accountNum("1234123412341234")
+        .accountNum(ACCOUNT_NUM)
         .seqno("1")
         .isConsent(TRUE)
         .prodName("prodName")
@@ -104,7 +110,7 @@ public class AccountBasicServiceTest {
     assertEquals(1, accountBasicHistoryEntities.size());
     assertThat(accountBasics.get(0)).usingRecursiveComparison()
         .isEqualTo(AccountBasic.builder()
-            .accountNum("1234123412341234")
+            .accountNum(ACCOUNT_NUM)
             .seqno("1")
             .holderName("대출차주명")
             .issueDate("20210210")
@@ -122,7 +128,7 @@ public class AccountBasicServiceTest {
         .isEqualTo(AccountBasicEntity.builder()
             .banksaladUserId(BANKSALAD_USER_ID)
             .organizationId(ORGANIZATION_ID)
-            .accountNum("1234123412341234")
+            .accountNum(ACCOUNT_NUM)
             .seqno("1")
             .holderName("대출차주명")
             .issueDate("20210210")
@@ -140,7 +146,7 @@ public class AccountBasicServiceTest {
         .isEqualTo(AccountBasicEntity.builder()
             .banksaladUserId(BANKSALAD_USER_ID)
             .organizationId(ORGANIZATION_ID)
-            .accountNum("1234123412341234")
+            .accountNum(ACCOUNT_NUM)
             .seqno("1")
             .holderName("대출차주명")
             .issueDate("20210210")

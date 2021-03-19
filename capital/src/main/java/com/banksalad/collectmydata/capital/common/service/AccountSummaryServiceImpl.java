@@ -28,18 +28,13 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
 
     List<AccountSummaryEntity> response = null;
     // TODO dusang, if else 걷어내고 그냥 리턴으로 할지 고민이됩니다.
+    // yonggeon: DB에서 미리 거르는 것이 효율적이라 생각되어 수정합니다.
     if (demandOperatingLeaseAccount) {
-      response = accountSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndIsConsent(
-          banksaladUserId, organizationId, true)
-          .stream()
-          .filter(accountSummaryEntity -> OPERATING_LEASE_ACCOUNT_TYPE.equals(accountSummaryEntity.getAccountType()))
-          .collect(Collectors.toList());
+      response = accountSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndIsConsentAndAccountType(
+          banksaladUserId, organizationId, true, OPERATING_LEASE_ACCOUNT_TYPE);
     } else {
-      response = accountSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndIsConsent(
-          banksaladUserId, organizationId, true)
-          .stream()
-          .filter(accountSummaryEntity -> !OPERATING_LEASE_ACCOUNT_TYPE.equals(accountSummaryEntity.getAccountType()))
-          .collect(Collectors.toList());
+      response = accountSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndIsConsentAndAccountTypeNot(
+          banksaladUserId, organizationId, true, OPERATING_LEASE_ACCOUNT_TYPE);
     }
     
     return response.stream().map(accountSummaryMapper::entityToDto).collect(Collectors.toList());
@@ -70,6 +65,32 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
   }
 
   @Override
+  public void updateDetailSearchTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      long detailSearchTimestamp) {
+
+    accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno())
+        .ifPresent(accountSummaryEntity -> {
+          accountSummaryEntity.setDetailSearchTimestamp(detailSearchTimestamp);
+          accountSummaryRepository.save(accountSummaryEntity);
+        });
+  }
+
+  @Override
+  public void updateDetailResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      String responseCode) {
+
+    accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno())
+        .ifPresent(accountSummaryEntity -> {
+          accountSummaryEntity.setDetailResponseCode(responseCode);
+          accountSummaryRepository.save(accountSummaryEntity);
+        });
+  }
+
+  @Override
   public void updateTransactionSyncedAt(long banksaladUserId, String organizationId, AccountSummary accountSummary,
       LocalDateTime syncedAt) {
     accountSummaryRepository
@@ -80,7 +101,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
           accountSummaryRepository.save(accountSummaryEntity);
         });
   }
-  
+
   @Override
   public void updateOperatingLeaseBasicSearchTimestamp(long banksaladUserId, String organizationId,
       AccountSummary accountSummary, long operatingLeaseBasicSearchTimestamp) {
@@ -104,8 +125,8 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
           accountSummaryRepository.save(accountSummaryEntity);
         });
   }
-  
-  @Override                                   
+
+  @Override
   public void updateOperatingLeaseBasicResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
       String responseCode) {
     accountSummaryRepository

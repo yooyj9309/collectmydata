@@ -47,7 +47,7 @@ public class AccountBasicResponseHelper implements AccountInfoResponseHelper<Acc
     accountBasic.setAccountNum(accountNum);
     accountBasic.setSeqno(seqno);
 
-    AccountBasicEntity accountBasicEntity = accountBasicMapper.toAccountBasicEntityFrom(accountBasic);
+    AccountBasicEntity accountBasicEntity = accountBasicMapper.dtoToEntity(accountBasic);
     accountBasicEntity.setSyncedAt(executionContext.getSyncStartedAt());
     accountBasicEntity.setBanksaladUserId(banksaladUserId);
     accountBasicEntity.setOrganizationId(organizationId);

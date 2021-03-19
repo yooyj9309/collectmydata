@@ -24,6 +24,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -72,6 +73,11 @@ public class OperatingLeaseBasicServiceTest {
     wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
     wireMockServer.start();
     setupMockServer();
+  }
+
+  @AfterEach
+  void cleanBefore() {
+    accountSummaryRepository.deleteAll();
   }
 
   @AfterAll

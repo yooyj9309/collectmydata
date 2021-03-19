@@ -11,9 +11,15 @@ public interface AccountSummaryService {
       boolean demandOperatingLeaseAccount);
 
   void updateBasicSearchTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary,
-      long detailSearchTimestamp);
+      long basicSearchTimestamp);
 
   void updateBasicResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      String responseCode);
+
+  void updateDetailSearchTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      long detailSearchTimestamp);
+
+  void updateDetailResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
       String responseCode);
 
   void updateTransactionSyncedAt(long banksaladUserId, String organizationId, AccountSummary accountSummary,
@@ -21,6 +27,7 @@ public interface AccountSummaryService {
 
   void updateTransactionResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
       String responseCode);
+
   void updateOperatingLeaseBasicSearchTimestamp(long banksaladUserId, String organizationId,
       AccountSummary accountSummary, long operatingLeaseBasicSearchTimestamp);
 

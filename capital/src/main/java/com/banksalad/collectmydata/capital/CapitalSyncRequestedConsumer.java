@@ -13,6 +13,8 @@ import com.banksalad.collectmydata.common.message.ConsumerGroupId;
 import com.banksalad.collectmydata.common.message.MessageTopic;
 import com.banksalad.collectmydata.common.message.PublishmentRequestedMessage;
 import com.banksalad.collectmydata.common.message.SyncRequestedMessage;
+import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +33,7 @@ public class CapitalSyncRequestedConsumer {
       topics = MessageTopic.capitalSyncRequested,
       containerFactory = "capitalSyncRequestedKafkaListenerContainerFactory",
       groupId = ConsumerGroupId.collectmydataFinanceCapital)
-  public void consumeSyncRequested(String source) {
+  public void consumeSyncRequested(String source) throws ResponseNotOkException {
     try {
       SyncRequestedMessage message = objectMapper.readValue(source, SyncRequestedMessage.class);
 

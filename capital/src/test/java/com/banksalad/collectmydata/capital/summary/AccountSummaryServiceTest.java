@@ -20,12 +20,14 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static com.banksalad.collectmydata.capital.common.TestHelper.ACCOUNT_NUM;
 import static com.banksalad.collectmydata.capital.common.TestHelper.BANKSALAD_USER_ID;
 import static com.banksalad.collectmydata.capital.common.TestHelper.ORGANIZATION_CODE;
 import static com.banksalad.collectmydata.capital.common.TestHelper.ORGANIZATION_ID;
@@ -62,6 +64,11 @@ public class AccountSummaryServiceTest {
     setupMockServer();
   }
 
+  @AfterEach
+  void cleanBefore() {
+    accountSummaryRepository.deleteAll();
+  }
+
   @AfterAll
   static void tearDown() {
     wireMockServer.shutdown();
@@ -90,7 +97,7 @@ public class AccountSummaryServiceTest {
             AccountSummaryEntity.builder()
                 .banksaladUserId(BANKSALAD_USER_ID)
                 .organizationId(ORGANIZATION_ID)
-                .accountNum("1234123412341234")
+                .accountNum(ACCOUNT_NUM)
                 .isConsent(true)
                 .seqno("1")
                 .prodName("상품명1")
@@ -110,6 +117,6 @@ public class AccountSummaryServiceTest {
                 .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/CP01_001.json"))));
+                .withBody(readText("classpath:mock/response/CP01_001_single_page_01.json"))));
   }
 }

@@ -5,6 +5,7 @@ import com.banksalad.collectmydata.common.enums.MydataSector;
 import lombok.Builder;
 import lombok.Getter;
 
+@Deprecated
 @Getter
 @Builder
 public class Organization {

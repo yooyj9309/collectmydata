@@ -24,7 +24,7 @@ public class TestHelper {
   public static final int AMOUNT_SCALE = 3;
   public static final MydataSector SECTOR = MydataSector.FINANCE;
   public static final Industry INDUSTRY = Industry.CAPITAL;
-  public static final LocalDateTime SYNCED_AT = LocalDateTime.now();
+  public static final LocalDateTime SYNCED_AT = DateUtil.toLocalDateTime("20210301", "011010");
   public static final long BANKSALAD_USER_ID = 1L;
   public static final String ORGANIZATION_ID = "X-loan";
   public static final String ORGANIZATION_CODE = "10041004";
@@ -54,11 +54,12 @@ public class TestHelper {
   public static final int LIMIT = 2;
   public static final String REP_CODE_OK = "00000";
   public static final String REP_MSG_OK = "rsp_msg";
-  public static final String ACCOUNT_NUMBER = "1234567890";
   public static final String FROM_DATE = "20210121";
   public static final String TO_DATE = "20210122";
   public static final String[] ENTITY_IGNORE_FIELD = {"id", "syncedAt", "createdAt", "createdBy", "updatedAt",
       "updatedBy"};
+  public static final int FIXED_DELAY = 100;
+
   private static final AccountTransactionMapper accountTransactionMapper = Mappers
       .getMapper(AccountTransactionMapper.class);
   private static final AccountTransactionInterestMapper accountTransactionInterestMapper = Mappers

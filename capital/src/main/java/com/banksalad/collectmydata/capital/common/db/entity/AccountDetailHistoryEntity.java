@@ -52,5 +52,5 @@ public class AccountDetailHistoryEntity extends BaseEntity {
   private BigDecimal loanPrincipal;
 
   @Column(nullable = false)
-  private LocalDate nextRepayDate;
+  private String nextRepayDate;
 }

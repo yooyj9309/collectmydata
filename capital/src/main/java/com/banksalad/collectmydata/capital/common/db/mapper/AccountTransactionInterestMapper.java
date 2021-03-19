@@ -3,6 +3,8 @@ package com.banksalad.collectmydata.capital.common.db.mapper;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionInterest;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionInterestEntity;
+import com.banksalad.collectmydata.common.mapper.BigDecimalMapper;
+
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -19,7 +21,8 @@ public interface AccountTransactionInterestMapper {
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   @Mappings(value = {
       // Must ignore id from `accountTransactionEntity`.
-      @Mapping(target = "id", ignore = true)
+      @Mapping(target = "id", ignore = true),
+      @Mapping(target = "intRate", qualifiedByName = "BigDecimalScale3")
   })
   AccountTransactionInterestEntity toEntity(AccountTransactionEntity accountTransactionEntity,
       AccountTransactionInterest accountTransactionInterest);
@@ -27,7 +30,8 @@ public interface AccountTransactionInterestMapper {
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   @Mappings(value = {
       // Must ignore id from `accountTransactionEntity`.
-      @Mapping(target = "id", ignore = true)
+      @Mapping(target = "id", ignore = true),
+      @Mapping(target = "intRate", qualifiedByName = "BigDecimalScale3")
   })
   void merge(AccountTransactionEntity accountTransactionEntity,
       AccountTransactionInterest accountTransactionInterest,

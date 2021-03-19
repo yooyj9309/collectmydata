@@ -13,10 +13,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class AccountDetailRequest {
+public class GetAccountDetailRequest {
 
   private String orgCode;
+
   private String accountNum;
+
   private String seqno;
+
   private long searchTimestamp;
 }
