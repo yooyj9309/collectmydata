@@ -6,17 +6,21 @@ import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
+import com.banksalad.collectmydata.finance.api.transaction.TransactionRequestHelper;
+import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
+import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceSummaryEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceTransactionEntity;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceSummaryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceTransactionRepository;
-import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.common.util.TestHelper;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceTransaction;
-import com.banksalad.collectmydata.insu.insurance.service.InsuranceTransactionService;
+import com.banksalad.collectmydata.insu.insurance.dto.ListInsuranceTransactionsRequest;
+import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +32,6 @@ import java.util.List;
 import static com.banksalad.collectmydata.insu.common.util.FileUtil.readText;
 import static com.banksalad.collectmydata.insu.common.util.TestHelper.BANKSALAD_USER_ID;
 import static com.banksalad.collectmydata.insu.common.util.TestHelper.ENTITY_IGNORE_FIELD;
-import static com.banksalad.collectmydata.insu.common.util.TestHelper.ORGANIZATION_CODE;
 import static com.banksalad.collectmydata.insu.common.util.TestHelper.ORGANIZATION_ID;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -41,7 +44,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class InsuranceTransactionServiceTest {
 
   @Autowired
-  private InsuranceTransactionService insuranceTransactionService;
+  private TransactionApiService<InsuranceSummary, ListInsuranceTransactionsRequest, InsuranceTransaction> transactionApiService;
+
+  @Autowired
+  private TransactionRequestHelper<InsuranceSummary, ListInsuranceTransactionsRequest> requestHelper;
+
+  @Autowired
+  private TransactionResponseHelper<InsuranceSummary, InsuranceTransaction> responseHelper;
 
   @Autowired
   private InsuranceTransactionRepository insuranceTransactionRepository;
@@ -49,9 +58,6 @@ public class InsuranceTransactionServiceTest {
   @Autowired
   private InsuranceSummaryRepository insuranceSummaryRepository;
 
-//  @Autowired
-//  private UserSyncStatusRepository userSyncStatusRepository;
-  
   private static WireMockServer wireMockServer;
 
   @BeforeAll
@@ -61,14 +67,8 @@ public class InsuranceTransactionServiceTest {
     setupMockServer();
   }
 
-  @AfterEach
-  private void after() {
-    insuranceTransactionRepository.deleteAll();
-    insuranceSummaryRepository.deleteAll();
-//    userSyncStatusRepository.deleteAll();
-  }
-
   @Test
+  @Transactional
   @DisplayName("6.5.6 보험 거래내역 조회 서비스 테스트1. 성공케이스")
   public void listInsuranceTransaction_success() {
     //20200101,20200302
@@ -77,10 +77,9 @@ public class InsuranceTransactionServiceTest {
         LocalDateTime.of(2020, 03, 02, 9, 0, 0)
     );
 
-    List<InsuranceSummary> insuranceSummaries = saveAndGetInsuranceSummary();
-
-    List<InsuranceTransaction> insuranceTransactions = insuranceTransactionService.
-        listInsuranceTransactions(context, ORGANIZATION_CODE, insuranceSummaries);
+    saveAndGetInsuranceSummary();
+    List<InsuranceTransaction> insuranceTransactions = transactionApiService.listTransactions(context,
+        Executions.insurance_get_transactions, requestHelper, responseHelper);
 
     List<InsuranceTransactionEntity> insuranceTransactionEntities = insuranceTransactionRepository.findAll();
 
@@ -111,7 +110,7 @@ public class InsuranceTransactionServiceTest {
                 .transDate("20200105")
                 .transAppliedMonth(202001)
                 .transNo(2)
-                .paidAmt(new BigDecimal("123456789.450"))
+                .paidAmt(new BigDecimal("123456789.45"))
                 .currencyCode("ABL")
                 .payMethod("02")
                 .build()
@@ -123,10 +122,10 @@ public class InsuranceTransactionServiceTest {
     assertEquals(context.getSyncStartedAt(), insuranceSummaryEntity.getTransactionSyncedAt());
   }
 
-  private List<InsuranceSummary> saveAndGetInsuranceSummary() {
+  private void saveAndGetInsuranceSummary() {
     insuranceSummaryRepository.save(
         InsuranceSummaryEntity.builder()
-            .syncedAt(LocalDateTime.now())
+            .syncedAt(LocalDateTime.of(2020, 01, 01, 9, 0, 0))
             .banksaladUserId(BANKSALAD_USER_ID)
             .organizationId(ORGANIZATION_ID)
             .insuNum("123456789")
@@ -134,16 +133,6 @@ public class InsuranceTransactionServiceTest {
             .insuType("05")
             .insuStatus("02")
             .prodName("묻지도 따지지도않고 암보험")
-            .build()
-    );
-
-    return List.of(
-        InsuranceSummary.builder()
-            .insuNum("123456789")
-            .consent(true)
-            .prodName("묻지도 따지지도않고 암보험")
-            .insuType("05")
-            .insuStatus("02")
             .transactionSyncedAt(LocalDateTime.of(2020, 01, 01, 9, 0, 0))
             .build()
     );

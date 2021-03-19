@@ -67,6 +67,6 @@ public class InsuranceSummaryEntity extends BaseEntity {
 
   private LocalDateTime transactionSyncedAt;
 
-  private LocalDateTime transactionResponseCode;
+  private String transactionResponseCode;
 
 }

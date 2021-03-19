@@ -8,15 +8,18 @@ import java.util.List;
 public interface InsuranceSummaryService {
 
   List<InsuranceSummary> listSummariesConsented(long banksaladUserId, String organizationId);
-  
+
   void updateBasicSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String insuNum,
       long basicSearchTimestamp, String rspCode);
 
   void updatePaymentSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String insuNum,
       long basicSearchTimestamp, String rspCode);
 
-  void updateTransactionSyncedAt(long banksaladUserId, String organizationId, String insuNum,
+  void updateTransactionSyncedAt(long banksaladUserId, String organizationId, InsuranceSummary insuranceSummary,
       LocalDateTime syncedAt);
+
+  void updateTransactionResponseCode(long banksaladUserId, String organizationId, InsuranceSummary insuranceSummary,
+      String responseCode);
 
   void updateCarSearchTimestamp(long banksaladUserId, String organizationId, InsuranceSummary insuranceSummary,
       long searchTimestamp);

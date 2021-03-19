@@ -2,9 +2,7 @@ package com.banksalad.collectmydata.insu.common.service;
 
 import org.springframework.stereotype.Service;
 
-import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
-import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceSummaryEntity;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceSummaryRepository;
 import com.banksalad.collectmydata.insu.common.mapper.InsuranceSummaryMapper;
@@ -22,11 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
 
-  private final UserSyncStatusService userSyncStatusService;
   private final InsuranceSummaryRepository insuranceSummaryRepository;
-  private final CollectExecutor collectExecutor;
-
-  private static final String AUTHORIZATION = "Authorization";
   private static final InsuranceSummaryMapper insuranceSummaryMapper = Mappers.getMapper(InsuranceSummaryMapper.class);
 
   @Override
@@ -58,10 +52,20 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
   }
 
   @Override
-  public void updateTransactionSyncedAt(long banksaladUserId, String organizationId, String insuNum,
+  public void updateTransactionSyncedAt(long banksaladUserId, String organizationId, InsuranceSummary insuranceSummary,
       LocalDateTime syncedAt) {
-    InsuranceSummaryEntity entity = getInsuranceSummaryEntity(banksaladUserId, organizationId, insuNum);
+    InsuranceSummaryEntity entity = getInsuranceSummaryEntity(banksaladUserId, organizationId,
+        insuranceSummary.getInsuNum());
     entity.setTransactionSyncedAt(syncedAt);
+    insuranceSummaryRepository.save(entity);
+  }
+
+  @Override
+  public void updateTransactionResponseCode(long banksaladUserId, String organizationId,
+      InsuranceSummary insuranceSummary, String responseCode) {
+    InsuranceSummaryEntity entity = getInsuranceSummaryEntity(banksaladUserId, organizationId,
+        insuranceSummary.getInsuNum());
+    entity.setTransactionResponseCode(responseCode);
     insuranceSummaryRepository.save(entity);
   }
 

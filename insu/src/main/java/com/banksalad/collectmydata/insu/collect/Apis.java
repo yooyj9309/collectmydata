@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.insu.collect;
 
 import com.banksalad.collectmydata.common.collect.api.Api;
+import com.banksalad.collectmydata.common.collect.api.Pagination;
 
 public class Apis {
 
@@ -60,6 +61,9 @@ public class Apis {
           .name("IS06-보험 거래내역 조회")
           .endpoint("/insurances/transactions")
           .method(HttpMethod.POST.name())
+          .pagination(Pagination.builder()
+              .nextPage("next_page")
+              .build())
           .build();
 
   // 6.5.7 자동차보험 거래내역 조회
@@ -69,6 +73,9 @@ public class Apis {
           .name("IS07-자동차보험 거래내역 조회")
           .endpoint("/insurances/car/transactions")
           .method(HttpMethod.POST.name())
+          .pagination(Pagination.builder()
+              .nextPage("next_page")
+              .build())
           .build();
 
   // 6.5.8 대출상품 목록 조회
@@ -105,5 +112,8 @@ public class Apis {
           .name("IS14-대출상품 거래내역 조회")
           .endpoint("/loans/transactions")
           .method(HttpMethod.POST.name())
+          .pagination(Pagination.builder()
+              .nextPage("next_page")
+              .build())
           .build();
 }

@@ -19,6 +19,7 @@ import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,6 +71,12 @@ class LoanTransactionServiceTest {
   static void tearDown() {
     wireMockServer.shutdown();
   }
+
+  @AfterEach
+  public void afterEach() {
+    loanSummaryRepository.deleteAll();
+  }
+
 
   @Test
   @DisplayName("6.5.11 Data Provider API Response : DB 에 없는 거래내역 01, DB 데이터와 동일한 거래내역 02")
