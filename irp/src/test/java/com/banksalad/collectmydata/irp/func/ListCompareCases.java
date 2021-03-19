@@ -10,6 +10,7 @@ import org.javers.core.diff.changetype.ObjectRemoved;
 import org.javers.core.diff.changetype.PropertyChange;
 import org.javers.core.diff.changetype.ValueChange;
 import org.javers.core.diff.changetype.container.ListChange;
+import org.javers.core.diff.custom.BigDecimalComparatorWithFixedEquals;
 import org.javers.core.metamodel.clazz.ValueObjectDefinition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,51 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ListCompareCases {
+
+  @Test
+  @DisplayName("Compare bigdecimal after striping trailing zeros")
+  void diffElementsInTwoLists_BigDecimal_stripTrailingZeros_Same() {
+
+    //given
+    Javers javers = JaversBuilder.javers()
+        .withListCompareAlgorithm(ListCompareAlgorithm.LEVENSHTEIN_DISTANCE)
+        .registerValue(BigDecimal.class, new BigDecimalComparatorWithFixedEquals())
+        .build();
+
+    List<IrpAccountDetail> oldIrpAccountDetails = new ArrayList<>();
+    oldIrpAccountDetails.add(IrpAccountDetail.builder()
+        .irpName("irp개별운용상품1")
+        .irpType("01")
+        .evalAmt(new BigDecimal("100000.123"))
+        .invPrincipal(new BigDecimal("5000.456"))
+        .fundNum(5)
+        .openDate("20200228")
+        .expDate("20210330")
+        .intRate(new BigDecimal("14.3"))
+        .build());
+
+    List<IrpAccountDetail> newIrpAccountDetails = new ArrayList<>();
+    newIrpAccountDetails.add(IrpAccountDetail.builder()
+        .irpName("irp개별운용상품1")
+        .irpType("01")
+        .evalAmt(new BigDecimal("100000.123"))
+        .invPrincipal(new BigDecimal("5000.456"))
+        .fundNum(5)
+        .openDate("20200228")
+        .expDate("20210330")
+        .intRate(new BigDecimal("14.300"))
+        .build());
+
+    //when
+    Diff diff = javers.compareCollections(oldIrpAccountDetails, newIrpAccountDetails, IrpAccountDetail.class);
+
+    //then
+    assertThat(diff.getChanges()).hasSize(0);
+
+    System.out.println(diff);
+    System.out.println(javers.getJsonConverter().toJson(diff));
+    diff.getChanges().forEach(change -> System.out.println("- " + change));
+  }
 
   @Test
   @DisplayName("Compare the equality of the elements in two lists objects as set because of ignoring order")
