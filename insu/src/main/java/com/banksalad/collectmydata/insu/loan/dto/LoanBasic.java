@@ -17,7 +17,6 @@ import lombok.Setter;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class LoanBasic {
 
-  private String accountNum;
   private String loanStartDate;
   private String loanExpDate;
   private String repayMethod;

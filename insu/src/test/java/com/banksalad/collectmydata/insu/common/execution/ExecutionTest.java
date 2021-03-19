@@ -33,6 +33,7 @@ import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailRequest;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailResponse;
 import com.banksalad.collectmydata.insu.loan.dto.ListLoanTransactionRequest;
 import com.banksalad.collectmydata.insu.loan.dto.ListLoanTransactionResponse;
+import com.banksalad.collectmydata.insu.loan.dto.LoanBasic;
 import com.banksalad.collectmydata.insu.loan.dto.LoanTransaction;
 import com.banksalad.collectmydata.insu.loan.dto.LoanTransactionInterest;
 import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
@@ -420,10 +421,13 @@ public class ExecutionTest {
                 .rspCode("00000")
                 .rspMsg("success")
                 .searchTimestamp(1000L)
-                .loanStartDate("20210305")
-                .loanExpDate("20300506")
-                .repayMethod("03")
-                .insuNum("123456789")
+                .loanBasic(LoanBasic.builder()
+                    .loanStartDate("20210305")
+                    .loanExpDate("20300506")
+                    .repayMethod("03")
+                    .insuNum("123456789")
+                    .build()
+                )
                 .build()
         );
   }

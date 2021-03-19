@@ -77,7 +77,6 @@ class LoanTransactionServiceTest {
     loanSummaryRepository.deleteAll();
   }
 
-
   @Test
   @DisplayName("6.5.11 Data Provider API Response : DB 에 없는 거래내역 01, DB 데이터와 동일한 거래내역 02")
   void givenLoanTransactions_whenListLoanTransactions_ThenInsertLonTransactionAndInterest() {

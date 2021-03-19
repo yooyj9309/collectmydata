@@ -1,51 +1,65 @@
 package com.banksalad.collectmydata.insu.common.service;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
-import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
-import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
-import com.banksalad.collectmydata.common.util.ExecutionUtil;
-import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.db.entity.LoanSummaryEntity;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanSummaryRepository;
-import com.banksalad.collectmydata.insu.summary.dto.ListLoanSummariesRequest;
-import com.banksalad.collectmydata.insu.summary.dto.ListLoanSummariesResponse;
+import com.banksalad.collectmydata.insu.common.mapper.LoanSummaryMapper;
+import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class LoanSummaryServiceImpl implements LoanSummaryService {
 
-  private final CollectExecutor collectExecutor;
   private final LoanSummaryRepository loanSummaryRepository;
-  private static final String AUTHORIZATION = "Authorization";
-
+  private final LoanSummaryMapper loanSummaryMapper = Mappers.getMapper(LoanSummaryMapper.class);
 
   @Override
-  public void updateBasicSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String accountNum,
-      long searchTimestamp, String rspCode) {
+  public List<LoanSummary> listLoanSummaries(long banksaladUserId, String organizationId) {
+    return loanSummaryRepository.findAllByBanksaladUserIdAndOrganizationId(banksaladUserId, organizationId).stream()
+        .map(loanSummaryMapper::entityToDto)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public void updateBasicSearchTimestamp(long banksaladUserId, String organizationId, String accountNum,
+      long searchTimestamp) {
     LoanSummaryEntity entity = getLoanSummaryEntity(banksaladUserId, organizationId, accountNum);
 
     entity.setBasicSearchTimestamp(searchTimestamp);
+    loanSummaryRepository.save(entity);
+  }
+
+  @Override
+  public void updateBasicResponseCode(long banksaladUserId, String organizationId, String accountNum, String rspCode) {
+    LoanSummaryEntity entity = getLoanSummaryEntity(banksaladUserId, organizationId, accountNum);
+
     entity.setBasicResponseCode(rspCode);
     loanSummaryRepository.save(entity);
   }
 
   @Override
-  public void updateDetailSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String accountNum,
-      long searchTimestamp, String rspCode) {
+  public void updateDetailSearchTimestamp(long banksaladUserId, String organizationId, String accountNum,
+      long searchTimestamp) {
     LoanSummaryEntity entity = getLoanSummaryEntity(banksaladUserId, organizationId, accountNum);
 
     entity.setDetailSearchTimestamp(searchTimestamp);
+    loanSummaryRepository.save(entity);
+  }
+
+  @Override
+  public void updateDetailResponseCode(long banksaladUserId, String organizationId, String accountNum, String rspCode) {
+    LoanSummaryEntity entity = getLoanSummaryEntity(banksaladUserId, organizationId, accountNum);
+
     entity.setDetailResponseCode(rspCode);
     loanSummaryRepository.save(entity);
   }
@@ -59,37 +73,20 @@ public class LoanSummaryServiceImpl implements LoanSummaryService {
     loanSummaryRepository.save(entity);
   }
 
+  @Override
+  public void updateTransactionResponseCode(long banksaladUserId, String organizationId, String accountNum,
+      String rspCode) {
+    LoanSummaryEntity entity = getLoanSummaryEntity(banksaladUserId, organizationId, accountNum);
+
+    entity.setTransactionResponseCode(rspCode);
+    loanSummaryRepository.save(entity);
+  }
+
   private LoanSummaryEntity getLoanSummaryEntity(long banksaladUserId, String organizationId, String accountNum) {
     return loanSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndAccountNum(
         banksaladUserId,
         organizationId,
         accountNum
     ).orElseThrow(() -> new CollectRuntimeException("No data LoanSummaryEntity"));
-  }
-
-  private ListLoanSummariesResponse listLoanSummariesResponse(ExecutionContext executionContext,
-      String organizationCode, long searchTimestamp) {
-
-    Map<String, String> headers = Map.of(AUTHORIZATION, executionContext.getAccessToken());
-    ListLoanSummariesRequest request = ListLoanSummariesRequest.builder()
-        .orgCode(organizationCode)
-        .searchTimestamp(searchTimestamp)
-        .build();
-
-    ExecutionRequest<ListLoanSummariesRequest> executionRequest = ExecutionUtil
-        .assembleExecutionRequest(headers, request);
-
-    ExecutionResponse<ListLoanSummariesResponse> executionResponse = collectExecutor
-        .execute(executionContext, Executions.insurance_get_loan_summaries, executionRequest);
-
-    if (executionResponse == null || executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
-      throw new CollectRuntimeException("execution Statue is not OK");
-    }
-
-    if (executionResponse.getResponse() == null) {
-      throw new CollectRuntimeException("response is null");
-    }
-
-    return executionResponse.getResponse();
   }
 }

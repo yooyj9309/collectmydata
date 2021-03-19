@@ -62,4 +62,6 @@ public class LoanSummaryEntity extends BaseEntity {
   private String detailResponseCode;
 
   private LocalDateTime transactionSyncedAt;
+
+  private String transactionResponseCode;
 }

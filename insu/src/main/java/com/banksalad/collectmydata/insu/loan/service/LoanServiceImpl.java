@@ -1,5 +1,11 @@
 package com.banksalad.collectmydata.insu.loan.service;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Service;
+
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
@@ -13,15 +19,14 @@ import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.db.entity.LoanBasicEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.LoanDetailEntity;
-import com.banksalad.collectmydata.insu.common.mapper.LoanBasicHistoryMapper;
-import com.banksalad.collectmydata.insu.common.mapper.LoanBasicMapper;
-import com.banksalad.collectmydata.insu.common.mapper.LoanDetailHistoryMapper;
-import com.banksalad.collectmydata.insu.common.mapper.LoanDetailMapper;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanBasicHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanBasicRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanDetailHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanDetailRepository;
-import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
+import com.banksalad.collectmydata.insu.common.mapper.LoanBasicHistoryMapper;
+import com.banksalad.collectmydata.insu.common.mapper.LoanBasicMapper;
+import com.banksalad.collectmydata.insu.common.mapper.LoanDetailHistoryMapper;
+import com.banksalad.collectmydata.insu.common.mapper.LoanDetailMapper;
 import com.banksalad.collectmydata.insu.common.service.LoanSummaryService;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicRequest;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicResponse;
@@ -29,13 +34,7 @@ import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailRequest;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailResponse;
 import com.banksalad.collectmydata.insu.loan.dto.LoanBasic;
 import com.banksalad.collectmydata.insu.loan.dto.LoanDetail;
-
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Service;
-
+import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -164,14 +163,6 @@ public class LoanServiceImpl implements LoanService {
       loanBasicHistoryRepository.save(loanBasicHistoryMapper.toHistoryEntity(loanBasicEntity));
     }
 
-    loanSummaryService.updateBasicSearchTimestampAndResponseCode(
-        banksaladUserId,
-        organizationId,
-        accountNum,
-        loanBasicResponse.getSearchTimestamp(),
-        loanBasicResponse.getRspCode()
-    );
-
     // response에 추가시켜놓고 setter로 AccountNum를 추가하는게 더 나을지도..
     LoanBasic loanBasic = loanBasicMapper.entityToDto(loanBasicEntity);
 
@@ -204,13 +195,6 @@ public class LoanServiceImpl implements LoanService {
         loanDetailRepository.save(loanDetailEntity);
         loanDetailHistoryRepository.save(loanDetailHistoryMapper.toEntity(loanDetailEntity));
         // Update the loan_summary record
-        loanSummaryService.updateDetailSearchTimestampAndResponseCode(
-            banksaladUserId,
-            organizationId,
-            accountNum,
-            getLoanDetailResponse.getSearchTimestamp(),
-            getLoanDetailResponse.getRspCode()
-        );
       }
       return loanDetail;
     } catch (DataAccessException e) {
