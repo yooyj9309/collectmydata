@@ -5,10 +5,10 @@ import com.banksalad.collectmydata.common.enums.Industry;
 import com.banksalad.collectmydata.common.enums.MydataSector;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.common.util.NumberUtil;
-import com.banksalad.collectmydata.insu.summary.dto.ListLoanSummariesResponse;
-import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailResponse;
 import com.banksalad.collectmydata.insu.loan.dto.LoanDetail;
+import com.banksalad.collectmydata.insu.summary.dto.ListLoanSummariesResponse;
+import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,28 +33,32 @@ public class TestHelper {
 
   public static ExecutionContext getExecutionContext(int port) {
     return ExecutionContext.builder()
-        .organizationHost("http://" + ORGANIZATION_HOST + ":" + port)
-        .accessToken(ACCESS_TOKEN)
+        .syncRequestId(UUID.randomUUID().toString())
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
         .organizationCode(ORGANIZATION_CODE)
         .executionRequestId(UUID.randomUUID().toString())
+        .organizationCode(ORGANIZATION_CODE)
+        .organizationHost("http://" + ORGANIZATION_HOST + ":" + port)
+        .accessToken("test")
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
   }
 
   public static ExecutionContext getExecutionContext(int port, LocalDateTime now) {
     return ExecutionContext.builder()
-        .organizationHost("http://" + ORGANIZATION_HOST + ":" + port)
-        .accessToken(ACCESS_TOKEN)
+        .syncRequestId(UUID.randomUUID().toString())
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
         .organizationCode(ORGANIZATION_CODE)
         .executionRequestId(UUID.randomUUID().toString())
+        .organizationCode(ORGANIZATION_CODE)
+        .organizationHost("http://" + ORGANIZATION_HOST + ":" + port)
+        .accessToken("test")
         .syncStartedAt(now)
         .build();
   }
-  
+
   public static ListLoanSummariesResponse buildListLoanSummariesResponse() {
     return ListLoanSummariesResponse.builder()
         .rspCode("00000")
