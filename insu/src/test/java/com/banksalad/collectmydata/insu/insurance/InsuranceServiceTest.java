@@ -21,11 +21,11 @@ import com.banksalad.collectmydata.insu.common.db.repository.InsuranceContractRe
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceSummaryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuredHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuredRepository;
-import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceBasic;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceContract;
 import com.banksalad.collectmydata.insu.insurance.dto.Insured;
 import com.banksalad.collectmydata.insu.insurance.service.InsuranceService;
+import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterEach;
@@ -288,7 +288,6 @@ public class InsuranceServiceTest {
             equalToJson(readText("classpath:mock/request/IS02_001_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS02_001_single_page_00.json"))));
@@ -299,7 +298,6 @@ public class InsuranceServiceTest {
             equalToJson(readText("classpath:mock/request/IS03_001_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS03_001_single_page_00.json"))));

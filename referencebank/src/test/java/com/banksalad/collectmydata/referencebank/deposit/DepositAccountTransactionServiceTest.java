@@ -1,5 +1,12 @@
 package com.banksalad.collectmydata.referencebank.deposit;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
@@ -14,14 +21,6 @@ import com.banksalad.collectmydata.referencebank.common.service.AccountSummarySe
 import com.banksalad.collectmydata.referencebank.deposit.dto.DepositAccountTransaction;
 import com.banksalad.collectmydata.referencebank.deposit.dto.ListDepositAccountTransactionsRequest;
 import com.banksalad.collectmydata.referencebank.summary.dto.AccountSummary;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
 import com.github.tomakehurst.wiremock.WireMockServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
@@ -105,7 +104,8 @@ class DepositAccountTransactionServiceTest {
     setupServerDepositAccountTransactionsSinglePage();
     ExecutionContext executionContext = initExecutionContext();
 
-    Mockito.when(accountSummaryService.listSummariesConsented(BANKSALAD_USER_ID, ORGANIZATION_ID, BankAccountType.DEPOSIT))
+    Mockito
+        .when(accountSummaryService.listSummariesConsented(BANKSALAD_USER_ID, ORGANIZATION_ID, BankAccountType.DEPOSIT))
         .thenReturn(List.of(
             AccountSummary.builder()
                 .accountNum("1234567890")
@@ -118,7 +118,8 @@ class DepositAccountTransactionServiceTest {
         ));
 
     Mockito.when(accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(BANKSALAD_USER_ID, ORGANIZATION_ID, "1234567890", "01"))
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(BANKSALAD_USER_ID, ORGANIZATION_ID, "1234567890",
+            "01"))
         .thenReturn(Optional.of(
             AccountSummaryEntity.builder()
                 .banksaladUserId(BANKSALAD_USER_ID)
@@ -149,7 +150,6 @@ class DepositAccountTransactionServiceTest {
         .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA04_001_transaction_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA04_001_transaction_single_page_00.json"))));

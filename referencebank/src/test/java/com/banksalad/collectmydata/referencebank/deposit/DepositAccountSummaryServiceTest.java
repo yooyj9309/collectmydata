@@ -1,5 +1,11 @@
 package com.banksalad.collectmydata.referencebank.deposit;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.summary.SummaryRequestHelper;
@@ -10,13 +16,6 @@ import com.banksalad.collectmydata.referencebank.common.db.entity.AccountSummary
 import com.banksalad.collectmydata.referencebank.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.referencebank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.referencebank.summary.dto.ListAccountSummariesRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
 import com.github.tomakehurst.wiremock.WireMockServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
@@ -99,7 +98,8 @@ class DepositAccountSummaryServiceTest {
         executionContext, Executions.finance_bank_summaries, bankSummaryRequestHelper, bankSummaryResponseHelper);
 
     Optional<AccountSummaryEntity> accountSummaryEntity = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(BANKSALAD_USER_ID, ORGANIZATION_ID, "1234567890", "1");
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(BANKSALAD_USER_ID, ORGANIZATION_ID, "1234567890",
+            "1");
 
     Assertions.assertThat(accountSummaryEntity.isPresent()).isTrue();
   }
@@ -126,7 +126,6 @@ class DepositAccountSummaryServiceTest {
         .withQueryParam("limit", equalTo("500"))
         .willReturn(
             aResponse()
-                .withFixedDelay(FIXED_DELAY)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA01_001_summary_single_page_00.json"))));
@@ -139,7 +138,6 @@ class DepositAccountSummaryServiceTest {
         .withQueryParam("limit", equalTo("500"))
         .willReturn(
             aResponse()
-                .withFixedDelay(FIXED_DELAY)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA01_002_summary_multi_page_01.json"))));
@@ -151,7 +149,6 @@ class DepositAccountSummaryServiceTest {
         .withQueryParam("limit", equalTo("500"))
         .willReturn(
             aResponse()
-                .withFixedDelay(FIXED_DELAY)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA01_002_summary_multi_page_02.json"))));
@@ -163,7 +160,6 @@ class DepositAccountSummaryServiceTest {
         .withQueryParam("limit", equalTo("500"))
         .willReturn(
             aResponse()
-                .withFixedDelay(FIXED_DELAY)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA01_002_summary_multi_page_03.json"))));

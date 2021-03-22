@@ -167,7 +167,6 @@ public class AccountBasicServiceTest {
         .withRequestBody(equalToJson(readText("classpath:mock/request/CP02_001.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/CP02_001.json"))));

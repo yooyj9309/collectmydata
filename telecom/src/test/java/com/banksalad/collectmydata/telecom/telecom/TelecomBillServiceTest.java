@@ -140,7 +140,6 @@ public class TelecomBillServiceTest {
         .withQueryParam("org_code", equalTo(ORGANIZATION_CODE))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/TC02_001_single_page_00.json"))));

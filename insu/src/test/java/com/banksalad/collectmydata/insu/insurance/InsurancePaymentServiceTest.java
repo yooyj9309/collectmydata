@@ -12,8 +12,8 @@ import com.banksalad.collectmydata.insu.common.db.entity.InsurancePaymentEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceSummaryEntity;
 import com.banksalad.collectmydata.insu.common.db.repository.InsurancePaymentRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceSummaryRepository;
-import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.insurance.service.InsurancePaymentService;
+import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
@@ -28,8 +28,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static com.banksalad.collectmydata.common.enums.Industry.*;
-import static com.banksalad.collectmydata.common.enums.MydataSector.*;
+import static com.banksalad.collectmydata.common.enums.Industry.CAPITAL;
+import static com.banksalad.collectmydata.common.enums.MydataSector.FINANCE;
 import static com.banksalad.collectmydata.insu.common.util.FileUtil.readText;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -194,7 +194,6 @@ class InsurancePaymentServiceTest {
             equalToJson(readText("classpath:mock/request/IS05_001.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS05_001.json"))));

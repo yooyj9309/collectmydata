@@ -160,7 +160,6 @@ public class IrpAccountSummaryServiceImplTest {
         .withQueryParam("search_timestamp", equalTo("0"))
         .willReturn(
             aResponse()
-                .withFixedDelay(50)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/irp/response/IR01_001_single_page_00.json"))));

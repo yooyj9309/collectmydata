@@ -145,7 +145,6 @@ public class InsuranceTransactionServiceTest {
             equalToJson(readText("classpath:mock/request/IS06_001_multi_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS06_001_multi_page_00.json"))));
@@ -155,7 +154,6 @@ public class InsuranceTransactionServiceTest {
             equalToJson(readText("classpath:mock/request/IS06_001_multi_page_01.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS06_001_multi_page_01.json"))));

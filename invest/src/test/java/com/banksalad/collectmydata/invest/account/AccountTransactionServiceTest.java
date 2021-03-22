@@ -97,7 +97,6 @@ class AccountTransactionServiceTest {
         .withRequestBody(equalToJson(readText("classpath:mock/request/IV03_001_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(0)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IV03_001_single_page_00.json"))));
@@ -115,7 +114,7 @@ class AccountTransactionServiceTest {
             .accountStatus("201")
             .accountType("101")
             .basicSearchTimestamp(0L)
-            .transactionSyncedAt(LocalDateTime.of(2021, 1, 1, 0,  0, 0))
+            .transactionSyncedAt(LocalDateTime.of(2021, 1, 1, 0, 0, 0))
             .productSearchTimestamp(0L)
             .build()
     );

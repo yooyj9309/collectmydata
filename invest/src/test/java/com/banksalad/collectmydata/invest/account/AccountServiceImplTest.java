@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.common.organization.Organization;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
@@ -17,10 +16,7 @@ import com.banksalad.collectmydata.invest.account.dto.AccountBasic;
 import com.banksalad.collectmydata.invest.account.dto.GetAccountBasicRequest;
 import com.banksalad.collectmydata.invest.collect.Executions;
 import com.banksalad.collectmydata.invest.common.db.entity.AccountBasicEntity;
-import com.banksalad.collectmydata.invest.common.db.entity.AccountSummaryEntity;
-import com.banksalad.collectmydata.invest.common.db.entity.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.invest.common.db.repository.AccountBasicRepository;
-import com.banksalad.collectmydata.invest.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.invest.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.invest.summary.dto.AccountSummary;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -29,14 +25,12 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
 import org.mockito.Mockito;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static com.banksalad.collectmydata.invest.util.FileUtil.readText;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -123,7 +117,6 @@ class AccountServiceImplTest {
         .withRequestBody(equalToJson(readText("classpath:mock/request/IV02_001_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(0)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IV02_001_single_page_00.json"))));

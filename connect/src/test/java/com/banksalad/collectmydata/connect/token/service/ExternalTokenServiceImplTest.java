@@ -10,7 +10,6 @@ import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationE
 import com.banksalad.collectmydata.connect.common.db.entity.OrganizationClientEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationClientRepository;
-
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
 import com.banksalad.collectmydata.connect.token.dto.ExternalTokenResponse;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -23,10 +22,9 @@ import org.junit.jupiter.api.Test;
 
 import static com.banksalad.collectmydata.connect.util.FileUtil.readText;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -125,7 +123,6 @@ class ExternalTokenServiceImplTest {
     wiremock.stubFor(post(urlMatching("/oauth/2.0/token"))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock.api5/AU02_001.json"))));
@@ -136,7 +133,6 @@ class ExternalTokenServiceImplTest {
     wiremock.stubFor(get(urlMatching("/oauth/2.0/token"))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock.api5/AU02_001.json"))));
@@ -147,7 +143,6 @@ class ExternalTokenServiceImplTest {
     wiremock.stubFor(get(urlMatching("/oauth/2.0/revoke"))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock.api5/AU03_001.json"))));

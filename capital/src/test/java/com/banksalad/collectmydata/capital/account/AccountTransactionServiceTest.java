@@ -103,7 +103,6 @@ public class AccountTransactionServiceTest {
               equalToJson(readText("classpath:mock/request/" + fileName)))
           .willReturn(
               aResponse()
-                  .withFixedDelay(500)
                   .withStatus(HttpStatus.OK.value())
                   .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                   .withBody(readText("classpath:mock/response/" + fileName))));

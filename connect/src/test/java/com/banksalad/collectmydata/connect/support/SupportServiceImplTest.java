@@ -174,7 +174,6 @@ public class SupportServiceImplTest {
     wiremock.stubFor(post(urlMatching("/oauth/2.0/token"))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/api7/SU01_001.json"))));
@@ -184,7 +183,6 @@ public class SupportServiceImplTest {
         .withQueryParam("search_timestamp", equalTo("0"))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/api7/SU02_001.json"))));

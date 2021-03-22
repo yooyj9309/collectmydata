@@ -144,7 +144,6 @@ public class OperatingLeaseBasicServiceTest {
             equalToJson(readText("classpath:mock/request/CP05_001.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/CP05_001.json"))));

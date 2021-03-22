@@ -534,7 +534,6 @@ public class ExecutionTest {
         .withQueryParam("search_timestamp", equalTo("0"))
         .willReturn(
             aResponse()
-                .withFixedDelay(0)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS01_001_single_page_00.json"))));
@@ -545,7 +544,6 @@ public class ExecutionTest {
             equalToJson(readText("classpath:mock/request/IS02_001_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(0)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS02_001_single_page_00.json"))));
@@ -556,7 +554,6 @@ public class ExecutionTest {
             equalToJson(readText("classpath:mock/request/IS03_001_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(0)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS03_001_single_page_00.json"))));
@@ -567,7 +564,6 @@ public class ExecutionTest {
             equalToJson(readText("classpath:mock/request/IS04_001_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(0)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS04_001_single_page_00.json"))));
@@ -578,7 +574,6 @@ public class ExecutionTest {
             equalToJson(readText("classpath:mock/request/IS06_001_multi_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(0)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS06_001_multi_page_00.json"))));
@@ -589,7 +584,6 @@ public class ExecutionTest {
             equalToJson(readText("classpath:mock/request/IS07_001_multi_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(0)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS07_001_multi_page_00.json"))));
@@ -600,7 +594,6 @@ public class ExecutionTest {
             equalToJson(readText("classpath:mock/request/IS11_001_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(0)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS11_001_single_page_00.json"))));
@@ -611,7 +604,6 @@ public class ExecutionTest {
             equalToJson(readText("classpath:mock/request/IS12_001_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(0)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS12_001_single_page_00.json"))));
@@ -622,7 +614,6 @@ public class ExecutionTest {
             equalToJson(readText("classpath:mock/request/IS13_001_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(0)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS13_001_single_page_00.json"))));
@@ -633,7 +624,6 @@ public class ExecutionTest {
             equalToJson(readText("classpath:mock/request/IS14_001.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(0)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS14_001.json"))));

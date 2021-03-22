@@ -28,14 +28,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.banksalad.collectmydata.telecom.common.util.FileUtil.readText;
-import static com.banksalad.collectmydata.telecom.common.util.TestHelper.*;
+import static com.banksalad.collectmydata.telecom.common.util.TestHelper.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.telecom.common.util.TestHelper.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.telecom.common.util.TestHelper.getExecutionContext;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayName("통신 거래내역 서비스 테스트")
@@ -114,7 +115,6 @@ class TelecomTransactionServiceTest {
             equalToJson(readText("classpath:mock/request/TC03_001_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(0)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/TC03_001_single_page_00.json"))));

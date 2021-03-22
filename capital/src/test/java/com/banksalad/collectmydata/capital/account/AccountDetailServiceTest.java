@@ -1,5 +1,10 @@
 package com.banksalad.collectmydata.capital.account;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
 import com.banksalad.collectmydata.capital.account.dto.AccountDetail;
 import com.banksalad.collectmydata.capital.account.dto.GetAccountDetailRequest;
 import com.banksalad.collectmydata.capital.collect.Executions;
@@ -20,23 +25,14 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
 import com.banksalad.collectmydata.finance.api.summary.SummaryService;
-import com.banksalad.collectmydata.finance.common.constant.FinanceConstant;
 import com.banksalad.collectmydata.finance.common.db.repository.ApiLogRepository;
 import com.banksalad.collectmydata.finance.common.db.repository.UserSyncStatusRepository;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.http.HttpStatus;
-
 import com.github.tomakehurst.wiremock.WireMockServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -50,7 +46,6 @@ import java.util.UUID;
 import static com.banksalad.collectmydata.capital.common.TestHelper.ACCESS_TOKEN;
 import static com.banksalad.collectmydata.capital.common.TestHelper.ACCOUNT_NUM;
 import static com.banksalad.collectmydata.capital.common.TestHelper.BANKSALAD_USER_ID;
-import static com.banksalad.collectmydata.capital.common.TestHelper.FIXED_DELAY;
 import static com.banksalad.collectmydata.capital.common.TestHelper.ORGANIZATION_CODE;
 import static com.banksalad.collectmydata.capital.common.TestHelper.ORGANIZATION_HOST;
 import static com.banksalad.collectmydata.capital.common.TestHelper.ORGANIZATION_ID;
@@ -63,7 +58,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -232,7 +226,6 @@ public class AccountDetailServiceTest {
         .withQueryParam("search_timestamp", equalTo(String.valueOf(searchTimestamp)))
         .willReturn(
             aResponse()
-                .withFixedDelay(FIXED_DELAY)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/CP01_" + tc + "_single_page_" + seq + ".json"))));
@@ -244,7 +237,6 @@ public class AccountDetailServiceTest {
             equalToJson(readText("classpath:mock/request/CP03_" + tc + "_" + paging + "_page_" + seq + ".json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(FIXED_DELAY)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/CP03_" + tc + "_" + paging + "_page_" + seq + ".json"))));

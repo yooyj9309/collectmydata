@@ -212,7 +212,6 @@ mock server 설정 -> API request 실행 -> service response 및 DB 입력 검�
         .withQueryParam("limit", equalTo("500"))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/BA01_001_single_page_01.json"))));
@@ -225,7 +224,6 @@ mock server 설정 -> API request 실행 -> service response 및 DB 입력 검�
         .withQueryParam("next_page", equalTo("02"))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/BA01_001_single_page_02.json"))));

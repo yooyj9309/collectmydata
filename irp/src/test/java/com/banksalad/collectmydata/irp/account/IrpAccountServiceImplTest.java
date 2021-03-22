@@ -131,7 +131,6 @@ class IrpAccountServiceImplTest {
         .withRequestBody(equalToJson(readText("classpath:mock/irp/request/IR02_001_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/irp/response/IR02_001_single_page_00.json"))));
@@ -144,7 +143,6 @@ class IrpAccountServiceImplTest {
         .withRequestBody(equalToJson(readText("classpath:mock/irp/request/IR03_001_multi_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/irp/response/IR03_001_multi_page_00.json"))));
@@ -154,7 +152,6 @@ class IrpAccountServiceImplTest {
 //        .withRequestBody(equalToJson(readText("classpath:mock/irp/request/IR03_001_multi_page_01.json")))
 //        .willReturn(
 //            aResponse()
-//                .withFixedDelay(1000)
 //                .withStatus(HttpStatus.OK.value())
 //                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
 //                .withBody(readText("classpath:mock/irp/response/IR03_001_multi_page_01.json"))));

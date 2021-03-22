@@ -153,7 +153,6 @@ class IrpAccountTransactionServiceImplTest {
         .withRequestBody(equalToJson(readText("classpath:mock/irp/request/IR04_001_transaction_multi_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(0)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/irp/response/IR04_001_transaction_multi_page_00.json"))));
@@ -163,7 +162,6 @@ class IrpAccountTransactionServiceImplTest {
         .withRequestBody(equalToJson(readText("classpath:mock/irp/request/IR04_001_transaction_multi_page_01.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(0)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/irp/response/IR04_001_transaction_multi_page_01.json"))));

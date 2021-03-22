@@ -1,5 +1,10 @@
 package com.banksalad.collectmydata.telecom.telecom;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.summary.SummaryService;
@@ -21,12 +26,6 @@ import com.banksalad.collectmydata.telecom.summary.dto.ListTelecomSummariesReque
 import com.banksalad.collectmydata.telecom.summary.dto.TelecomSummary;
 import com.banksalad.collectmydata.telecom.telecom.dto.ListTelecomPaidTransactionsRequest;
 import com.banksalad.collectmydata.telecom.telecom.dto.TelecomPaidTransaction;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
 import com.github.tomakehurst.wiremock.WireMockServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
@@ -221,7 +220,6 @@ public class TelecomPaidTransactionServiceTest {
         .withQueryParam("search_timestamp", equalTo(String.valueOf(searchTimestamp)))
         .willReturn(
             aResponse()
-                .withFixedDelay(FIXED_DELAY)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/TC01_single_page_" + seq + ".json"))));
@@ -232,7 +230,6 @@ public class TelecomPaidTransactionServiceTest {
         .withRequestBody(equalToJson(readText("classpath:mock/request/TC04_" + paging + "_page_" + seq + ".json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(FIXED_DELAY)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/TC04_" + paging + "_page_" + seq + ".json"))));

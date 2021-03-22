@@ -151,7 +151,6 @@ public class AccountSummaryServiceImplTest {
         .withQueryParam("limit", equalTo("500"))
         .willReturn(
             aResponse()
-                .withFixedDelay(API_RESPONSE_FIXED_DELAY)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA01_001_single_page_00.json"))));
@@ -165,7 +164,6 @@ public class AccountSummaryServiceImplTest {
         .withQueryParam("limit", equalTo("500"))
         .willReturn(
             aResponse()
-                .withFixedDelay(API_RESPONSE_FIXED_DELAY)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA01_001_single_page_01.json"))));
@@ -178,7 +176,6 @@ public class AccountSummaryServiceImplTest {
         .withQueryParam("next_page", equalTo("02"))
         .willReturn(
             aResponse()
-                .withFixedDelay(API_RESPONSE_FIXED_DELAY)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA01_001_single_page_02.json"))));
@@ -191,7 +188,6 @@ public class AccountSummaryServiceImplTest {
         .withQueryParam("next_page", equalTo("03"))
         .willReturn(
             aResponse()
-                .withFixedDelay(API_RESPONSE_FIXED_DELAY)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA01_001_single_page_03.json"))));

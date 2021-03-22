@@ -1,10 +1,14 @@
 package com.banksalad.collectmydata.telecom.summary;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.summary.SummaryService;
-import com.banksalad.collectmydata.finance.common.db.repository.UserSyncStatusRepository;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.telecom.collect.Apis;
 import com.banksalad.collectmydata.telecom.collect.Executions;
@@ -14,18 +18,11 @@ import com.banksalad.collectmydata.telecom.common.mapper.TelecomSummaryMapper;
 import com.banksalad.collectmydata.telecom.common.service.TelecomSummaryService;
 import com.banksalad.collectmydata.telecom.summary.dto.ListTelecomSummariesRequest;
 import com.banksalad.collectmydata.telecom.summary.dto.TelecomSummary;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
 import com.github.tomakehurst.wiremock.WireMockServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -96,7 +93,7 @@ public class TelecomSummaryServiceTest {
   }
 
   @Test
-  public void test00_init(){
+  public void test00_init() {
     executionContext = initExecutionContext();
   }
 
@@ -220,7 +217,6 @@ public class TelecomSummaryServiceTest {
         .withQueryParam("search_timestamp", equalTo(String.valueOf(searchTimestamp)))
         .willReturn(
             aResponse()
-                .withFixedDelay(FIXED_DELAY)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/TC01_single_page_" + seq + ".json"))));

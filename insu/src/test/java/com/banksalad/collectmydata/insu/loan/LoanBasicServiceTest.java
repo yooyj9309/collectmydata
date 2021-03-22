@@ -135,7 +135,6 @@ public class LoanBasicServiceTest {
             equalToJson(readText("classpath:mock/request/IS12_001_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(0)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS12_001_single_page_00.json"))));

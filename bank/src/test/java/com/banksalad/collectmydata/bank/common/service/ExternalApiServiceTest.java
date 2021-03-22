@@ -5,12 +5,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 
-import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
-import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountBasicResponse;
 import com.banksalad.collectmydata.bank.invest.dto.GetInvestAccountDetailResponse;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountBasic;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountDetail;
+import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
+import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.organization.Organization;
 import com.banksalad.collectmydata.common.util.DateUtil;
@@ -179,7 +179,6 @@ class ExternalApiServiceTest {
         .withQueryParam("limit", equalTo("500"))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA01_001_single_page_01.json"))));
@@ -192,7 +191,6 @@ class ExternalApiServiceTest {
         .withQueryParam("next_page", equalTo("02"))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA01_001_single_page_02.json"))));
@@ -205,7 +203,6 @@ class ExternalApiServiceTest {
         .withQueryParam("next_page", equalTo("03"))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA01_001_single_page_03.json"))));
@@ -219,7 +216,6 @@ class ExternalApiServiceTest {
         )
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA05_001_single_page_00.json"))));
@@ -230,7 +226,6 @@ class ExternalApiServiceTest {
             equalToJson(readText("classpath:mock/bank/request/BA06_001_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA06_001_single_page_00.json"))));

@@ -95,7 +95,6 @@ public class LoanSummaryServiceTest {
         .withQueryParam("search_timestamp", equalTo("0"))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS11_001_single_page_00.json"))));

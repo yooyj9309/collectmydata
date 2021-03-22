@@ -1,5 +1,12 @@
 package com.banksalad.collectmydata.referencebank.deposit;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
@@ -13,14 +20,6 @@ import com.banksalad.collectmydata.referencebank.common.service.AccountSummarySe
 import com.banksalad.collectmydata.referencebank.deposit.dto.DepositAccountDetail;
 import com.banksalad.collectmydata.referencebank.deposit.dto.GetDepositAccountDetailRequest;
 import com.banksalad.collectmydata.referencebank.summary.dto.AccountSummary;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
 import com.github.tomakehurst.wiremock.WireMockServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
@@ -103,7 +102,8 @@ class DepositAccountDetailServiceTest {
     setupServerDepositAccountDetail();
     ExecutionContext executionContext = initExecutionContext();
 
-    Mockito.when(accountSummaryService.listSummariesConsented(BANKSALAD_USER_ID, ORGANIZATION_ID, BankAccountType.DEPOSIT))
+    Mockito
+        .when(accountSummaryService.listSummariesConsented(BANKSALAD_USER_ID, ORGANIZATION_ID, BankAccountType.DEPOSIT))
         .thenReturn(List.of(
             AccountSummary.builder()
                 .accountNum("1234567890")
@@ -116,7 +116,8 @@ class DepositAccountDetailServiceTest {
         ));
 
     List<List<DepositAccountDetail>> depositAccountDetails = depositAccountDetailApiService
-        .listAccountInfos(executionContext, Executions.finance_bank_deposit_account_detail, depositAccountDetailInfoRequestHelper,
+        .listAccountInfos(executionContext, Executions.finance_bank_deposit_account_detail,
+            depositAccountDetailInfoRequestHelper,
             depositAccountInfoDetailResponseHelper);
 
     Optional<DepositAccountDetailEntity> depositAccountDetailEntityKrw = depositAccountDetailRepository
@@ -138,7 +139,6 @@ class DepositAccountDetailServiceTest {
         .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA03_001_detail_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(FIXED_DELAY)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/bank/response/BA03_001_detail_00.json"))));
