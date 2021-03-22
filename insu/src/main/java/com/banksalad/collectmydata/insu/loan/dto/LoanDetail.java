@@ -19,8 +19,6 @@ import java.math.BigDecimal;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class LoanDetail {
 
-  private String accountNum;
-
   private String currencyCode;
   private BigDecimal balanceAmt;
   private BigDecimal loanPrincipal;

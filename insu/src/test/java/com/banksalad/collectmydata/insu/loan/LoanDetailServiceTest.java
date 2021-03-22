@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
@@ -11,23 +12,23 @@ import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHel
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
 import com.banksalad.collectmydata.insu.collect.Executions;
-import com.banksalad.collectmydata.insu.common.db.entity.LoanBasicEntity;
-import com.banksalad.collectmydata.insu.common.db.entity.LoanBasicHistoryEntity;
+import com.banksalad.collectmydata.insu.common.db.entity.LoanDetailEntity;
+import com.banksalad.collectmydata.insu.common.db.entity.LoanDetailHistoryEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.LoanSummaryEntity;
-import com.banksalad.collectmydata.insu.common.db.repository.LoanBasicHistoryRepository;
-import com.banksalad.collectmydata.insu.common.db.repository.LoanBasicRepository;
+import com.banksalad.collectmydata.insu.common.db.repository.LoanDetailHistoryRepository;
+import com.banksalad.collectmydata.insu.common.db.repository.LoanDetailRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanSummaryRepository;
 import com.banksalad.collectmydata.insu.common.util.TestHelper;
-import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicRequest;
-import com.banksalad.collectmydata.insu.loan.dto.LoanBasic;
+import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailRequest;
+import com.banksalad.collectmydata.insu.loan.dto.LoanDetail;
 import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
 import com.github.tomakehurst.wiremock.WireMockServer;
-import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -44,24 +45,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class LoanBasicServiceTest {
+public class LoanDetailServiceTest {
 
   private static WireMockServer wireMockServer;
 
   @Autowired
-  private AccountInfoService<LoanSummary, GetLoanBasicRequest, LoanBasic> accountInfoService;
+  private AccountInfoService<LoanSummary, GetLoanDetailRequest, LoanDetail> accountInfoService;
 
   @Autowired
-  private AccountInfoRequestHelper<GetLoanBasicRequest, LoanSummary> requestHelper;
+  private AccountInfoRequestHelper<GetLoanDetailRequest, LoanSummary> requestHelper;
 
   @Autowired
-  private AccountInfoResponseHelper<LoanSummary, LoanBasic> responseHelper;
+  private AccountInfoResponseHelper<LoanSummary, LoanDetail> responseHelper;
 
   @Autowired
-  private LoanBasicRepository loanBasicRepository;
+  private LoanDetailRepository loanDetailRepository;
 
   @Autowired
-  private LoanBasicHistoryRepository loanBasicHistoryRepository;
+  private LoanDetailHistoryRepository loanDetailHistoryRepository;
 
   @Autowired
   private LoanSummaryRepository loanSummaryRepository;
@@ -75,70 +76,70 @@ public class LoanBasicServiceTest {
 
   @Test
   @Transactional
-  @DisplayName("6.5.9 (1) 대출상품 추가정보 조회: 신규 케이스")
-  public void listLoanBasics_succeed_1_of_1() {
+  @DisplayName("6.5.10 (1) 대출상품 추가정보 조회: 신규 케이스")
+  public void listLoanDetails_succeed_1_of_1() {
     ExecutionContext executionContext = TestHelper.getExecutionContext(wireMockServer.port());
     saveLoanSummaryEntity();
 
-    List<LoanBasic> loanBasics = accountInfoService
-        .listAccountInfos(executionContext, Executions.insurance_get_loan_basic, requestHelper, responseHelper);
-    List<LoanBasicEntity> loanBasicEntities = loanBasicRepository.findAll();
-    List<LoanBasicHistoryEntity> loanBasicHistoryEntities = loanBasicHistoryRepository.findAll();
+    List<LoanDetail> loanDetails = accountInfoService.listAccountInfos(executionContext,
+        Executions.insurance_get_loan_detail, requestHelper, responseHelper);
+    List<LoanDetailEntity> loanDetailEntities = loanDetailRepository.findAll();
+    List<LoanDetailHistoryEntity> loanDetailHistoryEntities = loanDetailHistoryRepository.findAll();
 
-    assertEquals(1, loanBasics.size());
-    assertEquals(1, loanBasicEntities.size());
-    assertEquals(1, loanBasicHistoryEntities.size());
+    assertEquals(1, loanDetails.size());
+    assertEquals(1, loanDetailEntities.size());
+    assertEquals(1, loanDetailHistoryEntities.size());
 
-    assertThat(loanBasics.get(0)).usingRecursiveComparison()
+    assertThat(loanDetails.get(0)).usingRecursiveComparison()
         .isEqualTo(
-            LoanBasic.builder()
-                .loanStartDate("20210305")
-                .loanExpDate("20300506")
-                .repayMethod("03")
-                .insuNum("123456789")
+            LoanDetail.builder()
+                .currencyCode("KRW")
+                .balanceAmt(new BigDecimal("125.075"))
+                .loanPrincipal(new BigDecimal("10000.000"))
+                .nextRepayDate("20210325")
                 .build()
         );
 
-    assertThat(loanBasics.get(0)).usingRecursiveComparison()
+    assertThat(loanDetailEntities.get(0)).usingRecursiveComparison()
         .ignoringFields(ENTITY_IGNORE_FIELD)
         .isEqualTo(
-            LoanBasicEntity.builder()
+            LoanDetailEntity.builder()
                 .banksaladUserId(BANKSALAD_USER_ID)
                 .organizationId(ORGANIZATION_ID)
                 .accountNum(ACCOUNT_NUM)
-                .loanStartDate("20210305")
-                .loanExpDate("20300506")
-                .repayMethod("03")
-                .insuNum("123456789")
+                .currencyCode("KRW")
+                .balanceAmt(new BigDecimal("125.075"))
+                .loanPrincipal(new BigDecimal("10000.000"))
+                .nextRepayDate("20210325")
                 .build()
         );
 
-    assertThat(loanBasicHistoryEntities.get(0)).usingRecursiveComparison()
+    assertThat(loanDetailHistoryEntities.get(0)).usingRecursiveComparison()
         .ignoringFields(ENTITY_IGNORE_FIELD)
         .isEqualTo(
-            LoanBasicHistoryEntity.builder()
+            LoanDetailEntity.builder()
                 .banksaladUserId(BANKSALAD_USER_ID)
                 .organizationId(ORGANIZATION_ID)
                 .accountNum(ACCOUNT_NUM)
-                .loanStartDate("20210305")
-                .loanExpDate("20300506")
-                .repayMethod("03")
-                .insuNum("123456789")
+                .currencyCode("KRW")
+                .balanceAmt(new BigDecimal("125.075"))
+                .loanPrincipal(new BigDecimal("10000.000"))
+                .nextRepayDate("20210325")
                 .build()
         );
   }
 
   private static void setupMockServer() {
-    // 6.5.9 대출상품 기본정보 조회
-    wireMockServer.stubFor(post(urlMatching("/loans/basic"))
+    // 6.5.10 대출상품 추가정보 조회
+    wireMockServer.stubFor(post(urlMatching("/loans/detail"))
         .withRequestBody(
-            equalToJson(readText("classpath:mock/request/IS12_001_single_page_00.json")))
+            equalToJson(readText("classpath:mock/request/IS13_001_single_page_00.json")))
         .willReturn(
             aResponse()
                 .withFixedDelay(0)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/IS12_001_single_page_00.json"))));
+                .withBody(readText("classpath:mock/response/IS13_001_single_page_00.json"))));
   }
 
   private void saveLoanSummaryEntity() {
@@ -151,6 +152,7 @@ public class LoanBasicServiceTest {
         .prodName("좋은 보험대출")
         .accountType("3400")
         .accountStatus("01")
+        .detailSearchTimestamp(0L)
         .build());
   }
 

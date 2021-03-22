@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.insu.loan.dto;
 
+import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class GetLoanDetailResponse {
+public class GetLoanDetailResponse implements AccountResponse {
 
   private String rspCode;
   private String rspMsg;

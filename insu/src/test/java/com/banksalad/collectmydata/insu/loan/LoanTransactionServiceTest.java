@@ -178,7 +178,7 @@ class LoanTransactionServiceTest {
             equalToJson(readText("classpath:mock/request/IS14_001_single_page_00.json")))
         .willReturn(
             aResponse()
-                .withFixedDelay(1000)
+                .withFixedDelay(0)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
                 .withBody(readText("classpath:mock/response/IS14_001_single_page_00.json"))));
