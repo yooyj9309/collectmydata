@@ -6,17 +6,21 @@ import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.common.organization.Organization;
-import com.banksalad.collectmydata.common.util.DateUtil;
+import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
+import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
+import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
+import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.db.entity.InsurancePaymentEntity;
+import com.banksalad.collectmydata.insu.common.db.entity.InsurancePaymentHistoryEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceSummaryEntity;
+import com.banksalad.collectmydata.insu.common.db.repository.InsurancePaymentHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsurancePaymentRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceSummaryRepository;
-import com.banksalad.collectmydata.insu.insurance.service.InsurancePaymentService;
+import com.banksalad.collectmydata.insu.common.util.TestHelper;
+import com.banksalad.collectmydata.insu.insurance.dto.GetInsurancePaymentRequest;
+import com.banksalad.collectmydata.insu.insurance.dto.InsurancePayment;
 import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import com.github.tomakehurst.wiremock.WireMockServer;
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
@@ -26,29 +30,38 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.List;
 
-import static com.banksalad.collectmydata.common.enums.Industry.CAPITAL;
-import static com.banksalad.collectmydata.common.enums.MydataSector.FINANCE;
 import static com.banksalad.collectmydata.insu.common.util.FileUtil.readText;
+import static com.banksalad.collectmydata.insu.common.util.TestHelper.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.insu.common.util.TestHelper.ENTITY_IGNORE_FIELD;
+import static com.banksalad.collectmydata.insu.common.util.TestHelper.ORGANIZATION_ID;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static java.lang.Boolean.TRUE;
-import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Transactional
 @SpringBootTest
 class InsurancePaymentServiceTest {
 
   @Autowired
-  private InsurancePaymentService insurancePaymentService;
+  private AccountInfoService<InsuranceSummary, GetInsurancePaymentRequest, InsurancePayment> accountInfoService;
+
+  @Autowired
+  private AccountInfoRequestHelper<GetInsurancePaymentRequest, InsuranceSummary> requestHelper;
+
+  @Autowired
+  private AccountInfoResponseHelper<InsuranceSummary, InsurancePayment> responseHelper;
 
   @Autowired
   private InsurancePaymentRepository insurancePaymentRepository;
+
+  @Autowired
+  private InsurancePaymentHistoryRepository insurancePaymentHistoryRepository;
 
   @Autowired
   private InsuranceSummaryRepository insuranceSummaryRepository;
@@ -68,134 +81,103 @@ class InsurancePaymentServiceTest {
   }
 
   @Test
-  @DisplayName("6.5.5 insurance_payment table 에 row 가 있음 && Data Provider API Response 와 다름")
-  void givenExistingInsuPaymentDifferedWithApiResponse_whenListInsuPayments_ThenUpdateInsuPayment() {
+  @DisplayName("6.5.5 보험 납입정보 조회 서비스 테스트1. 성공케이스")
+  void insurancePayment_success() {
     // Given
-    ExecutionContext executionContext = getExecutionContext();
-    Organization organization = getOrganization();
-    InsuranceSummary insuranceSummary = getInsuranceSummary();
-
-    InsuranceSummaryEntity insuranceSummaryEntity = InsuranceSummaryEntity.builder()
-        .syncedAt(LocalDateTime.now())
-        .banksaladUserId(executionContext.getBanksaladUserId())
-        .organizationId(organization.getOrganizationId())
-        .insuNum(insuranceSummary.getInsuNum())
-        .consent(TRUE)
-        .insuType("05")
-        .prodName("묻지도 따지지도않고 암보험")
-        .insuStatus("02")
-        .basicSearchTimestamp(1000L)
-        .carSearchTimestamp(2000L)
-        .paymentSearchTimestamp(3000L)
-        .build();
-    insuranceSummaryRepository.save(insuranceSummaryEntity);
-
-    InsurancePaymentEntity insurancePaymentEntity = InsurancePaymentEntity.builder()
-        .syncedAt(LocalDateTime.now())
-        .banksaladUserId(executionContext.getBanksaladUserId())
-        .organizationId(organization.getOrganizationId())
-        .insuNum(insuranceSummary.getInsuNum())
-        .payDue("01")
-        .payCycle("1M")
-        .payCnt(1)
-        .payOrgCode("1234")
-        .payDate("03")
-        .payEndDate("20210320")
-        .payAmt(BigDecimal.valueOf(30000.999))
-        .currencyCode("KRW")
-        .isAutoPay(true)
-        .build();
-    insurancePaymentRepository.save(insurancePaymentEntity);
+    ExecutionContext executionContext = TestHelper.getExecutionContext(wireMockServer.port());
+    saveInsuranceSummary(0);
 
     // When
-    insurancePaymentService.listInsurancePayments(executionContext, organization, singletonList(insuranceSummary));
+    List<InsurancePayment> insurancePayments = accountInfoService
+        .listAccountInfos(executionContext, Executions.insurance_get_payment, requestHelper, responseHelper);
+    List<InsurancePaymentEntity> insurancePaymentEntities = insurancePaymentRepository.findAll();
+    List<InsurancePaymentHistoryEntity> insurancePaymentHistoryRepositories = insurancePaymentHistoryRepository
+        .findAll();
 
-    // Then
-    InsurancePaymentEntity actualInsurancePaymentEntity = insurancePaymentRepository
-        .findByBanksaladUserIdAndOrganizationIdAndInsuNum(executionContext.getBanksaladUserId(),
-            organization.getOrganizationId(), insuranceSummary.getInsuNum())
-        .orElseThrow(EntityNotFoundException::new);
-    assertEquals(BigDecimal.valueOf(30000.123), actualInsurancePaymentEntity.getPayAmt());
+    assertEquals(1, insurancePayments.size());
+    assertEquals(1, insurancePaymentEntities.size());
+    assertEquals(1, insurancePaymentHistoryRepositories.size());
+
+    //Then
+    assertThat(insurancePayments.get(0)).usingRecursiveComparison()
+        .isEqualTo(
+            InsurancePayment.builder()
+                .insuNum("1234567812345678")
+                .payDue("01")
+                .payCycle("1M")
+                .payCnt(1)
+                .payOrgCode("1234")
+                .payDate("03")
+                .payEndDate("20210320")
+                .payAmt(new BigDecimal("30000.123"))
+                .currencyCode("KRW")
+                .autoPay(true)
+                .build()
+        );
+
+    assertThat(insurancePaymentEntities.get(0)).usingRecursiveComparison()
+        .ignoringFields(ENTITY_IGNORE_FIELD)
+        .isEqualTo(
+            InsurancePaymentEntity.builder()
+                .banksaladUserId(BANKSALAD_USER_ID)
+                .organizationId(ORGANIZATION_ID)
+                .insuNum("1234567812345678")
+                .payDue("01")
+                .payCycle("1M")
+                .payCnt(1)
+                .payOrgCode("1234")
+                .payDate("03")
+                .payEndDate("20210320")
+                .payAmt(new BigDecimal("30000.123"))
+                .currencyCode("KRW")
+                .autoPay(true)
+                .build()
+        );
+
+    assertThat(insurancePaymentHistoryRepositories.get(0)).usingRecursiveComparison()
+        .ignoringFields(ENTITY_IGNORE_FIELD)
+        .isEqualTo(
+            InsurancePaymentHistoryEntity.builder()
+                .banksaladUserId(BANKSALAD_USER_ID)
+                .organizationId(ORGANIZATION_ID)
+                .insuNum("1234567812345678")
+                .payDue("01")
+                .payCycle("1M")
+                .payCnt(1)
+                .payOrgCode("1234")
+                .payDate("03")
+                .payEndDate("20210320")
+                .payAmt(new BigDecimal("30000.123"))
+                .currencyCode("KRW")
+                .autoPay(true)
+                .build()
+        );
   }
 
-  @Test
-  @DisplayName("6.7.2 account_payment table 에 row 가 없음")
-  void givenNotExistingInsuPayment_whenListInsuPayments_ThenSaveInsuPaymentAndUpdateSearchTimestamp() {
-    // Given
-    ExecutionContext executionContext = getExecutionContext();
-    Organization organization = getOrganization();
-    InsuranceSummary insuranceSummary = getInsuranceSummary();
-
-    InsuranceSummaryEntity insuranceSummaryEntity = InsuranceSummaryEntity.builder()
-        .syncedAt(LocalDateTime.now())
-        .banksaladUserId(executionContext.getBanksaladUserId())
-        .organizationId(organization.getOrganizationId())
-        .insuNum(insuranceSummary.getInsuNum())
-        .consent(TRUE)
-        .insuType("05")
-        .prodName("묻지도 따지지도않고 암보험")
-        .insuStatus("02")
-        .basicSearchTimestamp(1000L)
-        .carSearchTimestamp(2000L)
-        .paymentSearchTimestamp(3000L)
-        .build();
-    insuranceSummaryRepository.save(insuranceSummaryEntity);
-
-    // When
-    insurancePaymentService.listInsurancePayments(executionContext, organization, singletonList(insuranceSummary));
-
-    // Then
-    InsurancePaymentEntity actualInsurancePaymentEntity = insurancePaymentRepository
-        .findByBanksaladUserIdAndOrganizationIdAndInsuNum(executionContext.getBanksaladUserId(),
-            organization.getOrganizationId(), insuranceSummary.getInsuNum())
-        .orElseThrow(EntityNotFoundException::new);
-    assertNotNull(actualInsurancePaymentEntity);
-
-    InsuranceSummaryEntity actualInsuranceSummaryEntity = insuranceSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndInsuNum(executionContext.getBanksaladUserId(),
-            organization.getOrganizationId(), insuranceSummary.getInsuNum())
-        .orElseThrow(EntityExistsException::new);
-    assertEquals(1000, actualInsuranceSummaryEntity.getPaymentSearchTimestamp());
-  }
-
-  private InsuranceSummary getInsuranceSummary() {
-    return InsuranceSummary.builder()
-        .insuNum("123456789")
-        .consent(true)
-        .prodName("묻지도 따지지도않고 암보험")
-        .insuType("05")
-        .insuStatus("02")
-        .build();
-  }
-
-  private ExecutionContext getExecutionContext() {
-    return ExecutionContext.builder()
-        .organizationHost("http://localhost:" + wireMockServer.port())
-        .accessToken("abc.def.ghi")
-        .banksaladUserId(1L)
-        .organizationId("X-loan")
-        .executionRequestId(UUID.randomUUID().toString())
-        .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
-        .build();
-  }
-
-  private Organization getOrganization() {
-    return Organization.builder()
-        .sector(FINANCE)
-        .industry(CAPITAL)
-        .organizationId("X-loan")
-        .organizationCode("020")
-        .build();
+  public void saveInsuranceSummary(long searchTimestamp) {
+    insuranceSummaryRepository.save(
+        InsuranceSummaryEntity.builder()
+            .syncedAt(LocalDateTime.now())
+            .banksaladUserId(BANKSALAD_USER_ID)
+            .organizationId(ORGANIZATION_ID)
+            .insuNum("1234567812345678")
+            .consent(TRUE)
+            .insuType("05")
+            .prodName("묻지도 따지지도않고 암보험")
+            .insuStatus("02")
+            .paymentSearchTimestamp(searchTimestamp)
+            .build()
+    );
   }
 
   private static void setUpMockServer() {
     wireMockServer.stubFor(post(urlMatching("/insurances/payment.*"))
         .withRequestBody(
-            equalToJson(readText("classpath:mock/request/IS05_001.json")))
+            equalToJson(readText("classpath:mock/request/IS05_001_single_page_00.json")))
         .willReturn(
             aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/IS05_001.json"))));
+                .withBody(readText("classpath:mock/response/IS05_001_single_page_00.json"))));
   }
 }

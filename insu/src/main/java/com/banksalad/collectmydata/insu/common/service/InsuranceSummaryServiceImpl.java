@@ -43,10 +43,16 @@ public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
   }
 
   @Override
-  public void updatePaymentSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String insuNum,
-      long paymentSearchTimestamp, String rspCode) {
+  public void updatePaymentSearchTimestamp(long banksaladUserId, String organizationId, String insuNum,
+      long paymentSearchTimestamp) {
     InsuranceSummaryEntity entity = getInsuranceSummaryEntity(banksaladUserId, organizationId, insuNum);
     entity.setPaymentSearchTimestamp(paymentSearchTimestamp);
+    insuranceSummaryRepository.save(entity);
+  }
+
+  @Override
+  public void updatePaymentResponseCode(long banksaladUserId, String organizationId, String insuNum, String rspCode) {
+    InsuranceSummaryEntity entity = getInsuranceSummaryEntity(banksaladUserId, organizationId, insuNum);
     entity.setPaymentResponseCode(rspCode);
     insuranceSummaryRepository.save(entity);
   }

@@ -14,15 +14,15 @@ import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.db.entity.InsurancePaymentEntity;
-import com.banksalad.collectmydata.insu.common.mapper.InsurancePaymentHistoryMapper;
-import com.banksalad.collectmydata.insu.common.mapper.InsurancePaymentMapper;
 import com.banksalad.collectmydata.insu.common.db.repository.InsurancePaymentHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsurancePaymentRepository;
-import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
+import com.banksalad.collectmydata.insu.common.mapper.InsurancePaymentHistoryMapper;
+import com.banksalad.collectmydata.insu.common.mapper.InsurancePaymentMapper;
 import com.banksalad.collectmydata.insu.common.service.InsuranceSummaryService;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsurancePaymentRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsurancePaymentResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.InsurancePayment;
+import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
@@ -70,13 +70,6 @@ public class InsurancePaymentServiceImpl implements InsurancePaymentService {
             insuranceSummary, insurancePaymentResponse);
         insurancePayments.add(insurancePaymentMapper.toInsurancePaymentFrom(insurancePaymentEntity));
 
-        insuranceSummaryService.updatePaymentSearchTimestampAndResponseCode(
-            banksaladUserId,
-            organizationId,
-            insuranceSummary.getInsuNum(),
-            insurancePaymentResponse.getSearchTimestamp(),
-            insurancePaymentResponse.getRspCode()
-        );
       } catch (Exception e) {
         isExceptionOccurred = TRUE;
         log.error("Failed to save insurance payment", e);

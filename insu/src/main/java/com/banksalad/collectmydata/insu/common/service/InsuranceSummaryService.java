@@ -12,8 +12,10 @@ public interface InsuranceSummaryService {
   void updateBasicSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String insuNum,
       long basicSearchTimestamp, String rspCode);
 
-  void updatePaymentSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String insuNum,
-      long basicSearchTimestamp, String rspCode);
+  void updatePaymentSearchTimestamp(long banksaladUserId, String organizationId, String insuNum,
+      long paymentSearchTimestamp);
+
+  void updatePaymentResponseCode(long banksaladUserId, String organizationId, String insuNum, String rspCode);
 
   void updateTransactionSyncedAt(long banksaladUserId, String organizationId, InsuranceSummary insuranceSummary,
       LocalDateTime syncedAt);

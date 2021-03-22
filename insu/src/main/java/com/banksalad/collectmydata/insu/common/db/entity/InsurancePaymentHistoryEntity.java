@@ -14,7 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -64,6 +63,6 @@ public class InsurancePaymentHistoryEntity extends BaseEntity {
   @Column(nullable = false)
   private String currencyCode;
 
-  @Column(columnDefinition = "BIT", length = 1)
-  private Boolean isAutoPay;
+  @Column(name = "is_auto_pay", columnDefinition = "BIT", length = 1)
+  private Boolean autoPay;
 }
