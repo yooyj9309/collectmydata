@@ -1,6 +1,8 @@
 package com.banksalad.collectmydata.schedule.sync.service;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import com.banksalad.collectmydata.schedule.ScheduledSyncServiceImpl;
 import com.banksalad.collectmydata.schedule.common.db.entity.ScheduledSyncEntity;
@@ -8,6 +10,8 @@ import com.banksalad.collectmydata.schedule.common.db.repository.ScheduledSyncRe
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import java.util.Collections;
 
 import static java.util.Arrays.asList;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,6 +28,12 @@ class ScheduledSyncServiceImplTest {
   @Mock
   private ScheduledSyncMessageService scheduledSyncMessageService;
 
+  @Mock
+  Page<ScheduledSyncEntity> scheduledSyncEntityPage01;
+
+  @Mock
+  Page<ScheduledSyncEntity> scheduledSyncEntityPage02;
+
   @InjectMocks
   private ScheduledSyncServiceImpl scheduledSyncService;
 
@@ -32,8 +42,11 @@ class ScheduledSyncServiceImplTest {
     // Given
     ScheduledSyncEntity scheduledSyncEntity01 = getScheduledSyncEntityWith(1L);
     ScheduledSyncEntity scheduledSyncEntity02 = getScheduledSyncEntityWith(2L);
-    given(scheduledSyncRepository.findAll())
-        .willReturn(asList(scheduledSyncEntity01, scheduledSyncEntity02));
+
+    given(scheduledSyncRepository.findAll(PageRequest.of(0, 100))).willReturn(scheduledSyncEntityPage01);
+    given(scheduledSyncEntityPage01.getContent()).willReturn(asList(scheduledSyncEntity01, scheduledSyncEntity02));
+    given(scheduledSyncRepository.findAll(PageRequest.of(1, 100))).willReturn(scheduledSyncEntityPage02);
+    given(scheduledSyncEntityPage02.getContent()).willReturn(Collections.emptyList());
 
     // When
     scheduledSyncService.syncBasic();
