@@ -13,20 +13,7 @@ public interface LoanAccountBasicMapper {
 
   @Mappings(
       value = {
-          @Mapping(target = "issueDate", source = "issueDate", dateFormat = "yyyyMMdd"),
-          @Mapping(target = "expDate", source = "expDate", dateFormat = "yyyyMMdd"),
-          @Mapping(target = "repayDate", source = "repayDate", dateFormat = "yyyyMMdd"),
-          @Mapping(target = "lastOfferedRate", qualifiedByName = "BigDecimalScale3"),
-      }
-  )
-  LoanAccountBasic entityToDto(LoanAccountBasicEntity entity);
-
-  @Mappings(
-      value = {
-          @Mapping(target = "issueDate", source = "issueDate", dateFormat = "yyyyMMdd"),
-          @Mapping(target = "expDate", source = "expDate", dateFormat = "yyyyMMdd"),
-          @Mapping(target = "repayDate", source = "repayDate", dateFormat = "yyyyMMdd"),
-          @Mapping(target = "lastOfferedRate", qualifiedByName = "BigDecimalScale3"),
+          @Mapping(target = "lastOfferedRate", qualifiedByName = "BigDecimalScale3")
       }
   )
   LoanAccountBasicEntity dtoToEntity(LoanAccountBasic loanAccountBasic);

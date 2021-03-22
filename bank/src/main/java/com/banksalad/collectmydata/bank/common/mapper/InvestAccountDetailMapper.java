@@ -19,15 +19,5 @@ public interface InvestAccountDetailMapper {
           @Mapping(target = "fundNum", qualifiedByName = "BigDecimalScale3"),
       }
   )
-  InvestAccountDetail entityToDto(InvestAccountDetailEntity entity);
-
-  @Mappings(
-      value = {
-          @Mapping(target = "balanceAmt", qualifiedByName = "BigDecimalScale3"),
-          @Mapping(target = "evalAmt", qualifiedByName = "BigDecimalScale3"),
-          @Mapping(target = "invPrincipal", qualifiedByName = "BigDecimalScale3"),
-          @Mapping(target = "fundNum", qualifiedByName = "BigDecimalScale3"),
-      }
-  )
   InvestAccountDetailEntity dtoToEntity(InvestAccountDetail investAccountDetail);
 }

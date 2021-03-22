@@ -66,7 +66,7 @@ public class InvestAccountTransactionResponseHelper implements
               investAccountTransactionEntity.getSeqno(),
               investAccountTransactionEntity.getUniqueTransNo(),
               investAccountTransactionEntity.getTransactionYearMonth()
-          );
+          ).orElse(null);
 
       if (existingInvestAccountTransactionEntity != null) {
         investAccountTransactionEntity.setId(existingInvestAccountTransactionEntity.getId());

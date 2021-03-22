@@ -14,17 +14,7 @@ public interface LoanAccountDetailMapper {
   @Mappings(
       value = {
           @Mapping(target = "balanceAmt", qualifiedByName = "BigDecimalScale3"),
-          @Mapping(target = "loanPrincipal", qualifiedByName = "BigDecimalScale3"),
-          @Mapping(target = "nextRepayDate", source = "nextRepayDate", dateFormat = "yyyyMMdd"),
-      }
-  )
-  LoanAccountDetail entityToDto(LoanAccountDetailEntity entity);
-
-  @Mappings(
-      value = {
-          @Mapping(target = "balanceAmt", qualifiedByName = "BigDecimalScale3"),
-          @Mapping(target = "loanPrincipal", qualifiedByName = "BigDecimalScale3"),
-          @Mapping(target = "nextRepayDate", source = "nextRepayDate", dateFormat = "yyyyMMdd"),
+          @Mapping(target = "loanPrincipal", qualifiedByName = "BigDecimalScale3")
       }
   )
   LoanAccountDetailEntity dtoToEntity(LoanAccountDetail loanAccountDetail);

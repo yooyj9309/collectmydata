@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.bank.invest;
+package com.banksalad.collectmydata.bank.loan;
 
 import org.springframework.stereotype.Component;
 
@@ -6,7 +6,7 @@ import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.bank.common.enums.BankAccountType;
 import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
-import com.banksalad.collectmydata.bank.invest.dto.ListInvestAccountTransactionsRequest;
+import com.banksalad.collectmydata.bank.loan.dto.ListLoanAccountTransactionsRequest;
 import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
@@ -22,8 +22,8 @@ import static com.banksalad.collectmydata.finance.common.constant.FinanceConstan
 
 @Component
 @RequiredArgsConstructor
-public class InvestAccountTransactionRequestHelper implements
-    TransactionRequestHelper<AccountSummary, ListInvestAccountTransactionsRequest> {
+public class LoanAccountTransactionRequestHelper implements
+    TransactionRequestHelper<AccountSummary, ListLoanAccountTransactionsRequest> {
 
   private final AccountSummaryService accountSummaryService;
   private final AccountSummaryRepository accountSummaryRepository;
@@ -34,7 +34,7 @@ public class InvestAccountTransactionRequestHelper implements
     return accountSummaryService.listSummariesConsented(
         executionContext.getBanksaladUserId(),
         executionContext.getOrganizationId(),
-        BankAccountType.INVEST
+        BankAccountType.LOAN
     );
   }
 
@@ -45,16 +45,17 @@ public class InvestAccountTransactionRequestHelper implements
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
             executionContext.getBanksaladUserId(),
             executionContext.getOrganizationId(),
-            accountSummary.getAccountNum(), accountSummary.getSeqno())
+            accountSummary.getAccountNum(),
+            accountSummary.getSeqno())
         .map(AccountSummaryEntity::getTransactionSyncedAt)
         .orElse(executionContext.getSyncStartedAt().minusYears(DEFAULT_SEARCH_YEAR));
   }
 
   @Override
-  public ListInvestAccountTransactionsRequest make(ExecutionContext executionContext, AccountSummary accountSummary,
+  public ListLoanAccountTransactionsRequest make(ExecutionContext executionContext, AccountSummary accountSummary,
       LocalDate fromDate, LocalDate toDate, String nextPage) {
 
-    return ListInvestAccountTransactionsRequest.builder()
+    return ListLoanAccountTransactionsRequest.builder()
         .orgCode(executionContext.getOrganizationCode())
         .accountNum(accountSummary.getAccountNum())
         .seqno(accountSummary.getSeqno())
