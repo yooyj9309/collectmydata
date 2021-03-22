@@ -1,24 +1,35 @@
 package com.banksalad.collectmydata.capital;
 
+import org.springframework.stereotype.Service;
+
+import com.banksalad.collectmydata.capital.account.dto.AccountBasic;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetail;
+import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
+import com.banksalad.collectmydata.capital.account.dto.GetAccountBasicRequest;
 import com.banksalad.collectmydata.capital.account.dto.GetAccountDetailRequest;
+import com.banksalad.collectmydata.capital.account.dto.ListAccountTransactionsRequest;
 import com.banksalad.collectmydata.capital.collect.Executions;
 import com.banksalad.collectmydata.capital.common.dto.CapitalApiResponse;
 import com.banksalad.collectmydata.capital.common.dto.Organization;
 import com.banksalad.collectmydata.capital.grpc.client.CollectmydataConnectClientService;
+import com.banksalad.collectmydata.capital.oplease.dto.GetOperatingLeaseBasicRequest;
+import com.banksalad.collectmydata.capital.oplease.dto.ListOperatingLeaseTransactionsRequest;
+import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasic;
+import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
 import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.summary.dto.ListAccountSummariesRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
 import com.banksalad.collectmydata.finance.api.summary.SummaryRequestHelper;
 import com.banksalad.collectmydata.finance.api.summary.SummaryResponseHelper;
 import com.banksalad.collectmydata.finance.api.summary.SummaryService;
+import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
+import com.banksalad.collectmydata.finance.api.transaction.TransactionRequestHelper;
+import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
-
-import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,13 +44,30 @@ public class CapitalApiServiceImpl implements CapitalApiService {
 
 
   private final CollectmydataConnectClientService collectmydataConnectClientService;
-  private final SummaryService<ListAccountSummariesRequest, AccountSummary> summaryService;
-  private final SummaryRequestHelper<ListAccountSummariesRequest> summaryRequestHelper;
-  private final SummaryResponseHelper<AccountSummary> summaryResponseHelper;
+
+  private final SummaryService<ListAccountSummariesRequest, AccountSummary> accountSummaryService;
+  private final SummaryRequestHelper<ListAccountSummariesRequest> accountSummaryRequestHelper;
+  private final SummaryResponseHelper<AccountSummary> accountSummaryResponseHelper;
+
+  private final AccountInfoService<AccountSummary, GetAccountBasicRequest, AccountBasic> accountBasicService;
+  private final AccountInfoRequestHelper<GetAccountBasicRequest, AccountSummary> accountBasicRequestHelper;
+  private final AccountInfoResponseHelper<AccountSummary, AccountBasic> accountBasicResponseHelper;
 
   private final AccountInfoService<AccountSummary, GetAccountDetailRequest, AccountDetail> accountDetailService;
   private final AccountInfoRequestHelper<GetAccountDetailRequest, AccountSummary> accountDetailRequestHelper;
   private final AccountInfoResponseHelper<AccountSummary, AccountDetail> accountDetailResponseHelper;
+
+  private final TransactionApiService<AccountSummary, ListAccountTransactionsRequest, AccountTransaction> accountTransactionService;
+  private final TransactionRequestHelper<AccountSummary, ListAccountTransactionsRequest> accountTransactionRequestHelper;
+  private final TransactionResponseHelper<AccountSummary, AccountTransaction> accountTransactionResponseHelper;
+
+  private final AccountInfoService<AccountSummary, GetOperatingLeaseBasicRequest, OperatingLeaseBasic> operatingLeaseBasicService;
+  private final AccountInfoRequestHelper<GetOperatingLeaseBasicRequest, AccountSummary> operatingLeaseRequestHelper;
+  private final AccountInfoResponseHelper<AccountSummary, OperatingLeaseBasic> operatingLeaseResponseHelper;
+
+  private final TransactionApiService<AccountSummary, ListOperatingLeaseTransactionsRequest, OperatingLeaseTransaction> operatingLeaseTransactionApiService;
+  private final TransactionRequestHelper<AccountSummary, ListOperatingLeaseTransactionsRequest> operatingLeaseTransactionRequestHelper;
+  private final TransactionResponseHelper<AccountSummary, OperatingLeaseTransaction> operatingLeaseTransactionResponseHelper;
 
   /**
    * kafka consumer 에서 호출, 최초 API를 연동하는 서비스
@@ -49,53 +77,80 @@ public class CapitalApiServiceImpl implements CapitalApiService {
    * @param syncRequestId
    */
   @Override
-  public CapitalApiResponse requestApi(long banksaladUserId, String organizationId, String syncRequestId)
+  public CapitalApiResponse onDemandRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
       throws ResponseNotOkException {
     Organization organization = collectmydataConnectClientService.getOrganization(organizationId);
     String accessToken = "fixme"; //TODO 토큰 조회 로직 추가하여 적용
 
-    ExecutionContext executionContext = ExecutionContext.builder()
-        .organizationId(organizationId)
-        .banksaladUserId(banksaladUserId)
-        .accessToken(accessToken)
-        .organizationHost(organization.getDomain())
-        .syncStartedAt(LocalDateTime.now())
-        .build();
+    ExecutionContext executionContext = generateExecutionContext(banksaladUserId, organizationId, syncRequestId,
+        accessToken, organization);
 
-    summaryService.listAccountSummaries(
-        executionContext, Executions.capital_get_accounts, summaryRequestHelper, summaryResponseHelper);
+    accountSummaryService.listAccountSummaries(
+        executionContext, Executions.capital_get_accounts, accountSummaryRequestHelper, accountSummaryResponseHelper);
 
     AtomicReference<CapitalApiResponse> atomicReference = new AtomicReference<>();
     atomicReference.set(CapitalApiResponse.builder().build());
 
     CompletableFuture.allOf(
-//        CompletableFuture
-//            .supplyAsync(
-//                () -> accountService.listAccountBasics(executionContext, organization, otherAccountSummaries))
-//            .thenAccept(atomicReference.get()::setAccountBasics),
-//
+        CompletableFuture
+            .supplyAsync(
+                () -> accountBasicService
+                    .listAccountInfos(executionContext, Executions.capital_get_account_basic, accountBasicRequestHelper,
+                        accountBasicResponseHelper))
+            .thenAccept(atomicReference.get()::setAccountBasics),
+
         CompletableFuture
             .supplyAsync(
                 () -> accountDetailService.listAccountInfos(executionContext, Executions.capital_get_account_detail,
                     accountDetailRequestHelper, accountDetailResponseHelper))
-            .thenAccept(atomicReference.get()::setAccountDetails)
-//
-//        CompletableFuture
-//            .supplyAsync(
-//                () -> accountService.listAccountTransactions(executionContext, organization, otherAccountSummaries))
-//            .thenAccept(atomicReference.get()::setAccountTransactions),
-//
-//        CompletableFuture
-//            .supplyAsync(
-//                () -> operatingLeaseService.listOperatingLeases(executionContext, organization, leaseAccountSummaries))
-//            .thenAccept(atomicReference.get()::setOperatingLeases),
-//
-//        CompletableFuture
-//            .supplyAsync(() -> operatingLeaseService
-//                .listOperatingLeaseTransactions(executionContext, organization, leaseAccountSummaries))
-//            .thenAccept(atomicReference.get()::setOperatingLeasesTransactions)
+            .thenAccept(atomicReference.get()::setAccountDetails),
+
+        CompletableFuture
+            .supplyAsync(
+                () -> accountTransactionService
+                    .listTransactions(executionContext, Executions.capital_get_account_transactions,
+                        accountTransactionRequestHelper, accountTransactionResponseHelper))
+            .thenAccept(atomicReference.get()::setAccountTransactions),
+
+        CompletableFuture
+            .supplyAsync(
+                () -> operatingLeaseBasicService
+                    .listAccountInfos(executionContext, Executions.capital_get_operating_lease_basic,
+                        operatingLeaseRequestHelper, operatingLeaseResponseHelper))
+            .thenAccept(atomicReference.get()::setOperatingLeaseBasics),
+
+        CompletableFuture
+            .supplyAsync(() -> operatingLeaseTransactionApiService
+                .listTransactions(executionContext, Executions.capital_get_operating_lease_transactions,
+                    operatingLeaseTransactionRequestHelper, operatingLeaseTransactionResponseHelper))
+            .thenAccept(atomicReference.get()::setOperatingLeasesTransactions)
     ).join();
 
     return atomicReference.get();
+  }
+
+  @Override
+  public CapitalApiResponse scheduledBasicRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
+      throws ResponseNotOkException {
+    return null;
+  }
+
+  @Override
+  public CapitalApiResponse scheduledAdditionalRequestApi(long banksaladUserId, String organizationId,
+      String syncRequestId) throws ResponseNotOkException {
+    return null;
+  }
+
+  private ExecutionContext generateExecutionContext(long banksaladUserId, String organizationId, String syncRequestId,
+      String accessToken, Organization organization) {
+    return ExecutionContext.builder()
+        .banksaladUserId(banksaladUserId)
+        .executionRequestId(syncRequestId)
+        .organizationId(organizationId)
+        .organizationCode(organization.getOrganizationCode())
+        .organizationHost(organization.getDomain())
+        .accessToken(accessToken)
+        .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+        .build();
   }
 }

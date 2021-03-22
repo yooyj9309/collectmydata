@@ -5,6 +5,12 @@ import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkExcepti
 
 public interface CapitalApiService {
 
-  CapitalApiResponse requestApi(long banksaladUserId, String organizationId, String syncRequestId)
+  CapitalApiResponse onDemandRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
+      throws ResponseNotOkException;
+
+  CapitalApiResponse scheduledBasicRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
+      throws ResponseNotOkException;
+
+  CapitalApiResponse scheduledAdditionalRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
       throws ResponseNotOkException;
 }

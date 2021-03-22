@@ -7,6 +7,8 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import com.banksalad.collectmydata.capital.common.dto.CapitalApiResponse;
 import com.banksalad.collectmydata.capital.common.service.CapitalMessageService;
+import com.banksalad.collectmydata.common.enums.Industry;
+import com.banksalad.collectmydata.common.enums.Sector;
 import com.banksalad.collectmydata.common.exception.CollectException;
 import com.banksalad.collectmydata.common.logging.LoggingMdcUtil;
 import com.banksalad.collectmydata.common.message.ConsumerGroupId;
@@ -14,7 +16,6 @@ import com.banksalad.collectmydata.common.message.MessageTopic;
 import com.banksalad.collectmydata.common.message.PublishmentRequestedMessage;
 import com.banksalad.collectmydata.common.message.SyncRequestedMessage;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,9 @@ public class CapitalSyncRequestedConsumer {
     try {
       SyncRequestedMessage message = objectMapper.readValue(source, SyncRequestedMessage.class);
 
-      LoggingMdcUtil.set(message.getBanksaladUserId(), message.getOrganizationId(), message.getSyncRequestId());
+      LoggingMdcUtil.set(Sector.FINANCE.name(), Industry.CAPITAL.name(), message.getBanksaladUserId(),
+          message.getOrganizationId(), message.getSyncRequestId());
+
       log.info("[collectmydata-capital] consume SyncRequested syncRequestId: {} ", message.getSyncRequestId());
 
       CapitalApiResponse response = null;
@@ -45,33 +48,44 @@ public class CapitalSyncRequestedConsumer {
       /* 1. request api */
       switch (message.getSyncRequestType()) {
         case ONDEMAND:
-          response = capitalApiService
-              .requestApi(message.getBanksaladUserId(), message.getOrganizationId(), message.getSyncRequestId());
+          response = capitalApiService.onDemandRequestApi(message.getBanksaladUserId(), message.getOrganizationId(),
+              message.getSyncRequestId());
           break;
         case SCHEDULED_BASIC:
-          // TODO
+          response = capitalApiService
+              .scheduledBasicRequestApi(message.getBanksaladUserId(), message.getOrganizationId(),
+                  message.getSyncRequestId());
           break;
         case SCHEDULED_ADDITIONAL:
-          // TODO
+          response = capitalApiService
+              .scheduledAdditionalRequestApi(message.getBanksaladUserId(), message.getOrganizationId(),
+                  message.getSyncRequestId());
           break;
         default:
           log.error("Fail to specify RequestType: {}", message.getSyncRequestType());
           throw new CollectException("undefined syncResultType"); // TODO Exception 처리는 모니터링 작업과 같이 진행
       }
-
-
+      
       /* 2. produce publish */
       producePublishmentRequested(message.getBanksaladUserId(), message.getOrganizationId(), message.getSyncRequestId(),
           response);
 
     } catch (JsonProcessingException e) {
       log.error("Fail to deserialize syncRequestedMessage: {}", e.getMessage());
+
+    } catch (ResponseNotOkException e) {
+      log.error("Fail to sync: {}", e.getMessage());
+      // TODO publish result with error code and message
     } catch (CollectException e) {
       log.error("Fail to sync: {}", e.getMessage());
+      // TODO publish result with error code and message
+    } catch (Throwable t) {
+      log.error("Fail to sync: {}", t.getMessage());
       // TODO publish result with error code and message
     } finally {
       LoggingMdcUtil.clear();
     }
+
   }
 
   private void producePublishmentRequested(long banksaladUserId, String organizationId, String syncRequestId,
@@ -90,12 +104,12 @@ public class CapitalSyncRequestedConsumer {
           .addCallback(new ListenableFutureCallback<>() {
             @Override
             public void onSuccess(SendResult<String, String> result) {
-              log.info("[collectmydata-bank] produce PublishmentRequested syncRequestId: {} ", syncRequestId);
+              log.info("[collectmydata-capital] produce PublishmentRequested syncRequestId: {} ", syncRequestId);
             }
 
             @Override
             public void onFailure(Throwable t) {
-              log.error("[collectmydata-bank] fail to produce PublishmentRequested syncRequestId: {}, exception: {}",
+              log.error("[collectmydata-capital] fail to produce PublishmentRequested syncRequestId: {}, exception: {}",
                   syncRequestId, t.getMessage());
             }
           });
