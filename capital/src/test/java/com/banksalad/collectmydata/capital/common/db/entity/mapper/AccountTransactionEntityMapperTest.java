@@ -3,8 +3,8 @@ package com.banksalad.collectmydata.capital.common.db.entity.mapper;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEntity;
-import com.banksalad.collectmydata.capital.common.db.mapper.AccountTransactionInterestMapper;
-import com.banksalad.collectmydata.capital.common.db.mapper.AccountTransactionMapper;
+import com.banksalad.collectmydata.capital.common.mapper.AccountTransactionInterestMapper;
+import com.banksalad.collectmydata.capital.common.mapper.AccountTransactionMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;

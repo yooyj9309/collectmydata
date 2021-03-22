@@ -3,7 +3,7 @@ package com.banksalad.collectmydata.capital.oplease;
 import org.springframework.stereotype.Component;
 
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseEntity;
-import com.banksalad.collectmydata.capital.common.db.mapper.OperatingLeaseHistoryMapper;
+import com.banksalad.collectmydata.capital.common.mapper.OperatingLeaseHistoryMapper;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseHistoryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseRepository;
 import com.banksalad.collectmydata.capital.common.service.AccountSummaryService;

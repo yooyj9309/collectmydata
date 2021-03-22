@@ -3,7 +3,7 @@ package com.banksalad.collectmydata.capital.common.service;
 import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
-import com.banksalad.collectmydata.capital.common.db.mapper.AccountSummaryMapper;
+import com.banksalad.collectmydata.capital.common.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
 import lombok.RequiredArgsConstructor;

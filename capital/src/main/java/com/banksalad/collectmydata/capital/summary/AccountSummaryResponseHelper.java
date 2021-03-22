@@ -4,13 +4,12 @@ import org.springframework.stereotype.Component;
 
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.capital.common.db.entity.OrganizationUserEntity;
-import com.banksalad.collectmydata.capital.common.db.mapper.AccountSummaryMapper;
+import com.banksalad.collectmydata.capital.common.mapper.AccountSummaryMapper;
 import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.capital.common.db.repository.OrganizationUserRepository;
 import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.summary.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.summary.SummaryResponseHelper;
 import com.banksalad.collectmydata.finance.api.summary.dto.SummaryResponse;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +33,6 @@ public class AccountSummaryResponseHelper implements SummaryResponseHelper<Accou
   @Override
   public void saveOrganizationUser(ExecutionContext executionContext, SummaryResponse response) {
     ListAccountSummariesResponse listAccountSummariesResponse = (ListAccountSummariesResponse) response;
-    long banksaladUserId = executionContext.getBanksaladUserId();
-    String organizationId = executionContext.getOrganizationId();
 
     OrganizationUserEntity organizationUserEntity = organizationUserRepository
         .findByBanksaladUserIdAndOrganizationId(executionContext.getBanksaladUserId(),
