@@ -20,7 +20,6 @@ import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountBasicResponse;
 import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountDetailRequest;
 import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountDetailResponse;
 import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
-import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesRequest;
 import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
@@ -49,54 +48,7 @@ public class ExternalApiServiceImpl implements ExternalApiService {
   public ListAccountSummariesResponse listAccountSummaries(ExecutionContext executionContext, String orgCode,
       long searchTimestamp) {
 
-    executionContext.generateAndsUpdateExecutionRequestId();
-
-    ExecutionRequest<ListAccountSummariesRequest> pagingExecutionRequest = ExecutionRequest.<ListAccountSummariesRequest>builder()
-        .headers(Map.of(AUTHORIZATION, executionContext.getAccessToken()))
-        .request(
-            ListAccountSummariesRequest.builder()
-                .orgCode(orgCode)
-                .searchTimestamp(searchTimestamp)
-                .limit(PAGING_MAXIMUM_LIMIT)
-                .build())
-        .build();
-
-    ListAccountSummariesResponse listAccountSummariesResponse = ListAccountSummariesResponse.builder()
-        .build();
-
-    do {
-      ExecutionResponse<ListAccountSummariesResponse> pagingExecutionResponse = collectExecutor
-          .execute(executionContext, Executions.finance_bank_summaries, pagingExecutionRequest);
-
-      if (pagingExecutionResponse.getResponse() == null || HttpStatus.OK.value() != pagingExecutionResponse
-          .getHttpStatusCode()) {
-        throw new RuntimeException("List accounts status is not OK");
-      }
-
-      ListAccountSummariesResponse pagingListAccountSummariesResponse = pagingExecutionResponse.getResponse();
-
-      if (pagingListAccountSummariesResponse.getAccountCnt() != pagingListAccountSummariesResponse
-          .getAccountList().size()) {
-        log.error("accounts size not equal. cnt: {}, size: {}", pagingListAccountSummariesResponse.getAccountCnt(),
-            pagingListAccountSummariesResponse.getAccountList().size());
-      }
-
-      listAccountSummariesResponse.setRspCode(pagingListAccountSummariesResponse.getRspCode());
-      listAccountSummariesResponse.setRspMsg(pagingListAccountSummariesResponse.getRspMsg());
-      listAccountSummariesResponse.setSearchTimestamp(pagingListAccountSummariesResponse.getSearchTimestamp());
-      listAccountSummariesResponse.setRegDate(pagingListAccountSummariesResponse.getRegDate());
-      listAccountSummariesResponse.setNextPage(pagingListAccountSummariesResponse.getNextPage());
-      listAccountSummariesResponse
-          .setAccountCnt(
-              listAccountSummariesResponse.getAccountCnt() + pagingListAccountSummariesResponse.getAccountCnt());
-      listAccountSummariesResponse.getAccountList()
-          .addAll(pagingListAccountSummariesResponse.getAccountList());
-
-      pagingExecutionRequest.getRequest().setNextPage(pagingListAccountSummariesResponse.getNextPage());
-
-    } while (pagingExecutionRequest.getRequest().getNextPage() != null);
-
-    return listAccountSummariesResponse;
+    return ListAccountSummariesResponse.builder().build();
   }
 
   @Override

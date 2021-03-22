@@ -92,6 +92,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
   @Override
   public void updateBasicResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
       String responseCode) {
+
     accountSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
         banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno())
         .ifPresent(accountSummaryEntity -> {
@@ -103,6 +104,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
   @Override
   public void updateDetailResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
       String responseCode) {
+
     accountSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
         banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno())
         .ifPresent(accountSummaryEntity -> {
@@ -114,6 +116,7 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
   @Override
   public void updateTransactionResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
       String responseCode) {
+
     accountSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
         banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno())
         .ifPresent(accountSummaryEntity -> {

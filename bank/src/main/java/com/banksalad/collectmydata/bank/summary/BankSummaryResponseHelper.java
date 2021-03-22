@@ -26,7 +26,6 @@ public class BankSummaryResponseHelper implements SummaryResponseHelper<AccountS
 
   private final AccountSummaryMapper accountSummaryMapper = Mappers.getMapper(AccountSummaryMapper.class);
 
-  // TODO jayden-lee SummaryResponse 안에 T response 추가해서 ListAccountSummariesResponse로 변환이 자동으로 되도록 하면 어떨까
   @Override
   public Iterator<AccountSummary> iterator(SummaryResponse response) {
     return ((ListAccountSummariesResponse) response).getAccountList().iterator();
