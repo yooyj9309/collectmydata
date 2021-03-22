@@ -1,7 +1,5 @@
 package com.banksalad.collectmydata.capital.account;
 
-import org.springframework.stereotype.Component;
-
 import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
 import com.banksalad.collectmydata.capital.account.dto.ListAccountTransactionsResponse;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionEntity;
@@ -17,6 +15,9 @@ import com.banksalad.collectmydata.common.crypto.HashUtil;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
 import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
+
+import org.springframework.stereotype.Component;
+
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
@@ -87,10 +88,13 @@ public class AccountTransactionResponseHelper implements TransactionResponseHelp
         accountTransactionEntity.setId(existingAccountTransactionEntity.getId());
       }
 
-      // save
-      if (!ObjectComparator.isSame(accountTransactionEntity, existingAccountTransactionEntity, ENTITY_EXCLUDE_FIELD)) {
-        accountTransactionRepository.save(accountTransactionEntity);
+      // compare
+      if (ObjectComparator.isSame(accountTransactionEntity, existingAccountTransactionEntity, ENTITY_EXCLUDE_FIELD)) {
+        continue;
       }
+
+      // save
+      accountTransactionRepository.save(accountTransactionEntity);
 
       accountTransactionInterestRepository
           .deleteAllByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransactionYearMonthAndUniqueTransNo(
