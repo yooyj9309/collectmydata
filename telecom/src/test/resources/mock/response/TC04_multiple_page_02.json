@@ -1,0 +1,14 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "next_page": "",
+  "trans_cnt": 1,
+  "trans_list": [
+    {
+      "trans_date": "20210203",
+      "trans_amt": "100000000",
+      "merchant_name": "거래소E",
+      "trans_title": "비트코인F"
+    }
+  ]
+}

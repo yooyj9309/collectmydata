@@ -9,6 +9,10 @@ public interface TelecomSummaryService {
 
   List<TelecomSummary> listSummariesConsented(long banksaladUserId, String organizationId);
 
+  LocalDateTime getTransactionSyncedAt(long banksaladUserId, String organizationId, TelecomSummary telecomSummary);
+
+  LocalDateTime getPaidTransactionSyncedAt(long banksaladUserId, String organizationId, TelecomSummary telecomSummary);
+
   void updateTransactionSyncedAt(long banksaladUserId, String organizationId, TelecomSummary telecomSummary,
       LocalDateTime transactionSyncedAt);
 

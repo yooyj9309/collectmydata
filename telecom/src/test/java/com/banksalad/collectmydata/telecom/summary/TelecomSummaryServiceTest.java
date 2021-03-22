@@ -54,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 public class TelecomSummaryServiceTest {
 
-  private static final int FIXED_DELAY = 500;
+  private static final int FIXED_DELAY = 0;
   private static final String ACCESS_TOKEN = "xxx.yyy.zzz";
   private static final Long BANKSALAD_USER_ID = 1L;
   private static final String ORGANIZATION_ID = "x-telecom";
@@ -65,19 +65,18 @@ public class TelecomSummaryServiceTest {
   private final TelecomSummaryMapper telecomSummaryMapper = Mappers.getMapper(TelecomSummaryMapper.class);
 
   @Autowired
+  private UserSyncStatusService userSyncStatusService;
+  @Autowired
+  private TelecomSummaryService telecomSummaryService;
+
+  @Autowired
+  private SummaryService<ListTelecomSummariesRequest, TelecomSummary> summaryService;
+  @Autowired
   private TelecomSummaryRequestHelper telecomSummaryRequestHelper;
   @Autowired
   private TelecomSummaryResponseHelper telecomSummaryResponseHelper;
   @Autowired
-  private SummaryService<ListTelecomSummariesRequest, TelecomSummary> summaryService;
-  @Autowired
   private TelecomSummaryRepository telecomSummaryRepository;
-  @Autowired
-  private UserSyncStatusRepository userSyncStatusRepository;
-  @Autowired
-  private UserSyncStatusService userSyncStatusService;
-  @Autowired
-  private TelecomSummaryService telecomSummaryService;
 
   private static ExecutionContext executionContext;
 
@@ -224,6 +223,6 @@ public class TelecomSummaryServiceTest {
                 .withFixedDelay(FIXED_DELAY)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/TC01_001_summary_single_page_" + seq + ".json"))));
+                .withBody(readText("classpath:mock/response/TC01_single_page_" + seq + ".json"))));
   }
 }

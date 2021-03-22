@@ -13,6 +13,8 @@ public class OauthTokenServiceImpl implements OauthTokenService {
   @Override
   public OauthToken getOauthToken(long banksaladUserId, String OrganizationId) {
     // TODO: Grpc call to connect service
-    return null;
+    return OauthToken.builder()
+        .accessToken("xxx.yyy.zzz")
+        .build();
   }
 }

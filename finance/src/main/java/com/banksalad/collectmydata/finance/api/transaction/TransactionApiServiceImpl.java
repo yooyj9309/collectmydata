@@ -79,9 +79,12 @@ public class TransactionApiServiceImpl<Summary, TransactionRequest, Transaction>
 
         /* save transactions */
         List<Transaction> transactions = responseHelper.getTransactionsFromResponse(executionResponse.getResponse());
-        responseHelper.saveTransactions(executionContext, summary, transactions);
 
-        transactionsAll.addAll(transactions);
+        /* Skip saving when no transaction exist. */
+        if (transactions != null && transactions.size() != 0) {
+          responseHelper.saveTransactions(executionContext, summary, transactions);
+          transactionsAll.addAll(transactions);
+        }
 
         nextPage = executionResponse.getNextPage();
       } while (executionResponse.getNextPage() != null && executionResponse.getNextPage().length() > 0);

@@ -1,5 +1,7 @@
 package com.banksalad.collectmydata.telecom.common.service;
 
+import com.banksalad.collectmydata.common.util.DateUtil;
+import com.banksalad.collectmydata.telecom.common.db.entity.TelecomSummaryEntity;
 import com.banksalad.collectmydata.telecom.common.db.repository.TelecomSummaryRepository;
 import com.banksalad.collectmydata.telecom.common.mapper.TelecomSummaryMapper;
 import com.banksalad.collectmydata.telecom.summary.dto.TelecomSummary;
@@ -12,6 +14,8 @@ import org.mapstruct.factory.Mappers;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.DEFAULT_SEARCH_YEAR;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +31,30 @@ public class TelecomSummaryServiceImpl implements TelecomSummaryService {
         .stream()
         .map(telecomSummaryMapper::entityToDto)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public LocalDateTime getTransactionSyncedAt(long banksaladUserId, String organizationId,
+      TelecomSummary telecomSummary) {
+    return telecomSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndMgmtId(
+            banksaladUserId,
+            organizationId,
+            telecomSummary.getMgmtId())
+        .map(TelecomSummaryEntity::getTransactionSyncedAt)
+        .orElse(LocalDateTime.now(DateUtil.UTC_ZONE_ID).minusYears(DEFAULT_SEARCH_YEAR));
+  }
+
+  @Override
+  public LocalDateTime getPaidTransactionSyncedAt(long banksaladUserId, String organizationId,
+      TelecomSummary telecomSummary) {
+    return telecomSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndMgmtId(
+            banksaladUserId,
+            organizationId,
+            telecomSummary.getMgmtId())
+        .map(TelecomSummaryEntity::getPaidTransactionSyncedAt)
+        .orElse(LocalDateTime.now(DateUtil.UTC_ZONE_ID).minusYears(DEFAULT_SEARCH_YEAR));
   }
 
   @Override

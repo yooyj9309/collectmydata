@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.telecom.common.db.mapper;
+package com.banksalad.collectmydata.telecom.common.mapper;
 
 import com.banksalad.collectmydata.telecom.common.db.entity.BillEntity;
 import com.banksalad.collectmydata.telecom.common.db.entity.BillHistoryEntity;

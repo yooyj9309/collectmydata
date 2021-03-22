@@ -17,6 +17,10 @@ public class OrganizationServiceImpl implements OrganizationService {
 
   @Override
   public Organization getOrganizationById(String organizationId) {
-    return null;
+    // TODO: Grpc call to connect service
+    return Organization.builder()
+        .organizationCode("020")
+        .hostUrl("http://localhost:9090")
+        .build();
   }
 }

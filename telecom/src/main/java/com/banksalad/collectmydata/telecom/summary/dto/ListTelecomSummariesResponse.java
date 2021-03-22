@@ -28,6 +28,6 @@ public class ListTelecomSummariesResponse implements SummaryResponse {
   private long searchTimestamp;
 
   private int telecomCnt;
-  private List<TelecomSummary> telecomList;
 
+  private List<TelecomSummary> telecomList;
 }

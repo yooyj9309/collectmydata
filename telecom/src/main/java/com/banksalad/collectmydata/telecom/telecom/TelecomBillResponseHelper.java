@@ -7,7 +7,7 @@ import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
 import com.banksalad.collectmydata.telecom.common.db.entity.BillEntity;
-import com.banksalad.collectmydata.telecom.common.db.mapper.BillHistoryMapper;
+import com.banksalad.collectmydata.telecom.common.mapper.BillHistoryMapper;
 import com.banksalad.collectmydata.telecom.common.db.repository.BillHistoryRepository;
 import com.banksalad.collectmydata.telecom.common.db.repository.BillRepository;
 import com.banksalad.collectmydata.telecom.telecom.dto.ListTelecomBillsResponse;
