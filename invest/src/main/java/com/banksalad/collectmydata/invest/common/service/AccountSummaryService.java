@@ -16,4 +16,8 @@ public interface AccountSummaryService {
   void updateTransactionSyncedAt(long banksaladUserId, String organizationId, String accountNum, LocalDateTime transactionSyncedAt);
 
   void updateTransactionResponseCode(long banksaladUserId, String organizationId, String accountNum, String responseCode);
+
+  void updateProductSearchTimestamp(long banksaladUserId, String organizationId, String accountNum, long productSearchTimestamp);
+
+  void updateProductResponseCode(long banksaladUserId, String organizationId, String accountNum, String productResponseCode);
 }

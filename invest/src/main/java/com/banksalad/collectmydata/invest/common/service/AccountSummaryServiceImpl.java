@@ -73,4 +73,27 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
           accountSummaryRepository.save(accountSummaryEntity);
         });
   }
+
+  @Override
+  public void updateProductSearchTimestamp(long banksaladUserId, String organizationId, String accountNum,
+      long productSearchTimestamp) {
+
+    accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNum(banksaladUserId, organizationId, accountNum)
+        .ifPresent(accountSummaryEntity -> {
+          accountSummaryEntity.setProductSearchTimestamp(productSearchTimestamp);
+          accountSummaryRepository.save(accountSummaryEntity);
+        });
+  }
+
+  @Override
+  public void updateProductResponseCode(long banksaladUserId, String organizationId, String accountNum,
+      String productResponseCode) {
+
+    accountSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndAccountNum(banksaladUserId, organizationId, accountNum)
+        .ifPresent(accountSummaryEntity -> {
+          accountSummaryEntity.setProductResponseCode(productResponseCode);
+          accountSummaryRepository.save(accountSummaryEntity);
+        });
+  }
 }

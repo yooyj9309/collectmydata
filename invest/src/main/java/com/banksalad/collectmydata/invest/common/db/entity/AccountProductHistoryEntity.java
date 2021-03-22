@@ -40,8 +40,8 @@ public class AccountProductHistoryEntity extends BaseEntity {
   @Column(nullable = false, name = "account_num_encrypted")
   private String accountNum;
 
-  @Column(nullable = false, columnDefinition = "SMALLINT")
-  private Integer prodNo;
+  @Column(nullable = false)
+  private Short prodNo;
 
   @Column(nullable = false)
   private String prodCode;

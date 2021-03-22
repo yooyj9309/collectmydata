@@ -13,20 +13,10 @@ public interface AccountBasicMapper {
 
   @Mappings(
       value = {
-          @Mapping(target = "issueDate", dateFormat = "yyyyMMdd"),
           @Mapping(target = "withholdingsAmt", qualifiedByName = "BigDecimalScale3"),
           @Mapping(target = "creditLoanAmt", qualifiedByName = "BigDecimalScale3"),
           @Mapping(target = "mortgageAmt", qualifiedByName = "BigDecimalScale3"),
       }
   )
   AccountBasicEntity dtoToEntity(AccountBasic accountBasic);
-
-  @Mappings(
-      value = {
-          @Mapping(target = "withholdingsAmt", qualifiedByName = "BigDecimalScale3"),
-          @Mapping(target = "creditLoanAmt", qualifiedByName = "BigDecimalScale3"),
-          @Mapping(target = "mortgageAmt", qualifiedByName = "BigDecimalScale3"),
-      }
-  )
-  AccountBasic entityToDto(AccountBasicEntity accountBasicEntity);
 }

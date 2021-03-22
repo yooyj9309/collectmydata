@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,18 +18,22 @@ import java.math.BigDecimal;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class AccountTransaction {
+@EqualsAndHashCode
+public class AccountProduct {
 
+  private String prodType;
+  private String prodTypeDetail;
   private String prodCode;
-  private String transDtime;
   private String prodName;
-  private String transType;
-  private String transTypeDetail;
-  private Long transNum;
-  private BigDecimal baseAmt;
-  private BigDecimal transAmt;
-  private BigDecimal settleAmt;
-  private BigDecimal balanceAmt;
+  private BigDecimal purchaseAmt;
+  private Long holdingNum;
+  private Long availForSaleNum;
+  private BigDecimal evalAmt;
+  private String issueDate;
+  private BigDecimal paidInAmt;
+  private BigDecimal withdrawalAmt;
+  private String lastPaidInDate;
+  private BigDecimal rcvAmt;
   @Builder.Default
   private String currencyCode = "KRW";
 }

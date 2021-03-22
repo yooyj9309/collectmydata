@@ -35,4 +35,12 @@ public class Apis {
           .method(HttpMethod.POST.name())
           .build();
 
+  // 6.4.4 계좌 상품정보 조회 API
+  public static Api finance_invest_account_products =
+      Api.builder()
+          .id("IV04")
+          .name("6.4.4 계좌 상품정보 조회")
+          .endpoint("/accounts/products")
+          .method(HttpMethod.POST.name())
+          .build();
 }

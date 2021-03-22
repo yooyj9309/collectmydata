@@ -23,7 +23,7 @@ import static com.banksalad.collectmydata.finance.common.constant.FinanceConstan
 
 @Component
 @RequiredArgsConstructor
-public class AccountBasicResponseHelper implements AccountInfoResponseHelper<AccountSummary, AccountBasic> {
+public class AccountBasicInfoResponseHelper implements AccountInfoResponseHelper<AccountSummary, AccountBasic> {
 
   private final AccountSummaryService accountSummaryService;
   private final AccountBasicRepository accountBasicRepository;

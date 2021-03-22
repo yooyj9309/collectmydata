@@ -12,11 +12,11 @@ import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
-import com.banksalad.collectmydata.invest.account.dto.AccountBasic;
-import com.banksalad.collectmydata.invest.account.dto.GetAccountBasicRequest;
+import com.banksalad.collectmydata.invest.account.dto.AccountProduct;
+import com.banksalad.collectmydata.invest.account.dto.ListAccountProductsRequest;
 import com.banksalad.collectmydata.invest.collect.Executions;
-import com.banksalad.collectmydata.invest.common.db.entity.AccountBasicEntity;
-import com.banksalad.collectmydata.invest.common.db.repository.AccountBasicRepository;
+import com.banksalad.collectmydata.invest.common.db.entity.AccountProductEntity;
+import com.banksalad.collectmydata.invest.common.db.repository.AccountProductRepository;
 import com.banksalad.collectmydata.invest.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.invest.summary.dto.AccountSummary;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -29,7 +29,6 @@ import org.mockito.Mockito;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.banksalad.collectmydata.invest.util.FileUtil.readText;
@@ -38,19 +37,18 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-class AccountServiceImplTest {
+class AccountProductServiceTest {
 
   @Autowired
-  private AccountInfoService<AccountSummary, GetAccountBasicRequest, AccountBasic> accountBasicService;
+  private AccountInfoService<AccountSummary, ListAccountProductsRequest, List<AccountProduct>> accountProductService;
   @Autowired
-  private AccountInfoRequestHelper<GetAccountBasicRequest, AccountSummary> accountInfoRequestHelper;
+  private AccountInfoRequestHelper<ListAccountProductsRequest, AccountSummary> requestHelper;
   @Autowired
-  private AccountInfoResponseHelper<AccountSummary, AccountBasic> accountInfoResponseHelper;
+  private AccountInfoResponseHelper<AccountSummary, List<AccountProduct>> responseHelper;
   @Autowired
-  private AccountBasicRepository accountBasicRepository;
+  private AccountProductRepository accountProductRepository;
 
   @MockBean
   AccountSummaryService accountSummaryService;
@@ -61,7 +59,7 @@ class AccountServiceImplTest {
   private static final String ORGANIZATION_ID = "nh_securities";
   private static final String ORGANIZATION_HOST = "http://localhost";
   private static final String ACCESS_TOKEN = "accessToken";
-  private static final String ORGANIZATION_CODE = "020";
+  private static final String ORGANIZATION_CODE = "organizationCode";
 
   @BeforeAll
   static void setup() {
@@ -70,6 +68,7 @@ class AccountServiceImplTest {
     setupMockServer();
   }
 
+
   @AfterAll
   static void clean() {
     wireMockServer.shutdown();
@@ -77,8 +76,8 @@ class AccountServiceImplTest {
 
   @Test
   @Transactional
-  @DisplayName("6.4.2 계좌 기본정보 조회 성공 테스트")
-  void listInvestAccountBasicsTest() {
+  @DisplayName("6.4.4 계좌 상품정보 조회 성공 테스트")
+  void accountProductServiceTest() {
     Mockito.when(accountSummaryService.listSummariesConsented(BANKSALAD_USER_ID, ORGANIZATION_ID))
         .thenReturn(List.of(
             AccountSummary.builder()
@@ -101,24 +100,25 @@ class AccountServiceImplTest {
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
 
-    List<AccountBasic> accountBasics = accountBasicService
-        .listAccountInfos(executionContext, Executions.finance_invest_account_basic, accountInfoRequestHelper,
-            accountInfoResponseHelper);
+    List<List<AccountProduct>> accountProducts = accountProductService
+        .listAccountInfos(executionContext, Executions.finance_invest_account_products, requestHelper, responseHelper);
 
-    Optional<AccountBasicEntity> accountBasicEntity = accountBasicRepository
+    List<AccountProductEntity> accountProductEntities = accountProductRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNum(BANKSALAD_USER_ID, ORGANIZATION_ID, "1234567890");
 
-    assertEquals(1, accountBasics.size());
-    assertTrue(accountBasicEntity.isPresent());
+    assertEquals(1, accountProducts.size());
+    assertEquals(2, accountProducts.get(0).size());
+    assertEquals(2, accountProductEntities.size());
   }
 
   private static void setupMockServer() {
-    wireMockServer.stubFor(post(urlMatching("/accounts/basic"))
-        .withRequestBody(equalToJson(readText("classpath:mock/request/IV02_001_single_page_00.json")))
+    wireMockServer.stubFor(post(urlMatching("/accounts/products"))
+        .withRequestBody(equalToJson(readText("classpath:mock/request/IV04_001_single_page_00.json")))
         .willReturn(
             aResponse()
+                .withFixedDelay(0)
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/IV02_001_single_page_00.json"))));
+                .withBody(readText("classpath:mock/response/IV04_001_single_page_00.json"))));
   }
 }

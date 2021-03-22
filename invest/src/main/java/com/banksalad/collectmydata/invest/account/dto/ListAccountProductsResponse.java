@@ -1,5 +1,6 @@
-package com.banksalad.collectmydata.invest.summary.dto;
+package com.banksalad.collectmydata.invest.account.dto;
 
+import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -10,22 +11,26 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class AccountSummary {
+public class ListAccountProductsResponse implements AccountResponse {
 
-  private String accountNum;
+  private String rspCode;
 
-  @JsonProperty("is_consent")
-  private boolean consent;
+  private String rspMsg;
 
-  private String accountName;
+  private long searchTimestamp;
 
-  private String accountType;
+  private int prodCnt;
 
-  private String accountStatus;
+  @JsonProperty(value = "prod_list")
+  @Builder.Default
+  private List<AccountProduct> products = new ArrayList<>();
 }
