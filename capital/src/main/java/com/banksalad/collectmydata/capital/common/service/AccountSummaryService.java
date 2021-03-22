@@ -33,4 +33,10 @@ public interface AccountSummaryService {
 
   void updateOperatingLeaseBasicResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
       String responseCode);
+
+  void updateOperatingLeaseTransactionSyncedAt(long banksaladUserId, String organizationId,
+      AccountSummary accountSummary, LocalDateTime syncStartedAt);
+
+  void updateOperatingLeaseTransactionResponseCode(long banksaladUserId, String organizationId,
+      AccountSummary accountSummary, String responseCode);
 }

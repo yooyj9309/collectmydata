@@ -4,7 +4,7 @@ import com.banksalad.collectmydata.capital.account.dto.GetAccountDetailResponse;
 import com.banksalad.collectmydata.capital.account.dto.GetAccountBasicResponse;
 import com.banksalad.collectmydata.capital.account.dto.ListAccountTransactionsResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.GetOperatingLeaseBasicResponse;
-import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransactionResponse;
+import com.banksalad.collectmydata.capital.oplease.dto.ListOperatingLeaseTransactionsResponse;
 import com.banksalad.collectmydata.capital.summary.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 
@@ -49,6 +49,6 @@ public class Executions {
   public static final Execution capital_get_operating_lease_transactions =
       Execution.create()
           .exchange(Apis.capital_get_operating_lease_transactions)
-          .as(OperatingLeaseTransactionResponse.class)
+          .as(ListOperatingLeaseTransactionsResponse.class)
           .build();
 }

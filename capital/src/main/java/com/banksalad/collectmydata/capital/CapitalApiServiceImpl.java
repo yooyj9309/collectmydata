@@ -31,6 +31,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public class CapitalApiServiceImpl implements CapitalApiService {
 
+
+  private final CollectmydataConnectClientService collectmydataConnectClientService;
   private final SummaryService<ListAccountSummariesRequest, AccountSummary> summaryService;
   private final SummaryRequestHelper<ListAccountSummariesRequest> summaryRequestHelper;
   private final SummaryResponseHelper<AccountSummary> summaryResponseHelper;
@@ -38,8 +40,6 @@ public class CapitalApiServiceImpl implements CapitalApiService {
   private final AccountInfoService<AccountSummary, GetAccountDetailRequest, AccountDetail> accountDetailService;
   private final AccountInfoRequestHelper<GetAccountDetailRequest, AccountSummary> accountDetailRequestHelper;
   private final AccountInfoResponseHelper<AccountSummary, AccountDetail> accountDetailResponseHelper;
-
-  private final CollectmydataConnectClientService collectmydataConnectClientService;
 
   /**
    * kafka consumer 에서 호출, 최초 API를 연동하는 서비스

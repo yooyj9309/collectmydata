@@ -15,7 +15,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class OperatingLeaseTransactionRequest {
+public class ListOperatingLeaseTransactionsRequest {
 
   private String orgCode;
   private String accountNum;
@@ -24,8 +24,4 @@ public class OperatingLeaseTransactionRequest {
   private String toDate;
   private String nextPage;
   private int limit;
-
-  public void updateNextPage(String nextPage) {
-    this.nextPage = nextPage;
-  }
 }

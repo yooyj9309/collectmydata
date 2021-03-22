@@ -137,4 +137,28 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
           accountSummaryRepository.save(accountSummaryEntity);
         });
   }
+
+  @Override
+  public void updateOperatingLeaseTransactionSyncedAt(long banksaladUserId, String organizationId,
+      AccountSummary accountSummary, LocalDateTime syncStartedAt) {
+    accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno())
+        .ifPresent(accountSummaryEntity -> {
+          accountSummaryEntity.setOperatingLeaseTransactionSyncedAt(syncStartedAt);
+          accountSummaryRepository.save(accountSummaryEntity);
+        });
+  }
+
+  @Override
+  public void updateOperatingLeaseTransactionResponseCode(long banksaladUserId, String organizationId,
+      AccountSummary accountSummary, String responseCode) {
+    accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+            banksaladUserId, organizationId, accountSummary.getAccountNum(), accountSummary.getSeqno())
+        .ifPresent(accountSummaryEntity -> {
+          accountSummaryEntity.setOperatingLeaseTransactionResponseCode(responseCode);
+          accountSummaryRepository.save(accountSummaryEntity);
+        });
+  }
 }

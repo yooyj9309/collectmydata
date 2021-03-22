@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.capital.oplease.dto;
 
+import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -19,7 +20,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class OperatingLeaseTransactionResponse {
+public class ListOperatingLeaseTransactionsResponse implements TransactionResponse {
 
   private String rspCode;
   private String rspMsg;
@@ -27,14 +28,5 @@ public class OperatingLeaseTransactionResponse {
   private int transCnt;
 
   @JsonProperty(value = "trans_list")
-  @Builder.Default
-  private List<OperatingLeaseTransaction> operatingLeaseTransactions = new ArrayList<>();
-
-  public void updateFrom(OperatingLeaseTransactionResponse pageResponse) {
-    this.rspCode = pageResponse.getRspCode();
-    this.rspMsg = pageResponse.getRspMsg();
-    this.nextPage = pageResponse.getNextPage();
-    this.transCnt += pageResponse.getTransCnt();
-    this.operatingLeaseTransactions.addAll(pageResponse.getOperatingLeaseTransactions());
-  }
+  private List<OperatingLeaseTransaction> operatingLeaseTransactions;
 }
