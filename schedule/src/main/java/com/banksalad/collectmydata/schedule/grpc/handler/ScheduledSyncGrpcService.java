@@ -17,9 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 
-
-// TODO : - How to validate request parameters
-//        - RegisterScheduledSyncRequest, UnregisterScheduledSyncRequest
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -40,11 +37,10 @@ public class ScheduledSyncGrpcService extends CollectscheduleImplBase {
 
       scheduledSyncRepository.save(scheduledSyncEntity);
 
-      RegisterScheduledSyncResponse response = RegisterScheduledSyncResponse.newBuilder().build();
-      responseObserver.onNext(response);
+      responseObserver.onNext(RegisterScheduledSyncResponse.getDefaultInstance());
       responseObserver.onCompleted();
     } catch (Exception e) {
-      log.error("Register Scheduled Sync Error: {}", e.getMessage());
+      log.error("Register Scheduled Sync Error: {}", e.getMessage(), e);
       responseObserver.onError(e);
     }
   }
@@ -57,11 +53,10 @@ public class ScheduledSyncGrpcService extends CollectscheduleImplBase {
               Long.valueOf(request.getBanksaladUserId()), request.getSector(),
               request.getIndustry(), request.getOrganizationId());
 
-      UnregisterScheduledSyncResponse response = UnregisterScheduledSyncResponse.newBuilder().build();
-      responseObserver.onNext(response);
+      responseObserver.onNext(UnregisterScheduledSyncResponse.getDefaultInstance());
       responseObserver.onCompleted();
     } catch (Exception e) {
-      log.error("Unregister Scheduled Sync Error: {}", e.getMessage());
+      log.error("Unregister Scheduled Sync Error: {}", e.getMessage(), e);
       responseObserver.onError(e);
     }
   }
@@ -69,11 +64,10 @@ public class ScheduledSyncGrpcService extends CollectscheduleImplBase {
   @Override
   public void healthCheck(HealthCheckRequest request, StreamObserver<HealthCheckResponse> responseObserver) {
     try {
-      HealthCheckResponse response = HealthCheckResponse.newBuilder().build();
+      responseObserver.onNext(HealthCheckResponse.getDefaultInstance());
       responseObserver.onCompleted();
-      responseObserver.onNext(response);
     } catch (Exception e) {
-      log.error("Health Check Error: {}", e.getMessage());
+      log.error("Health Check Error: {}", e.getMessage(), e);
       responseObserver.onError(e);
     }
   }
