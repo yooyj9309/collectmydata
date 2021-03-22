@@ -46,10 +46,10 @@ public class LoanTransactionEntity extends BaseEntity {
   private String accountNum;
 
   @Column(nullable = false)
-  private String transDtime;
-
-  @Column(nullable = false)
   private String transNo;
+  
+  @Column(nullable = false)
+  private String transDtime;
 
   @Column(nullable = false)
   private String accountType;

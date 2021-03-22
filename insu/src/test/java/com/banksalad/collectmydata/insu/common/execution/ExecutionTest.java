@@ -455,16 +455,16 @@ public class ExecutionTest {
   }
 
   @Test
-  @DisplayName("6.5.10 대출상품 거래내역 조회")
+  @DisplayName("6.5.11 대출상품 거래내역 조회")
   public void getLoanTransactionsApiTest() {
     // Given
     ExecutionContext executionContext = getExecutionContext();
     ListLoanTransactionRequest request = ListLoanTransactionRequest.builder()
         .orgCode(ORGANIZATION_CODE)
         .accountNum("1234567812345678")
-        .fromDate("20210121")
-        .toDate("20210122")
-        .limit(2)
+        .fromDate("20210315")
+        .toDate("20210316")
+        .limit(500)
         .build();
 
     ExecutionRequest<ListLoanTransactionResponse> executionRequest = ExecutionUtil
@@ -621,12 +621,12 @@ public class ExecutionTest {
     // 6.5.11 대출상품 거래내역 조회
     wireMockServer.stubFor(post(urlMatching("/loans/transactions"))
         .withRequestBody(
-            equalToJson(readText("classpath:mock/request/IS14_001.json")))
+            equalToJson(readText("classpath:mock/request/IS14_001_single_page_00.json")))
         .willReturn(
             aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/IS14_001.json"))));
+                .withBody(readText("classpath:mock/response/IS14_001_single_page_00.json"))));
   }
 
   private ExecutionContext getExecutionContext() {
