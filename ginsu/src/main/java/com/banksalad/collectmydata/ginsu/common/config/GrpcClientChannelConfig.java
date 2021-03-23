@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.ginsu.config;
+package com.banksalad.collectmydata.ginsu.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
