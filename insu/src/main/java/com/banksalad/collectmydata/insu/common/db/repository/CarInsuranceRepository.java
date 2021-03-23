@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface CarInsuranceRepository extends JpaRepository<CarInsuranceEntity, Long> {
 
-  Optional<CarInsuranceEntity> findByBanksaladUserIdAndOrganizationIdAndInsuNumAndCarInsuranceNo(long banksaladUserId,
-      String organizationId, String insuNum, int carInsuranceNo);
+  Optional<CarInsuranceEntity> findByBanksaladUserIdAndOrganizationIdAndInsuNumAndCarNumber(long banksaladUserId,
+      String organizationId, String insuNum, String carNumber);
 }

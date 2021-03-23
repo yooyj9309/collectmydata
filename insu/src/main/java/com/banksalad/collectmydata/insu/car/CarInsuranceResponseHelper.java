@@ -42,7 +42,6 @@ public class CarInsuranceResponseHelper implements AccountInfoResponseHelper<Ins
   public void saveAccountAndHistory(ExecutionContext executionContext, InsuranceSummary insuranceSummary,
       List<CarInsurance> carInsurances) {
 
-    int carInsuranceNo = 1;
     for (CarInsurance carInsurance : carInsurances) {
       /* mapping car insurance dto to entity */
       CarInsuranceEntity carInsuranceEntity = carInsuranceMapper.dtoToEntity(carInsurance);
@@ -51,13 +50,12 @@ public class CarInsuranceResponseHelper implements AccountInfoResponseHelper<Ins
       carInsuranceEntity.setOrganizationId(executionContext.getOrganizationId());
       carInsuranceEntity.setSyncedAt(executionContext.getSyncStartedAt());
       carInsuranceEntity.setInsuNum(insuranceSummary.getInsuNum());
-      carInsuranceEntity.setCarInsuranceNo(carInsuranceNo);
 
       /* load existing car insurance entity */
       CarInsuranceEntity existingCarInsuranceEntity = carInsuranceRepository
-          .findByBanksaladUserIdAndOrganizationIdAndInsuNumAndCarInsuranceNo(
+          .findByBanksaladUserIdAndOrganizationIdAndInsuNumAndCarNumber(
               executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
-              insuranceSummary.getInsuNum(), carInsuranceNo)
+              insuranceSummary.getInsuNum(), carInsurance.getCarNumber())
           .orElse(null);
 
       /* copy PK for update */
@@ -71,9 +69,6 @@ public class CarInsuranceResponseHelper implements AccountInfoResponseHelper<Ins
         carInsuranceRepository.save(carInsuranceEntity);
         carInsuranceHistoryRepository.save(carInsuranceHistoryMapper.toHistoryEntity(carInsuranceEntity));
       }
-
-      /* increase car insurance no */
-      carInsuranceNo++;
     }
   }
 

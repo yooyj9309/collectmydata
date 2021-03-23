@@ -40,9 +40,6 @@ public class CarInsuranceHistoryEntity extends BaseEntity {
   @Column(nullable = false)
   private String insuNum;
 
-  @Column(nullable = false)
-  private Integer carInsuranceNo;
-
   @Column(nullable = false, name = "car_number_encrypted")
   private String carNumber;
 

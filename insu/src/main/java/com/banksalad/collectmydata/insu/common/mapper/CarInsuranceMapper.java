@@ -17,7 +17,6 @@ public interface CarInsuranceMapper {
           @Mapping(target = "banksaladUserId", ignore = true),
           @Mapping(target = "organizationId", ignore = true),
           @Mapping(target = "insuNum", ignore = true),
-          @Mapping(target = "carInsuranceNo", ignore = true),
           @Mapping(target = "transactionSyncedAt", ignore = true),
           @Mapping(target = "transactionResponseCode", ignore = true)
       }
