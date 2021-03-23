@@ -16,6 +16,12 @@ import com.banksalad.collectmydata.bank.invest.dto.InvestAccountBasic;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountDetail;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountTransaction;
 import com.banksalad.collectmydata.bank.invest.dto.ListInvestAccountTransactionsRequest;
+import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountBasicRequest;
+import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountDetailRequest;
+import com.banksalad.collectmydata.bank.loan.dto.ListLoanAccountTransactionsRequest;
+import com.banksalad.collectmydata.bank.loan.dto.LoanAccountBasic;
+import com.banksalad.collectmydata.bank.loan.dto.LoanAccountDetail;
+import com.banksalad.collectmydata.bank.loan.dto.LoanAccountTransaction;
 import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
@@ -78,12 +84,24 @@ public class BankApiServiceImpl implements BankApiService {
   private final TransactionResponseHelper<AccountSummary, InvestAccountTransaction> investAccountTransactionResponseHelper;
 
   // LOAN
+  private final AccountInfoService<AccountSummary, GetLoanAccountBasicRequest, LoanAccountBasic> loanAccountBasicApiService;
+  private final AccountInfoService<AccountSummary, GetLoanAccountDetailRequest, LoanAccountDetail> loanAccountDetailApiService;
+  private final TransactionApiService<AccountSummary, ListLoanAccountTransactionsRequest, LoanAccountTransaction> loanTransactionApiService;
+
+  private final AccountInfoRequestHelper<GetLoanAccountBasicRequest, AccountSummary> loanAccountBasicInfoRequestHelper;
+  private final AccountInfoResponseHelper<AccountSummary, LoanAccountBasic> loanAccountInfoBasicResponseHelper;
+
+  private final AccountInfoRequestHelper<GetLoanAccountDetailRequest, AccountSummary> loanAccountDetailInfoRequestHelper;
+  private final AccountInfoResponseHelper<AccountSummary, LoanAccountDetail> loanAccountDetailInfoResponseHelper;
+
+  private final TransactionRequestHelper<AccountSummary, ListLoanAccountTransactionsRequest> loanAccountTransactionRequestHelper;
+  private final TransactionResponseHelper<AccountSummary, LoanAccountTransaction> loanAccountTransactionResponseHelper;
 
   @Override
   public BankApiResponse requestApi(long banksaladUserId, String organizationId, String syncRequestId,
       SyncRequestType syncRequestType) throws ResponseNotOkException {
 
-    // TODO jayden-lee organizaion service 호출 해서 Organization 정보 가져 오기
+    // TODO jayden-lee organization service 호출 해서 Organization 정보 가져 오기
 
     ExecutionContext executionContext = ExecutionContext.builder()
         .banksaladUserId(banksaladUserId)
@@ -101,7 +119,20 @@ public class BankApiServiceImpl implements BankApiService {
     bankApiResponseAtomicReference.set(BankApiResponse.builder().build());
 
     CompletableFuture.allOf(
-        // TODO 각 계좌별 서비스 호출 하고 응답을 bankApiResponse 에 저장
+        // Deposit
+        CompletableFuture.supplyAsync(() -> depositAccountBasicApiService.listAccountInfos(
+            executionContext, Executions.finance_bank_deposit_account_basic, depositAccountBasicInfoRequestHelper,
+            depositAccountBasicInfoResponseHelper)),
+
+        CompletableFuture.supplyAsync(() -> depositAccountDetailApiService.listAccountInfos(
+            executionContext, Executions.finance_bank_deposit_account_detail, depositAccountDetailInfoRequestHelper,
+            depositAccountDetailInfoResponseHelper)),
+
+        CompletableFuture.supplyAsync(() -> depositTransactionApiService.listTransactions(executionContext,
+            Executions.finance_bank_deposit_account_transaction, depositAccountTransactionRequestHelper,
+            depositAccountTransactionResponseHelper)),
+
+        // Invest
         CompletableFuture.supplyAsync(() -> investAccountBasicApiService.listAccountInfos(
             executionContext, Executions.finance_bank_invest_account_basic, investAccountBasicInfoRequestHelper,
             investAccountInfoBasicResponseHelper)),
@@ -117,17 +148,21 @@ public class BankApiServiceImpl implements BankApiService {
             .thenAccept(investAccountTransactions -> bankApiResponseAtomicReference.get()
                 .setInvestAccountTransactions(investAccountTransactions)),
 
-        CompletableFuture.supplyAsync(() -> depositAccountBasicApiService.listAccountInfos(
-            executionContext, Executions.finance_bank_deposit_account_basic, depositAccountBasicInfoRequestHelper,
-            depositAccountBasicInfoResponseHelper)),
+        // Loan
+        CompletableFuture.supplyAsync(() -> loanAccountBasicApiService.listAccountInfos(
+            executionContext, Executions.finance_bank_loan_account_basic, loanAccountBasicInfoRequestHelper,
+            loanAccountInfoBasicResponseHelper)),
 
-        CompletableFuture.supplyAsync(() -> depositAccountDetailApiService.listAccountInfos(
-            executionContext, Executions.finance_bank_deposit_account_detail, depositAccountDetailInfoRequestHelper,
-            depositAccountDetailInfoResponseHelper)),
+        CompletableFuture.supplyAsync(() -> loanAccountDetailApiService.listAccountInfos(
+            executionContext, Executions.finance_bank_loan_account_detail, loanAccountDetailInfoRequestHelper,
+            loanAccountDetailInfoResponseHelper)),
 
-        CompletableFuture.supplyAsync(() -> depositTransactionApiService.listTransactions(executionContext,
-            Executions.finance_bank_deposit_account_transaction, depositAccountTransactionRequestHelper,
-            depositAccountTransactionResponseHelper))
+        CompletableFuture.supplyAsync(
+            () -> loanTransactionApiService.listTransactions(
+                executionContext, Executions.finance_bank_loan_account_transaction,
+                loanAccountTransactionRequestHelper, loanAccountTransactionResponseHelper))
+            .thenAccept(loanAccountTransactions -> bankApiResponseAtomicReference.get()
+                .setLoanAccountTransactions(loanAccountTransactions))
     ).join();
 
     return bankApiResponseAtomicReference.get();

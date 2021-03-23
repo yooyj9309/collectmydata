@@ -1,0 +1,49 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "rsp_msg",
+  "trans_cnt": 2,
+  "trans_list": [
+    {
+      "trans_dtime": "20210121103000",
+      "trans_no": "ewpk2",
+      "trans_type": "01",
+      "trans_amt": 1000.300,
+      "balance_amt": 18000.700,
+      "principal_amt": 20000.000,
+      "int_amt": 100.000,
+      "int_cnt": 2,
+      "int_list": [
+        {
+          "int_start_date": "20201201",
+          "int_end_date": "20201231",
+          "int_rate": 4.125,
+          "int_type": "02"
+        },
+        {
+          "int_start_date": "20201201",
+          "int_end_date": "20201231",
+          "int_rate": 3.025,
+          "int_type": "01"
+        }
+      ]
+    },
+    {
+      "trans_dtime": "20210121093000",
+      "trans_no": "weker",
+      "trans_type": "01",
+      "trans_amt": 1000.300,
+      "balance_amt": 18000.700,
+      "principal_amt": 20000.000,
+      "int_amt": 100.000,
+      "int_cnt": 1,
+      "int_list": [
+        {
+          "int_start_date": "20201201",
+          "int_end_date": "20201231",
+          "int_rate": 3.025,
+          "int_type": "99"
+        }
+      ]
+    }
+  ]
+}

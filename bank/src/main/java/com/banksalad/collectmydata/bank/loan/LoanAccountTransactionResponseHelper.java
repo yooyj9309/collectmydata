@@ -117,6 +117,13 @@ public class LoanAccountTransactionResponseHelper implements
         LoanAccountTransactionInterestEntity interestEntity = loanAccountTransactionInterestMapper
             .dtoToEntity(interest);
         interestEntity.setIntNo(intNo++);
+        interestEntity.setTransactionYearMonth(transactionYearMonth);
+        interestEntity.setSyncedAt(executionContext.getSyncStartedAt());
+        interestEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
+        interestEntity.setOrganizationId(executionContext.getOrganizationId());
+        interestEntity.setAccountNum(accountSummary.getAccountNum());
+        interestEntity.setUniqueTransNo(uniqueTransNo);
+
         loanAccountTransactionInterestRepository.save(interestEntity);
       }
       // finish loan account transaction interest entity
