@@ -22,6 +22,7 @@ import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractResponse;
+import com.banksalad.collectmydata.insu.insurance.dto.InsuranceBasic;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceContract;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceTransaction;
 import com.banksalad.collectmydata.insu.insurance.dto.Insured;
@@ -152,23 +153,27 @@ public class ExecutionTest {
                 .rspCode("00000")
                 .rspMsg("success")
                 .searchTimestamp(1000L)
-                .renewable(false)
-                .issueDate("20200101")
-                .expDate("99991231")
-                .faceAmt(BigDecimal.valueOf(53253.333))
-                .currencyCode("KRW")
-                .variable(true)
-                .universal(true)
-                .pensionRcvStartDate("20200101")
-                .pensionRcvCycle("3M")
-                .loanable(true)
-                .insuredCount(1)
-                .insuredList(List.of(
-                    Insured.builder()
-                        .insuredNo("01")
-                        .insuredName("뱅샐")
+                .insuranceBasic(
+                    InsuranceBasic.builder()
+                        .renewable(false)
+                        .issueDate("20200101")
+                        .expDate("99991231")
+                        .faceAmt(BigDecimal.valueOf(53253.333))
+                        .currencyCode("KRW")
+                        .variable(true)
+                        .universal(true)
+                        .pensionRcvStartDate("20200101")
+                        .pensionRcvCycle("3M")
+                        .loanable(true)
+                        .insuredCount(1)
+                        .insuredList(List.of(
+                            Insured.builder()
+                                .insuredNo("01")
+                                .insuredName("뱅샐")
+                                .build()
+                            )
+                        )
                         .build()
-                    )
                 )
                 .build()
         );

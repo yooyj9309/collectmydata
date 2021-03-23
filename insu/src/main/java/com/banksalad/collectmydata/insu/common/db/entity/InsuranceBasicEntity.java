@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -47,10 +46,10 @@ public class InsuranceBasicEntity extends BaseEntity {
   private Boolean renewable;
 
   @Column(nullable = false)
-  private LocalDate issueDate;
+  private String issueDate;
 
   @Column(nullable = false)
-  private LocalDate expDate;
+  private String expDate;
 
   @Column(nullable = false, precision = 18, scale = 3)
   private BigDecimal faceAmt;
@@ -63,7 +62,7 @@ public class InsuranceBasicEntity extends BaseEntity {
   @Column(nullable = false, name = "is_universal", columnDefinition = "BIT", length = 1)
   private Boolean universal;
 
-  private LocalDate pensionRcvStartDate;
+  private String pensionRcvStartDate;
 
   private String pensionRcvCycle;
 

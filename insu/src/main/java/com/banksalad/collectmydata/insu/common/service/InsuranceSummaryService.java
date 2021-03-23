@@ -9,8 +9,10 @@ public interface InsuranceSummaryService {
 
   List<InsuranceSummary> listSummariesConsented(long banksaladUserId, String organizationId);
 
-  void updateBasicSearchTimestampAndResponseCode(long banksaladUserId, String organizationId, String insuNum,
-      long basicSearchTimestamp, String rspCode);
+  void updateBasicSearchTimestamp(long banksaladUserId, String organizationId, String insuNum,
+      long basicSearchTimestamp);
+
+  void updateBasicResponseCode(long banksaladUserId, String organizationId, String insuNum, String rspCode);
 
   void updatePaymentSearchTimestamp(long banksaladUserId, String organizationId, String insuNum,
       long paymentSearchTimestamp);

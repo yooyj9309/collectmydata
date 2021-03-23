@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.insu.insurance.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
@@ -23,6 +24,7 @@ public class InsuranceBasic {
 
   private String insuNum;
 
+  @JsonProperty("is_renewable")
   private boolean renewable;
 
   private String issueDate;
@@ -33,14 +35,17 @@ public class InsuranceBasic {
 
   private String currencyCode;
 
+  @JsonProperty("is_variable")
   private boolean variable;
 
+  @JsonProperty("is_universal")
   private boolean universal;
 
   private String pensionRcvStartDate;
 
   private String pensionRcvCycle;
 
+  @JsonProperty("is_loanable")
   private boolean loanable;
 
   private int insuredCount;
