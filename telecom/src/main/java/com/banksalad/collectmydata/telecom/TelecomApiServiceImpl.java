@@ -17,11 +17,15 @@ import com.banksalad.collectmydata.telecom.summary.dto.ListTelecomSummariesReque
 import com.banksalad.collectmydata.telecom.summary.dto.TelecomSummary;
 import com.banksalad.collectmydata.telecom.telecom.TelecomPaidTransactionRequestHelper;
 import com.banksalad.collectmydata.telecom.telecom.TelecomPaidTransactionResponseHelper;
+import com.banksalad.collectmydata.telecom.telecom.TelecomTransactionRequestHelper;
+import com.banksalad.collectmydata.telecom.telecom.TelecomTransactionResponseHelper;
 import com.banksalad.collectmydata.telecom.telecom.dto.ListTelecomPaidTransactionsRequest;
+import com.banksalad.collectmydata.telecom.telecom.dto.ListTelecomTransactionsRequest;
 import com.banksalad.collectmydata.telecom.telecom.dto.TelecomPaidTransaction;
 
 import org.springframework.stereotype.Service;
 
+import com.banksalad.collectmydata.telecom.telecom.dto.TelecomTransaction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,35 +36,34 @@ import java.util.stream.Stream;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class TelecomApiServiceImple implements TelecomApiService {
+public class TelecomApiServiceImpl implements TelecomApiService {
 
   private final OrganizationService organizationService;
   private final OauthTokenService oauthTokenService;
 
   private final SummaryService<ListTelecomSummariesRequest, TelecomSummary> summaryService;
+  private final TransactionApiService<TelecomSummary, ListTelecomTransactionsRequest, TelecomTransaction> telecomTransactionService;
   private final TransactionApiService<TelecomSummary, ListTelecomPaidTransactionsRequest, TelecomPaidTransaction> telecomPaidTransactionService;
 
   private final TelecomSummaryRequestHelper telecomSummaryRequestHelper;
   private final TelecomSummaryResponseHelper telecomSummaryResponseHelper;
 
+  private final TelecomTransactionRequestHelper telecomTransactionRequestHelper;
+  private final TelecomTransactionResponseHelper telecomTransactionResponseHelper;
+
   private final TelecomPaidTransactionRequestHelper telecomPaidTransactionRequestHelper;
   private final TelecomPaidTransactionResponseHelper telecomPaidTransactionResponseHelper;
 
   @Override
-  public TelecomApiResponse requestApi(long banksaladUserId, String organizationId, String syncRequestId,
-      SyncRequestType syncRequestType) throws ResponseNotOkException {
+  public TelecomApiResponse onDemandRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
+      throws ResponseNotOkException {
 
     final OauthToken oauthToken = oauthTokenService.getOauthToken(banksaladUserId, organizationId);
     final Organization organization = organizationService.getOrganizationById(organizationId);
 
     // Make an execution context
-    ExecutionContext executionContext = ExecutionContext.builder()
-        .banksaladUserId(banksaladUserId)
-        .organizationId(organizationId)
-        .organizationCode(organization.getOrganizationCode())
-        .organizationHost(organization.getHostUrl())
-        .accessToken(oauthToken.getAccessToken())
-        .build();
+    ExecutionContext executionContext = generateExecutionContext(banksaladUserId, organizationId, oauthToken,
+        organization);
 
     // 6.9.1: 통신 계약 목록 조회
     summaryService
@@ -86,5 +89,59 @@ public class TelecomApiServiceImple implements TelecomApiService {
     Stream.of(telecomBillFuture, telecomTransactionFuture, telecomPaidTransactionFuture).map(CompletableFuture::join);
 
     return telecomApiResponseAtomicReference.get();
+  }
+
+  @Override
+  public TelecomApiResponse scheduledBasicRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
+      throws ResponseNotOkException {
+    return onDemandRequestApi(banksaladUserId, organizationId, syncRequestId);
+  }
+
+  @Override
+  public TelecomApiResponse scheduledAdditionalRequestApi(long banksaladUserId, String organizationId,
+      String syncRequestId) throws ResponseNotOkException {
+    final OauthToken oauthToken = oauthTokenService.getOauthToken(banksaladUserId, organizationId);
+    final Organization organization = organizationService.getOrganizationById(organizationId);
+
+    // Make an execution context
+    ExecutionContext executionContext = generateExecutionContext(banksaladUserId, organizationId, oauthToken,
+        organization);
+
+    summaryService
+        .listAccountSummaries(executionContext, Executions.finance_telecom_summaries, telecomSummaryRequestHelper,
+            telecomSummaryResponseHelper);
+
+    AtomicReference<TelecomApiResponse> atomicReference = new AtomicReference<>();
+    atomicReference.set(TelecomApiResponse.builder().build());
+
+    CompletableFuture.allOf(
+        CompletableFuture
+            .supplyAsync(
+                () -> telecomTransactionService
+                    .listTransactions(executionContext, Executions.finance_telecom_transactions,
+                        telecomTransactionRequestHelper, telecomTransactionResponseHelper))
+            .thenAccept(atomicReference.get()::setTelecomTransactions),
+
+        CompletableFuture
+            .supplyAsync(
+                () -> telecomPaidTransactionService
+                    .listTransactions(executionContext, Executions.finance_telecom_paid_transactions,
+                        telecomPaidTransactionRequestHelper,
+                        telecomPaidTransactionResponseHelper))
+            .thenAccept(atomicReference.get()::setTelecomPaidTransactions)
+    ).join();
+
+    return atomicReference.get();
+  }
+
+  private ExecutionContext generateExecutionContext(long banksaladUserId, String organizationId, OauthToken oauthToken,
+      Organization organization) {
+    return ExecutionContext.builder()
+        .banksaladUserId(banksaladUserId)
+        .organizationId(organizationId)
+        .organizationCode(organization.getOrganizationCode())
+        .organizationHost(organization.getHostUrl())
+        .accessToken(oauthToken.getAccessToken())
+        .build();
   }
 }
