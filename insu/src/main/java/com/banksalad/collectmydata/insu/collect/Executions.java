@@ -3,15 +3,15 @@ package com.banksalad.collectmydata.insu.collect;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.insu.car.dto.GetCarInsuranceResponse;
 import com.banksalad.collectmydata.insu.car.dto.ListCarInsuranceTransactionsResponse;
-import com.banksalad.collectmydata.insu.summary.dto.ListInsuranceSummariesResponse;
-import com.banksalad.collectmydata.insu.summary.dto.ListLoanSummariesResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicResponse;
-import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsurancePaymentResponse;
+import com.banksalad.collectmydata.insu.insurance.dto.ListInsuranceContractsResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.ListInsuranceTransactionsResponse;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicResponse;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailResponse;
 import com.banksalad.collectmydata.insu.loan.dto.ListLoanTransactionResponse;
+import com.banksalad.collectmydata.insu.summary.dto.ListInsuranceSummariesResponse;
+import com.banksalad.collectmydata.insu.summary.dto.ListLoanSummariesResponse;
 
 public class Executions {
 
@@ -33,7 +33,7 @@ public class Executions {
   public static final Execution insurance_get_contract =
       Execution.create()
           .exchange(Apis.insurance_get_contract)
-          .as(GetInsuranceContractResponse.class)
+          .as(ListInsuranceContractsResponse.class)
           .build();
 
   // 6.5.4 자동차보험 정보 조회

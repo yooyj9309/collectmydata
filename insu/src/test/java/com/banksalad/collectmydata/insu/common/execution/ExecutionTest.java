@@ -1,10 +1,5 @@
 package com.banksalad.collectmydata.insu.common.execution;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
@@ -20,12 +15,12 @@ import com.banksalad.collectmydata.insu.car.dto.ListCarInsuranceTransactionsResp
 import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicResponse;
-import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractRequest;
-import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceBasic;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceContract;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceTransaction;
 import com.banksalad.collectmydata.insu.insurance.dto.Insured;
+import com.banksalad.collectmydata.insu.insurance.dto.ListInsuranceContractsRequest;
+import com.banksalad.collectmydata.insu.insurance.dto.ListInsuranceContractsResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.ListInsuranceTransactionsRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.ListInsuranceTransactionsResponse;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicRequest;
@@ -43,6 +38,12 @@ import com.banksalad.collectmydata.insu.summary.dto.ListInsuranceSummariesRespon
 import com.banksalad.collectmydata.insu.summary.dto.ListLoanSummariesRequest;
 import com.banksalad.collectmydata.insu.summary.dto.ListLoanSummariesResponse;
 import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
@@ -184,22 +185,22 @@ public class ExecutionTest {
   public void getInsuranceContractApiTest() {
     ExecutionContext executionContext = getExecutionContext();
 
-    GetInsuranceContractRequest request = GetInsuranceContractRequest.builder()
+    ListInsuranceContractsRequest request = ListInsuranceContractsRequest.builder()
         .orgCode(ORGANIZATION_CODE)
         .insuNum("123456789")
         .insuredNo("01")
         .searchTimestamp(0L)
         .build();
 
-    ExecutionRequest<GetInsuranceContractRequest> executionRequest = ExecutionUtil
+    ExecutionRequest<ListInsuranceContractsRequest> executionRequest = ExecutionUtil
         .assembleExecutionRequest(HEADERS, request);
 
-    ExecutionResponse<GetInsuranceContractResponse> executionResponse = collectExecutor
+    ExecutionResponse<ListInsuranceContractsResponse> executionResponse = collectExecutor
         .execute(executionContext, Executions.insurance_get_contract, executionRequest);
 
     assertThat(executionResponse.getResponse()).usingRecursiveComparison()
         .isEqualTo(
-            GetInsuranceContractResponse.builder()
+            ListInsuranceContractsResponse.builder()
                 .rspCode("00000")
                 .rspMsg("success")
                 .searchTimestamp(1000L)

@@ -2,10 +2,12 @@ package com.banksalad.collectmydata.insu.common.mapper;
 
 import com.banksalad.collectmydata.insu.common.db.entity.InsurancePaymentEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.InsurancePaymentHistoryEntity;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface InsurancePaymentHistoryMapper {
 
   @Mapping(target = "id", ignore = true)

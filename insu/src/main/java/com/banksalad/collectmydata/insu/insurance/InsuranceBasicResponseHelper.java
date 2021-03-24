@@ -76,7 +76,7 @@ public class InsuranceBasicResponseHelper implements AccountInfoResponseHelper<I
       // 피보험자 목록 비교 및 저장.
       if (insuranceBasic.getInsuredList() != null) {
         for (Insured insured : insuranceBasic.getInsuredList()) {
-          InsuredEntity insuredEntity = insuredMapper.toEntity(insured);
+          InsuredEntity insuredEntity = insuredMapper.dtoToEntity(insured);
           insuredEntity.setSyncedAt(executionContext.getSyncStartedAt());
           insuredEntity.setBanksaladUserId(banksaladUserId);
           insuredEntity.setOrganizationId(organizationId);

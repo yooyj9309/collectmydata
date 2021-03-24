@@ -2,12 +2,14 @@ package com.banksalad.collectmydata.insu.common.mapper;
 
 import com.banksalad.collectmydata.insu.common.db.entity.LoanSummaryEntity;
 import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface LoanSummaryMapper {
 
   @Mappings(

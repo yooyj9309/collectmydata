@@ -159,6 +159,7 @@ public class InsuranceBasicServiceTest {
                 .insuNum("123456789")
                 .insuredName("뱅샐")
                 .insuredNo("01")
+                .contractSearchTimestamp(0L)
                 .build()
         );
 

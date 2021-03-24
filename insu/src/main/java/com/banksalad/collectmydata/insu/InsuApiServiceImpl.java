@@ -1,7 +1,5 @@
 package com.banksalad.collectmydata.insu;
 
-import org.springframework.stereotype.Service;
-
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
@@ -23,12 +21,13 @@ import com.banksalad.collectmydata.insu.collect.Executions;
 import com.banksalad.collectmydata.insu.common.dto.InsuApiResponse;
 import com.banksalad.collectmydata.insu.common.grpc.CollectmydataConnectClientService;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicRequest;
-import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceContractRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsurancePaymentRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceBasic;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceContract;
 import com.banksalad.collectmydata.insu.insurance.dto.InsurancePayment;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceTransaction;
+import com.banksalad.collectmydata.insu.insurance.dto.Insured;
+import com.banksalad.collectmydata.insu.insurance.dto.ListInsuranceContractsRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.ListInsuranceTransactionsRequest;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicRequest;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanDetailRequest;
@@ -40,13 +39,18 @@ import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.summary.dto.ListInsuranceSummariesRequest;
 import com.banksalad.collectmydata.insu.summary.dto.ListLoanSummariesRequest;
 import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
+
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -67,9 +71,9 @@ public class InsuApiServiceImpl implements InsuApiService {
   private final AccountInfoRequestHelper<GetInsuranceBasicRequest, InsuranceSummary> insuranceBasicRequestHelper;
   private final AccountInfoResponseHelper<InsuranceSummary, InsuranceBasic> insuranceBasicResponseHelper;
 
-  private final AccountInfoService<InsuranceSummary, GetInsuranceContractRequest, InsuranceContract> insuranceContractService;
-  private final AccountInfoRequestHelper<GetInsuranceContractRequest, InsuranceSummary> insuranceContractRequestHelper;
-  private final AccountInfoResponseHelper<InsuranceSummary, InsuranceContract> insuranceContractResponseHelper;
+  private final AccountInfoService<Insured, ListInsuranceContractsRequest, List<InsuranceContract>> insuranceContractService;
+  private final AccountInfoRequestHelper<ListInsuranceContractsRequest, Insured> insuranceContractRequestHelper;
+  private final AccountInfoResponseHelper<Insured, List<InsuranceContract>> insuranceContractResponseHelper;
 
   private final AccountInfoService<InsuranceSummary, GetInsurancePaymentRequest, InsurancePayment> insurancePaymentService;
   private final AccountInfoRequestHelper<GetInsurancePaymentRequest, InsuranceSummary> insurancePaymentRequestHelper;
@@ -137,6 +141,7 @@ public class InsuApiServiceImpl implements InsuApiService {
                     .listAccountInfos(executionContext, Executions.insurance_get_contract,
                         insuranceContractRequestHelper,
                         insuranceContractResponseHelper))
+            .thenApply(lists -> lists.stream().flatMap(Collection::stream).collect(Collectors.toList()))
             .thenAccept(atomicReference.get()::setInsuranceContracts),
 
         CompletableFuture
