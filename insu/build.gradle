@@ -51,6 +51,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux:${springBootVersion}")
     implementation("org.springframework.boot:spring-boot-starter-validation:${springBootVersion}")
 
+    // kafka
+    implementation("org.springframework.kafka:spring-kafka:${springKafkaVersion}")
+
     // armeria
     implementation platform("com.linecorp.armeria:armeria-bom:${armeriaVersion}")
     implementation platform('io.netty:netty-bom:4.1.54.Final')
