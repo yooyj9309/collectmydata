@@ -89,7 +89,7 @@ public class LoanSummaryServiceTest {
   }
 
   private static void setupMockServer() {
-    // 6.5.1 보험 목록 조회
+    // 6.5.8 대출 목록 조회
     wireMockServer.stubFor(get(urlMatching("/loans.*"))
         .withQueryParam("org_code", equalTo(ORGANIZATION_CODE))
         .withQueryParam("search_timestamp", equalTo("0"))

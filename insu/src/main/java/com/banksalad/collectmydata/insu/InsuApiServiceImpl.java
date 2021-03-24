@@ -80,14 +80,13 @@ public class InsuApiServiceImpl implements InsuApiService {
   private final TransactionResponseHelper<InsuranceSummary, InsuranceTransaction> insuranceTransactionResponseHelper;
 
   // CAR
-  // TODO : carInsuranceResponseHelper 의 List<CarInsurance> right ?
-  private final AccountInfoService<InsuranceSummary, GetCarInsuranceRequest, CarInsurance> carInsuranceService;
+  private final AccountInfoService<InsuranceSummary, GetCarInsuranceRequest, List<CarInsurance>> carInsuranceService;
   private final AccountInfoRequestHelper<GetCarInsuranceRequest, InsuranceSummary> carInsuranceRequestHelper;
   private final AccountInfoResponseHelper<InsuranceSummary, List<CarInsurance>> carInsuranceResponseHelper;
 
-  private final TransactionApiService<InsuranceSummary, ListCarInsuranceTransactionsRequest, CarInsuranceTransaction> carInsuranceTransactionService;
-  private final TransactionRequestHelper<InsuranceSummary, ListCarInsuranceTransactionsRequest> carInsuranceTransactionRequestHelper;
-  private final TransactionResponseHelper<InsuranceSummary, CarInsuranceTransaction> carInsuranceTransactionResponseHelper;
+  private final TransactionApiService<CarInsurance, ListCarInsuranceTransactionsRequest, CarInsuranceTransaction> carInsuranceTransactionService;
+  private final TransactionRequestHelper<CarInsurance, ListCarInsuranceTransactionsRequest> carInsuranceTransactionRequestHelper;
+  private final TransactionResponseHelper<CarInsurance, CarInsuranceTransaction> carInsuranceTransactionResponseHelper;
 
   // LOAN
   private final AccountInfoService<LoanSummary, GetLoanBasicRequest, LoanBasic> loanBasicService;

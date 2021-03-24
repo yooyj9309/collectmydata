@@ -60,7 +60,7 @@ public class OperatingLeaseTransactionResponseHelper implements
       operatingLeaseTransactionEntity.setAccountNum(accountSummary.getAccountNum());
       operatingLeaseTransactionEntity.setSeqno(accountSummary.getSeqno());
 
-      /* upsert entity entity */
+      /* upsert entity */
       operatingLeaseTransactionRepository.save(operatingLeaseTransactionEntity);
     }
   }

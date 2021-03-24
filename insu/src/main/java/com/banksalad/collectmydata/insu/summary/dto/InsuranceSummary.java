@@ -38,6 +38,4 @@ public class InsuranceSummary {
   private long paymentSearchTimestamp;
 
   private LocalDateTime transactionSyncedAt;
-  
-  private LocalDateTime carInsuranceTransactionSyncedAt;
 }

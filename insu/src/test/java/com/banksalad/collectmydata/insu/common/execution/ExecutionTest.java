@@ -330,7 +330,7 @@ public class ExecutionTest {
         .carNumber("60무1234")
         .fromDate("20200101")
         .toDate("20200302")
-        .limit(500)
+        .limit(100)
         .build();
 
     ExecutionRequest<GetCarInsuranceRequest> executionRequest = ExecutionUtil

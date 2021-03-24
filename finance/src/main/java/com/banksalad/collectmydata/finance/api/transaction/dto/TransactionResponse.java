@@ -5,5 +5,4 @@ public interface TransactionResponse {
   String getRspCode();
 
   String getRspMsg();
-
 }

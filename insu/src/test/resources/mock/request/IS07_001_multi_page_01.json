@@ -5,5 +5,5 @@
   "from_date": "20200101",
   "to_date": "20200302",
   "next_page": "2",
-  "limit": 500
+  "limit": 100
 }

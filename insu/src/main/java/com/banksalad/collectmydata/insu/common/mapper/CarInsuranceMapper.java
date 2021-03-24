@@ -22,4 +22,6 @@ public interface CarInsuranceMapper {
       }
   )
   CarInsuranceEntity dtoToEntity(CarInsurance carInsurance);
+
+  CarInsurance entityToDto(CarInsuranceEntity carInsuranceEntity);
 }
