@@ -9,8 +9,8 @@ import java.util.Optional;
 
 public interface OauthTokenRepository extends JpaRepository<OauthTokenEntity, Long> {
 
-  Optional<OauthTokenEntity> findByBanksaladUserIdAndOrganizationIdAndIsExpired(Long banksaladUserId,
-      String organizationId, boolean isExpired);
+  Optional<OauthTokenEntity> findByBanksaladUserIdAndOrganizationId(Long banksaladUserId,
+      String organizationId);
 
-  Optional<List<OauthTokenEntity>> findAllByBanksaladUserIdAndIsExpired(Long banksaladUserId, boolean isExpired);
+  List<OauthTokenEntity> findAllByBanksaladUserId(Long banksaladUserId);
 }

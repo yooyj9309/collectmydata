@@ -1,9 +1,9 @@
-package com.banksalad.collectmydata.connect.common.collect;
+package com.banksalad.collectmydata.connect.collect;
 
 import com.banksalad.collectmydata.common.collect.api.Api;
-import com.banksalad.collectmydata.common.collect.api.Pagination;
 
 public class Apis {
+
   private enum HttpMethod {
     GET, POST
   }

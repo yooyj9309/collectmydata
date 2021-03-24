@@ -1,8 +1,8 @@
-package com.banksalad.collectmydata.connect.common.collect;
-
-import com.banksalad.collectmydata.common.collect.apilog.IdGenerator;
+package com.banksalad.collectmydata.connect.collect;
 
 import org.springframework.stereotype.Component;
+
+import com.banksalad.collectmydata.common.collect.apilog.IdGenerator;
 
 import java.util.UUID;
 

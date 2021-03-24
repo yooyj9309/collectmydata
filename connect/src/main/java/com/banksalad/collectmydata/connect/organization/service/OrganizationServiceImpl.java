@@ -2,10 +2,10 @@ package com.banksalad.collectmydata.connect.organization.service;
 
 import org.springframework.stereotype.Service;
 
-import com.banksalad.collectmydata.connect.common.exception.ConnectException;
 import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;
 import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
+import com.banksalad.collectmydata.connect.common.exception.ConnectException;
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationIdRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationObjectidRequest;
@@ -40,8 +40,8 @@ public class OrganizationServiceImpl implements OrganizationService {
         .sector(connectOrganizationEntity.getSector())
         .industry(connectOrganizationEntity.getIndustry())
         .organizationId(connectOrganizationEntity.getOrganizationId())
-        .organizationCode(connectOrganizationEntity.getOrganizationCode())
-        .domain(connectOrganizationEntity.getDomain())
+        .organizationCode(connectOrganizationEntity.getOrgCode())
+        .domain("fixme") // fixme
         .build();
   }
 }

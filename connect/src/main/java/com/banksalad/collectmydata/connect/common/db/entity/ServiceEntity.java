@@ -19,30 +19,27 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "connect_organization")
-public class ConnectOrganizationEntity extends BaseEntity {
+@Table(name = "service")
+public class ServiceEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Column(nullable = false)
-  private String sector;
-
-  @Column(nullable = false)
-  private String industry;
-
-  @Column(nullable = false)
   private String organizationId;
 
   @Column(nullable = false)
-  private String organizationObjectid;
-
-  private String orgCode;
+  private String serviceName;
 
   @Column(nullable = false)
-  private String organizationStatus;
+  private String opType;
 
-  @Column(name = "is_deleted", nullable = false)
-  private Integer deleted;
+  @Column(nullable = false, name = "client_id_encrypted")
+  private String clientId;
+
+  @Column(name = "client_secret_encrypted")
+  private String clientSecret;
+
+  private String redirectUri;
 }

@@ -10,13 +10,13 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
+import com.banksalad.collectmydata.connect.collect.Executions;
+import com.banksalad.collectmydata.connect.common.db.entity.BanksaladClientSecretEntity;
+import com.banksalad.collectmydata.connect.common.db.repository.BanksaladClientSecretRepository;
 import com.banksalad.collectmydata.connect.common.dto.ErrorResponse;
+import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
 import com.banksalad.collectmydata.connect.common.enums.TokenErrorType;
 import com.banksalad.collectmydata.connect.common.exception.ConnectException;
-import com.banksalad.collectmydata.connect.common.collect.Executions;
-import com.banksalad.collectmydata.connect.common.db.entity.OrganizationClientEntity;
-import com.banksalad.collectmydata.connect.common.db.repository.OrganizationClientRepository;
-import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
 import com.banksalad.collectmydata.connect.common.meters.ConnectMeterRegistry;
 import com.banksalad.collectmydata.connect.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ExternalTokenServiceImpl implements ExternalTokenService {
 
-  private final OrganizationClientRepository organizationClientRepository;
+  private final BanksaladClientSecretRepository banksaladClientSecretRepository;
   private final CollectExecutor collectExecutor;
   private final ConnectMeterRegistry connectMeterRegistry;
 
@@ -39,13 +39,13 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
 
   @Override
   public ExternalTokenResponse issueToken(Organization organization, String authorizationCode) {
-    OrganizationClientEntity organizationClientEntity = getOrganizationClientEntity(organization);
+    BanksaladClientSecretEntity banksaladClientSecretEntity = getOrganizationClientEntity(organization);
 
     ExternalIssueTokenRequest request = ExternalIssueTokenRequest.builder()
         .orgCode(organization.getOrganizationCode())
         .code(authorizationCode)
-        .clientId(organizationClientEntity.getClientId())
-        .clientSecret(organizationClientEntity.getClientSecret())
+        .clientId(banksaladClientSecretEntity.getClientId())
+        .clientSecret(banksaladClientSecretEntity.getClientSecret())
         .redirectUri(redirectUrl)
         .build();
 
@@ -57,13 +57,13 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
 
   @Override
   public ExternalTokenResponse refreshToken(Organization organization, String refreshToken) {
-    OrganizationClientEntity organizationClientEntity = getOrganizationClientEntity(organization);
+    BanksaladClientSecretEntity banksaladClientSecretEntity = getOrganizationClientEntity(organization);
 
     ExternalRefreshTokenRequest request = ExternalRefreshTokenRequest.builder()
         .orgCode(organization.getOrganizationCode())
         .refreshToken(refreshToken)
-        .clientId(organizationClientEntity.getClientId())
-        .clientSecret(organizationClientEntity.getClientSecret())
+        .clientId(banksaladClientSecretEntity.getClientId())
+        .clientSecret(banksaladClientSecretEntity.getClientSecret())
         .build();
 
     ExecutionRequest<ExternalRefreshTokenRequest> executionRequest = ExecutionUtil.executionRequestAssembler(request);
@@ -74,13 +74,13 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
 
   @Override
   public void revokeToken(Organization organization, String accessToken) {
-    OrganizationClientEntity organizationClientEntity = getOrganizationClientEntity(organization);
+    BanksaladClientSecretEntity banksaladClientSecretEntity = getOrganizationClientEntity(organization);
 
     ExternalRevokeTokenRequest request = ExternalRevokeTokenRequest.builder()
         .orgCode(organization.getOrganizationCode())
         .token(accessToken)
-        .clientId(organizationClientEntity.getClientId())
-        .clientSecret(organizationClientEntity.getClientSecret())
+        .clientId(banksaladClientSecretEntity.getClientId())
+        .clientSecret(banksaladClientSecretEntity.getClientSecret())
         .build();
 
     ExecutionRequest<ExternalRevokeTokenRequest> executionRequest = ExecutionUtil.executionRequestAssembler(request);
@@ -89,9 +89,9 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
     execute(executionContext, Executions.oauth_revoke_token, executionRequest);
   }
 
-  private OrganizationClientEntity getOrganizationClientEntity(Organization organization) {
-    return organizationClientRepository
-        .findByOrganizationId(organization.getOrganizationId())
+  private BanksaladClientSecretEntity getOrganizationClientEntity(Organization organization) {
+    return banksaladClientSecretRepository
+        .findBySecretType("FIXME") // fixme
         .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_ORGANIZATION));
   }
 

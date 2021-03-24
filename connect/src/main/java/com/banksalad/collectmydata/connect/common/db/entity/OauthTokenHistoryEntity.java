@@ -20,20 +20,23 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "oauth_token_history")
-public class OauthTokenHistoryEntity extends BaseTimeAndUserEntity{
+public class OauthTokenHistoryEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long oauthTokenHistoryId;
+  private Long id;
 
   @Column(nullable = false)
-  private String oauthTokenId;
+  private LocalDateTime syncedAt;
 
   @Column(nullable = false)
   private Long banksaladUserId;
 
   @Column(nullable = false)
   private String organizationId;
+
+  @Column(nullable = false)
+  private String consentId;
 
   @Column(nullable = false)
   private String authorizationCode;
@@ -61,6 +64,7 @@ public class OauthTokenHistoryEntity extends BaseTimeAndUserEntity{
   @Column(nullable = false)
   private String scope;
 
-  @Column(nullable = false, columnDefinition = "BIT", length = 1)
-  private Boolean isExpired;
+  private LocalDateTime issuedAt;
+
+  private LocalDateTime refreshedAt;
 }

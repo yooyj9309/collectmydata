@@ -11,31 +11,27 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "service_client_ip")
-public class FinanceServiceClientIpEntity extends BaseTimeAndUserEntity {
+@Table(name = "api_sync_status")
+public class ApiSyncStatusEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long serviceClientIpId;
+  private Long id;
 
   @Column(nullable = false)
-  private Long serviceId;
+  private String apiId;
 
   @Column(nullable = false)
-  private String organizationId;
+  private LocalDateTime syncedAt;
 
   @Column(nullable = false)
-  private String serviceName;
-
-  @Column(nullable = false)
-  private String clientIp;
-
+  private Long searchTimestamp;
 }

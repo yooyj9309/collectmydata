@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.connect.common.collect;
+package com.banksalad.collectmydata.connect.collect;
 
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationResponse;

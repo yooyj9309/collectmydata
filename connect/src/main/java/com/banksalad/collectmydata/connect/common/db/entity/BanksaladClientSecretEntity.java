@@ -17,14 +17,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "organization_client")
-public class OrganizationClientEntity extends BaseTimeAndUserEntity{
+@Table(name = "banksalad_client_secret")
+public class BanksaladClientSecretEntity extends BaseEntity {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long organizationClientId;
+  private Long id;
 
   @Column(nullable = false)
-  private String organizationId;
+  private String secretType;
 
   @Column(nullable = false)
   private String clientId;

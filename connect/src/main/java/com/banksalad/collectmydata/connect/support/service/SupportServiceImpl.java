@@ -11,25 +11,25 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
-import com.banksalad.collectmydata.connect.common.collect.Apis;
-import com.banksalad.collectmydata.connect.common.collect.Executions;
+import com.banksalad.collectmydata.connect.collect.Apis;
+import com.banksalad.collectmydata.connect.collect.Executions;
+import com.banksalad.collectmydata.connect.common.db.entity.ApiSyncStatusEntity;
+import com.banksalad.collectmydata.connect.common.db.entity.BanksaladClientSecretEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
-import com.banksalad.collectmydata.connect.common.db.entity.FinanceServiceClientIpEntity;
-import com.banksalad.collectmydata.connect.common.db.entity.FinanceServiceEntity;
-import com.banksalad.collectmydata.connect.common.db.entity.OrganizationClientEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.OrganizationOauthTokenEntity;
-import com.banksalad.collectmydata.connect.common.db.entity.SyncApiStatusEntity;
-import com.banksalad.collectmydata.connect.common.db.entity.mapper.ConnectOrganizationMapper;
-import com.banksalad.collectmydata.connect.common.db.entity.mapper.FinanceServiceClientIpMapper;
-import com.banksalad.collectmydata.connect.common.db.entity.mapper.FinanceServiceMapper;
+import com.banksalad.collectmydata.connect.common.db.entity.ServiceClientIpEntity;
+import com.banksalad.collectmydata.connect.common.db.entity.ServiceEntity;
+import com.banksalad.collectmydata.connect.common.db.repository.ApiSyncStatusRepository;
+import com.banksalad.collectmydata.connect.common.db.repository.BanksaladClientSecretRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;
-import com.banksalad.collectmydata.connect.common.db.repository.FinanceServiceClientIpRepository;
-import com.banksalad.collectmydata.connect.common.db.repository.FinanceServiceRepository;
-import com.banksalad.collectmydata.connect.common.db.repository.OrganizationClientRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationOauthTokenRepository;
-import com.banksalad.collectmydata.connect.common.db.repository.SyncApiStatusRepository;
+import com.banksalad.collectmydata.connect.common.db.repository.ServiceClientIpRepository;
+import com.banksalad.collectmydata.connect.common.db.repository.ServiceRepository;
 import com.banksalad.collectmydata.connect.common.dto.ErrorResponse;
 import com.banksalad.collectmydata.connect.common.enums.TokenErrorType;
+import com.banksalad.collectmydata.connect.common.mapper.ConnectOrganizationMapper;
+import com.banksalad.collectmydata.connect.common.mapper.FinanceServiceClientIpMapper;
+import com.banksalad.collectmydata.connect.common.mapper.FinanceServiceMapper;
 import com.banksalad.collectmydata.connect.common.meters.ConnectMeterRegistry;
 import com.banksalad.collectmydata.connect.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationInfo;
@@ -60,11 +60,11 @@ public class SupportServiceImpl implements SupportService {
   private final CollectExecutor collectExecutor;
   private final ConnectMeterRegistry connectMeterRegistry;
   private final ConnectOrganizationRepository connectOrganizationRepository;
-  private final SyncApiStatusRepository syncApiStatusRepository;
-  private final OrganizationClientRepository organizationClientRepository;
+  private final ApiSyncStatusRepository apiSyncStatusRepository;
+  private final BanksaladClientSecretRepository banksaladClientSecretRepository;
   private final OrganizationOauthTokenRepository organizationOauthTokenRepository;
-  private final FinanceServiceRepository financeServiceRepository;
-  private final FinanceServiceClientIpRepository financeServiceClientIpRepository;
+  private final ServiceRepository serviceRepository;
+  private final ServiceClientIpRepository serviceClientIpRepository;
 
   private final FinanceServiceMapper serviceMapper = Mappers.getMapper(FinanceServiceMapper.class);
   private final FinanceServiceClientIpMapper serviceClientIpMapper = Mappers
@@ -95,7 +95,7 @@ public class SupportServiceImpl implements SupportService {
 
     // db 조회
     for (FinanceOrganizationInfo orgInfo : financeOrganizationResponse.getOrgList()) {
-      ConnectOrganizationEntity entity = connectOrganizationRepository.findByOrganizationCode(orgInfo.getOrgCode())
+      ConnectOrganizationEntity entity = connectOrganizationRepository.findByOrgCode(orgInfo.getOrgCode())
           .orElse(ConnectOrganizationEntity.builder().build());
 
       mapper.merge(orgInfo, entity);
@@ -128,7 +128,7 @@ public class SupportServiceImpl implements SupportService {
     // 추후 업데이트시 히스토리 이력이 필요하다면 객체비교로직 추가.
     for (FinanceOrganizationInfo orgInfo : executionResponse.getOrgList()) {
       ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
-          .findByOrganizationCode(orgInfo.getOrgCode())
+          .findByOrgCode(orgInfo.getOrgCode())
           .orElseThrow(RuntimeException::new); // fixme exception
 
       String organizationId = connectOrganizationEntity.getOrganizationId();
@@ -136,30 +136,30 @@ public class SupportServiceImpl implements SupportService {
       // service 순회
       for (FinanceOrganizationServiceInfo service : orgInfo.getServiceList()) {
         // service db insert;
-        FinanceServiceEntity serviceEntity = financeServiceRepository.findByOrganizationId(organizationId)
-            .orElse(FinanceServiceEntity.builder().build());
+        ServiceEntity serviceEntity = serviceRepository.findByOrganizationId(organizationId)
+            .orElse(ServiceEntity.builder().build());
 
         serviceMapper.merge(service, serviceEntity);
         serviceEntity.setOrganizationId(organizationId);
-        serviceEntity = financeServiceRepository.save(serviceEntity);
+        serviceEntity = serviceRepository.save(serviceEntity);
 
         // serviceIp 순회
         for (FinanceOrganizationServiceIp serviceIp : service.getClientIpList()) {
           // service ip db insert
           String serviceName = serviceEntity.getServiceName();
-          Long serviceId = serviceEntity.getServiceId();
+          Long serviceId = serviceEntity.getId();
           String clientId = serviceIp.getClientIp();
 
-          FinanceServiceClientIpEntity serviceClientIpEntity = financeServiceClientIpRepository
+          ServiceClientIpEntity serviceClientIpEntity = serviceClientIpRepository
               .findByServiceIdAndClientIp(serviceId, clientId)
-              .orElse(FinanceServiceClientIpEntity.builder().build());
+              .orElse(ServiceClientIpEntity.builder().build());
 
           serviceClientIpMapper.merge(serviceIp, serviceClientIpEntity);
           serviceClientIpEntity.setOrganizationId(organizationId);
           serviceClientIpEntity.setServiceId(serviceId);
           serviceClientIpEntity.setServiceName(serviceName);
 
-          financeServiceClientIpRepository.save(serviceClientIpEntity);
+          serviceClientIpRepository.save(serviceClientIpEntity);
         }
       }
     }
@@ -167,8 +167,8 @@ public class SupportServiceImpl implements SupportService {
 
   public String getAccessToken(ExecutionContext executionContext) {
     // banksalad 기관 clientId, clientSecret 조회
-    OrganizationClientEntity organizationClientEntity = organizationClientRepository
-        .findByOrganizationId(BANKSALAD_ORAGNIZATION_ID)
+    BanksaladClientSecretEntity banksaladClientSecretEntity = banksaladClientSecretRepository
+        .findBySecretType(BANKSALAD_ORAGNIZATION_ID) // fixme
         .orElseThrow(RuntimeException::new); // fixme
 
     // accessToken db 조회
@@ -177,11 +177,11 @@ public class SupportServiceImpl implements SupportService {
         .orElse(null);
 
     // accessToken 유효기간 검증 ,조회 및 db저장
-    if (tokenEntity == null || tokenEntity.isAccessTokenExpired()) {
+    if (tokenEntity == null || isAccessTokenExpired(tokenEntity)) {
 
       FinanceOrganizationTokenRequest request = FinanceOrganizationTokenRequest.builder()
-          .clientId(organizationClientEntity.getClientId())
-          .clientSecret(organizationClientEntity.getClientSecret())
+          .clientId(banksaladClientSecretEntity.getClientId())
+          .clientSecret(banksaladClientSecretEntity.getClientSecret())
           .build();
 
       ExecutionRequest<FinanceOrganizationTokenRequest> executionRequest = ExecutionUtil
@@ -212,11 +212,15 @@ public class SupportServiceImpl implements SupportService {
     return tokenEntity.getAccessToken();
   }
 
+  public Boolean isAccessTokenExpired(OrganizationOauthTokenEntity tokenEntity) {
+    return tokenEntity.getAccessTokenExpiresAt().isBefore(LocalDateTime.now()) ? true : false;
+  }
+
   private Long getTimeStamp(Api api) {
     //DB 조회
-    SyncApiStatusEntity entity = syncApiStatusRepository.findByApiId(api.getId())
-        .orElse(SyncApiStatusEntity.builder().build());
-    return Optional.ofNullable(entity.getOriginalSyncedAt()).orElse(0L);
+    ApiSyncStatusEntity entity = apiSyncStatusRepository.findByApiId(api.getId())
+        .orElse(ApiSyncStatusEntity.builder().build());
+    return Optional.ofNullable(entity.getSearchTimestamp()).orElse(0L);
   }
 
   private ExecutionContext executionContextAssembler() {

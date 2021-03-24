@@ -11,31 +11,53 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "service")
-public class FinanceServiceEntity extends BaseTimeAndUserEntity {
+@Table(name = "organization_history")
+public class OrganizationHistoryEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long serviceId;
+  private Long id;
+
+  @Column(nullable = false)
+  private LocalDateTime syncedAt;
+
+  @Column(nullable = false)
+  private String sector;
+
+  @Column(nullable = false)
+  private String industry;
 
   @Column(nullable = false)
   private String organizationId;
 
   @Column(nullable = false)
-  private String serviceName;
+  private String opType;
 
   @Column(nullable = false)
-  private String clientId;
+  private String orgCode;
 
-  private String clientSecret;
+  @Column(nullable = false)
+  private String orgType;
 
-  private String redirectUri;
+  private String orgName;
+
+  private String orgRegno;
+
+  private String corpRegno;
+
+  private String address;
+
+  private String domain;
+
+  private String relayOrgCode;
+
+  private String authType;
 }

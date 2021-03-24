@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public class BaseTimeAndUserEntity {
+public class BaseEntity {
 
   @EqualsExclude
   @CreatedDate

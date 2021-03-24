@@ -20,11 +20,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "organization_oauth_token")
-public class OrganizationOauthTokenEntity extends BaseTimeAndUserEntity {
+public class OrganizationOauthTokenEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long organizationOauthTokenId;
+  private Long id;
 
   @Column(nullable = false)
   private String organizationId;
@@ -42,8 +42,4 @@ public class OrganizationOauthTokenEntity extends BaseTimeAndUserEntity {
 
   @Column(nullable = false)
   private String scope;
-
-  public Boolean isAccessTokenExpired() {
-    return getAccessTokenExpiresAt().isBefore(LocalDateTime.now()) ? true : false;
-  }
 }

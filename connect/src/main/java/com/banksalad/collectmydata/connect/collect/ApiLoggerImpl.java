@@ -1,11 +1,10 @@
-package com.banksalad.collectmydata.connect.common.collect;
+package com.banksalad.collectmydata.connect.collect;
+
+import org.springframework.stereotype.Component;
 
 import com.banksalad.collectmydata.common.collect.apilog.ApiLogger;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.executor.ApiLog;
-
-import org.springframework.stereotype.Component;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

@@ -11,20 +11,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @Builder
-@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "oauth_token")
-public class OauthTokenEntity extends BaseEntity {
+@Table(name = "organization")
+public class OrganizationEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,41 +30,35 @@ public class OauthTokenEntity extends BaseEntity {
   private LocalDateTime syncedAt;
 
   @Column(nullable = false)
-  private Long banksaladUserId;
+  private String sector;
+
+  @Column(nullable = false)
+  private String industry;
 
   @Column(nullable = false)
   private String organizationId;
 
   @Column(nullable = false)
-  private String consentId;
+  private String opType;
 
   @Column(nullable = false)
-  private String authorizationCode;
+  private String orgCode;
 
   @Column(nullable = false)
-  private String accessToken;
+  private String orgType;
 
-  @Column(nullable = false)
-  private String refreshToken;
+  private String orgName;
 
-  @Column(nullable = false)
-  private LocalDateTime accessTokenExpiresAt;
+  private String orgRegno;
 
-  @Column(nullable = false)
-  private Integer accessTokenExpiresIn;
+  private String corpRegno;
 
-  @Column(nullable = false)
-  private LocalDateTime refreshTokenExpiresAt;
+  private String address;
 
-  @Column(nullable = false)
-  private Integer refreshTokenExpiresIn;
+  private String domain;
 
-  private String tokenType;
+  private String relayOrgCode;
 
-  @Column(nullable = false)
-  private String scope;
+  private String authType;
 
-  private LocalDateTime issuedAt;
-
-  private LocalDateTime refreshedAt;
 }
