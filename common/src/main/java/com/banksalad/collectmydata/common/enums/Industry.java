@@ -9,7 +9,7 @@ public enum Industry {
   INSU,
   CAPITAL,
   EFIN,
-  INVERT;
+  INVEST;
 
   public static Industry getIndustry(String key) {
     for (Industry industry : Industry.values()) {

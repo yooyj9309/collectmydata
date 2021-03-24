@@ -17,3 +17,6 @@ uri:
   user: dns:///user-headless:18081
   cipher: dns:///cipher-headless:18081
   connect: dns:///connect-headless:18081
+
+kafka:
+  bootstrap-servers: localhost:9092

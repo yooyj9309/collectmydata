@@ -45,6 +45,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
     implementation("org.springframework.boot:spring-boot-starter-webflux:${springBootVersion}")
 
+    // kafka
+    implementation("org.springframework.kafka:spring-kafka:${springKafkaVersion}")
+
     // grpc
     implementation("io.grpc:grpc-context:${grpcVersion}")
     implementation("io.grpc:grpc-api:${grpcVersion}")
