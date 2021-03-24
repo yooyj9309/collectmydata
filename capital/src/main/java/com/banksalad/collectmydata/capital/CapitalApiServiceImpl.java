@@ -65,7 +65,7 @@ public class CapitalApiServiceImpl implements CapitalApiService {
   private final AccountInfoRequestHelper<GetOperatingLeaseBasicRequest, AccountSummary> operatingLeaseRequestHelper;
   private final AccountInfoResponseHelper<AccountSummary, OperatingLeaseBasic> operatingLeaseResponseHelper;
 
-  private final TransactionApiService<AccountSummary, ListOperatingLeaseTransactionsRequest, OperatingLeaseTransaction> operatingLeaseTransactionApiService;
+  private final TransactionApiService<AccountSummary, ListOperatingLeaseTransactionsRequest, OperatingLeaseTransaction> operatingLeaseTransactionService;
   private final TransactionRequestHelper<AccountSummary, ListOperatingLeaseTransactionsRequest> operatingLeaseTransactionRequestHelper;
   private final TransactionResponseHelper<AccountSummary, OperatingLeaseTransaction> operatingLeaseTransactionResponseHelper;
 
@@ -120,7 +120,7 @@ public class CapitalApiServiceImpl implements CapitalApiService {
             .thenAccept(atomicReference.get()::setOperatingLeaseBasics),
 
         CompletableFuture
-            .supplyAsync(() -> operatingLeaseTransactionApiService
+            .supplyAsync(() -> operatingLeaseTransactionService
                 .listTransactions(executionContext, Executions.capital_get_operating_lease_transactions,
                     operatingLeaseTransactionRequestHelper, operatingLeaseTransactionResponseHelper))
             .thenAccept(atomicReference.get()::setOperatingLeasesTransactions)
@@ -132,13 +132,45 @@ public class CapitalApiServiceImpl implements CapitalApiService {
   @Override
   public CapitalApiResponse scheduledBasicRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
       throws ResponseNotOkException {
-    return null;
+    return onDemandRequestApi(banksaladUserId, organizationId, syncRequestId);
   }
 
   @Override
   public CapitalApiResponse scheduledAdditionalRequestApi(long banksaladUserId, String organizationId,
       String syncRequestId) throws ResponseNotOkException {
-    return null;
+    Organization organization = collectmydataConnectClientService.getOrganization(organizationId);
+    String accessToken = "fixme"; //TODO 토큰 조회 로직 추가하여 적용
+
+    ExecutionContext executionContext = generateExecutionContext(banksaladUserId, organizationId, syncRequestId,
+        accessToken, organization);
+
+    accountSummaryService.listAccountSummaries(
+        executionContext, Executions.capital_get_accounts, accountSummaryRequestHelper, accountSummaryResponseHelper);
+
+    AtomicReference<CapitalApiResponse> atomicReference = new AtomicReference<>();
+    atomicReference.set(CapitalApiResponse.builder().build());
+
+    CompletableFuture.allOf(
+        CompletableFuture
+            .supplyAsync(
+                () -> accountDetailService.listAccountInfos(executionContext, Executions.capital_get_account_detail,
+                    accountDetailRequestHelper, accountDetailResponseHelper))
+            .thenAccept(atomicReference.get()::setAccountDetails),
+        CompletableFuture
+            .supplyAsync(
+                () -> accountTransactionService
+                    .listTransactions(executionContext, Executions.capital_get_account_transactions,
+                        accountTransactionRequestHelper, accountTransactionResponseHelper))
+            .thenAccept(atomicReference.get()::setAccountTransactions),
+        CompletableFuture
+            .supplyAsync(
+                () -> operatingLeaseTransactionService
+                    .listTransactions(executionContext, Executions.capital_get_operating_lease_transactions,
+                        operatingLeaseTransactionRequestHelper, operatingLeaseTransactionResponseHelper))
+            .thenAccept(atomicReference.get()::setOperatingLeasesTransactions)
+    ).join();
+
+    return atomicReference.get();
   }
 
   private ExecutionContext generateExecutionContext(long banksaladUserId, String organizationId, String syncRequestId,
