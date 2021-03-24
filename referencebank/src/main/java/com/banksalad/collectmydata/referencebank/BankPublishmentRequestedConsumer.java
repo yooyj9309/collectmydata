@@ -40,8 +40,7 @@ public class BankPublishmentRequestedConsumer {
 
   @KafkaListener(
       topics = MessageTopic.bankPublishmentRequested,
-      containerFactory = "bankPublishmentRequestedKafkaListenerContainerFactory",
-      groupId = ConsumerGroupId.collectmydataFinanceBank)
+      containerFactory = "bankPublishmentRequestedKafkaListenerContainerFactory")
   public void consumePublishmentRequested(String source) {
     try {
       /* deserialize message */

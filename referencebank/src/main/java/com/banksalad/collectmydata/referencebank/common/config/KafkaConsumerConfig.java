@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.referencebank.common.config;
 
+import com.banksalad.collectmydata.common.message.ConsumerGroupId;
 import com.banksalad.collectmydata.common.message.MessageTopic;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -40,11 +41,11 @@ public class KafkaConsumerConfig {
 
   @Bean
   public ConcurrentKafkaListenerContainerFactory<String, String> bankSyncRequestedKafkaListenerContainerFactory() {
-    return kafkaListenerContainerFactory(MessageTopic.bankSyncRequested);
+    return kafkaListenerContainerFactory(ConsumerGroupId.collectmydataFinanceBank);
   }
 
   @Bean
   public ConcurrentKafkaListenerContainerFactory<String, String> bankPublishmentRequestedKafkaListenerContainerFactory() {
-    return kafkaListenerContainerFactory(MessageTopic.bankPublishmentRequested);
+    return kafkaListenerContainerFactory(ConsumerGroupId.collectmydataFinanceBank);
   }
 }

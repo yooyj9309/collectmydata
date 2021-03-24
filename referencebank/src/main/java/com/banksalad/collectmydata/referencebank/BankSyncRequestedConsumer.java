@@ -32,8 +32,7 @@ public class BankSyncRequestedConsumer {
 
   @KafkaListener(
       topics = MessageTopic.bankSyncRequested,
-      containerFactory = "bankSyncRequestedKafkaListenerContainerFactory",
-      groupId = ConsumerGroupId.collectmydataFinanceBank)
+      containerFactory = "bankSyncRequestedKafkaListenerContainerFactory")
   public void consumeSyncRequested(String source) {
     try {
       /* deserialize message */
