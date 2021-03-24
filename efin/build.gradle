@@ -1,8 +1,8 @@
 plugins {
-    id "org.springframework.boot" version "2.2.8.RELEASE"
-    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'org.springframework.boot' version "${springBootVersion}"
+    id 'io.spring.dependency-management' version "${springDependencyVersion}"
     id 'java'
-    id "jacoco"
+    id 'jacoco'
 }
 
 group = 'com.banksalad.collectmydata'
@@ -25,22 +25,40 @@ repositories {
             password = System.getenv("GH_DAAS_PACKAGES_TOKEN")
         }
     }
+
+    maven {
+        url = uri("https://repo.spring.io/release")
+    }
 }
 
 dependencyManagement {
     imports {
         mavenBom "software.amazon.awssdk:bom:${awsSdkVersion}"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
 
 dependencies {
+    implementation project(":common")
+    implementation project(":finance")
+
     // idl
     implementation("com.banksalad:idl:${idlVersion}")
 
     // spring
-    implementation("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
-    implementation("org.springframework.boot:spring-boot-starter-webflux:${springBootVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+
+    // kafka
+    implementation("org.springframework.kafka:spring-kafka:${springKafkaVersion}")
+
+    // armeria
+    implementation platform("com.linecorp.armeria:armeria-bom:${armeriaVersion}")
+    implementation platform('io.netty:netty-bom:4.1.54.Final')
+
+    implementation("com.linecorp.armeria:armeria-spring-boot2-webflux-starter:${armeriaVersion}")
+    implementation("com.linecorp.armeria:armeria-grpc:${armeriaVersion}")
 
     // grpc
     implementation("io.grpc:grpc-context:${grpcVersion}")
@@ -55,15 +73,11 @@ dependencies {
     // httpclient
     implementation("org.apache.httpcomponents:httpclient:4.5.12")
 
-    // lombok
-    compileOnly("org.projectlombok:lombok:${lombokVersion}")
-    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
-
     // apache commons
     implementation("org.apache.commons:commons-lang3:${apacheCommonsVersion}")
 
     // DB
-    implementation("org.mariadb.jdbc:mariadb-java-client:2.6.0")
+    implementation("org.mariadb.jdbc:mariadb-java-client:${mariadbClientVersion}")
 
     // AWS
     implementation("software.amazon.awssdk:kms:2.14.21")
@@ -81,18 +95,32 @@ dependencies {
     implementation("io.micrometer:micrometer-core:${micrometerVersion}")
     implementation("io.micrometer:micrometer-registry-statsd:${micrometerVersion}")
 
+    // mapstruct
+    implementation("org.mapstruct:mapstruct:${mapstructVersion}")
+    annotationProcessor("org.mapstruct:mapstruct-processor:${mapstructVersion}")
+
+    // lombok
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
+
+    compileOnly("org.projectlombok:lombok:${lombokVersion}")
+    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+
     //test
-    testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}") {
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude group: "org.junit.vintage", module: "junit-vintage-engine"
     }
+
+    testImplementation("org.springframework.cloud:spring-cloud-starter-contract-stub-runner")
 
     testImplementation("commons-io:commons-io:2.6")
     testImplementation("com.h2database:h2")
     testImplementation("org.mockito:mockito-inline:3.1.0")
     testImplementation("com.google.protobuf:protobuf-java-util:3.11.0")
 
-    testCompile("org.projectlombok:lombok:${lombokVersion}")
+    testImplementation("org.projectlombok:lombok:${lombokVersion}")
     testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+
+    testImplementation("io.projectreactor:reactor-test:3.4.2")
 }
 
 test {

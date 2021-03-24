@@ -1,0 +1,35 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "success",
+  "search_timestamp": 1000,
+  "name": "이뱅샐",
+  "reg_date": "20210101",
+  "account_cnt": 1,
+  "account_list": [
+    {
+      "sub_key": "mykakaoid",
+      "account_id": "11****",
+      "is_consent": true,
+      "account_status": "01",
+      "is_pay_reg": true,
+      "pay_cnt": 1,
+      "pay_list": [
+        {
+          "pay_org_code": "080",
+          "pay_id": "423******1",
+          "is_primary": true
+        },
+        {
+          "pay_org_code": "080",
+          "pay_id": "423******2",
+          "is_primary": true
+        },
+        {
+          "pay_org_code": "080",
+          "pay_id": "423******3",
+          "is_primary": true
+        }
+      ]
+    }
+  ]
+}
