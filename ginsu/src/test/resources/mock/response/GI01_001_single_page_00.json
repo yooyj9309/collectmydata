@@ -1,0 +1,22 @@
+{
+  "rsp_code": "000",
+  "rsp_msg": "rsp_msg",
+  "search_timestamp": 1000,
+  "insu_cnt": 2,
+  "insu_list": [
+    {
+      "insu_num": "1234567890",
+      "is_consent": true,
+      "prod_name": "보증 서지 말아요 보험",
+      "insu_type": "20",
+      "insu_status": "01"
+    },
+    {
+      "insu_num": "0123456789",
+      "is_consent": true,
+      "prod_name": "보증 서지 말아요 보험2",
+      "insu_type": "20",
+      "insu_status": "01"
+    }
+  ]
+}

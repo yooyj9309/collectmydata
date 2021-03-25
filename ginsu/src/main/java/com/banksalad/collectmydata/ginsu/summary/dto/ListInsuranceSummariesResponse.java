@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ListGinsuSummariesResponse implements SummaryResponse {
+public class ListInsuranceSummariesResponse implements SummaryResponse {
 
   private String rspCode;
 
@@ -28,5 +28,5 @@ public class ListGinsuSummariesResponse implements SummaryResponse {
   private int insuCnt;
 
   @JsonProperty("insu_list")
-  private List<GinsuSummary> ginsuSummaries;
+  private List<InsuranceSummary> insuranceSummaries;
 }

@@ -11,8 +11,8 @@ import com.banksalad.collectmydata.finance.api.summary.SummaryService;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.banksalad.collectmydata.ginsu.collect.Executions;
 import com.banksalad.collectmydata.ginsu.common.dto.GinsuApiResponse;
-import com.banksalad.collectmydata.ginsu.summary.dto.GinsuSummary;
-import com.banksalad.collectmydata.ginsu.summary.dto.ListGinsuSummariesRequest;
+import com.banksalad.collectmydata.ginsu.summary.dto.InsuranceSummary;
+import com.banksalad.collectmydata.ginsu.summary.dto.ListInsuranceSummariesRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,9 +26,9 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public class GinsuApiServiceImpl implements GinsuApiService {
 
-  private final SummaryService<ListGinsuSummariesRequest, GinsuSummary> ginsuSummaryService;
-  private final SummaryRequestHelper<ListGinsuSummariesRequest> summaryRequestHelper;
-  private final SummaryResponseHelper<GinsuSummary> summaryResponseHelper;
+  private final SummaryService<ListInsuranceSummariesRequest, InsuranceSummary> insuranceSummaryService;
+  private final SummaryRequestHelper<ListInsuranceSummariesRequest> summaryRequestHelper;
+  private final SummaryResponseHelper<InsuranceSummary> summaryResponseHelper;
 
   @Override
   public GinsuApiResponse requestApi(long banksaladUserId, String organizationId, String syncRequestId,
@@ -43,7 +43,7 @@ public class GinsuApiServiceImpl implements GinsuApiService {
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
 
-    ginsuSummaryService.listAccountSummaries(
+    insuranceSummaryService.listAccountSummaries(
         executionContext,
         Executions.finance_ginsu_summaries,
         summaryRequestHelper,

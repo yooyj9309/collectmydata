@@ -2,9 +2,9 @@ package com.banksalad.collectmydata.ginsu.common.service;
 
 import org.springframework.stereotype.Service;
 
-import com.banksalad.collectmydata.ginsu.common.db.repository.GinsuSummaryRepository;
-import com.banksalad.collectmydata.ginsu.common.mapper.GinsuSummaryMapper;
-import com.banksalad.collectmydata.ginsu.summary.dto.GinsuSummary;
+import com.banksalad.collectmydata.ginsu.common.db.repository.InsuranceSummaryRepository;
+import com.banksalad.collectmydata.ginsu.common.mapper.InsuranceSummaryMapper;
+import com.banksalad.collectmydata.ginsu.summary.dto.InsuranceSummary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
@@ -16,70 +16,70 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class GinsuSummaryServiceImpl implements GinsuSummaryService {
+public class InsuranceSummaryServiceImpl implements InsuranceSummaryService {
 
-  private final GinsuSummaryRepository ginsuSummaryRepository;
-  private final GinsuSummaryMapper ginsuSummaryMapper = Mappers.getMapper(GinsuSummaryMapper.class);
+  private final InsuranceSummaryRepository insuranceSummaryRepository;
+  private final InsuranceSummaryMapper insuranceSummaryMapper = Mappers.getMapper(InsuranceSummaryMapper.class);
 
   @Override
-  public List<GinsuSummary> listSummariesConsented(long banksaladUserId, String organizationId) {
+  public List<InsuranceSummary> listSummariesConsented(long banksaladUserId, String organizationId) {
 
-    return ginsuSummaryRepository
+    return insuranceSummaryRepository
         .findByBanksaladUserIdAndOrganizationIdAndConsentIsTrue(banksaladUserId, organizationId)
         .stream()
-        .map(ginsuSummaryMapper::entityToDto)
+        .map(insuranceSummaryMapper::entityToDto)
         .collect(Collectors.toList());
   }
 
   @Override
-  public void updateBasicSearchTimestamp(long banksaladUserId, String organizationId, GinsuSummary ginsuSummary,
+  public void updateBasicSearchTimestamp(long banksaladUserId, String organizationId, InsuranceSummary insuranceSummary,
       long basicSearchTimestamp) {
 
-    ginsuSummaryRepository
+    insuranceSummaryRepository
         .findByBanksaladUserIdAndOrganizationIdAndInsuNum(banksaladUserId, organizationId,
-            ginsuSummary.getInsuNum())
+            insuranceSummary.getInsuNum())
         .ifPresent(insuranceSummaryEntity -> {
           insuranceSummaryEntity.setBasicSearchTimestamp(basicSearchTimestamp);
-          ginsuSummaryRepository.save(insuranceSummaryEntity);
+          insuranceSummaryRepository.save(insuranceSummaryEntity);
         });
   }
 
   @Override
-  public void updateTransactionSyncedAt(long banksaladUserId, String organizationId, GinsuSummary ginsuSummary,
+  public void updateTransactionSyncedAt(long banksaladUserId, String organizationId, InsuranceSummary insuranceSummary,
       LocalDateTime transactionSyncedAt) {
 
-    ginsuSummaryRepository
+    insuranceSummaryRepository
         .findByBanksaladUserIdAndOrganizationIdAndInsuNum(banksaladUserId, organizationId,
-            ginsuSummary.getInsuNum())
+            insuranceSummary.getInsuNum())
         .ifPresent(insuranceSummaryEntity -> {
           insuranceSummaryEntity.setTransactionSyncedAt(transactionSyncedAt);
-          ginsuSummaryRepository.save(insuranceSummaryEntity);
+          insuranceSummaryRepository.save(insuranceSummaryEntity);
         });
   }
 
   @Override
-  public void updateBasicResponseCode(long banksaladUserId, String organizationId, GinsuSummary ginsuSummary,
+  public void updateBasicResponseCode(long banksaladUserId, String organizationId, InsuranceSummary insuranceSummary,
       String responseCode) {
 
-    ginsuSummaryRepository
+    insuranceSummaryRepository
         .findByBanksaladUserIdAndOrganizationIdAndInsuNum(banksaladUserId, organizationId,
-            ginsuSummary.getInsuNum())
+            insuranceSummary.getInsuNum())
         .ifPresent(insuranceSummaryEntity -> {
           insuranceSummaryEntity.setBasicResponseCode(responseCode);
-          ginsuSummaryRepository.save(insuranceSummaryEntity);
+          insuranceSummaryRepository.save(insuranceSummaryEntity);
         });
   }
 
   @Override
   public void updateTransactionResponseCode(long banksaladUserId, String organizationId,
-      GinsuSummary ginsuSummary, String responseCode) {
+      InsuranceSummary insuranceSummary, String responseCode) {
 
-    ginsuSummaryRepository
+    insuranceSummaryRepository
         .findByBanksaladUserIdAndOrganizationIdAndInsuNum(banksaladUserId, organizationId,
-            ginsuSummary.getInsuNum())
+            insuranceSummary.getInsuNum())
         .ifPresent(insuranceSummaryEntity -> {
           insuranceSummaryEntity.setTransactionResponseCode(responseCode);
-          ginsuSummaryRepository.save(insuranceSummaryEntity);
+          insuranceSummaryRepository.save(insuranceSummaryEntity);
         });
   }
 

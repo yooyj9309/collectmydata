@@ -4,14 +4,14 @@ import org.springframework.stereotype.Component;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.summary.SummaryRequestHelper;
-import com.banksalad.collectmydata.ginsu.summary.dto.ListGinsuSummariesRequest;
+import com.banksalad.collectmydata.ginsu.summary.dto.ListInsuranceSummariesRequest;
 
 @Component
-public class GinsuSummaryRequestHelper implements SummaryRequestHelper<ListGinsuSummariesRequest> {
+public class InsuranceSummaryRequestHelper implements SummaryRequestHelper<ListInsuranceSummariesRequest> {
 
   @Override
-  public ListGinsuSummariesRequest make(ExecutionContext executionContext, long searchTimestamp, String nextPage) {
-    return ListGinsuSummariesRequest.builder()
+  public ListInsuranceSummariesRequest make(ExecutionContext executionContext, long searchTimestamp, String nextPage) {
+    return ListInsuranceSummariesRequest.builder()
         .orgCode(executionContext.getOrganizationCode())
         .searchTimestamp(searchTimestamp)
         .build();
