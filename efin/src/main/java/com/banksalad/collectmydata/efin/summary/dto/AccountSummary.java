@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -37,5 +38,11 @@ public class AccountSummary {
   @JsonProperty("pay_list")
   private List<AccountSummaryPay> accountSummaryPays;
 
+  private long balanceSearchTimestamp;
 
+  private long chargeSearchTimestamp;
+
+  private LocalDateTime transactionSyncedAt;
+
+  private LocalDateTime prepaidTransactionSyncedAt;
 }

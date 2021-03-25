@@ -44,9 +44,6 @@ public class BalanceEntity extends BaseEntity {
   @Column(nullable = false)
   private String fobName;
 
-  @Column(nullable = false)
-  private String fobNo;
-
   @Column(nullable = false, precision = 18, scale = 3)
   private BigDecimal totalBalanceAmt;
 

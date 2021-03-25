@@ -12,7 +12,7 @@
       "is_consent": true,
       "account_status": "01",
       "is_pay_reg": true,
-      "pay_cnt": 1,
+      "pay_cnt": 3,
       "pay_list": [
         {
           "pay_org_code": "080",

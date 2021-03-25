@@ -1,0 +1,26 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "success",
+  "search_timestamp": 1000,
+  "fob_cnt": 2,
+  "fob_list": [
+    {
+      "fob_name": "가상계좌",
+      "total_balance_amt": 1000000,
+      "charge_balance_amt": 10000,
+      "reserve_balance_amt": 0,
+      "reserve_due_amt": 0,
+      "exp_due_amt": 0,
+      "limit_amt": 2000000
+    },
+    {
+      "fob_name": "비밀금고",
+      "total_balance_amt": 500000,
+      "charge_balance_amt": 10000,
+      "reserve_balance_amt": 0,
+      "reserve_due_amt": 0,
+      "exp_due_amt": 0,
+      "limit_amt": 2000000
+    }
+  ]
+}
