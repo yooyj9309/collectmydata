@@ -145,11 +145,11 @@ public class InvestAccountTransactionServiceTest {
 
   private void setupServerInvestAccountTransactionsSinglePage() {
     wiremock.stubFor(post(urlMatching("/accounts/invest/transactions"))
-        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA07_001_single_page_00.json")))
+        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA13_001_single_page_00.json")))
         .willReturn(
             aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/bank/response/BA07_001_single_page_00.json"))));
+                .withBody(readText("classpath:mock/bank/response/BA13_001_single_page_00.json"))));
   }
 }

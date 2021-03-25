@@ -48,7 +48,7 @@ public class Apis {
   //6.2.5 투자상품 계좌 기본 정보 조회
   public static Api finance_bank_invest_account_basic =
       Api.builder()
-          .id("BA05")
+          .id("BA11")
           .name("투자 상품 계좌 기본 정보 조회")
           .endpoint("/accounts/invest/basic")
           .method(HttpMethod.POST.name())
@@ -57,7 +57,7 @@ public class Apis {
   //6.2.6 투자상품 계좌 추가 정보 조회
   public static Api finance_bank_invest_account_detail =
       Api.builder()
-          .id("BA06")
+          .id("BA12")
           .name("투자 상품 계좌 추가 정보 조회")
           .endpoint("/accounts/invest/detail")
           .method(HttpMethod.POST.name())
@@ -66,7 +66,7 @@ public class Apis {
   //6.2.7 투자상품 계좌 거래내역 정보 조회
   public static Api finance_bank_invest_account_transaction =
       Api.builder()
-          .id("BA07")
+          .id("BA13")
           .name("투자 상품 계좌 거래내역 조회")
           .endpoint("/accounts/invest/transactions")
           .method(HttpMethod.POST.name())
@@ -75,7 +75,7 @@ public class Apis {
   //6.2.8 대출상품 기본 정보 조회
   public static Api finance_bank_loan_account_basic =
       Api.builder()
-          .id("BA08")
+          .id("BA21")
           .name("대출 상품 계좌 기본 정보 조회")
           .endpoint("/accounts/loan/basic")
           .method(HttpMethod.POST.name())
@@ -84,7 +84,7 @@ public class Apis {
   //6.2.9 대출상품 추가 정보 조회
   public static Api finance_bank_loan_account_detail =
       Api.builder()
-          .id("BA09")
+          .id("BA22")
           .name("대출 상품 계좌 추가 정보 조회")
           .endpoint("/accounts/loan/detail")
           .method(HttpMethod.POST.name())
@@ -93,7 +93,7 @@ public class Apis {
   //6.2.10 대출상품 계좌 거래내역 정보 조회
   public static Api finance_bank_loan_account_transaction =
       Api.builder()
-          .id("BA10")
+          .id("BA23")
           .name("대출 상품 계좌 거래내역 조회")
           .endpoint("/accounts/loan/transactions")
           .method(HttpMethod.POST.name())

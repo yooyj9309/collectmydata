@@ -143,12 +143,12 @@ public class LoanAccountTransactionServiceTest {
 
   private void setupServerLoanAccountTransactionsSinglePage() {
     wiremock.stubFor(post(urlMatching("/accounts/loan/transactions"))
-        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA10_001_single_page_00.json")))
+        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA23_001_single_page_00.json")))
         .willReturn(
             aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/bank/response/BA10_001_single_page_00.json"))));
+                .withBody(readText("classpath:mock/bank/response/BA23_001_single_page_00.json"))));
   }
 
 }

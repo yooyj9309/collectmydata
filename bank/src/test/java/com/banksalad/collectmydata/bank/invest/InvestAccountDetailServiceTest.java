@@ -132,12 +132,12 @@ class InvestAccountDetailServiceTest {
 
   private void setupServerInvestAccountDetail() throws Exception {
     wiremock.stubFor(post(urlMatching("/accounts/invest/detail"))
-        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA06_001_single_page_00.json")))
+        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA12_001_single_page_00.json")))
         .willReturn(
             aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/bank/response/BA06_001_single_page_00.json"))));
+                .withBody(readText("classpath:mock/bank/response/BA12_001_single_page_00.json"))));
   }
 
   private List<AccountSummary> getAccountSummaries() {

@@ -130,12 +130,12 @@ public class LoanAccountDetailServiceTest {
 
   private void setupServerLoanAccountDetail() throws Exception {
     wiremock.stubFor(post(urlMatching("/accounts/loan/detail"))
-        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA09_001_single_page_00.json")))
+        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA22_001_single_page_00.json")))
         .willReturn(
             aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/bank/response/BA09_001_single_page_00.json"))));
+                .withBody(readText("classpath:mock/bank/response/BA22_001_single_page_00.json"))));
   }
 
   private List<AccountSummary> getAccountSummaries() {
