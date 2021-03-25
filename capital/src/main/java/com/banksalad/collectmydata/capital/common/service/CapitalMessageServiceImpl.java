@@ -54,7 +54,7 @@ public class CapitalMessageServiceImpl implements CapitalMessageService {
     }
 
     return publishKafkaTemplate.send(
-        MessageTopic.bankSyncCompleted,
+        MessageTopic.capitalSyncCompleted,
         String.valueOf(syncCompletedMessage.getBanksaladUserId()),
         message
     );

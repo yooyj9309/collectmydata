@@ -8,7 +8,7 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
 
-import com.banksalad.collectmydata.common.message.MessageTopic;
+import com.banksalad.collectmydata.common.message.ConsumerGroupId;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
@@ -22,12 +22,12 @@ public class KafkaConsumerConfig {
 
   @Bean
   public ConcurrentKafkaListenerContainerFactory<String, String> capitalSyncRequestedKafkaListenerContainerFactory() {
-    return kafkaListenerContainerFactory(MessageTopic.capitalSyncRequested);
+    return kafkaListenerContainerFactory(ConsumerGroupId.collectmydataFinanceCapital);
   }
 
   @Bean
   public ConcurrentKafkaListenerContainerFactory<String, String> capitalPublishmentRequestedKafkaListenerContainerFactory() {
-    return kafkaListenerContainerFactory(MessageTopic.capitalPublishmentRequested);
+    return kafkaListenerContainerFactory(ConsumerGroupId.collectmydataFinanceCapital);
   }
 
   private ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory(String groupId) {
