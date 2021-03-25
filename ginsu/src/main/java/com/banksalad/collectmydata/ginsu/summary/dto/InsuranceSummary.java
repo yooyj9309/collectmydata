@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,4 +29,7 @@ public class InsuranceSummary {
 
   private String insuStatus;
 
+  private long basicSearchTimestamp;
+
+  private LocalDateTime transactionSyncedAt;
 }
