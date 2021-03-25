@@ -42,13 +42,11 @@ public class TelecomMessageServiceImpl implements TelecomMessageService {
 
   @Override
   public ListenableFuture<SendResult<String, String>> produceSyncCompleted(
-      SyncCompletedMessage syncCompletedMessage
-  ) {
+      SyncCompletedMessage syncCompletedMessage) {
     final String message;
 
     try {
       message = objectMapper.writeValueAsString(syncCompletedMessage);
-
     } catch (JsonProcessingException e) {
       throw new CollectRuntimeException("Fail to serialize message", e);
     }
