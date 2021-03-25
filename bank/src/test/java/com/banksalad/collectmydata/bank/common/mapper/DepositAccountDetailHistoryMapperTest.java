@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @DisplayName("수신계좌 추가정보 이력 매퍼 테스트")
 class DepositAccountDetailHistoryMapperTest {
@@ -38,6 +39,7 @@ class DepositAccountDetailHistoryMapperTest {
         .toHistoryEntity(entity);
 
     assertAll(
+        () -> assertNotEquals(entity.getId(), historyEntity.getId()),
         () -> assertEquals(entity.getSyncedAt(), historyEntity.getSyncedAt()),
         () -> assertEquals(entity.getBanksaladUserId(), historyEntity.getBanksaladUserId()),
         () -> assertEquals(entity.getOrganizationId(), historyEntity.getOrganizationId()),
