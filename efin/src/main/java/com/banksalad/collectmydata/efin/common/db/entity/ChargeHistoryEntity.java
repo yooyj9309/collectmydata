@@ -50,13 +50,13 @@ public class ChargeHistoryEntity extends BaseEntity {
   @Column(nullable = false)
   private String chargeOption;
 
-  @Column(nullable = false, columnDefinition = "TINYINT", length = 4)
+  @Column(columnDefinition = "TINYINT", length = 4)
   private Integer chargeDay;
 
-  @Column(nullable = false, precision = 18, scale = 3)
+  @Column(precision = 18, scale = 3)
   private BigDecimal chargeBaseAmt;
 
-  @Column(nullable = false, precision = 18, scale = 3)
+  @Column(precision = 18, scale = 3)
   private BigDecimal chargeAmt;
 
 }

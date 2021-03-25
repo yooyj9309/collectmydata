@@ -17,6 +17,8 @@ import java.math.BigDecimal;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class AccountCharge {
 
+  private String chargeOrgCode;
+
   private String chargeAccountNum;
 
   private String chargeOption;
@@ -26,7 +28,4 @@ public class AccountCharge {
   private BigDecimal chargeBaseAmt;
 
   private BigDecimal chargeAmt;
-
-  @Builder.Default
-  private String currencyCode = "KRW";
 }

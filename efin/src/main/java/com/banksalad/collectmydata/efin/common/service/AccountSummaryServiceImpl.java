@@ -50,6 +50,24 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
     accountSummaryRepository.save(accountSummaryEntity);
   }
 
+  @Override
+  public void updateChargeResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      String responseCode) {
+    AccountSummaryEntity accountSummaryEntity = getAccountSummaryEntity(banksaladUserId, organizationId,
+        accountSummary.getSubKey(), accountSummary.getAccountId());
+    accountSummaryEntity.setChargeResponseCode(responseCode);
+    accountSummaryRepository.save(accountSummaryEntity);
+  }
+
+  @Override
+  public void updateChargeSearchTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      long searchTimestamp) {
+    AccountSummaryEntity accountSummaryEntity = getAccountSummaryEntity(banksaladUserId, organizationId,
+        accountSummary.getSubKey(), accountSummary.getAccountId());
+    accountSummaryEntity.setChargeSearchTimestamp(searchTimestamp);
+    accountSummaryRepository.save(accountSummaryEntity);
+  }
+
   private AccountSummaryEntity getAccountSummaryEntity(long banksaladUserId, String organizationId, String subKey,
       String accountId) {
     return accountSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndSubKeyAndAccountId(

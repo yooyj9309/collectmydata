@@ -13,4 +13,10 @@ public interface AccountSummaryService {
 
   void updateBalanceSearchTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary,
       long searchTimestamp);
+
+  void updateChargeResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      String responseCode);
+
+  void updateChargeSearchTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      long searchTimestamp);
 }
