@@ -13,12 +13,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ExternalTokenResponse {
+public class GetRefreshTokenRequest {
 
-  private String tokenType;
-  private String accessToken;
-  private Integer expiresIn;
+  private String orgCode;
+
+  @Builder.Default
+  private final String grantType = "refresh_token";
+  
   private String refreshToken;
-  private Integer refreshTokenExpiresIn;
-  private String scope;
+  private String clientId;
+  private String clientSecret;
 }

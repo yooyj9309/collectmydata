@@ -10,7 +10,7 @@ import com.banksalad.collectmydata.connect.common.db.repository.OauthTokenReposi
 import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
 import com.banksalad.collectmydata.connect.common.exception.ConnectException;
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
-import com.banksalad.collectmydata.connect.token.dto.ExternalTokenResponse;
+import com.banksalad.collectmydata.connect.token.dto.GetTokenResponse;
 import com.banksalad.collectmydata.connect.token.dto.OauthToken;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.IssueTokenRequest;
@@ -40,7 +40,7 @@ public class OauthTokenServiceImpl implements OauthTokenService {
         .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_ORGANIZATION));
 
     Organization organization = createOrganization(connectOrganizationEntity);
-    ExternalTokenResponse externalTokenResponse = externalTokenService
+    GetTokenResponse getTokenResponse = externalTokenService
         .issueToken(organization, request.getAuthorizationCode());
 
     // TODO query 수정부분
@@ -48,7 +48,7 @@ public class OauthTokenServiceImpl implements OauthTokenService {
         .findByBanksaladUserIdAndOrganizationId(banksaladUserId, request.getOrganizationId())
         .orElse(createOauthTokenEntity(banksaladUserId, request.getOrganizationId()));
 
-    updateFrom(oauthTokenEntity, externalTokenResponse, request.getAuthorizationCode());
+    updateFrom(oauthTokenEntity, getTokenResponse, request.getAuthorizationCode());
     oauthTokenRepository.save(oauthTokenEntity);
 
     return OauthToken.builder()
@@ -67,7 +67,7 @@ public class OauthTokenServiceImpl implements OauthTokenService {
         .findByBanksaladUserIdAndOrganizationId(banksaladUserId, request.getOrganizationId())
         .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_TOKEN));
 
-    if (oauthTokenEntity.getAccessTokenExpiresAt().isBefore(LocalDateTime.now())) {
+    if (isTokenExpired(oauthTokenEntity.getAccessTokenExpiresAt())) {
       RefreshTokenRequest refreshTokenRequest = RefreshTokenRequest.newBuilder()
           .setBanksaladUserId(request.getBanksaladUserId())
           .setOrganizationId(request.getOrganizationId())
@@ -89,7 +89,7 @@ public class OauthTokenServiceImpl implements OauthTokenService {
         .findByBanksaladUserIdAndOrganizationId(banksaladUserId, request.getOrganizationId())
         .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_TOKEN));
 
-    if (oauthTokenEntity.getRefreshTokenExpiresAt().isBefore(LocalDateTime.now())) {
+    if (isTokenExpired(oauthTokenEntity.getRefreshTokenExpiresAt())) {
       throw new ConnectException(ConnectErrorType.EXPIRED_TOKEN);
     }
 
@@ -98,10 +98,10 @@ public class OauthTokenServiceImpl implements OauthTokenService {
         .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_ORGANIZATION));
 
     Organization organization = createOrganization(connectOrganizationEntity);
-    ExternalTokenResponse externalTokenResponse = externalTokenService
+    GetTokenResponse getTokenResponse = externalTokenService
         .refreshToken(organization, oauthTokenEntity.getRefreshToken());
 
-    updateFrom(oauthTokenEntity, externalTokenResponse, null);
+    updateFrom(oauthTokenEntity, getTokenResponse, null);
     oauthTokenRepository.save(oauthTokenEntity);
 
     return OauthToken.builder()
@@ -155,7 +155,7 @@ public class OauthTokenServiceImpl implements OauthTokenService {
         .sector(connectOrganizationEntity.getSector())
         .industry(connectOrganizationEntity.getIndustry())
         .organizationId(connectOrganizationEntity.getOrganizationId())
-        .organizationCode("fixme") // fixme
+        .organizationCode(connectOrganizationEntity.getOrgCode())
         .domain("fixme") // fixme
         .build();
   }
@@ -164,7 +164,7 @@ public class OauthTokenServiceImpl implements OauthTokenService {
     return Arrays.asList(scope.split(" "));
   }
 
-  public void updateFrom(OauthTokenEntity entity, ExternalTokenResponse response, String authorizationCode) {
+  private void updateFrom(OauthTokenEntity entity, GetTokenResponse response, String authorizationCode) {
     if (authorizationCode != null) {
       entity.setAuthorizationCode(authorizationCode);
     }
@@ -177,5 +177,9 @@ public class OauthTokenServiceImpl implements OauthTokenService {
     entity.setRefreshTokenExpiresIn(response.getRefreshTokenExpiresIn());
     entity.setTokenType(response.getTokenType());
     entity.setScope(response.getScope());
+  }
+
+  private boolean isTokenExpired(LocalDateTime expirationTime) {
+    return expirationTime.isBefore(LocalDateTime.now());
   }
 }

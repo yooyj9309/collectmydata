@@ -13,11 +13,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ExternalRevokeTokenRequest {
+public class GetIssueTokenRequest {
 
   private String orgCode;
-  private String token; // 폐기할 토큰 : tokenTypeHint 미지정시 access token, refresh token 모두 폐기
-  private String tokenTypeHint; // 폐기할 토큰 유형 : access token, refresh token
+
+  @Builder.Default
+  private final String grantType = "authorization_code";
+
+  private String code;
   private String clientId;
   private String clientSecret;
+  private String redirectUri;
 }

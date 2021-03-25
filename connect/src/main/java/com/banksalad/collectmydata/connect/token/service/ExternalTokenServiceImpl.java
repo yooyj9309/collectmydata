@@ -20,10 +20,10 @@ import com.banksalad.collectmydata.connect.common.exception.ConnectException;
 import com.banksalad.collectmydata.connect.common.meters.ConnectMeterRegistry;
 import com.banksalad.collectmydata.connect.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
-import com.banksalad.collectmydata.connect.token.dto.ExternalIssueTokenRequest;
-import com.banksalad.collectmydata.connect.token.dto.ExternalRefreshTokenRequest;
-import com.banksalad.collectmydata.connect.token.dto.ExternalRevokeTokenRequest;
-import com.banksalad.collectmydata.connect.token.dto.ExternalTokenResponse;
+import com.banksalad.collectmydata.connect.token.dto.GetIssueTokenRequest;
+import com.banksalad.collectmydata.connect.token.dto.GetRefreshTokenRequest;
+import com.banksalad.collectmydata.connect.token.dto.GetRevokeTokenRequest;
+import com.banksalad.collectmydata.connect.token.dto.GetTokenResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -38,10 +38,10 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
   private String redirectUrl;
 
   @Override
-  public ExternalTokenResponse issueToken(Organization organization, String authorizationCode) {
+  public GetTokenResponse issueToken(Organization organization, String authorizationCode) {
     BanksaladClientSecretEntity banksaladClientSecretEntity = getOrganizationClientEntity(organization);
 
-    ExternalIssueTokenRequest request = ExternalIssueTokenRequest.builder()
+    GetIssueTokenRequest request = GetIssueTokenRequest.builder()
         .orgCode(organization.getOrganizationCode())
         .code(authorizationCode)
         .clientId(banksaladClientSecretEntity.getClientId())
@@ -49,24 +49,24 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
         .redirectUri(redirectUrl)
         .build();
 
-    ExecutionRequest<ExternalIssueTokenRequest> executionRequest = ExecutionUtil.executionRequestAssembler(request);
+    ExecutionRequest<GetIssueTokenRequest> executionRequest = ExecutionUtil.executionRequestAssembler(request);
     ExecutionContext executionContext = buildExecutionContext(organization);
 
     return execute(executionContext, Executions.oauth_issue_token, executionRequest);
   }
 
   @Override
-  public ExternalTokenResponse refreshToken(Organization organization, String refreshToken) {
+  public GetTokenResponse refreshToken(Organization organization, String refreshToken) {
     BanksaladClientSecretEntity banksaladClientSecretEntity = getOrganizationClientEntity(organization);
 
-    ExternalRefreshTokenRequest request = ExternalRefreshTokenRequest.builder()
+    GetRefreshTokenRequest request = GetRefreshTokenRequest.builder()
         .orgCode(organization.getOrganizationCode())
         .refreshToken(refreshToken)
         .clientId(banksaladClientSecretEntity.getClientId())
         .clientSecret(banksaladClientSecretEntity.getClientSecret())
         .build();
 
-    ExecutionRequest<ExternalRefreshTokenRequest> executionRequest = ExecutionUtil.executionRequestAssembler(request);
+    ExecutionRequest<GetRefreshTokenRequest> executionRequest = ExecutionUtil.executionRequestAssembler(request);
     ExecutionContext executionContext = buildExecutionContext(organization);
 
     return execute(executionContext, Executions.oauth_refresh_token, executionRequest);
@@ -76,14 +76,14 @@ public class ExternalTokenServiceImpl implements ExternalTokenService {
   public void revokeToken(Organization organization, String accessToken) {
     BanksaladClientSecretEntity banksaladClientSecretEntity = getOrganizationClientEntity(organization);
 
-    ExternalRevokeTokenRequest request = ExternalRevokeTokenRequest.builder()
+    GetRevokeTokenRequest request = GetRevokeTokenRequest.builder()
         .orgCode(organization.getOrganizationCode())
         .token(accessToken)
         .clientId(banksaladClientSecretEntity.getClientId())
         .clientSecret(banksaladClientSecretEntity.getClientSecret())
         .build();
 
-    ExecutionRequest<ExternalRevokeTokenRequest> executionRequest = ExecutionUtil.executionRequestAssembler(request);
+    ExecutionRequest<GetRevokeTokenRequest> executionRequest = ExecutionUtil.executionRequestAssembler(request);
     ExecutionContext executionContext = buildExecutionContext(organization);
 
     execute(executionContext, Executions.oauth_revoke_token, executionRequest);
