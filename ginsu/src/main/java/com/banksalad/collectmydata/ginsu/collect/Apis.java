@@ -17,7 +17,7 @@ public class Apis {
           .method(HttpMethod.GET.name())
           .build();
 
-  public static Api finance_ginsu_account_basic =
+  public static Api finance_ginsu_insurance_basic =
       Api.builder()
           .id("GI02")
           .name("보증 보험 기본 정보 조회")

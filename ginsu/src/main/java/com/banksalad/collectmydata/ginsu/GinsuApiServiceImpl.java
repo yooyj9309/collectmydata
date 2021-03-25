@@ -5,12 +5,17 @@ import org.springframework.stereotype.Service;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.enums.SyncRequestType;
 import com.banksalad.collectmydata.common.util.DateUtil;
+import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
+import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
+import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
 import com.banksalad.collectmydata.finance.api.summary.SummaryRequestHelper;
 import com.banksalad.collectmydata.finance.api.summary.SummaryResponseHelper;
 import com.banksalad.collectmydata.finance.api.summary.SummaryService;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.banksalad.collectmydata.ginsu.collect.Executions;
 import com.banksalad.collectmydata.ginsu.common.dto.GinsuApiResponse;
+import com.banksalad.collectmydata.ginsu.insurance.dto.GetInsuranceBasicRequest;
+import com.banksalad.collectmydata.ginsu.insurance.dto.InsuranceBasic;
 import com.banksalad.collectmydata.ginsu.summary.dto.InsuranceSummary;
 import com.banksalad.collectmydata.ginsu.summary.dto.ListInsuranceSummariesRequest;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +34,11 @@ public class GinsuApiServiceImpl implements GinsuApiService {
   private final SummaryService<ListInsuranceSummariesRequest, InsuranceSummary> insuranceSummaryService;
   private final SummaryRequestHelper<ListInsuranceSummariesRequest> summaryRequestHelper;
   private final SummaryResponseHelper<InsuranceSummary> summaryResponseHelper;
+
+  private final AccountInfoService<InsuranceSummary, GetInsuranceBasicRequest, InsuranceBasic> insuranceBasicApiService;
+
+  private final AccountInfoRequestHelper<GetInsuranceBasicRequest, InsuranceSummary> insuranceBasicInfoRequestHelper;
+  private final AccountInfoResponseHelper<InsuranceSummary, InsuranceBasic> insuranceBasicInfoResponseHelper;
 
   @Override
   public GinsuApiResponse requestApi(long banksaladUserId, String organizationId, String syncRequestId,
@@ -53,7 +63,12 @@ public class GinsuApiServiceImpl implements GinsuApiService {
     AtomicReference<GinsuApiResponse> ginsuApiResponse = new AtomicReference<>();
     ginsuApiResponse.set(GinsuApiResponse.builder().build());
 
-    CompletableFuture.allOf().join();
+    CompletableFuture.allOf(
+        CompletableFuture.supplyAsync(
+            () -> insuranceBasicApiService.listAccountInfos(executionContext, Executions.finance_ginsu_insurance_basic,
+                insuranceBasicInfoRequestHelper, insuranceBasicInfoResponseHelper))
+    ).join();
+
     return ginsuApiResponse.get();
   }
 }
