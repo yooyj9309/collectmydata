@@ -11,11 +11,16 @@ import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
 import com.banksalad.collectmydata.finance.api.summary.SummaryRequestHelper;
 import com.banksalad.collectmydata.finance.api.summary.SummaryResponseHelper;
 import com.banksalad.collectmydata.finance.api.summary.SummaryService;
+import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
+import com.banksalad.collectmydata.finance.api.transaction.TransactionRequestHelper;
+import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.banksalad.collectmydata.ginsu.collect.Executions;
 import com.banksalad.collectmydata.ginsu.common.dto.GinsuApiResponse;
 import com.banksalad.collectmydata.ginsu.insurance.dto.GetInsuranceBasicRequest;
 import com.banksalad.collectmydata.ginsu.insurance.dto.InsuranceBasic;
+import com.banksalad.collectmydata.ginsu.insurance.dto.InsuranceTransaction;
+import com.banksalad.collectmydata.ginsu.insurance.dto.ListInsuranceTransactionsRequest;
 import com.banksalad.collectmydata.ginsu.summary.dto.InsuranceSummary;
 import com.banksalad.collectmydata.ginsu.summary.dto.ListInsuranceSummariesRequest;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +44,10 @@ public class GinsuApiServiceImpl implements GinsuApiService {
 
   private final AccountInfoRequestHelper<GetInsuranceBasicRequest, InsuranceSummary> insuranceBasicInfoRequestHelper;
   private final AccountInfoResponseHelper<InsuranceSummary, InsuranceBasic> insuranceBasicInfoResponseHelper;
+
+  private final TransactionApiService<InsuranceSummary, ListInsuranceTransactionsRequest, InsuranceTransaction> insuranceTransactionApiService;
+  private final TransactionRequestHelper<InsuranceSummary, ListInsuranceTransactionsRequest> insuranceTransactionRequestHelper;
+  private final TransactionResponseHelper<InsuranceSummary, InsuranceTransaction> insuranceTransactionResponseHelper;
 
   @Override
   public GinsuApiResponse requestApi(long banksaladUserId, String organizationId, String syncRequestId,
@@ -66,7 +75,15 @@ public class GinsuApiServiceImpl implements GinsuApiService {
     CompletableFuture.allOf(
         CompletableFuture.supplyAsync(
             () -> insuranceBasicApiService.listAccountInfos(executionContext, Executions.finance_ginsu_insurance_basic,
-                insuranceBasicInfoRequestHelper, insuranceBasicInfoResponseHelper))
+                insuranceBasicInfoRequestHelper, insuranceBasicInfoResponseHelper)),
+
+        CompletableFuture.supplyAsync(
+            () -> insuranceTransactionApiService.listTransactions(
+                executionContext,
+                Executions.finance_ginsu_insurance_transaction,
+                insuranceTransactionRequestHelper,
+                insuranceTransactionResponseHelper)
+        )
     ).join();
 
     return ginsuApiResponse.get();

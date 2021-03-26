@@ -17,11 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InsuranceBasicInfoRequestHelper implements
     AccountInfoRequestHelper<GetInsuranceBasicRequest, InsuranceSummary> {
-
-  private static final long DEFAULT_SEARCH_TIME_STAMP = 0L;
-
   private final InsuranceSummaryService insuranceSummaryService;
-  private final InsuranceSummaryRepository insuranceSummaryRepository;
 
   @Override
   public List<InsuranceSummary> listSummaries(ExecutionContext executionContext) {
@@ -31,15 +27,11 @@ public class InsuranceBasicInfoRequestHelper implements
 
   @Override
   public GetInsuranceBasicRequest make(ExecutionContext executionContext, InsuranceSummary insuranceSummary) {
-    long searchTimestamp = insuranceSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndInsuNum(
-        executionContext.getBanksaladUserId(), executionContext.getOrganizationId(), insuranceSummary.getInsuNum())
-        .map(InsuranceSummaryEntity::getBasicSearchTimestamp)
-        .orElseGet(() -> DEFAULT_SEARCH_TIME_STAMP);
 
     return GetInsuranceBasicRequest.builder()
         .orgCode(executionContext.getOrganizationCode())
         .insuNum(insuranceSummary.getInsuNum())
-        .searchTimestamp(searchTimestamp)
+        .searchTimestamp(insuranceSummary.getBasicSearchTimestamp())
         .build();
   }
 }
