@@ -26,15 +26,15 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
   public List<AccountSummary> listSummariesConsented(long banksaladUserId, String organizationId,
       boolean demandOperatingLeaseAccount) {
 
-    List<AccountSummaryEntity> response = null;
+    List<AccountSummaryEntity> response;
     // TODO dusang, if else 걷어내고 그냥 리턴으로 할지 고민이됩니다.
     // yonggeon: DB에서 미리 거르는 것이 효율적이라 생각되어 수정합니다.
     if (demandOperatingLeaseAccount) {
-      response = accountSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndIsConsentAndAccountType(
-          banksaladUserId, organizationId, true, OPERATING_LEASE_ACCOUNT_TYPE);
+      response = accountSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndIsConsentIsTrueAndAccountType(
+          banksaladUserId, organizationId, OPERATING_LEASE_ACCOUNT_TYPE);
     } else {
-      response = accountSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndIsConsentAndAccountTypeNot(
-          banksaladUserId, organizationId, true, OPERATING_LEASE_ACCOUNT_TYPE);
+      response = accountSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndIsConsentIsTrueAndAccountTypeNot(
+          banksaladUserId, organizationId, OPERATING_LEASE_ACCOUNT_TYPE);
     }
     
     return response.stream().map(accountSummaryMapper::entityToDto).collect(Collectors.toList());

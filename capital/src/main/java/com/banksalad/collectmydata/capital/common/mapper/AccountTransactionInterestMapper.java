@@ -26,14 +26,4 @@ public interface AccountTransactionInterestMapper {
   })
   AccountTransactionInterestEntity toEntity(AccountTransactionEntity accountTransactionEntity,
       AccountTransactionInterest accountTransactionInterest);
-
-  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-  @Mappings(value = {
-      // Must ignore id from `accountTransactionEntity`.
-      @Mapping(target = "id", ignore = true),
-      @Mapping(target = "intRate", qualifiedByName = "BigDecimalScale3")
-  })
-  void merge(AccountTransactionEntity accountTransactionEntity,
-      AccountTransactionInterest accountTransactionInterest,
-      @MappingTarget AccountTransactionInterestEntity accountTransactionInterestEntity);
 }

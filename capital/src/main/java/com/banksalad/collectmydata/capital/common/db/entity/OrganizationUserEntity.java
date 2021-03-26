@@ -39,5 +39,4 @@ public class OrganizationUserEntity extends BaseEntity {
 
   @Column(nullable = false)
   private String regDate;
-
 }

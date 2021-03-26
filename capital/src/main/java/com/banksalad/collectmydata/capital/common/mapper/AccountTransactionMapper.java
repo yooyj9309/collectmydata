@@ -24,5 +24,4 @@ public interface AccountTransactionMapper {
   })
   void merge(AccountTransactionEntity sourceAccountTransactionEntity,
       @MappingTarget AccountTransactionEntity targetAccountTransactionEntity);
-
 }

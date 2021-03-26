@@ -7,6 +7,6 @@ import com.banksalad.collectmydata.capital.common.db.entity.AccountTransactionIn
 public interface AccountTransactionInterestRepository extends JpaRepository<AccountTransactionInterestEntity, Long> {
 
   void deleteAllByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransactionYearMonthAndUniqueTransNo(
-      long banksaladUserId, String organizationId, String accountNum, String seqno, Integer transactionYearMonth,
+      Long banksaladUserId, String organizationId, String accountNum, String seqno, Integer transactionYearMonth,
       String uniqueTransNo);
 }

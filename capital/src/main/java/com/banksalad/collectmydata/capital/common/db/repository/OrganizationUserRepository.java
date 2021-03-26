@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface OrganizationUserRepository extends JpaRepository<OrganizationUserEntity, Long> {
 
-  Optional<OrganizationUserEntity> findByBanksaladUserIdAndOrganizationId(long banksaladUserId, String organizationId);
+  Optional<OrganizationUserEntity> findByBanksaladUserIdAndOrganizationId(Long banksaladUserId, String organizationId);
 }

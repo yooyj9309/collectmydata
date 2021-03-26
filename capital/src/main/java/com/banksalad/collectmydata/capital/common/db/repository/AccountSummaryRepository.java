@@ -12,12 +12,9 @@ public interface AccountSummaryRepository extends JpaRepository<AccountSummaryEn
   Optional<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(Long banksaladUserId,
       String organizationId, String accountNum, String seqno);
 
-  List<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndIsConsent(Long banksaladUserId,
-      String organizationId, Boolean isConsent);
+  List<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndIsConsentIsTrueAndAccountType(Long banksaladUserId,
+      String organizationId, String accountType);
 
-  List<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndIsConsentAndAccountType(Long banksaladUserId,
-      String organizationId, Boolean isConsent, String accountType);
-
-  List<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndIsConsentAndAccountTypeNot(Long banksaladUserId,
-      String organizationId, Boolean isConsent, String accountType);
+  List<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndIsConsentIsTrueAndAccountTypeNot(Long banksaladUserId,
+      String organizationId, String accountType);
 }
