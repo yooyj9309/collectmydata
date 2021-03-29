@@ -10,9 +10,6 @@ import java.util.Optional;
 
 public interface InsuranceContractRepository extends JpaRepository<InsuranceContractEntity, Long> {
 
-  Optional<InsuranceContractEntity> findByBanksaladUserIdAndOrganizationIdAndInsuNumAndInsuredNo(Long banksaladUserId,
-      String organizationId, String insuNum, String insuredNo);
-
   List<InsuranceContractEntity> findAllByBanksaladUserIdAndOrganizationIdAndInsuNum(Long banksaladUserId,
       String organizationId, String insuNum);
 

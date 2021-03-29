@@ -10,7 +10,4 @@ import java.util.Optional;
 @Repository
 public interface LoanDetailHistoryRepository extends JpaRepository<LoanDetailHistoryEntity, Long> {
 
-  Optional<LoanDetailHistoryEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNum(Long bankSaladUserId,
-      String organizationId, String accountNum);
-
 }

@@ -68,7 +68,7 @@ public class InsurancePaymentServiceImpl implements InsurancePaymentService {
 
         InsurancePaymentEntity insurancePaymentEntity = saveInsurancePaymentWithHistory(executionContext,
             insuranceSummary, insurancePaymentResponse);
-        insurancePayments.add(insurancePaymentMapper.toInsurancePaymentFrom(insurancePaymentEntity));
+        insurancePayments.add(insurancePaymentMapper.entityToDto(insurancePaymentEntity));
 
       } catch (Exception e) {
         isExceptionOccurred = TRUE;
@@ -91,7 +91,7 @@ public class InsurancePaymentServiceImpl implements InsurancePaymentService {
       InsuranceSummary insuranceSummary, GetInsurancePaymentResponse insurancePaymentResponse) {
 
     InsurancePaymentEntity insurancePaymentEntity = insurancePaymentMapper
-        .toInsurancePaymentEntityFrom(insurancePaymentResponse);
+        .dtoToEntity(insurancePaymentResponse);
     insurancePaymentEntity.setSyncedAt(executionContext.getSyncStartedAt());
     insurancePaymentEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
     insurancePaymentEntity.setOrganizationId(executionContext.getOrganizationId());
@@ -110,7 +110,7 @@ public class InsurancePaymentServiceImpl implements InsurancePaymentService {
         "syncedAt", "createdAt", "createdBy", "updatedAt", "updatedBy")) {
       insurancePaymentRepository.save(insurancePaymentEntity);
       insurancePaymentHistoryRepository
-          .save(insurancePaymentHistoryMapper.toInsurancePaymentHistoryEntityFrom(insurancePaymentEntity));
+          .save(insurancePaymentHistoryMapper.toHistoryEntity(insurancePaymentEntity));
     }
 
     return insurancePaymentEntity;

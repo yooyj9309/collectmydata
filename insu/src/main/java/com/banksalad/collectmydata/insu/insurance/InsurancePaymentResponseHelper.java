@@ -70,7 +70,7 @@ public class InsurancePaymentResponseHelper implements AccountInfoResponseHelper
     if (!ObjectComparator.isSame(entity, existingEntity, ENTITY_EXCLUDE_FIELD)) {
       insurancePaymentRepository.save(entity);
       insurancePaymentHistoryRepository
-          .save(insurancePaymentHistoryMapper.toInsurancePaymentHistoryEntityFrom(entity));
+          .save(insurancePaymentHistoryMapper.toHistoryEntity(entity));
     }
   }
 

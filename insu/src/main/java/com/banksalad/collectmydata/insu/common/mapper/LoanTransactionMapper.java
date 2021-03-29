@@ -8,5 +8,5 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface LoanTransactionMapper {
 
-  LoanTransactionEntity toLoanTransactionEntityFrom(LoanTransaction loanTransaction);
+  LoanTransactionEntity dtoToEntity(LoanTransaction loanTransaction);
 }

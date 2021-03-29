@@ -11,5 +11,5 @@ import org.mapstruct.ReportingPolicy;
 public interface InsurancePaymentHistoryMapper {
 
   @Mapping(target = "id", ignore = true)
-  InsurancePaymentHistoryEntity toInsurancePaymentHistoryEntityFrom(InsurancePaymentEntity insurancePaymentEntity);
+  InsurancePaymentHistoryEntity toHistoryEntity(InsurancePaymentEntity insurancePaymentEntity);
 }

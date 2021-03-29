@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface LoanTransactionRepository extends JpaRepository<LoanTransactionEntity, Long> {
 
   Optional<LoanTransactionEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndTransDtimeAndTransNoAndTransactionYearMonth(
-      long banksaladUserId, String organizationId, String accountNum, String transDtime, String transNo,
+      Long banksaladUserId, String organizationId, String accountNum, String transDtime, String transNo,
       Integer transactionYearMonth);
 }

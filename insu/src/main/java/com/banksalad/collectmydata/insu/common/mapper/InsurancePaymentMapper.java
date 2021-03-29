@@ -9,7 +9,7 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface InsurancePaymentMapper {
 
-  InsurancePaymentEntity toInsurancePaymentEntityFrom(GetInsurancePaymentResponse insurancePaymentResponse);
+  InsurancePaymentEntity dtoToEntity(GetInsurancePaymentResponse insurancePaymentResponse);
 
-  InsurancePayment toInsurancePaymentFrom(InsurancePaymentEntity insurancePaymentEntity);
+  InsurancePayment entityToDto(InsurancePaymentEntity insurancePaymentEntity);
 }

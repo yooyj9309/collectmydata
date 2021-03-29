@@ -10,8 +10,5 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface LoanBasicMapper {
 
-  LoanBasicEntity responseDtoToEntity(GetLoanBasicResponse response);
-
   LoanBasic entityToDto(LoanBasicEntity entity);
-
 }

@@ -8,5 +8,5 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface InsuranceBasicMapper {
 
-  InsuranceBasicEntity toEntity(InsuranceBasic insuranceBasic);
+  InsuranceBasicEntity dtoToEntity(InsuranceBasic insuranceBasic);
 }

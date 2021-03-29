@@ -9,7 +9,7 @@ public interface LoanTransactionInterestRepository extends JpaRepository<LoanTra
 
   @Transactional
   void deleteAllByBanksaladUserIdAndOrganizationIdAndAccountNumAndTransDtimeAndTransNoAndTransactionYearMonth(
-      long banksaladUserId, String organizationId, String accountNum, String transDtime, String transNo,
+      Long banksaladUserId, String organizationId, String accountNum, String transDtime, String transNo,
       Integer transactionYearMonth
   );
 }

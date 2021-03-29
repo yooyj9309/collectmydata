@@ -55,7 +55,7 @@ public class InsuranceBasicResponseHelper implements AccountInfoResponseHelper<I
     String organizationId = executionContext.getOrganizationId();
     String insuNum = insuranceSummary.getInsuNum();
 
-    InsuranceBasicEntity insuranceBasicEntity = insuranceBasicMapper.toEntity(insuranceBasic);
+    InsuranceBasicEntity insuranceBasicEntity = insuranceBasicMapper.dtoToEntity(insuranceBasic);
     insuranceBasicEntity.setSyncedAt(executionContext.getSyncStartedAt());
     insuranceBasicEntity.setBanksaladUserId(banksaladUserId);
     insuranceBasicEntity.setOrganizationId(organizationId);
