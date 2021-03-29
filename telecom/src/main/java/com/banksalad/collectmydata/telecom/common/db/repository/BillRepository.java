@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface BillRepository extends JpaRepository<BillEntity, Long> {
 
-  Optional<BillEntity> findByBanksaladUserIdAndOrganizationIdAndChargeMonthAndMgmtId(long banksaladUserId,
+  Optional<BillEntity> findByBanksaladUserIdAndOrganizationIdAndChargeMonthAndMgmtId(Long banksaladUserId,
       String organizationId, int chargeMonth, String mgmtId);
 }

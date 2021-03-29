@@ -15,11 +15,5 @@ import org.mapstruct.ReportingPolicy;
 public interface PaidTransactionMapper {
 
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-  void mergeDtoToEntity(TelecomPaidTransaction telecomPaidTransaction,
-      @MappingTarget PaidTransactionEntity paidTransactionEntity);
-
-  TelecomPaidTransaction entityToDto(PaidTransactionEntity paidTransactionEntity);
-
-  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
   PaidTransactionEntity dtoToEntity(TelecomPaidTransaction telecomPaidTransaction);
 }

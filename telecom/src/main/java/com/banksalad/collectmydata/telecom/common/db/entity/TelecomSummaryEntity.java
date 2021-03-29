@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.telecom.common.db.entity;
 
+import com.banksalad.collectmydata.finance.common.db.entity.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,7 +23,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "telecom_summary")
-public class TelecomSummaryEntity extends BaseTimeAndUserEntity {
+public class TelecomSummaryEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,7 +57,6 @@ public class TelecomSummaryEntity extends BaseTimeAndUserEntity {
 
   private LocalDateTime paidTransactionSyncedAt;
 
-  // DB 명세서 추가 전이지만 미리 만들어 둠.
   private String transactionResponseCode;
 
   private String paidTransactionResponseCode;
