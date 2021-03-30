@@ -140,7 +140,7 @@ public class SupportServiceImplTest {
 //            aResponse()
 //                .withStatus(HttpStatus.OK.value())
 //                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-//                .withBody(readText("classpath:mock/api7/SU01_001.json"))));
+//                .withBody(readText("classpath:mock/response/SU01_001.json"))));
 //
 //    // 7.1.2 기관정보 조회
 //    wiremock.stubFor(get(urlMatching("/mgmts/orgs.*"))
@@ -149,6 +149,6 @@ public class SupportServiceImplTest {
 //            aResponse()
 //                .withStatus(HttpStatus.OK.value())
 //                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-//                .withBody(readText("classpath:mock/api7/SU02_001.json"))));
+//                .withBody(readText("classpath:mock/response/SU02_001.json"))));
 //  }
 }

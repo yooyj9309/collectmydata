@@ -43,6 +43,8 @@ public class ConnectOrganizationEntity extends BaseEntity {
   @Column(nullable = false)
   private String organizationStatus;
 
+  private String domain;
+
   @Column(name = "is_deleted", nullable = false, columnDefinition = "TINYINT")
   private Boolean deleted;
 }

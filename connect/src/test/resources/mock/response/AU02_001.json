@@ -4,5 +4,5 @@
   "expires_in": 324000,
   "refresh_token": "refreshToken",
   "refresh_token_expires_in": 1314000,
-  "scope": "industry.scope1 industry.scope2"
+  "scope": "card.loan card.bill"
 }

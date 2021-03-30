@@ -1,0 +1,8 @@
+{
+  "token_type": "Bearer",
+  "access_token": "accessToken",
+  "expires_in": 324000,
+  "refresh_token": "refreshToken",
+  "refresh_token_expires_in": 1314000,
+  "scope": "card.loan card.bill"
+}

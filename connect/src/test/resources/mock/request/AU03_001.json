@@ -1,0 +1,7 @@
+{
+  "org_code": "10041004",
+  "token": "accessToken",
+  "token_type_hint": "access_token",
+  "client_id": "clientId",
+  "client_secret": "clientSecret"
+}

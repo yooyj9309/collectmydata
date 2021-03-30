@@ -37,5 +37,4 @@ public class ServiceClientIpEntity extends BaseEntity {
 
   @Column(nullable = false)
   private String clientIp;
-
 }

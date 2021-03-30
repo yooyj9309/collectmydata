@@ -20,7 +20,13 @@ public class ConnectConstant {
   public static final String REFRESH_TOKEN = "refreshToken";
   public static final String CONSENT_ID = "consentId";
   public static final String TOKEN_TYPE = "Bearer";
+  public static final String TOKEN_TYPE_HINT = "access_token";
+  public static final String GRANT_TYPE = "refresh_token";
   public static final String SCOPE = "card.loan card.bill";
+  public static final String CLIENT_ID = "clientId";
+  public static final String CLIENT_SECRET = "clientSecret";
+  public static final String REDIRECT_URI = "http://fixme.com";
+  public static final String DOMAIN = "http://domain.com";
 
   public static final LocalDateTime ACCESS_TOKEN_EXPIRES_AT = LocalDateTime.now().plusDays(90);
   public static final LocalDateTime REFRESH_TOKEN_EXPIRES_AT = LocalDateTime.now().plusDays(365);

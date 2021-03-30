@@ -35,7 +35,6 @@ public class OrganizationEntity extends BaseEntity {
   @Column(nullable = false)
   private String industry;
 
-  @Column(nullable = false)
   private String organizationId;
 
   @Column(nullable = false)
