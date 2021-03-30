@@ -35,5 +35,13 @@ public class Apis {
           .method(HttpMethod.GET.name())
           .build();
 
+  public static Api finance_card_bills =
+      Api.builder()
+          .id("CD21")
+          .name("CD21-청구 기본정보 조회")
+          .endpoint(
+              "/cards/bills?org_code={org_code}&from_month={from_month}&to_month={to_month}&next_page={next_page}&limit={limit}")
+          .method(HttpMethod.GET.name())
+          .build();
 
 }
