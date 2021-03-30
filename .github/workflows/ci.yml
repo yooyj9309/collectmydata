@@ -25,7 +25,126 @@ jobs:
         env:
           GH_USERNAME: ${{ secrets.GH_USERNAME }}
           GH_DAAS_PACKAGES_TOKEN: ${{ secrets.GH_DAAS_PACKAGES_TOKEN }}
-        run: ./gradlew -s test
+        run: ./gradlew -s test jacocoTestReport
+
+      - name: Generate Bank JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2.0.1
+        with:
+          generate-coverage-badge: true
+          generate-branches-badge: true
+          branches-badge-filename: bank-branch.svg
+          coverage-badge-filename: bank.svg
+          jacoco-csv-file: ./bank/build/reports/jacoco/test/jacocoTestReport.csv
+
+      - name: Generate Capital JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2.0.1
+        with:
+          generate-coverage-badge: true
+          generate-branches-badge: true
+          branches-badge-filename: capital-branch.svg
+          coverage-badge-filename: capital.svg
+          jacoco-csv-file: ./capital/build/reports/jacoco/test/jacocoTestReport.csv
+
+      - name: Generate Card JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2.0.1
+        with:
+          generate-coverage-badge: true
+          generate-branches-badge: true
+          branches-badge-filename: card-branch.svg
+          coverage-badge-filename: card.svg
+          jacoco-csv-file: ./card/build/reports/jacoco/test/jacocoTestReport.csv
+
+      - name: Generate connect JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2.0.1
+        with:
+          generate-coverage-badge: true
+          generate-branches-badge: true
+          branches-badge-filename: connect-branch.svg
+          coverage-badge-filename: connect.svg
+          jacoco-csv-file: ./connect/build/reports/jacoco/test/jacocoTestReport.csv
+
+      - name: Generate efin JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2.0.1
+        with:
+          generate-coverage-badge: true
+          generate-branches-badge: true
+          branches-badge-filename: efin-branch.svg
+          coverage-badge-filename: efin.svg
+          jacoco-csv-file: ./efin/build/reports/jacoco/test/jacocoTestReport.csv
+
+      - name: Generate ginsu JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2.0.1
+        with:
+          generate-coverage-badge: true
+          generate-branches-badge: true
+          branches-badge-filename: ginsu-branch.svg
+          coverage-badge-filename: ginsu.svg
+          jacoco-csv-file: ./ginsu/build/reports/jacoco/test/jacocoTestReport.csv
+
+      - name: Generate insu JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2.0.1
+        with:
+          generate-coverage-badge: true
+          generate-branches-badge: true
+          branches-badge-filename: insu-branch.svg
+          coverage-badge-filename: insu.svg
+          jacoco-csv-file: ./insu/build/reports/jacoco/test/jacocoTestReport.csv
+
+      - name: Generate invest JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2.0.1
+        with:
+          generate-coverage-badge: true
+          generate-branches-badge: true
+          branches-badge-filename: invest-branch.svg
+          coverage-badge-filename: invest.svg
+          jacoco-csv-file: ./invest/build/reports/jacoco/test/jacocoTestReport.csv
+
+      - name: Generate irp JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2.0.1
+        with:
+          generate-coverage-badge: true
+          generate-branches-badge: true
+          branches-badge-filename: irp-branch.svg
+          coverage-badge-filename: irp.svg
+          jacoco-csv-file: ./irp/build/reports/jacoco/test/jacocoTestReport.csv
+
+      - name: Generate oauth JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2.0.1
+        with:
+          generate-coverage-badge: true
+          generate-branches-badge: true
+          branches-badge-filename: oauth-branch.svg
+          coverage-badge-filename: oauth.svg
+          jacoco-csv-file: ./oauth/build/reports/jacoco/test/jacocoTestReport.csv
+
+      - name: Generate schedule JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2.0.1
+        with:
+          generate-coverage-badge: true
+          generate-branches-badge: true
+          branches-badge-filename: schedule-branch.svg
+          coverage-badge-filename: schedule.svg
+          jacoco-csv-file: ./schedule/build/reports/jacoco/test/jacocoTestReport.csv
+
+      - name: Generate telecom JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2.0.1
+        with:
+          generate-coverage-badge: true
+          generate-branches-badge: true
+          branches-badge-filename: telecom-branch.svg
+          coverage-badge-filename: telecom.svg
+          jacoco-csv-file: ./telecom/build/reports/jacoco/test/jacocoTestReport.csv
+
+      - name: Commit the badge (if it changed)
+        run: |
+          if [[ `git status --porcelain` ]]; then
+            git config --global user.email "banksalad@rainist.com"
+            git config --global user.name "Banksalad"
+            git checkout -f --orphan badges
+            git add -f ./.github/badges
+            git commit -m "Autogenerated JaCoCo coverage badge" --  ./.github/badges
+            git push -f origin badges
+          fi
 
   build:
     name: Build

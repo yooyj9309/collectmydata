@@ -1,6 +1,21 @@
 # collectmydata
 
-
+# Coverage
+| module | coverage |
+| ---: |:---:|
+| `bank` | ![Coverage](https://github.com/banksalad/collectmydata/blob/badges/.github/badges/bank-branch.svg?raw=true) |
+| `capital` | ![Coverage](https://github.com/banksalad/collectmydata/blob/badges/.github/badges/capital-branch.svg?raw=true) |
+| `card` | ![Coverage](https://github.com/banksalad/collectmydata/blob/badges/.github/badges/card-branch.svg?raw=true) |
+| `efin` | ![Coverage](https://github.com/banksalad/collectmydata/blob/badges/.github/badges/efin-branch.svg?raw=true) |
+| `insu` | ![Coverage](https://github.com/banksalad/collectmydata/blob/badges/.github/badges/insu-branch.svg?raw=true) |
+| `irp` | ![Coverage](https://github.com/banksalad/collectmydata/blob/badges/.github/badges/irp-branch.svg?raw=true) |
+| `invest` | ![Coverage](https://github.com/banksalad/collectmydata/blob/badges/.github/badges/invest-branch.svg?raw=true) |
+| `telecom` | ![Coverage](https://github.com/banksalad/collectmydata/blob/badges/.github/badges/telecom-branch.svg?raw=true) |
+| `ginsu` | ![Coverage](https://github.com/banksalad/collectmydata/blob/badges/.github/badges/ginsu-branch.svg?raw=true) |
+| `connect` | ![Coverage](https://github.com/banksalad/collectmydata/blob/badges/.github/badges/connect-branch.svg?raw=true) |
+| `oauth` | ![Coverage](https://github.com/banksalad/collectmydata/blob/badges/.github/badges/oauth-branch.svg?raw=true) |
+| `schedule` | ![Coverage](https://github.com/banksalad/collectmydata/blob/badges/.github/badges/schedule-branch.svg?raw=true) |
+  
 # API 송수신 개발 가이드
 API 전송 레이어를 구현하였습니다 (Pagination 코드는 좀더 간결하게 변경할 예정입니다)
 따라서, 리팩토링을 대비하여 API 송수신 코드와 response를 받아 비지니스 로직 처리를 하는 코드를 분리해 주세요.
