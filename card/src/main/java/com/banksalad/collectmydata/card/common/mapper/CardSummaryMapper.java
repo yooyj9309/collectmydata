@@ -15,7 +15,7 @@ public interface CardSummaryMapper {
       value = {
           @Mapping(target = "searchTimestamp", ignore = true),
           @Mapping(target = "approvalDomesticTransactionSyncedAt", ignore = true),
-          @Mapping(target = "overseasDomesticTransactionSyncedAt", ignore = true)
+          @Mapping(target = "approvalOverseasTransactionSyncedAt", ignore = true)
       }
   )
   void mergeDtoToEntity(CardSummary cardSummary, @MappingTarget CardSummaryEntity cardSummaryEntity);

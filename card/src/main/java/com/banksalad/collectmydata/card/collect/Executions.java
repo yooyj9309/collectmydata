@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.card.collect;
 
 import com.banksalad.collectmydata.card.card.dto.GetCardBasicResponse;
+import com.banksalad.collectmydata.card.card.dto.ListApprovalDomesticResponse;
 import com.banksalad.collectmydata.card.summary.dto.ListCardSummariesResponse;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 
@@ -18,6 +19,13 @@ public class Executions {
       Execution.create()
           .exchange(Apis.finance_card_basic)
           .as(GetCardBasicResponse.class)
+          .build();
+
+  // 6.3.7 국내 승인내역 조회
+  public static final Execution finance_card_approval_domestic =
+      Execution.create()
+          .exchange(Apis.finance_card_approval_domestic)
+          .as(ListApprovalDomesticResponse.class)
           .build();
 
 }

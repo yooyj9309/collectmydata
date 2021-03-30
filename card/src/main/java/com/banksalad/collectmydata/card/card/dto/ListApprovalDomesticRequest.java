@@ -1,6 +1,5 @@
-package com.banksalad.collectmydata.card.summary.dto;
+package com.banksalad.collectmydata.card.card.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
@@ -10,30 +9,23 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class CardSummary {
+public class ListApprovalDomesticRequest {
 
   private String cardId;
 
-  private String cardNum;
+  private String orgCode;
 
-  @JsonProperty("is_consent")
-  private boolean consent;
+  private String fromDate;
 
-  private String cardName;
+  private String toDate;
 
-  private Integer cardMember;
+  private String nextPage;
 
-  private long searchTimestamp;
-
-  private LocalDateTime approvalDomesticTransactionSyncedAt;
-
-  private LocalDateTime approvalOverseasTransactionSyncedAt;
+  private int limit;
 }

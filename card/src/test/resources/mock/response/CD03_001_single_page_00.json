@@ -1,0 +1,25 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "success",
+  "approved_cnt": 2,
+  "approved_list": [
+    {
+      "approved_num": "001",
+      "status": "01",
+      "pay_type": "01",
+      "approved_dtime": "20210301091000",
+      "merchant_name": "스타벅스",
+      "approved_amt": 5000,
+      "total_install_cnt": 2
+    },
+    {
+      "approved_num": "002",
+      "status": "02",
+      "pay_type": "01",
+      "approved_dtime": "20210302101000",
+      "cancel_dtime": "20210302102000",
+      "merchant_name": "메가커피",
+      "approved_amt": 15000
+    }
+  ]
+}

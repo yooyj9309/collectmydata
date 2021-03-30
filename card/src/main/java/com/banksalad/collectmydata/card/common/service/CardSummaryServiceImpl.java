@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,24 @@ public class CardSummaryServiceImpl implements CardSummaryService {
     CardSummaryEntity cardSummaryEntity = getCardSummaryEntity(banksaladUserId, organizationId,
         cardSummary.getCardId());
     cardSummaryEntity.setResponseCode(responseCode);
+    cardSummaryRepository.save(cardSummaryEntity);
+  }
+
+  @Override
+  public void updateApprovalDomesticTransactionSyncedAt(long banksaladUserId, String organizationId,
+      CardSummary cardSummary, LocalDateTime syncStartedAt) {
+    CardSummaryEntity cardSummaryEntity = getCardSummaryEntity(banksaladUserId, organizationId,
+        cardSummary.getCardId());
+    cardSummaryEntity.setApprovalDomesticTransactionSyncedAt(syncStartedAt);
+    cardSummaryRepository.save(cardSummaryEntity);
+  }
+
+  @Override
+  public void updateApprovalDomesticTransactionResponseCode(long banksaladUserId, String organizationId,
+      CardSummary cardSummary, String responseCode) {
+    CardSummaryEntity cardSummaryEntity = getCardSummaryEntity(banksaladUserId, organizationId,
+        cardSummary.getCardId());
+    cardSummaryEntity.setApprovalDomesticTransactionResponseCode(responseCode);
     cardSummaryRepository.save(cardSummaryEntity);
   }
 

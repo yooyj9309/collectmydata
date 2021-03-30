@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,12 +23,15 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "card_summary")
-public class CardSummaryEntity extends BaseEntity {
+@Table(name = "approval_domestic")
+public class ApprovalDomesticEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Column(nullable = false)
+  private Integer approvalYearMonth;
 
   @Column(nullable = false)
   private LocalDateTime syncedAt;
@@ -41,28 +45,25 @@ public class CardSummaryEntity extends BaseEntity {
   @Column(nullable = false)
   private String cardId;
 
-  @Column(nullable = false, name = "card_num_encrypted")
-  private String cardNum;
-
-  @Column(nullable = false, name = "is_consent", columnDefinition = "BIT", length = 1)
-  private Boolean consent;
+  @Column(nullable = false)
+  private String approvedNum;
 
   @Column(nullable = false)
-  private String cardName;
+  private String status;
 
-  @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
-  private Integer cardMember;
+  @Column(nullable = false)
+  private String payType;
 
-  private Long searchTimestamp;
+  @Column(nullable = false)
+  private String approvedDtime;
 
-  private String responseCode;
+  private String cancelDtime;
 
-  private LocalDateTime approvalDomesticTransactionSyncedAt;
+  @Column(nullable = false)
+  private String merchantName;
 
-  private String approvalDomesticTransactionResponseCode;
+  @Column(nullable = false, precision = 18, scale = 3)
+  private BigDecimal approvedAmt;
 
-  private LocalDateTime approvalOverseasTransactionSyncedAt;
-
-  private String approvalOverseasTransactionResponseCode;
-
+  private Integer totalInstallCnt;
 }
