@@ -6,10 +6,10 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.summary.SummaryResponseHelper;
 import com.banksalad.collectmydata.finance.api.summary.dto.SummaryResponse;
 import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountSummaryEntity;
-import com.banksalad.collectmydata.irp.common.db.entity.mapper.IrpAccountSummaryMapper;
 import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountSummaryRepository;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummariesResponse;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummary;
+import com.banksalad.collectmydata.irp.common.mapper.IrpAccountSummaryMapper;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 

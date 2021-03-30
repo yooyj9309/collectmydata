@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
@@ -30,15 +31,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.banksalad.collectmydata.insu.common.util.FileUtil.readText;
-import static com.banksalad.collectmydata.insu.common.util.TestHelper.*;
+import static com.banksalad.collectmydata.insu.common.util.TestHelper.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.insu.common.util.TestHelper.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.insu.common.util.TestHelper.getExecutionContext;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 @DisplayName("자동차보험 거래내역 서비스 테스트")
 class CarInsuranceTransactionServiceTest {
 

@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.irp.common.db.entity.mapper;
+package com.banksalad.collectmydata.irp.common.mapper;
 
 import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountBasicEntity;
 import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountBasicHistoryEntity;

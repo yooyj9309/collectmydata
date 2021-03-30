@@ -10,12 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
-import com.banksalad.collectmydata.irp.TestConfig;
+import com.banksalad.collectmydata.irp.IrpApplication;
 import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountSummaryEntity;
-import com.banksalad.collectmydata.irp.common.db.entity.mapper.IrpAccountSummaryMapper;
 import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountSummaryRepository;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasic;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountDetail;
+import com.banksalad.collectmydata.irp.common.mapper.IrpAccountSummaryMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @ActiveProfiles("test")
-@SpringBootTest(classes = TestConfig.class, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = IrpApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayName("6.1.4 개인형 IRP 계좌 기본정보 조회")
 @Transactional
 class IrpAccountServiceImplTest {

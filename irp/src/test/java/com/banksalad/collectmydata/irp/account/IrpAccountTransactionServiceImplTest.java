@@ -13,7 +13,7 @@ import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionRequestHelper;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
-import com.banksalad.collectmydata.irp.TestConfig;
+import com.banksalad.collectmydata.irp.IrpApplication;
 import com.banksalad.collectmydata.irp.collect.Executions;
 import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountSummaryEntity;
 import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountSummaryRepository;
@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @ActiveProfiles("test")
-@SpringBootTest(classes = TestConfig.class, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = IrpApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayName("개인형 IRP계좌 거래내역 조회 테스트")
 class IrpAccountTransactionServiceImplTest {
 

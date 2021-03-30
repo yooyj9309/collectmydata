@@ -6,7 +6,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.junit.jupiter.api.Test;
 
 @ActiveProfiles("test")
-@SpringBootTest(classes = TestConfig.class)
+@SpringBootTest(classes = IrpApplication.class)
 class IrpApplicationTests {
 
   @Test

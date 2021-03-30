@@ -12,7 +12,7 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
-import com.banksalad.collectmydata.irp.TestConfig;
+import com.banksalad.collectmydata.irp.IrpApplication;
 import com.banksalad.collectmydata.irp.collect.Apis;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummary;
 import com.banksalad.collectmydata.irp.summary.IrpAccountSummaryService;
@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @ActiveProfiles("test")
-@SpringBootTest(classes = TestConfig.class, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = IrpApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayName("6.1.3 개인형 IRP 계좌 목록 조회")
 @Transactional
 public class IrpAccountSummaryServiceImplTest {

@@ -2,14 +2,15 @@ package com.banksalad.collectmydata.telecom;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(scanBasePackages = {
-    "com.banksalad.collectmydata.telecom",
-    "com.banksalad.collectmydata.finance"})
-@EnableJpaRepositories(basePackages = {
-    "com.banksalad.collectmydata.telecom",
-    "com.banksalad.collectmydata.finance"})
+import com.banksalad.collectmydata.finance.context.annotation.EnableFinance;
+
+@SpringBootApplication
+@EntityScan
+@EnableJpaRepositories
+@EnableFinance
 public class TelecomApplication {
 
   public static void main(String[] args) {

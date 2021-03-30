@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.irp.common.db.entity.mapper;
+package com.banksalad.collectmydata.irp.common.mapper;
 
 import com.banksalad.collectmydata.common.mapper.BigDecimalMapper;
 import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountSummaryEntity;

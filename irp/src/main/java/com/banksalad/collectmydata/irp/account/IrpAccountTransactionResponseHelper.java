@@ -9,11 +9,11 @@ import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHe
 import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
 import com.banksalad.collectmydata.finance.common.constant.FinanceConstant;
 import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountTransactionEntity;
-import com.banksalad.collectmydata.irp.common.db.entity.mapper.IrpAccountTransactionMapper;
 import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountTransactionRepository;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummary;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountTransaction;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountTransactionResponse;
+import com.banksalad.collectmydata.irp.common.mapper.IrpAccountTransactionMapper;
 import com.banksalad.collectmydata.irp.summary.IrpAccountSummaryService;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;

@@ -2,20 +2,15 @@ package com.banksalad.collectmydata.ginsu;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(
-    scanBasePackages = {
-        "com.banksalad.collectmydata.finance",
-        "com.banksalad.collectmydata.ginsu"
-    }
-)
-@EnableJpaRepositories(
-    basePackages = {
-        "com.banksalad.collectmydata.finance",
-        "com.banksalad.collectmydata.ginsu"
-    }
-)
+import com.banksalad.collectmydata.finance.context.annotation.EnableFinance;
+
+@SpringBootApplication
+@EntityScan
+@EnableJpaRepositories
+@EnableFinance
 public class GinsuApplication {
 
   public static void main(String[] args) {

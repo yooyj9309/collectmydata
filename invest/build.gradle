@@ -37,6 +37,8 @@ dependencyManagement {
 dependencies {
     implementation project(":common")
     implementation project(":finance")
+    implementation project(":irp")
+
     // idl
     implementation("com.banksalad:idl:${idlVersion}")
 
