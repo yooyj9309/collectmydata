@@ -1,0 +1,12 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "success",
+  "search_timestamp": 1000,
+  "card_type": "01",
+  "is_trans_payable": true,
+  "is_cash_card": false,
+  "linked_bank_code": "080",
+  "card_brand": "VISA",
+  "annual_fee": 10000,
+  "issue_date": "20210301"
+}

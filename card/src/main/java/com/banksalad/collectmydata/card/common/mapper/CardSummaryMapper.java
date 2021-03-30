@@ -18,6 +18,8 @@ public interface CardSummaryMapper {
           @Mapping(target = "overseasDomesticTransactionSyncedAt", ignore = true)
       }
   )
-  void mergeDtoToEntity(CardSummary cardSummary, @MappingTarget CardSummaryEntity entity);
+  void mergeDtoToEntity(CardSummary cardSummary, @MappingTarget CardSummaryEntity cardSummaryEntity);
+
+  CardSummary entityToDto(CardSummaryEntity cardSummaryEntity);
 
 }

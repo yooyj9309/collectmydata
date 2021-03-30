@@ -17,5 +17,14 @@ public class Apis {
           .method(HttpMethod.GET.name())
           .build();
 
+  public static Api finance_card_basic =
+      Api.builder()
+          .id("CD01")
+          .name("CD02-카드 기본정보 조회")
+          .endpoint(
+              "/cards/{card_id}?org_code={org_code}&search_timestamp={search_timestamp}")
+          .method(HttpMethod.GET.name())
+          .build();
+
 
 }
