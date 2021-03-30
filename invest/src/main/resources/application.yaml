@@ -5,7 +5,7 @@ spring:
     name: collectmydata-invest
 
 logging:
-#  config: classpath:logback/logback-${spring.profiles.active}.xml
+  config: classpath:logback/logback-${spring.profiles.active}.xml
   level:
     com.zaxxer.hikari.HikariConfig: WARN
     com.zaxxer.hikari: TRACE

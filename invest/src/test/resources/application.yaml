@@ -13,6 +13,12 @@ spring:
     hibernate:
       ddl-auto: create-drop
 
+logging:
+  config: classpath:logback/logback-${spring.profiles.active}.xml
+  level:
+    com.zaxxer.hikari.HikariConfig: WARN
+    com.zaxxer.hikari: TRACE
+
 uri:
   user: dns:///user-headless:18081
   cipher: dns:///cipher-headless:18081
