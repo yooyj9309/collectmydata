@@ -1,9 +1,10 @@
 package com.banksalad.collectmydata.card.collect;
 
 import com.banksalad.collectmydata.card.card.dto.GetCardBasicResponse;
-import com.banksalad.collectmydata.card.loan.dto.GetLoanSummaryResponse;
-import com.banksalad.collectmydata.card.card.dto.ListBillBasicResponse;
 import com.banksalad.collectmydata.card.card.dto.ListApprovalDomesticResponse;
+import com.banksalad.collectmydata.card.card.dto.ListBillBasicResponse;
+import com.banksalad.collectmydata.card.card.dto.ListPointsResponse;
+import com.banksalad.collectmydata.card.loan.dto.GetLoanSummaryResponse;
 import com.banksalad.collectmydata.card.summary.dto.ListCardSummariesResponse;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 
@@ -21,6 +22,13 @@ public class Executions {
       Execution.create()
           .exchange(Apis.finance_card_basic)
           .as(GetCardBasicResponse.class)
+          .build();
+
+  // 6.3.3 포인트 정보 조회
+  public static final Execution finance_card_point =
+      Execution.create()
+          .exchange(Apis.finance_card_point)
+          .as(ListPointsResponse.class)
           .build();
 
   // 6.3.4 청구 기본정보 조회

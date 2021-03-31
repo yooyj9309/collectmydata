@@ -1,0 +1,18 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": 1000,
+  "point_cnt": 2,
+  "point_list": [
+    {
+      "point_name": "포인트1",
+      "remain_point_amt": 15000,
+      "expiring_point_amt": 3000
+    },
+    {
+      "point_name": "포인트2",
+      "remain_point_amt": 25000,
+      "expiring_point_amt": 2000
+    }
+  ]
+}
