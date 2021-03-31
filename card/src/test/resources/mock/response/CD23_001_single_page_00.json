@@ -1,0 +1,18 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": 1000,
+  "pay_cnt": 2,
+  "pay_list": [
+    {
+      "seqno": "001",
+      "pay_due_date": "20210401",
+      "pay_amt": 30000
+    },
+    {
+      "seqno": "002",
+      "pay_due_date": "20210401",
+      "pay_amt": 1200
+    }
+  ]
+}

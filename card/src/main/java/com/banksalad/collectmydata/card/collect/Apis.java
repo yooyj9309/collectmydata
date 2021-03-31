@@ -52,6 +52,15 @@ public class Apis {
           .method(HttpMethod.GET.name())
           .build();
 
+  public static Api finance_card_payment =
+      Api.builder()
+          .id("CD23")
+          .name("CD23-결제내역 조회")
+          .endpoint(
+              "/cards/payment?org_code={org_code}&search_timestamp={search_timestamp}")
+          .method(HttpMethod.GET.name())
+          .build();
+
   public static Api finance_loan_summaries =
       Api.builder()
           .id("CD31")
