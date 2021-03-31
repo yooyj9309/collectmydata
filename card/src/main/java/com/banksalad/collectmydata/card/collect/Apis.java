@@ -61,12 +61,39 @@ public class Apis {
           .method(HttpMethod.GET.name())
           .build();
 
-  public static Api finance_loan_summaries =
+  public static Api finance_loan_summary =
       Api.builder()
           .id("CD31")
           .name("CD31-대출상품 목록 조회")
           .endpoint(
-              "/loans")
+              "/loans?org_code={org_code}&search_timestamp={search_timestamp}")
+          .method(HttpMethod.GET.name())
+          .build();
+
+  public static Api finance_loan_revolvings =
+      Api.builder()
+          .id("CD32")
+          .name("CD32-리볼빙 정보 조회")
+          .endpoint(
+              "/loans/revolving?org_code={org_code}&search_timestamp={search_timestamp}")
+          .method(HttpMethod.GET.name())
+          .build();
+
+  public static Api finance_loan_short_terms =
+      Api.builder()
+          .id("CD33")
+          .name("CD33-단기대출 정보 조회")
+          .endpoint(
+              "/loans/short-term?org_code={org_code}&search_timestamp={search_timestamp}")
+          .method(HttpMethod.GET.name())
+          .build();
+
+  public static Api finance_loan_long_terms =
+      Api.builder()
+          .id("CD34")
+          .name("CD34-장기대출 정보 조회")
+          .endpoint(
+              "/loans/long-term?org_code={org_code}&search_timestamp={search_timestamp}")
           .method(HttpMethod.GET.name())
           .build();
 }

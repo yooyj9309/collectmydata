@@ -54,9 +54,30 @@ public class Executions {
           .build();
 
   // 6.3.9 대출상품 목록 조회
-  public static final Execution finance_loan_summaries =
+  public static final Execution finance_loan_summary =
       Execution.create()
-          .exchange(Apis.finance_loan_summaries)
+          .exchange(Apis.finance_loan_summary)
+          .as(GetLoanSummaryResponse.class)
+          .build();
+
+  // 6.3.10 리볼빙 정보 조회
+  public static final Execution finance_loan_revolvings =
+      Execution.create()
+          .exchange(Apis.finance_loan_revolvings)
+          .as(GetLoanSummaryResponse.class)
+          .build();
+
+  // 6.3.11 단기대출 정보 조회
+  public static final Execution finance_loan_short_terms =
+      Execution.create()
+          .exchange(Apis.finance_loan_short_terms)
+          .as(GetLoanSummaryResponse.class)
+          .build();
+
+  // 6.3.12 장기대출 정보 조회
+  public static final Execution finance_loan_long_terms =
+      Execution.create()
+          .exchange(Apis.finance_loan_long_terms)
           .as(GetLoanSummaryResponse.class)
           .build();
 }

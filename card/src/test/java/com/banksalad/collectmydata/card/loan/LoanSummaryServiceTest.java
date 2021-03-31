@@ -34,7 +34,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @DisplayName("대출상품 목록 조회")
@@ -73,7 +72,7 @@ class LoanSummaryServiceTest {
     ExecutionContext executionContext = getExecutionContext(wireMockServer.port());
 
     // when
-    loanSummaryService.getUserBaseInfo(executionContext, Executions.finance_loan_summaries, loanSummaryRequestHelper,
+    loanSummaryService.getUserBaseInfo(executionContext, Executions.finance_loan_summary, loanSummaryRequestHelper,
         loanSummaryResponseHelper);
 
     List<LoanSummaryEntity> loanSummaryEntities = loanSummaryRepository.findAll();
@@ -94,7 +93,7 @@ class LoanSummaryServiceTest {
 
   private static void setupMockServer() {
     // 6.3.9 대출상품 목록 조회
-    wireMockServer.stubFor(get(urlMatching("/loans"))
+    wireMockServer.stubFor(get(urlMatching("/loans.*"))
         .withRequestBody(
             equalToJson(readText("classpath:mock/request/CD31_001_single_page_00.json")))
         .willReturn(
