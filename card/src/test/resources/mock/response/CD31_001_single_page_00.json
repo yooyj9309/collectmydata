@@ -1,0 +1,8 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "success",
+  "search_timestamp": 1000,
+  "is_loan_revolving": true,
+  "is_loan_short_term": false,
+  "is_loan_long_term": true
+}

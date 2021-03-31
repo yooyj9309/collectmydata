@@ -38,14 +38,14 @@ public class LoanSummaryEntity extends BaseEntity {
   @Column(nullable = false)
   private String organizationId;
 
-  @Column(nullable = false)
-  private Integer isLoanRevolving;
+  @Column(nullable = false, name = "is_loan_revolving", columnDefinition = "BIT", length = 1)
+  private Boolean loanRevolving;
 
-  @Column(nullable = false)
-  private Integer isLoanShortTerm;
+  @Column(nullable = false, name = "is_loan_short_term", columnDefinition = "BIT", length = 1)
+  private Boolean loanShortTerm;
 
-  @Column(nullable = false)
-  private Integer isLoanLongTerm;
+  @Column(nullable = false, name = "is_loan_long_term", columnDefinition = "BIT", length = 1)
+  private Boolean loanLongTerm;
 
   private Long revolvingSearchTimestamp;
 

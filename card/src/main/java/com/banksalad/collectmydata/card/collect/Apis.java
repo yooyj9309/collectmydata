@@ -44,4 +44,12 @@ public class Apis {
           .method(HttpMethod.GET.name())
           .build();
 
+  public static Api finance_loan_summaries =
+      Api.builder()
+          .id("CD31")
+          .name("CD31-대출상품 목록 조회")
+          .endpoint(
+              "/loans")
+          .method(HttpMethod.GET.name())
+          .build();
 }

@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.card.collect;
 
 import com.banksalad.collectmydata.card.card.dto.GetCardBasicResponse;
+import com.banksalad.collectmydata.card.loan.dto.GetLoanSummaryResponse;
 import com.banksalad.collectmydata.card.card.dto.ListBillBasicResponse;
 import com.banksalad.collectmydata.card.card.dto.ListApprovalDomesticResponse;
 import com.banksalad.collectmydata.card.summary.dto.ListCardSummariesResponse;
@@ -22,13 +23,6 @@ public class Executions {
           .as(GetCardBasicResponse.class)
           .build();
 
-  // 6.3.7 국내 승인내역 조회
-  public static final Execution finance_card_approval_domestic =
-      Execution.create()
-          .exchange(Apis.finance_card_approval_domestic)
-          .as(ListApprovalDomesticResponse.class)
-          .build();
-
   // 6.3.4 청구 기본정보 조회
   public static final Execution finance_card_bills =
       Execution.create()
@@ -36,5 +30,17 @@ public class Executions {
           .as(ListBillBasicResponse.class)
           .build();
 
+  // 6.3.7 국내 승인내역 조회
+  public static final Execution finance_card_approval_domestic =
+      Execution.create()
+          .exchange(Apis.finance_card_approval_domestic)
+          .as(ListApprovalDomesticResponse.class)
+          .build();
 
+  // 6.3.9 대출상품 목록 조회
+  public static final Execution finance_loan_summaries =
+      Execution.create()
+          .exchange(Apis.finance_loan_summaries)
+          .as(GetLoanSummaryResponse.class)
+          .build();
 }
