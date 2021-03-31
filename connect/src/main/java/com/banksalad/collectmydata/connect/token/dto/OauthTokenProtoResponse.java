@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class TokenResponse {
+public class OauthTokenProtoResponse {
 
   private final OauthToken oauthToken;
 

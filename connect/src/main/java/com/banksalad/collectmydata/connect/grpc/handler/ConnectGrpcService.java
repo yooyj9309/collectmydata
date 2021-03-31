@@ -11,10 +11,10 @@ import com.banksalad.collectmydata.connect.grpc.validator.RefreshTokenRequestVal
 import com.banksalad.collectmydata.connect.grpc.validator.RevokeAllTokensRequestValidator;
 import com.banksalad.collectmydata.connect.grpc.validator.RevokeTokenRequestValidator;
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
-import com.banksalad.collectmydata.connect.organization.dto.OrganizationResponse;
+import com.banksalad.collectmydata.connect.organization.dto.OrganizationProtoResponse;
 import com.banksalad.collectmydata.connect.organization.service.OrganizationService;
 import com.banksalad.collectmydata.connect.token.dto.OauthToken;
-import com.banksalad.collectmydata.connect.token.dto.TokenResponse;
+import com.banksalad.collectmydata.connect.token.dto.OauthTokenProtoResponse;
 import com.banksalad.collectmydata.connect.token.service.OauthTokenService;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataGrpc;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenRequest;
@@ -65,11 +65,11 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
       validatorService.validate(validator);
 
       OauthToken oauthToken = oauthTokenService.issueToken(request);
-      TokenResponse tokenResponse = TokenResponse.builder()
+      OauthTokenProtoResponse oauthTokenProtoResponse = OauthTokenProtoResponse.builder()
           .oauthToken(oauthToken)
           .build();
 
-      responseObserver.onNext(tokenResponse.toIssueTokenResponseProto());
+      responseObserver.onNext(oauthTokenProtoResponse.toIssueTokenResponseProto());
       responseObserver.onCompleted();
     } catch (GrpcException e) {
       responseObserver.onError(e.handle());
@@ -86,11 +86,11 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
       validatorService.validate(validator);
 
       OauthToken oauthToken = oauthTokenService.getAccessToken(request);
-      TokenResponse tokenResponse = TokenResponse.builder()
+      OauthTokenProtoResponse oauthTokenProtoResponse = OauthTokenProtoResponse.builder()
           .oauthToken(oauthToken)
           .build();
 
-      responseObserver.onNext(tokenResponse.toGetAccessTokenResponseProto());
+      responseObserver.onNext(oauthTokenProtoResponse.toGetAccessTokenResponseProto());
       responseObserver.onCompleted();
     } catch (GrpcException e) {
       responseObserver.onError(e.handle());
@@ -107,11 +107,11 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
       validatorService.validate(validator);
 
       OauthToken oauthToken = oauthTokenService.refreshToken(request);
-      TokenResponse tokenResponse = TokenResponse.builder()
+      OauthTokenProtoResponse oauthTokenProtoResponse = OauthTokenProtoResponse.builder()
           .oauthToken(oauthToken)
           .build();
 
-      responseObserver.onNext(tokenResponse.toRefreshTokenResponseProto());
+      responseObserver.onNext(oauthTokenProtoResponse.toRefreshTokenResponseProto());
       responseObserver.onCompleted();
     } catch (GrpcException e) {
       responseObserver.onError(e.handle());
@@ -166,11 +166,11 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
       validatorService.validate(validator);
 
       Organization organization = organizationService.getOrganization(request);
-      OrganizationResponse organizationResponse = OrganizationResponse.builder()
+      OrganizationProtoResponse organizationProtoResponse = OrganizationProtoResponse.builder()
           .organization(organization)
           .build();
 
-      responseObserver.onNext(organizationResponse.toGetOrganizationProto());
+      responseObserver.onNext(organizationProtoResponse.toGetOrganizationProto());
       responseObserver.onCompleted();
     } catch (GrpcException e) {
       responseObserver.onError(e.handle());
@@ -188,11 +188,11 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
       validatorService.validate(validator);
 
       Organization organization = organizationService.getOrganization(request);
-      OrganizationResponse organizationResponse = OrganizationResponse.builder()
+      OrganizationProtoResponse organizationProtoResponse = OrganizationProtoResponse.builder()
           .organization(organization)
           .build();
 
-      responseObserver.onNext(organizationResponse.toGetOrganizationProto());
+      responseObserver.onNext(organizationProtoResponse.toGetOrganizationProto());
       responseObserver.onCompleted();
     } catch (GrpcException e) {
       responseObserver.onError(e.handle());

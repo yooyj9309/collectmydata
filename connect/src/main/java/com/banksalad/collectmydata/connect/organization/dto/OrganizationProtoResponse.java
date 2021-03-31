@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class OrganizationResponse {
+public class OrganizationProtoResponse {
 
   private final Organization organization;
 

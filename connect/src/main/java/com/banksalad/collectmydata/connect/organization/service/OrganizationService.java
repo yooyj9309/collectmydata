@@ -9,5 +9,4 @@ public interface OrganizationService {
   Organization getOrganization(GetOrganizationByOrganizationObjectidRequest request);
 
   Organization getOrganization(GetOrganizationByOrganizationIdRequest request);
-
 }

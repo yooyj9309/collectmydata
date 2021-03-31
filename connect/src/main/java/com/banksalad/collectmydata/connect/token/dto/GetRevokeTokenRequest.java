@@ -16,8 +16,8 @@ import lombok.NoArgsConstructor;
 public class GetRevokeTokenRequest {
 
   private String orgCode;
-  private String token; // 폐기할 토큰 : tokenTypeHint 미지정시 access token, refresh token 모두 폐기
-  private String tokenTypeHint; // 폐기할 토큰 유형 : access token, refresh token
+  private String token;
+  private String tokenTypeHint;
   private String clientId;
   private String clientSecret;
 }

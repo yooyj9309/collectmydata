@@ -41,7 +41,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         .industry(connectOrganizationEntity.getIndustry())
         .organizationId(connectOrganizationEntity.getOrganizationId())
         .organizationCode(connectOrganizationEntity.getOrgCode())
-        .domain("fixme") // fixme
+        .domain(connectOrganizationEntity.getDomain())
         .build();
   }
 }

@@ -52,8 +52,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-@DisplayName("OauthTokenServiceImplTest Test")
-class OauthTokenServiceImplTest {
+@DisplayName("OauthTokenService Test")
+class OauthTokenServiceTest {
 
   @Autowired
   private OauthTokenService oauthTokenService;
