@@ -62,9 +62,6 @@ dependencies {
     implementation("com.linecorp.armeria:armeria-spring-boot2-webflux-starter:${armeriaVersion}")
     implementation("com.linecorp.armeria:armeria-grpc:${armeriaVersion}")
 
-    //h2 db
-    implementation("com.h2database:h2")
-
     // grpc
     implementation("io.grpc:grpc-context:${grpcVersion}")
     implementation("io.grpc:grpc-api:${grpcVersion}")

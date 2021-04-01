@@ -53,6 +53,7 @@ public class AccountTransactionInterestEntity extends BaseEntity {
   private String uniqueTransNo;
 
   @NotNull
+  @Column(columnDefinition = "tinyint")
   private Integer intNo;
 
   @NotNull
