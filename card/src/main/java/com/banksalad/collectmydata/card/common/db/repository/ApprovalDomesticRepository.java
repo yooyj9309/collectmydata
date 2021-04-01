@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface ApprovalDomesticRepository extends JpaRepository<ApprovalDomesticEntity, Long> {
 
-  Optional<ApprovalDomesticEntity> findByApprovalYearMonthAndBanksaladUserIdAndOrganizationIdAndCardIdAndApprovedNum(
-      Integer approvalYearMonth, Long banksaladUserId, String organizationId, String cardId, String approvedNum);
+  Optional<ApprovalDomesticEntity> findByBanksaladUserIdAndOrganizationIdAndApprovalYearMonthAndCardIdAndApprovedNumAndStatus(
+      Long banksaladUserId, String organizationId, Integer approvalYearMonth, String cardId, String approvedNum,
+      String status);
 }

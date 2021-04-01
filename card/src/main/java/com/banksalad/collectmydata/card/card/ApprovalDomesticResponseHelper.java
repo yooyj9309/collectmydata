@@ -54,12 +54,13 @@ public class ApprovalDomesticResponseHelper implements TransactionResponseHelper
       approvalDomesticEntity.setCardId(cardSummary.getCardId());
 
       ApprovalDomesticEntity existingApprovalDomesticEntity = approvalDomesticRepository
-          .findByApprovalYearMonthAndBanksaladUserIdAndOrganizationIdAndCardIdAndApprovedNum(
-              approvalDomesticEntity.getApprovalYearMonth(),
+          .findByBanksaladUserIdAndOrganizationIdAndApprovalYearMonthAndCardIdAndApprovedNumAndStatus(
               approvalDomesticEntity.getBanksaladUserId(),
               approvalDomesticEntity.getOrganizationId(),
+              approvalDomesticEntity.getApprovalYearMonth(),
               approvalDomesticEntity.getCardId(),
-              approvalDomesticEntity.getApprovedNum()
+              approvalDomesticEntity.getApprovedNum(),
+              approvalDomesticEntity.getStatus()
           )
           .map(foundApprovalDomesticEntity -> {
             approvalDomesticEntity.setId(foundApprovalDomesticEntity.getId());
