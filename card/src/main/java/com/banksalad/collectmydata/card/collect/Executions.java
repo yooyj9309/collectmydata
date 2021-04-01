@@ -7,6 +7,7 @@ import com.banksalad.collectmydata.card.card.dto.ListPaymentsResponse;
 import com.banksalad.collectmydata.card.card.dto.ListPointsResponse;
 import com.banksalad.collectmydata.card.card.dto.ListRevolvingsResponse;
 import com.banksalad.collectmydata.card.loan.dto.GetLoanSummaryResponse;
+import com.banksalad.collectmydata.card.loan.dto.ListLoanLongTermsResponse;
 import com.banksalad.collectmydata.card.loan.dto.ListLoanShortTermsResponse;
 import com.banksalad.collectmydata.card.summary.dto.ListCardSummariesResponse;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
@@ -80,6 +81,6 @@ public class Executions {
   public static final Execution finance_loan_long_terms =
       Execution.create()
           .exchange(Apis.finance_loan_long_terms)
-          .as(GetLoanSummaryResponse.class)
+          .as(ListLoanLongTermsResponse.class)
           .build();
 }

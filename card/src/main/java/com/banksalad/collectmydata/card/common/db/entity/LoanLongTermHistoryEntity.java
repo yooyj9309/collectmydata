@@ -37,9 +37,8 @@ public class LoanLongTermHistoryEntity extends BaseEntity {
   @Column(nullable = false)
   private String organizationId;
 
-  // FIXME: 종합포털 문의결과에 따라 수정
-//  @Column(nullable = false)
-//  private Integer loanLongTermNo;
+  @Column(nullable = false)
+  private Integer loanLongTermNo;
 
   @Column(nullable = false)
   private String loanDtime;
@@ -70,4 +69,3 @@ public class LoanLongTermHistoryEntity extends BaseEntity {
   @Column(nullable = false, precision = 18, scale = 3)
   private BigDecimal intAmt;
 }
-
