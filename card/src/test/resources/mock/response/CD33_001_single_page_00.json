@@ -1,0 +1,20 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": 1000,
+  "short_term_cnt": 2,
+  "short_term_list": [
+    {
+      "loan_dtime": "20210125100000",
+      "loan_amt": 300000,
+      "pay_due_date": "20210228",
+      "int_rate": 2.150
+    },
+    {
+      "loan_dtime": "20210131123000",
+      "loan_amt": 8500000,
+      "pay_due_date": "20210331",
+      "int_rate": 2.283
+    }
+  ]
+}
