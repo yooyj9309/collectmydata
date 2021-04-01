@@ -46,7 +46,7 @@ public class RevolvingEntity extends BaseEntity {
   private Integer revolvingMonth;
 
   @Column(nullable = false)
-  private String regDate;
+  private String reqDate;
 
   @Column(nullable = false, precision = 5, scale = 3)
   private BigDecimal minPayRate;

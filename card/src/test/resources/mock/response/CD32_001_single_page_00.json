@@ -1,0 +1,23 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": 1000,
+  "revolving_month": 202102,
+  "revolving_cnt": 2,
+  "revolving_list": [
+    {
+      "req_date": "20210125",
+      "min_pay_rate": 15.000,
+      "min_pay_amt": 50000,
+      "agreed_pay_rate": 20.000,
+      "remained_amt": 300000
+    },
+    {
+      "req_date": "20210131",
+      "min_pay_rate": 15.000,
+      "min_pay_amt": 50000,
+      "agreed_pay_rate": 25.000,
+      "remained_amt": 8500000
+    }
+  ]
+}

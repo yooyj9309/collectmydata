@@ -46,7 +46,7 @@ public class RevolvingHistoryEntity extends BaseEntity {
   private Integer revolvingMonth;
 
   @Column(nullable = false)
-  private String regDate;
+  private String reqDate;
 
   @Column(nullable = false, precision = 5, scale = 3)
   private BigDecimal minPayRate;
@@ -60,4 +60,3 @@ public class RevolvingHistoryEntity extends BaseEntity {
   @Column(nullable = false, precision = 18, scale = 3)
   private BigDecimal remainedAmt;
 }
-

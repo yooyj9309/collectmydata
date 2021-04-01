@@ -5,6 +5,7 @@ import com.banksalad.collectmydata.card.card.dto.ListApprovalDomesticResponse;
 import com.banksalad.collectmydata.card.card.dto.ListBillBasicResponse;
 import com.banksalad.collectmydata.card.card.dto.ListPaymentsResponse;
 import com.banksalad.collectmydata.card.card.dto.ListPointsResponse;
+import com.banksalad.collectmydata.card.card.dto.ListRevolvingsResponse;
 import com.banksalad.collectmydata.card.loan.dto.GetLoanSummaryResponse;
 import com.banksalad.collectmydata.card.summary.dto.ListCardSummariesResponse;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
@@ -64,7 +65,7 @@ public class Executions {
   public static final Execution finance_loan_revolvings =
       Execution.create()
           .exchange(Apis.finance_loan_revolvings)
-          .as(GetLoanSummaryResponse.class)
+          .as(ListRevolvingsResponse.class)
           .build();
 
   // 6.3.11 단기대출 정보 조회
