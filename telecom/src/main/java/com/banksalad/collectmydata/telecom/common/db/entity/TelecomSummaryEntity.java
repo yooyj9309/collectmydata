@@ -41,7 +41,7 @@ public class TelecomSummaryEntity extends BaseEntity {
   @Column(nullable = false)
   private String mgmtId;
 
-  @Column(nullable = false, name = "is_consent", columnDefinition = "BOOLEAN")
+  @Column(nullable = false, name = "is_consent", columnDefinition = "BIT", length = 1)
   private Boolean consent;
 
   @Column(nullable = false, name = "telecom_num_masked_encrypted")

@@ -46,9 +46,6 @@ public class PaidTransactionEntity extends BaseEntity {
   private String mgmtId;
 
   @Column(nullable = false)
-  private Integer paidTransactionNo;
-
-  @Column(nullable = false)
   private String transDate;
 
   @Column(nullable = false, precision = 18, scale = 3)

@@ -8,9 +8,8 @@ import java.util.Optional;
 
 public interface PaidTransactionRepository extends JpaRepository<PaidTransactionEntity, Long> {
 
-  Optional<PaidTransactionEntity> findByBanksaladUserIdAndOrganizationIdAndMgmtIdAndPaidTransactionNoAndTransactionYearMonth(
-      Long banksaladUserId, String organizationId, String mgmtId, Integer paidTransactionNo,
-      Integer transactionYearMonth);
+  Optional<PaidTransactionEntity> findByBanksaladUserIdAndOrganizationIdAndMgmtIdAndTransactionYearMonth(
+      Long banksaladUserId, String organizationId, String mgmtId, Integer transactionYearMonth);
 
   void deleteByBanksaladUserIdAndOrganizationIdAndMgmtIdAndTransactionYearMonthAndTransDate(
       Long banksaladUserId, String organizationId, String mgmtId, Integer transactionYearMonth, String transDate);

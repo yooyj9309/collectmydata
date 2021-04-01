@@ -33,18 +33,20 @@ public class TestHelper {
         .executionRequestId(UUID.randomUUID().toString())
         .organizationCode(ORGANIZATION_CODE)
         .organizationHost("http://" + ORGANIZATION_HOST + ":" + port)
-        .accessToken("test")
+        .accessToken(ACCESS_TOKEN)
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
   }
 
   public static ExecutionContext getExecutionContext(int port, LocalDateTime now) {
     return ExecutionContext.builder()
-        .organizationHost("http://" + ORGANIZATION_HOST + ":" + port)
-        .accessToken(ACCESS_TOKEN)
+        .syncRequestId(UUID.randomUUID().toString())
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
         .executionRequestId(UUID.randomUUID().toString())
+        .organizationCode(ORGANIZATION_CODE)
+        .organizationHost("http://" + ORGANIZATION_HOST + ":" + port)
+        .accessToken(ACCESS_TOKEN)
         .syncStartedAt(now)
         .build();
   }

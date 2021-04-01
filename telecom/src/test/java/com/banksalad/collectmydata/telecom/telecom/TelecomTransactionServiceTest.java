@@ -72,7 +72,8 @@ class TelecomTransactionServiceTest {
   @DisplayName("6.9.3 통신 거래내역 조회")
   void telecomTransaction_transactionService_listTransactions_test() {
     // given
-    ExecutionContext executionContext = getExecutionContext(wireMockServer.port());
+    LocalDateTime testLocalDateTime = LocalDateTime.of(2021, 3, 15, 0, 0);
+    ExecutionContext executionContext = getExecutionContext(wireMockServer.port(), testLocalDateTime);
 
     when(telecomSummaryService.listSummariesConsented(BANKSALAD_USER_ID, ORGANIZATION_ID))
         .thenReturn(List.of(

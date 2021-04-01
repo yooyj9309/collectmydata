@@ -150,8 +150,8 @@ public class TelecomPaidTransactionServiceTest {
         .listTransactions(executionContext, Executions.finance_telecom_paid_transactions,
             telecomPaidTransactionRequestHelper, telecomPaidTransactionResponseHelper);
     PaidTransactionEntity paidTransactionEntity = paidTransactionRepository
-        .findByBanksaladUserIdAndOrganizationIdAndMgmtIdAndPaidTransactionNoAndTransactionYearMonth(
-            BANKSALAD_USER_ID, ORGANIZATION_ID, MGMT_ID, 1, TRANSACTION_YEARMONTH)
+        .findByBanksaladUserIdAndOrganizationIdAndMgmtIdAndTransactionYearMonth(
+            BANKSALAD_USER_ID, ORGANIZATION_ID, MGMT_ID, TRANSACTION_YEARMONTH)
         .orElse(null);
 
     // Then
@@ -171,8 +171,8 @@ public class TelecomPaidTransactionServiceTest {
         .listTransactions(executionContext, Executions.finance_telecom_paid_transactions,
             telecomPaidTransactionRequestHelper, telecomPaidTransactionResponseHelper);
     PaidTransactionEntity paidTransactionEntity = paidTransactionRepository
-        .findByBanksaladUserIdAndOrganizationIdAndMgmtIdAndPaidTransactionNoAndTransactionYearMonth(
-            BANKSALAD_USER_ID, ORGANIZATION_ID, MGMT_ID, 1, TRANSACTION_YEARMONTH)
+        .findByBanksaladUserIdAndOrganizationIdAndMgmtIdAndTransactionYearMonth(
+            BANKSALAD_USER_ID, ORGANIZATION_ID, MGMT_ID, TRANSACTION_YEARMONTH)
         .orElse(null);
 
     // Then
@@ -193,8 +193,8 @@ public class TelecomPaidTransactionServiceTest {
         .listTransactions(executionContext, Executions.finance_telecom_paid_transactions,
             telecomPaidTransactionRequestHelper, telecomPaidTransactionResponseHelper);
     PaidTransactionEntity paidTransactionEntity = paidTransactionRepository
-        .findByBanksaladUserIdAndOrganizationIdAndMgmtIdAndPaidTransactionNoAndTransactionYearMonth(
-            BANKSALAD_USER_ID, ORGANIZATION_ID, MGMT_ID, 1, TRANSACTION_YEARMONTH)
+        .findByBanksaladUserIdAndOrganizationIdAndMgmtIdAndTransactionYearMonth(
+            BANKSALAD_USER_ID, ORGANIZATION_ID, MGMT_ID, TRANSACTION_YEARMONTH)
         .orElse(null);
 
     // Then
