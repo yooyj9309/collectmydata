@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.card.collect;
 
 import com.banksalad.collectmydata.common.collect.api.Api;
+import com.banksalad.collectmydata.common.collect.api.Pagination;
 
 public class Apis {
 
@@ -33,6 +34,9 @@ public class Apis {
           .endpoint(
               "/cards/{card_id}/approval-domestic?org_code={org_code}&from_date={from_date}&to_date={to_date}&next_page={next_page}&limit={limit}")
           .method(HttpMethod.GET.name())
+          .pagination(Pagination.builder()
+              .nextPage("next_page")
+              .build())
           .build();
 
   public static Api finance_card_point =
@@ -50,6 +54,21 @@ public class Apis {
           .endpoint(
               "/cards/bills?org_code={org_code}&from_month={from_month}&to_month={to_month}&next_page={next_page}&limit={limit}")
           .method(HttpMethod.GET.name())
+          .pagination(Pagination.builder()
+              .nextPage("next_page")
+              .build())
+          .build();
+
+  public static Api finance_card_bills_detail =
+      Api.builder()
+          .id("CD22")
+          .name("CD22-청구 추가정보 조회")
+          .endpoint(
+              "/cards/bills/detail?org_code={org_code}&seqno={seqno}&charge_month={charge_month}&next_page={next_page}&limit={limit}")
+          .method(HttpMethod.GET.name())
+          .pagination(Pagination.builder()
+              .nextPage("next_page")
+              .build())
           .build();
 
   public static Api finance_card_payment =

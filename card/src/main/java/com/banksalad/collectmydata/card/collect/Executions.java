@@ -3,6 +3,7 @@ package com.banksalad.collectmydata.card.collect;
 import com.banksalad.collectmydata.card.card.dto.GetCardBasicResponse;
 import com.banksalad.collectmydata.card.card.dto.ListApprovalDomesticResponse;
 import com.banksalad.collectmydata.card.card.dto.ListBillBasicResponse;
+import com.banksalad.collectmydata.card.card.dto.ListBillDetailResponse;
 import com.banksalad.collectmydata.card.card.dto.ListPaymentsResponse;
 import com.banksalad.collectmydata.card.card.dto.ListPointsResponse;
 import com.banksalad.collectmydata.card.card.dto.ListRevolvingsResponse;
@@ -40,6 +41,13 @@ public class Executions {
       Execution.create()
           .exchange(Apis.finance_card_bills)
           .as(ListBillBasicResponse.class)
+          .build();
+
+  // 6.3.5 청구 추가정보 조회
+  public static final Execution finance_card_bills_detail =
+      Execution.create()
+          .exchange(Apis.finance_card_bills_detail)
+          .as(ListBillDetailResponse.class)
           .build();
 
   // 6.3.6 결제정보 조회

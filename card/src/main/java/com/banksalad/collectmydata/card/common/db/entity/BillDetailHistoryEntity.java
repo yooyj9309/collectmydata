@@ -60,13 +60,13 @@ public class BillDetailHistoryEntity extends BaseEntity {
   private String merchantName;
 
   @Column(nullable = false, precision = 18, scale = 3)
-  private BigDecimal creditFreeAmt;
+  private BigDecimal creditFeeAmt;
 
   private Integer totalInstallCnt;
 
   private Integer curInstallCnt;
 
-  @Column(nullable = false, precision = 18, scale = 3)
+  @Column(precision = 18, scale = 3)
   private BigDecimal balanceAmt;
 
   @Column(nullable = false)

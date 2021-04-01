@@ -19,7 +19,7 @@ public class ListBillDetailRequest {
 
   private String seqno;
 
-  private String chargeMonth;
+  private int chargeMonth;
 
   private String nextPage;
 

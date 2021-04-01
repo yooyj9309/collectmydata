@@ -1,0 +1,23 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "success",
+  "bill_detail_cnt": 2,
+  "bill_detail_list": [
+    {
+      "card_id": "card-001",
+      "paid_dtime": "20210302090000",
+      "paid_amt": 50000,
+      "merchant_name": "스타벅스",
+      "credit_fee_amt": 500,
+      "prod_type": "01"
+    },
+    {
+      "card_id": "card-001",
+      "paid_dtime": "20210301010000",
+      "paid_amt": 30000,
+      "merchant_name": "메가커피",
+      "credit_fee_amt": 300,
+      "prod_type": "01"
+    }
+  ]
+}

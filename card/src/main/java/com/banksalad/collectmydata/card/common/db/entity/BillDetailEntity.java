@@ -12,12 +12,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -60,13 +62,13 @@ public class BillDetailEntity extends BaseEntity {
   private String merchantName;
 
   @Column(nullable = false, precision = 18, scale = 3)
-  private BigDecimal creditFreeAmt;
+  private BigDecimal creditFeeAmt;
 
   private Integer totalInstallCnt;
 
   private Integer curInstallCnt;
 
-  @Column(nullable = false, precision = 18, scale = 3)
+  @Column(precision = 18, scale = 3)
   private BigDecimal balanceAmt;
 
   @Column(nullable = false)

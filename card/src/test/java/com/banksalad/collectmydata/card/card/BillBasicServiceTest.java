@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import com.banksalad.collectmydata.card.card.dto.BillBasic;
 import com.banksalad.collectmydata.card.card.dto.BillDetail;
 import com.banksalad.collectmydata.card.card.dto.ListBillBasicRequest;
+import com.banksalad.collectmydata.card.card.dto.ListBillDetailRequest;
 import com.banksalad.collectmydata.card.collect.Executions;
 import com.banksalad.collectmydata.card.common.db.entity.BillEntity;
 import com.banksalad.collectmydata.card.common.db.repository.BillRepository;
@@ -43,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class BillBasicServiceTest {
 
   @Autowired
-  private BillService<ListBillBasicRequest, BillBasic, BillDetail> billService;
+  private BillService<ListBillBasicRequest, BillBasic, ListBillDetailRequest, BillDetail> billService;
 
   @Autowired
   private BillRequestHelper<ListBillBasicRequest> requestHelper;

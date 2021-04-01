@@ -6,7 +6,7 @@ import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkExcepti
 
 import java.util.List;
 
-public interface BillService<BillRequest, Bill, BillDetail> {
+public interface BillService<BillRequest, Bill, BillTransactionRequest, BillTransaction> {
 
   List<Bill> listBills(
       ExecutionContext executionContext,
@@ -15,11 +15,11 @@ public interface BillService<BillRequest, Bill, BillDetail> {
       BillResponseHelper<Bill> responseHelper
   ) throws ResponseNotOkException;
 
-  List<BillDetail> listBillDetails(
+  List<BillTransaction> listBillTransactions(
       ExecutionContext executionContext,
       Execution execution,
       List<Bill> bills,
-      BillDetailRequestHelper<Bill> requestHelper,
-      BillDetailResponseHelper<BillDetail> responseHelper
+      BillTransactionRequestHelper<BillTransactionRequest, Bill> requestHelper,
+      BillTransactionResponseHelper<Bill, BillTransaction> responseHelper
   );
 }

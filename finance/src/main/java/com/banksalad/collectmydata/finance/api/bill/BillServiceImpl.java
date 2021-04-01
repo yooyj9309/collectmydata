@@ -1,5 +1,8 @@
 package com.banksalad.collectmydata.finance.api.bill;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
@@ -7,12 +10,9 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.bill.dto.BillResponse;
+import com.banksalad.collectmydata.finance.api.bill.dto.BillTransactionResponse;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,8 +24,8 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class BillServiceImpl<BillRequest, Bill, BillDetail> implements
-    BillService<BillRequest, Bill, BillDetail> {
+public class BillServiceImpl<BillRequest, Bill, BillTransactionRequest, BillTransaction> implements
+    BillService<BillRequest, Bill, BillTransactionRequest, BillTransaction> {
 
   private static final String AUTHORIZATION = "Authorization";
 
@@ -58,7 +58,8 @@ public class BillServiceImpl<BillRequest, Bill, BillDetail> implements
           execution,
           ExecutionRequest.builder()
               .headers(Map.of(AUTHORIZATION, executionContext.getAccessToken()))
-              .request(requestHelper.make(executionContext, fromDateTime.toLocalDate(), toDateTime.toLocalDate(), nextPage))
+              .request(
+                  requestHelper.make(executionContext, fromDateTime.toLocalDate(), toDateTime.toLocalDate(), nextPage))
               .build());
 
       /* validate response and break pagination */
@@ -86,15 +87,61 @@ public class BillServiceImpl<BillRequest, Bill, BillDetail> implements
   }
 
   @Override
-  public List<BillDetail> listBillDetails(
+  public List<BillTransaction> listBillTransactions(
       ExecutionContext executionContext,
       Execution execution,
       List<Bill> bills,
-      BillDetailRequestHelper<Bill> requestHelper,
-      BillDetailResponseHelper<BillDetail> responseHelper
+      BillTransactionRequestHelper<BillTransactionRequest, Bill> requestHelper,
+      BillTransactionResponseHelper<Bill, BillTransaction> responseHelper
   ) {
 
-    return null;
+    List<BillTransaction> billDetailsAll = new ArrayList<>();
+
+    ExecutionResponse<BillTransactionResponse> executionResponse;
+
+    for (Bill bill : bills) {
+      /* copy ExecutionContext for new executionRequestId */
+      ExecutionContext executionContextLocal = executionContext.copyWith(ExecutionContext.generateExecutionRequestId());
+      String nextPage = null;
+
+      do {
+        executionResponse = collectExecutor.execute(
+            executionContextLocal,
+            execution,
+            ExecutionRequest.builder()
+                .headers(Map.of(AUTHORIZATION, executionContext.getAccessToken()))
+                .request(requestHelper
+                    .make(executionContext, bill, nextPage))
+                .build());
+
+        /* validate response and break pagination */
+        if (executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
+          break;
+        }
+
+        /* save transactions */
+        List<BillTransaction> billTransactions = responseHelper
+            .getBillTransactionsFromResponse(executionResponse.getResponse());
+
+        /* Skip saving when no transaction exist. */
+        if (billTransactions != null && billTransactions.size() != 0) {
+          responseHelper.saveBillTransactions(executionContext, bill, billTransactions);
+          billDetailsAll.addAll(billTransactions);
+        }
+
+        nextPage = executionResponse.getNextPage();
+      } while (executionResponse.getNextPage() != null && executionResponse.getNextPage().length() > 0);
+    }
+
+    userSyncStatusService.updateUserSyncStatus(
+        executionContext.getBanksaladUserId(),
+        executionContext.getOrganizationId(),
+        execution.getApi().getId(),
+        executionContext.getSyncStartedAt(),
+        0L
+    );
+
+    return billDetailsAll;
   }
 
 

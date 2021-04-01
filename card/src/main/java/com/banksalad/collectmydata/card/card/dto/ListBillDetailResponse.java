@@ -1,6 +1,6 @@
 package com.banksalad.collectmydata.card.card.dto;
 
-import com.banksalad.collectmydata.finance.api.bill.dto.BillResponse;
+import com.banksalad.collectmydata.finance.api.bill.dto.BillTransactionResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ListBillDetailResponse implements BillResponse {
+public class ListBillDetailResponse implements BillTransactionResponse {
 
   private String rspCode;
 

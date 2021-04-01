@@ -1,6 +1,6 @@
 package com.banksalad.collectmydata.finance.api.bill.dto;
 
-public interface BillDetailResopnse {
+public interface BillTransactionResponse {
 
   String getRspCode();
 
