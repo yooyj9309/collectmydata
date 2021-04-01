@@ -5,11 +5,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.enums.Industry;
 import com.banksalad.collectmydata.common.enums.MydataSector;
+import com.banksalad.collectmydata.connect.collect.Executions;
 import com.banksalad.collectmydata.connect.common.db.entity.BanksaladClientSecretEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.OrganizationEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.OrganizationOauthTokenEntity;
@@ -22,27 +22,35 @@ import com.banksalad.collectmydata.connect.common.db.repository.OrganizationRepo
 import com.banksalad.collectmydata.connect.common.db.repository.ServiceClientIpRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.ServiceRepository;
 import com.banksalad.collectmydata.connect.common.enums.SecretType;
+import com.banksalad.collectmydata.connect.common.exception.ConnectException;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationInfo;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationResponse;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationServiceInfo;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationServiceIp;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationServiceResponse;
+import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationTokenResponse;
 import com.banksalad.collectmydata.connect.support.service.SupportService;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.ACCESS_TOKEN;
 import static com.banksalad.collectmydata.connect.common.ConnectConstant.CLIENT_ID;
 import static com.banksalad.collectmydata.connect.common.ConnectConstant.CLIENT_SECRET;
 import static com.banksalad.collectmydata.connect.common.ConnectConstant.ENTITY_IGNORE_FIELD;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 
 @SpringBootTest
+@Transactional
 @DisplayName("SupportService Test")
 public class SupportServiceTest {
 
@@ -70,37 +78,9 @@ public class SupportServiceTest {
   @MockBean
   private CollectExecutor collectExecutor;
 
-//  private static WireMockServer wireMockServer;
-//
-//  @BeforeAll
-//  public void test() {
-//    int port = Integer.parseInt(financeStaticPortalDomain.split(":")[2]);
-//    for (int idx = 0; idx < 5; idx++) {
-//      try {
-//        (new ServerSocket(port)).close();
-//        wireMockServer = new WireMockServer(port);
-//        wireMockServer.start();
-//        setupMockServer();
-//        break;
-//      } catch (Exception e) {
-//        try {
-//          Thread.sleep(1000);
-//        } catch (InterruptedException interruptedException) {
-//          interruptedException.printStackTrace();
-//        }
-//      }
-//    }
-//  }
-//
-//  @AfterEach
-//  public void shutdown() {
-//    wireMockServer.shutdown();
-//  }
-
   @Test
-  @Transactional
   @DisplayName("syncOrganizationInfo 테스트 성공케이스")
-  public void syncOrganizationInfo_success() {
+  public void syncOrganizationInfo_success1() {
     mockingOrganizationInfoTest();
     banksaladClientSecretRepository.save(
         BanksaladClientSecretEntity.builder()
@@ -142,9 +122,63 @@ public class SupportServiceTest {
   }
 
   @Test
-  @Transactional
-  @DisplayName("syncOrganizationServiceInfo 테스트 성공케이")
-  public void syncOrganizationServiceInfo_success() {
+  @DisplayName("syncOrganizationInfo 테스트 성공 - token을 새로 발급하는경우.")
+  public void syncOrganizationInfo_success2() {
+    mockingOrganizationInfoWithToken(true);
+    banksaladClientSecretRepository.save(
+        BanksaladClientSecretEntity.builder()
+            .clientId(CLIENT_ID)
+            .clientSecret(CLIENT_SECRET)
+            .secretType(SecretType.FINANCE.name())
+            .build()
+    );
+    supportService.syncOrganizationInfo();
+
+    OrganizationEntity entity = organizationRepository.findByOrgCode("020").get();
+    assertThat(entity)
+        .usingRecursiveComparison()
+        .ignoringFields(ENTITY_IGNORE_FIELD)
+        .isEqualTo(OrganizationEntity.builder()
+            .sector(MydataSector.UNKNOWN.name())
+            .industry(Industry.UNKNOWN.name())
+            .opType("I")
+            .orgCode("020")
+            .orgType("01")
+            .orgName("기관1")
+            .orgRegno("1234567890")
+            .corpRegno("1234567890")
+            .address("address1")
+            .domain("domain1")
+            .relayOrgCode("relay_org_code1")
+            .build()
+        );
+  }
+
+  @Test
+  @DisplayName("syncOrganizationInfo 테스트 - client id 관련 데이터가 없는경우 ")
+  public void syncOrganizationInfo_fail1() {
+    mockingOrganizationInfoTest();
+    organizationOauthTokenRepository.save(
+        OrganizationOauthTokenEntity.builder()
+            .secretType(SecretType.FINANCE.name())
+            .accessToken("accessToken")
+            .accessTokenExpiresAt(LocalDateTime.now().plusDays(5L))
+            .accessTokenExpiresIn(33)
+            .scope("scope")
+            .build()
+    );
+    Exception responseException = assertThrows(
+        Exception.class,
+        () -> supportService.syncOrganizationInfo()
+    );
+
+    AssertionsForClassTypes.assertThat(responseException).isInstanceOf(ConnectException.class);
+    assertEquals("NOT_FOUND_CLIENT_ID", responseException.getMessage());
+  }
+
+  @Test
+  @DisplayName("syncOrganizationServiceInfo 테스트 성공케이스")
+  public void syncOrganizationServiceInfo_success1() {
     mockingOrganizationServiceInfo();
     banksaladClientSecretRepository.save(
         BanksaladClientSecretEntity.builder()
@@ -203,8 +237,135 @@ public class SupportServiceTest {
     );
   }
 
+  @Test
+  @DisplayName("syncOrganizationServiceInfo 테스트 성공케이스 - token을 새로 발급하는경우.")
+  public void syncOrganizationServiceInfo_success2() {
+    mockingOrganizationInfoWithToken(false);
+    banksaladClientSecretRepository.save(
+        BanksaladClientSecretEntity.builder()
+            .clientId(CLIENT_ID)
+            .clientSecret(CLIENT_SECRET)
+            .secretType(SecretType.FINANCE.name())
+            .build()
+    );
+    organizationRepository.save(
+        OrganizationEntity.builder()
+            .syncedAt(LocalDateTime.now())
+            .sector("")
+            .industry("")
+            .organizationId("shinhancard")
+            .opType("")
+            .orgCode("020")
+            .orgType("")
+            .build()
+    );
+    supportService.syncOrganizationServiceInfo();
+
+    ServiceEntity serviceEntity = financeServiceRepository.findByOrganizationId("shinhancard").get();
+    assertThat(serviceEntity).usingRecursiveComparison()
+        .ignoringFields(ENTITY_IGNORE_FIELD).isEqualTo(
+        ServiceEntity.builder()
+            .organizationId("shinhancard")
+            .serviceName("service1")
+            .opType("I")
+            .clientId("clientId")
+            .clientSecret("clientSecret")
+            .redirectUri("http://redirect.com")
+            .build()
+    );
+
+    assertThat(
+        financeServiceClientIpRepository.findByServiceIdAndClientIp(serviceEntity.getId(), "127.0.0.1").get())
+        .usingRecursiveComparison()
+        .ignoringFields(ENTITY_IGNORE_FIELD).isEqualTo(
+        ServiceClientIpEntity.builder()
+            .serviceId(serviceEntity.getId())
+            .organizationId("shinhancard")
+            .serviceName("service1")
+            .clientIp("127.0.0.1")
+            .build()
+    );
+  }
+
+  @Test
+  @DisplayName("syncOrganizationServiceInfo 테스트 - client id 관련 데이터가 없는경우")
+  public void syncOrganizationServiceInfo_fail1() {
+    organizationRepository.save(
+        OrganizationEntity.builder()
+            .syncedAt(LocalDateTime.now())
+            .sector("")
+            .industry("")
+            .organizationId("shinhancard")
+            .opType("")
+            .orgCode("020")
+            .orgType("")
+            .build()
+    );
+
+    Exception responseException = assertThrows(
+        Exception.class,
+        () -> supportService.syncOrganizationServiceInfo()
+    );
+
+    AssertionsForClassTypes.assertThat(responseException).isInstanceOf(ConnectException.class);
+    assertEquals("NOT_FOUND_CLIENT_ID", responseException.getMessage());
+  }
+
+  @Test
+  @DisplayName("syncOrganizationServiceInfo 테스트 - Organization 데이터가 없는경우")
+  public void syncOrganizationServiceInfo_fail2() {
+    mockingOrganizationServiceInfo();
+    banksaladClientSecretRepository.save(
+        BanksaladClientSecretEntity.builder()
+            .clientId(CLIENT_ID)
+            .clientSecret(CLIENT_SECRET)
+            .secretType(SecretType.FINANCE.name())
+            .build()
+    );
+    organizationOauthTokenRepository.save(
+        OrganizationOauthTokenEntity.builder()
+            .secretType(SecretType.FINANCE.name())
+            .accessToken("accessToken")
+            .accessTokenExpiresAt(LocalDateTime.now().plusDays(5L))
+            .accessTokenExpiresIn(33)
+            .scope("scope")
+            .build()
+    );
+
+    Exception responseException = assertThrows(
+        Exception.class,
+        () -> supportService.syncOrganizationServiceInfo()
+    );
+
+    AssertionsForClassTypes.assertThat(responseException).isInstanceOf(ConnectException.class);
+    assertEquals("NOT_FOUND_ORGANIZATION", responseException.getMessage());
+  }
+
+  private void mockingOrganizationInfoWithToken(boolean isOrganizationInfoTest) {
+    when(collectExecutor.execute(any(), eq(Executions.support_get_access_token), any())).thenReturn(
+        ExecutionResponse.builder()
+            .httpStatusCode(200)
+            .response(
+                FinanceOrganizationTokenResponse.builder()
+                    .tokenType("Bearer")
+                    .accessToken(ACCESS_TOKEN)
+                    .expiresIn(100000)
+                    .scope("manage")
+                    .error("")
+                    .errorDescription("")
+                    .build()
+            )
+            .build()
+    );
+    if (isOrganizationInfoTest) {
+      mockingOrganizationInfoTest();
+    } else {
+      mockingOrganizationServiceInfo();
+    }
+  }
+
   private void mockingOrganizationInfoTest() {
-    when(collectExecutor.execute(any(), any(Execution.class), any())).thenReturn(
+    when(collectExecutor.execute(any(), eq(Executions.support_get_organization_info), any())).thenReturn(
         ExecutionResponse.builder()
             .httpStatusCode(200)
             .response(
@@ -243,7 +404,7 @@ public class SupportServiceTest {
   }
 
   private void mockingOrganizationServiceInfo() {
-    when(collectExecutor.execute(any(), any(), any())).thenReturn(
+    when(collectExecutor.execute(any(), eq(Executions.support_get_organization_service_info), any())).thenReturn(
         ExecutionResponse.builder()
             .httpStatusCode(200)
             .response(

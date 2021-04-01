@@ -11,6 +11,7 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
+import com.banksalad.collectmydata.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.connect.collect.Apis;
 import com.banksalad.collectmydata.connect.collect.Executions;
 import com.banksalad.collectmydata.connect.common.db.entity.ApiSyncStatusEntity;
@@ -34,7 +35,6 @@ import com.banksalad.collectmydata.connect.common.mapper.OrganizationMapper;
 import com.banksalad.collectmydata.connect.common.mapper.ServiceClientIpMapper;
 import com.banksalad.collectmydata.connect.common.mapper.ServiceMapper;
 import com.banksalad.collectmydata.connect.common.meters.ConnectMeterRegistry;
-import com.banksalad.collectmydata.connect.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationInfo;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationRequest;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationResponse;
@@ -93,7 +93,7 @@ public class SupportServiceImpl implements SupportService {
     // 7.1.2 기관 정보 조회 및 적재
 
     ExecutionRequest<FinanceOrganizationRequest> executionRequest = ExecutionUtil
-        .executionRequestAssembler(headers, request);
+        .assembleExecutionRequest(headers, request);
 
     FinanceOrganizationResponse financeOrganizationResponse = execute(
         Executions.support_get_organization_info, executionRequest);
@@ -121,10 +121,10 @@ public class SupportServiceImpl implements SupportService {
         .build();
 
     ExecutionRequest<FinanceOrganizationRequest> executionRequest = ExecutionUtil
-        .executionRequestAssembler(headers, request);
+        .assembleExecutionRequest(headers, request);
 
     // 7.1.2 기관 정보 조회 및 적재
-    FinanceOrganizationServiceResponse executionResponse = execute(Executions.support_get_organization_info,
+    FinanceOrganizationServiceResponse executionResponse = execute(Executions.support_get_organization_service_info,
         executionRequest);
 
     // db 적재
@@ -173,15 +173,16 @@ public class SupportServiceImpl implements SupportService {
     // banksalad 기관 clientId, clientSecret 조회
     BanksaladClientSecretEntity banksaladClientSecretEntity = banksaladClientSecretRepository
         .findBySecretType(secretType.name())
-        .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_SECTOR));
+        .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_CLIENT_ID));
 
     // accessToken db 조회
     OrganizationOauthTokenEntity tokenEntity = organizationOauthTokenRepository
         .findBySecretType(secretType.name())
         .orElse(null);
 
-    // accessToken 유효기간 검증 ,조회 및 db저장
-    if (tokenEntity == null || isAccessTokenExpired(tokenEntity.getAccessTokenExpiresAt())) {
+    // accessToken 유효기간 검증 ,조회 및 db저장,
+    // TODO 받아올때는 kst일거같은데 utc로 비교가 될것같다. utc시간이 -9라 로직상 큰 이슈는 아니나 맞춰야할 경우 시간변경 필요
+    if (tokenEntity == null || tokenEntity.getAccessTokenExpiresAt().isBefore(LocalDateTime.now())) {
       FinanceOrganizationTokenRequest request = FinanceOrganizationTokenRequest.builder()
           .grantType(FINANCE_REQUEST_GRANT_TYPE)
           .clientId(banksaladClientSecretEntity.getClientId())
@@ -190,9 +191,9 @@ public class SupportServiceImpl implements SupportService {
           .build();
 
       ExecutionRequest<FinanceOrganizationTokenRequest> executionRequest = ExecutionUtil
-          .executionRequestAssembler(request);
+          .assembleExecutionRequest(request);
 
-      // 7.1.1 기관 정보 조회
+      // 7.1.1 토큰정보 조회
       FinanceOrganizationTokenResponse response = execute(Executions.support_get_access_token,
           executionRequest);
 
@@ -237,10 +238,6 @@ public class SupportServiceImpl implements SupportService {
       throw new CollectRuntimeException(errorResponse.getError());
     }
     return executionResponse.getResponse();
-  }
-
-  public Boolean isAccessTokenExpired(LocalDateTime expiredAt) {
-    return expiredAt.isBefore(LocalDateTime.now()) ? true : false;
   }
 
   private Long getTimeStamp(Api api) {
