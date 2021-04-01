@@ -101,7 +101,7 @@ public class InsuranceContractResponseHelper implements
         .findByBanksaladUserIdAndOrganizationIdAndInsuNumAndInsuredNo(executionContext.getBanksaladUserId(),
             executionContext.getOrganizationId(), insured.getInsuNum(), insured.getInsuredNo())
         .ifPresent(insuredEntity -> {
-          insuredEntity.setContractSearchResponseCode(responseCode);
+          insuredEntity.setContractResponseCode(responseCode);
           insuredRepository.save(insuredEntity);
         });
   }

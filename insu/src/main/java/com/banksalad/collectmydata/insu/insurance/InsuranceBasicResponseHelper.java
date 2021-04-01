@@ -89,7 +89,7 @@ public class InsuranceBasicResponseHelper implements AccountInfoResponseHelper<I
 
           if (existingInsuredEntity != null) {
             insuredEntity.setId(existingInsuredEntity.getId());
-            insuredEntity.setContractSearchResponseCode(existingInsuredEntity.getContractSearchResponseCode());
+            insuredEntity.setContractResponseCode(existingInsuredEntity.getContractResponseCode());
             insuredEntity.setContractSearchTimestamp(existingInsuredEntity.getContractSearchTimestamp());
           }
 

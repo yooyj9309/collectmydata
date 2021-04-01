@@ -45,7 +45,7 @@ public class CarInsuranceTransactionEntity extends BaseEntity {
   @Column(nullable = false, name = "car_number_encrypted")
   private String carNumber;
 
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "smallint")
   private Integer transNo;
 
   @Column(nullable = false, precision = 18, scale = 3)

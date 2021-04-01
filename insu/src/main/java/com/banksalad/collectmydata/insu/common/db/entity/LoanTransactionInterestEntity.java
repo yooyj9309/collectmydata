@@ -51,7 +51,7 @@ public class LoanTransactionInterestEntity extends BaseEntity {
   @Column(nullable = false)
   private String transNo;
 
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "tinyint")
   private Integer intNo;
 
   @Column(nullable = false)

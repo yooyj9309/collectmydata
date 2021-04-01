@@ -45,7 +45,7 @@ public class InsuranceTransactionEntity extends BaseEntity {
   @Column(nullable = false)
   private String insuNum;
 
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "smallint")
   private Integer transNo;
 
   @Column(nullable = false)

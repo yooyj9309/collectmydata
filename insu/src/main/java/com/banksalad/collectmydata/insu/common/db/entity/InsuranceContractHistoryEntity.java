@@ -43,7 +43,7 @@ public class InsuranceContractHistoryEntity extends BaseEntity {
   @Column(nullable = false)
   private String insuredNo;
 
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "smallint")
   private Integer contractNo;
 
   @Column(nullable = false)

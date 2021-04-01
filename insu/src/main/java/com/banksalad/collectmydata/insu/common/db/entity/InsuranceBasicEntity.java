@@ -69,6 +69,6 @@ public class InsuranceBasicEntity extends BaseEntity {
   @Column(nullable = false, name = "is_loanable", columnDefinition = "BIT", length = 1)
   private Boolean loanable;
 
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "tinyint")
   private Integer insuredCount;
 }

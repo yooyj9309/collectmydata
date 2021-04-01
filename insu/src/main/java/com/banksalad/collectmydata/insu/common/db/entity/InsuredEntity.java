@@ -49,5 +49,5 @@ public class InsuredEntity extends BaseEntity {
 
   private Long contractSearchTimestamp;
 
-  private String contractSearchResponseCode;
+  private String contractResponseCode;
 }
