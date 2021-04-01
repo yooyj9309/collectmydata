@@ -15,21 +15,24 @@ import com.banksalad.collectmydata.connect.collect.Apis;
 import com.banksalad.collectmydata.connect.collect.Executions;
 import com.banksalad.collectmydata.connect.common.db.entity.ApiSyncStatusEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.BanksaladClientSecretEntity;
-import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
+import com.banksalad.collectmydata.connect.common.db.entity.OrganizationEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.OrganizationOauthTokenEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.ServiceClientIpEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.ServiceEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.ApiSyncStatusRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.BanksaladClientSecretRepository;
-import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationOauthTokenRepository;
+import com.banksalad.collectmydata.connect.common.db.repository.OrganizationRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.ServiceClientIpRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.ServiceRepository;
 import com.banksalad.collectmydata.connect.common.dto.ErrorResponse;
+import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
+import com.banksalad.collectmydata.connect.common.enums.SecretType;
 import com.banksalad.collectmydata.connect.common.enums.TokenErrorType;
-import com.banksalad.collectmydata.connect.common.mapper.ConnectOrganizationMapper;
-import com.banksalad.collectmydata.connect.common.mapper.FinanceServiceClientIpMapper;
-import com.banksalad.collectmydata.connect.common.mapper.FinanceServiceMapper;
+import com.banksalad.collectmydata.connect.common.exception.ConnectException;
+import com.banksalad.collectmydata.connect.common.mapper.OrganizationMapper;
+import com.banksalad.collectmydata.connect.common.mapper.ServiceClientIpMapper;
+import com.banksalad.collectmydata.connect.common.mapper.ServiceMapper;
 import com.banksalad.collectmydata.connect.common.meters.ConnectMeterRegistry;
 import com.banksalad.collectmydata.connect.common.util.ExecutionUtil;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationInfo;
@@ -54,22 +57,25 @@ public class SupportServiceImpl implements SupportService {
 
   @Value("${organization.finance-portal-domain}")
   private String financePortalDomain;
+
   public static final String AUTHORIZATION = "Authorization";
-  public static final String BANKSALAD_ORAGNIZATION_ID = "banksalad";
+
+  private static final String FINANCE_REQUEST_GRANT_TYPE = "Bearer";
+  private static final String FINANCE_RESPONSE_TOKEN_TYPE = "Bearer";
+  private static final String FINANCE_SCOPE = "manage";
 
   private final CollectExecutor collectExecutor;
   private final ConnectMeterRegistry connectMeterRegistry;
-  private final ConnectOrganizationRepository connectOrganizationRepository;
+  private final OrganizationRepository organizationRepository;
   private final ApiSyncStatusRepository apiSyncStatusRepository;
   private final BanksaladClientSecretRepository banksaladClientSecretRepository;
   private final OrganizationOauthTokenRepository organizationOauthTokenRepository;
   private final ServiceRepository serviceRepository;
   private final ServiceClientIpRepository serviceClientIpRepository;
 
-  private final FinanceServiceMapper serviceMapper = Mappers.getMapper(FinanceServiceMapper.class);
-  private final FinanceServiceClientIpMapper serviceClientIpMapper = Mappers
-      .getMapper(FinanceServiceClientIpMapper.class);
-  private final ConnectOrganizationMapper mapper = Mappers.getMapper(ConnectOrganizationMapper.class);
+  private final OrganizationMapper mapper = Mappers.getMapper(OrganizationMapper.class);
+  private final ServiceMapper serviceMapper = Mappers.getMapper(ServiceMapper.class);
+  private final ServiceClientIpMapper serviceClientIpMapper = Mappers.getMapper(ServiceClientIpMapper.class);
 
   public void syncAllOrganizationInfo() {
     syncOrganizationInfo();
@@ -78,10 +84,9 @@ public class SupportServiceImpl implements SupportService {
 
   @Override
   public void syncOrganizationInfo() {
-    ExecutionContext executionContext = executionContextAssembler();
-
-    String accessToken = getAccessToken(executionContext);
-    Long timestamp = getTimeStamp(Apis.support_get_organization_info); // 7.1.2 timestamp 조회 fixme
+    LocalDateTime now = LocalDateTime.now();
+    String accessToken = getAccessToken(SecretType.FINANCE);
+    Long timestamp = getTimeStamp(Apis.support_get_organization_info);
 
     Map<String, String> headers = Map.of(AUTHORIZATION, accessToken);
     FinanceOrganizationRequest request = FinanceOrganizationRequest.builder().searchTimestamp(timestamp).build();
@@ -90,25 +95,24 @@ public class SupportServiceImpl implements SupportService {
     ExecutionRequest<FinanceOrganizationRequest> executionRequest = ExecutionUtil
         .executionRequestAssembler(headers, request);
 
-    FinanceOrganizationResponse financeOrganizationResponse = execute(executionContext,
+    FinanceOrganizationResponse financeOrganizationResponse = execute(
         Executions.support_get_organization_info, executionRequest);
 
     // db 조회
     for (FinanceOrganizationInfo orgInfo : financeOrganizationResponse.getOrgList()) {
-      ConnectOrganizationEntity entity = connectOrganizationRepository.findByOrgCode(orgInfo.getOrgCode())
-          .orElse(ConnectOrganizationEntity.builder().build());
+      OrganizationEntity entity = organizationRepository.findByOrgCode(orgInfo.getOrgCode())
+          .orElse(OrganizationEntity.builder().build());
 
-      mapper.merge(orgInfo, entity);
-      connectOrganizationRepository.save(entity);
+      mapper.mergeDtoToEntity(orgInfo, entity);
+      entity.setSyncedAt(now);
+      organizationRepository.save(entity);
     }
   }
 
   @Override
   @Transactional
   public void syncOrganizationServiceInfo() {
-    ExecutionContext executionContext = executionContextAssembler();
-
-    String accessToken = getAccessToken(executionContext);
+    String accessToken = getAccessToken(SecretType.FINANCE);
     Long timestamp = getTimeStamp(Apis.support_get_organization_service_info); // 7.1.3 timestamp 조회
     // 7.1.3 기관 서비스 정보 조회 및 적재
     Map<String, String> headers = Map.of(AUTHORIZATION, accessToken);
@@ -120,18 +124,18 @@ public class SupportServiceImpl implements SupportService {
         .executionRequestAssembler(headers, request);
 
     // 7.1.2 기관 정보 조회 및 적재
-    FinanceOrganizationServiceResponse executionResponse = execute(executionContext,
-        Executions.support_get_organization_info, executionRequest);
+    FinanceOrganizationServiceResponse executionResponse = execute(Executions.support_get_organization_info,
+        executionRequest);
 
     // db 적재
     // 기관 리스트 순회
     // 추후 업데이트시 히스토리 이력이 필요하다면 객체비교로직 추가.
     for (FinanceOrganizationInfo orgInfo : executionResponse.getOrgList()) {
-      ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
+      OrganizationEntity organizationEntity = organizationRepository
           .findByOrgCode(orgInfo.getOrgCode())
-          .orElseThrow(RuntimeException::new); // fixme exception
+          .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_ORGANIZATION));
 
-      String organizationId = connectOrganizationEntity.getOrganizationId();
+      String organizationId = organizationEntity.getOrganizationId();
 
       // service 순회
       for (FinanceOrganizationServiceInfo service : orgInfo.getServiceList()) {
@@ -139,7 +143,7 @@ public class SupportServiceImpl implements SupportService {
         ServiceEntity serviceEntity = serviceRepository.findByOrganizationId(organizationId)
             .orElse(ServiceEntity.builder().build());
 
-        serviceMapper.merge(service, serviceEntity);
+        serviceMapper.mergeDtoToEntity(service, serviceEntity);
         serviceEntity.setOrganizationId(organizationId);
         serviceEntity = serviceRepository.save(serviceEntity);
 
@@ -154,7 +158,7 @@ public class SupportServiceImpl implements SupportService {
               .findByServiceIdAndClientIp(serviceId, clientId)
               .orElse(ServiceClientIpEntity.builder().build());
 
-          serviceClientIpMapper.merge(serviceIp, serviceClientIpEntity);
+          serviceClientIpMapper.mergeDtoToEntity(serviceIp, serviceClientIpEntity);
           serviceClientIpEntity.setOrganizationId(organizationId);
           serviceClientIpEntity.setServiceId(serviceId);
           serviceClientIpEntity.setServiceName(serviceName);
@@ -165,33 +169,37 @@ public class SupportServiceImpl implements SupportService {
     }
   }
 
-  public String getAccessToken(ExecutionContext executionContext) {
+  public String getAccessToken(SecretType secretType) {
     // banksalad 기관 clientId, clientSecret 조회
     BanksaladClientSecretEntity banksaladClientSecretEntity = banksaladClientSecretRepository
-        .findBySecretType(BANKSALAD_ORAGNIZATION_ID) // fixme
-        .orElseThrow(RuntimeException::new); // fixme
+        .findBySecretType(secretType.name())
+        .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_SECTOR));
 
     // accessToken db 조회
     OrganizationOauthTokenEntity tokenEntity = organizationOauthTokenRepository
-        .findByOrganizationId(BANKSALAD_ORAGNIZATION_ID)
+        .findBySecretType(secretType.name())
         .orElse(null);
 
     // accessToken 유효기간 검증 ,조회 및 db저장
-    if (tokenEntity == null || isAccessTokenExpired(tokenEntity)) {
-
+    if (tokenEntity == null || isAccessTokenExpired(tokenEntity.getAccessTokenExpiresAt())) {
       FinanceOrganizationTokenRequest request = FinanceOrganizationTokenRequest.builder()
+          .grantType(FINANCE_REQUEST_GRANT_TYPE)
           .clientId(banksaladClientSecretEntity.getClientId())
           .clientSecret(banksaladClientSecretEntity.getClientSecret())
+          .scope(FINANCE_SCOPE)
           .build();
 
       ExecutionRequest<FinanceOrganizationTokenRequest> executionRequest = ExecutionUtil
           .executionRequestAssembler(request);
 
-      // 7.1.1 기관 정보 조회 및 적재
-      FinanceOrganizationTokenResponse response = execute(executionContext, Executions.support_get_access_token,
+      // 7.1.1 기관 정보 조회
+      FinanceOrganizationTokenResponse response = execute(Executions.support_get_access_token,
           executionRequest);
 
-      //TODO token_type, scope 고정값 검증 및 에러 처리
+      if (!response.getTokenType().equals(FINANCE_RESPONSE_TOKEN_TYPE) ||
+          !response.getScope().equals(FINANCE_SCOPE)) {
+        throw new ConnectException(ConnectErrorType.INVALID_TOKEN_RESPONSE);
+      }
 
       // expiresAt 계산
       LocalDateTime expiresAt = LocalDateTime.now().plusSeconds(response.getExpiresIn()).minusDays(1);
@@ -199,7 +207,7 @@ public class SupportServiceImpl implements SupportService {
       // db 적재
       tokenEntity = organizationOauthTokenRepository.save(
           OrganizationOauthTokenEntity.builder()
-              .organizationId(BANKSALAD_ORAGNIZATION_ID)
+              .secretType(secretType.name())
               .accessToken(response.getAccessToken())
               .accessTokenExpiresAt(expiresAt)
               .accessTokenExpiresIn(response.getExpiresIn())
@@ -209,11 +217,30 @@ public class SupportServiceImpl implements SupportService {
       );
     }
 
-    return tokenEntity.getAccessToken();
+    return new StringBuilder().append("Bearer ").append(tokenEntity.getAccessToken()).toString();
   }
 
-  public Boolean isAccessTokenExpired(OrganizationOauthTokenEntity tokenEntity) {
-    return tokenEntity.getAccessTokenExpiresAt().isBefore(LocalDateTime.now()) ? true : false;
+  private <T, R> R execute(Execution execution, ExecutionRequest<T> executionRequest) {
+    // 추후 도메인이 늘어나는경우, 해당부분 수정 필요.
+    ExecutionContext executionContext = ExecutionContext.builder()
+        .organizationHost(financePortalDomain)
+        .build();
+
+    ExecutionResponse<R> executionResponse = collectExecutor.execute(executionContext, execution, executionRequest);
+
+    if (executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
+      ErrorResponse errorResponse = (ErrorResponse) executionResponse.getResponse();
+
+      connectMeterRegistry.incrementTokenErrorCount(executionContext.getOrganizationId(),
+          TokenErrorType.getValidatedError(errorResponse.getError()));
+
+      throw new CollectRuntimeException(errorResponse.getError());
+    }
+    return executionResponse.getResponse();
+  }
+
+  public Boolean isAccessTokenExpired(LocalDateTime expiredAt) {
+    return expiredAt.isBefore(LocalDateTime.now()) ? true : false;
   }
 
   private Long getTimeStamp(Api api) {
@@ -223,27 +250,4 @@ public class SupportServiceImpl implements SupportService {
     return Optional.ofNullable(entity.getSearchTimestamp()).orElse(0L);
   }
 
-  private ExecutionContext executionContextAssembler() {
-    return ExecutionContext.builder()
-        .organizationHost(financePortalDomain)
-        .build();
-  }
-
-  private <T, R> R execute(ExecutionContext executionContext, Execution execution,
-      ExecutionRequest<T> executionRequest) {
-
-    ExecutionResponse<R> executionResponse = collectExecutor.execute(executionContext, execution, executionRequest);
-
-    // TODO : Throw 부분 개선후 적용 - logging, execution monitoring,throw
-    if (executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
-      ErrorResponse errorResponse = (ErrorResponse) executionResponse.getResponse();
-
-      // TODO : 지원 API의 경우 error & metric 변경
-      connectMeterRegistry.incrementTokenErrorCount(executionContext.getOrganizationId(),
-          TokenErrorType.getValidatedError(errorResponse.getError()));
-
-      throw new CollectRuntimeException(errorResponse.getError());
-    }
-    return executionResponse.getResponse();
-  }
 }

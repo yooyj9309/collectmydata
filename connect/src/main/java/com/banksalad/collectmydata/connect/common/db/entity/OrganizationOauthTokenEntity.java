@@ -27,7 +27,7 @@ public class OrganizationOauthTokenEntity extends BaseEntity {
   private Long id;
 
   @Column(nullable = false)
-  private String organizationId;
+  private String secretType;
 
   @Column(nullable = false)
   private String accessToken;

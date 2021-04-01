@@ -11,7 +11,7 @@ public class Apis {
   public static Api support_get_access_token =
       Api.builder()
           .id("SU01") // 7.x 는 이름이 없습니다.
-          .name("접근토큰 발급(7.1.2)")
+          .name("접근토큰 발급(7.1.1)")
           .endpoint("/oauth/2.0/token")
           .method(HttpMethod.POST.name())
           .build();
