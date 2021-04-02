@@ -19,6 +19,8 @@ import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction
 import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.capital.summary.dto.ListAccountSummariesRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+import com.banksalad.collectmydata.common.enums.SyncRequestType;
+import com.banksalad.collectmydata.common.exception.CollectException;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
@@ -41,7 +43,6 @@ import java.util.concurrent.atomic.AtomicReference;
 @Service
 @RequiredArgsConstructor
 public class CapitalApiServiceImpl implements CapitalApiService {
-
 
   private final CollectmydataConnectClientService collectmydataConnectClientService;
 
@@ -69,15 +70,24 @@ public class CapitalApiServiceImpl implements CapitalApiService {
   private final TransactionRequestHelper<AccountSummary, ListOperatingLeaseTransactionsRequest> operatingLeaseTransactionRequestHelper;
   private final TransactionResponseHelper<AccountSummary, OperatingLeaseTransaction> operatingLeaseTransactionResponseHelper;
 
-  /**
-   * kafka consumer 에서 호출, 최초 API를 연동하는 서비스
-   *
-   * @param banksaladUserId
-   * @param organizationId
-   * @param syncRequestId
-   */
   @Override
-  public CapitalApiResponse onDemandRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
+  public CapitalApiResponse requestApi(long banksaladUserId, String organizationId, String syncRequestId,
+      SyncRequestType syncRequestType) throws ResponseNotOkException, CollectException {
+    switch (syncRequestType) {
+      case ONDEMAND:
+        return requestApiOnDemand(banksaladUserId, organizationId, syncRequestId, syncRequestType);
+      case SCHEDULED_BASIC:
+        return requestApiScheduledBasic(banksaladUserId, organizationId, syncRequestId, syncRequestType);
+      case SCHEDULED_ADDITIONAL:
+        return requestApiScheduledAdditional(banksaladUserId, organizationId, syncRequestId, syncRequestType);
+      default:
+        log.error("Fail to specify RequestType: {}", syncRequestType);
+        throw new CollectException("undefined syncRequestType"); // TODO
+    }
+  }
+
+  private CapitalApiResponse requestApiOnDemand(long banksaladUserId, String organizationId, String syncRequestId,
+      SyncRequestType syncRequestType)
       throws ResponseNotOkException {
     Organization organization = collectmydataConnectClientService.getOrganization(organizationId);
     String accessToken = "fixme"; //TODO 토큰 조회 로직 추가하여 적용
@@ -129,15 +139,14 @@ public class CapitalApiServiceImpl implements CapitalApiService {
     return atomicReference.get();
   }
 
-  @Override
-  public CapitalApiResponse scheduledBasicRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
+  private CapitalApiResponse requestApiScheduledBasic(long banksaladUserId, String organizationId, String syncRequestId,
+      SyncRequestType syncRequestType)
       throws ResponseNotOkException {
-    return onDemandRequestApi(banksaladUserId, organizationId, syncRequestId);
+    return requestApiOnDemand(banksaladUserId, organizationId, syncRequestId, syncRequestType);
   }
 
-  @Override
-  public CapitalApiResponse scheduledAdditionalRequestApi(long banksaladUserId, String organizationId,
-      String syncRequestId) throws ResponseNotOkException {
+  private CapitalApiResponse requestApiScheduledAdditional(long banksaladUserId, String organizationId,
+      String syncRequestId, SyncRequestType syncRequestType) throws ResponseNotOkException {
     Organization organization = collectmydataConnectClientService.getOrganization(organizationId);
     String accessToken = "fixme"; //TODO 토큰 조회 로직 추가하여 적용
 

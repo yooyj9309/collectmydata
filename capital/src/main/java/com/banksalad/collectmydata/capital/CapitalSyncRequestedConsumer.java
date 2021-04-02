@@ -34,7 +34,7 @@ public class CapitalSyncRequestedConsumer {
       topics = MessageTopic.capitalSyncRequested,
       containerFactory = "capitalSyncRequestedKafkaListenerContainerFactory",
       groupId = ConsumerGroupId.collectmydataFinanceCapital)
-  public void consumeSyncRequested(String source) throws ResponseNotOkException {
+  public void consumeSyncRequested(String source) {
     try {
       SyncRequestedMessage message = objectMapper.readValue(source, SyncRequestedMessage.class);
 
@@ -43,36 +43,14 @@ public class CapitalSyncRequestedConsumer {
 
       log.info("[collectmydata-capital] consume SyncRequested syncRequestId: {} ", message.getSyncRequestId());
 
-      CapitalApiResponse response = null;
+      CapitalApiResponse response = capitalApiService
+          .requestApi(message.getBanksaladUserId(), message.getOrganizationId(), message.getSyncRequestId(),
+              message.getSyncRequestType());
 
-      /* 1. request api */
-      switch (message.getSyncRequestType()) {
-        case ONDEMAND:
-          response = capitalApiService.onDemandRequestApi(message.getBanksaladUserId(), message.getOrganizationId(),
-              message.getSyncRequestId());
-          break;
-        case SCHEDULED_BASIC:
-          response = capitalApiService
-              .scheduledBasicRequestApi(message.getBanksaladUserId(), message.getOrganizationId(),
-                  message.getSyncRequestId());
-          break;
-        case SCHEDULED_ADDITIONAL:
-          response = capitalApiService
-              .scheduledAdditionalRequestApi(message.getBanksaladUserId(), message.getOrganizationId(),
-                  message.getSyncRequestId());
-          break;
-        default:
-          log.error("Fail to specify RequestType: {}", message.getSyncRequestType());
-          throw new CollectException("undefined syncResultType"); // TODO Exception 처리는 모니터링 작업과 같이 진행
-      }
-      
-      /* 2. produce publish */
       producePublishmentRequested(message.getBanksaladUserId(), message.getOrganizationId(), message.getSyncRequestId(),
           response);
-
     } catch (JsonProcessingException e) {
       log.error("Fail to deserialize syncRequestedMessage: {}", e.getMessage());
-
     } catch (ResponseNotOkException e) {
       log.error("Fail to sync: {}", e.getMessage());
       // TODO publish result with error code and message
@@ -85,12 +63,10 @@ public class CapitalSyncRequestedConsumer {
     } finally {
       LoggingMdcUtil.clear();
     }
-
   }
 
   private void producePublishmentRequested(long banksaladUserId, String organizationId, String syncRequestId,
       CapitalApiResponse capitalApiResponse) throws CollectException {
-
     try {
       PublishmentRequestedMessage publishmentRequestedMessage = PublishmentRequestedMessage.builder()
           .banksaladUserId(banksaladUserId)
