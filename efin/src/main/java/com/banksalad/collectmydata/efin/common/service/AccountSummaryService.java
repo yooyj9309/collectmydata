@@ -2,6 +2,7 @@ package com.banksalad.collectmydata.efin.common.service;
 
 import com.banksalad.collectmydata.efin.summary.dto.AccountSummary;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AccountSummaryService {
@@ -19,4 +20,11 @@ public interface AccountSummaryService {
 
   void updateChargeSearchTimestamp(long banksaladUserId, String organizationId, AccountSummary accountSummary,
       long searchTimestamp);
+
+  void updatePrepaidTransactionResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      String responseCode);
+
+  void updatePrepaidTransactionSyncedAt(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      LocalDateTime syncStartedAt);
+
 }

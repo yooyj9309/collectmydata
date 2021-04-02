@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.efin.collect;
 
 import com.banksalad.collectmydata.common.collect.api.Api;
+import com.banksalad.collectmydata.common.collect.api.Pagination;
 
 public class Apis {
 
@@ -39,6 +40,9 @@ public class Apis {
           .name("EF04-선불 거래내역 조회")
           .endpoint("/accounts/prepaid-transactions")
           .method(HttpMethod.POST.name())
+          .pagination(Pagination.builder()
+              .nextPage("next_page")
+              .build())
           .build();
 
   public static Api finance_efin_transactions =
@@ -47,6 +51,9 @@ public class Apis {
           .name("EF05-결제내역 조회")
           .endpoint("/accounts/transactions")
           .method(HttpMethod.POST.name())
+          .pagination(Pagination.builder()
+              .nextPage("next_page")
+              .build())
           .build();
 
 

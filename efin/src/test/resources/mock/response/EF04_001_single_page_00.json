@@ -1,0 +1,25 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "success",
+  "trans_cnt": 2,
+  "trans_list": [
+    {
+      "trans_type": "5201",
+      "fob_name": "가상계좌",
+      "trans_dtime": "20210302091000",
+      "trans_amt": 5000,
+      "balance_amt": 10000,
+      "trans_org_code": "080",
+      "trans_id": "000*****"
+    },
+    {
+      "trans_type": "5201",
+      "fob_name": "가상계좌",
+      "trans_dtime": "20210301091000",
+      "trans_amt": 5000,
+      "balance_amt": 15000,
+      "trans_org_code": "080",
+      "trans_id": "000*****"
+    }
+  ]
+}

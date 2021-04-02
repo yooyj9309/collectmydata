@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,6 +69,28 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
     accountSummaryRepository.save(accountSummaryEntity);
   }
 
+  @Override
+  public void updatePrepaidTransactionResponseCode(long banksaladUserId, String organizationId,
+      AccountSummary accountSummary, String responseCode) {
+    // 권면 상관없이 subkey 기준으로 선불거래내역을 주기때문에 subkey 일치하는 모든 계좌 responseCode 업데이트
+    List<AccountSummaryEntity> accountSummaryEntities =
+        getAccountSummaryEntities(banksaladUserId, organizationId, accountSummary.getSubKey());
+    accountSummaryEntities.forEach(accountSummaryEntity ->
+        accountSummaryEntity.setPrepaidTransactionResponseCode(responseCode));
+    accountSummaryRepository.saveAll(accountSummaryEntities);
+  }
+
+  @Override
+  public void updatePrepaidTransactionSyncedAt(long banksaladUserId, String organizationId,
+      AccountSummary accountSummary, LocalDateTime syncStartedAt) {
+    // 권면 상관없이 subkey 기준으로 선불거래내역을 주기때문에 subkey 일치하는 모든 계좌 syncedAt 업데이트
+    List<AccountSummaryEntity> accountSummaryEntities =
+        getAccountSummaryEntities(banksaladUserId, organizationId, accountSummary.getSubKey());
+    accountSummaryEntities.forEach(accountSummaryEntity ->
+        accountSummaryEntity.setPrepaidTransactionSyncedAt(syncStartedAt));
+    accountSummaryRepository.saveAll(accountSummaryEntities);
+  }
+
   private AccountSummaryEntity getAccountSummaryEntity(long banksaladUserId, String organizationId, String subKey,
       String accountId) {
     return accountSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndSubKeyAndAccountId(
@@ -76,6 +99,16 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
         subKey,
         accountId
     ).orElseThrow(() -> new CollectRuntimeException("No data AccountSummaryEntity"));
+  }
+
+  private List<AccountSummaryEntity> getAccountSummaryEntities(long banksaladUserId, String organizationId,
+      String subKey) {
+    List<AccountSummaryEntity> accountSummaryEntities = accountSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndSubKey(banksaladUserId, organizationId, subKey);
+    if (accountSummaryEntities.isEmpty()) {
+      throw new CollectRuntimeException("No data AccountSummaryEntity");
+    }
+    return accountSummaryEntities;
   }
 
 }

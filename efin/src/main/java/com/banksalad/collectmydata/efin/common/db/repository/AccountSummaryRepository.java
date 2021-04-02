@@ -14,4 +14,7 @@ public interface AccountSummaryRepository extends JpaRepository<AccountSummaryEn
 
   List<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndConsentIsTrue(long banksaladUserId,
       String organizationId);
+
+  List<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndSubKey(long banksaladUserId,
+      String organizationId, String subKey);
 }
