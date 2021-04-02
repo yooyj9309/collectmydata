@@ -1,5 +1,7 @@
 package com.banksalad.collectmydata.connect.support.dto;
 
+import com.banksalad.collectmydata.connect.common.dto.ErrorResponse;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
@@ -20,6 +22,6 @@ public class FinanceOrganizationTokenResponse {
   private int expiresIn; // 접근토큰 유효기간(단위: 초)
   private String scope; // 고정값 리턴 manage
 
-  private String error; // 에러코드 TODO.. 공통 으로 뺴는게 맞을지 검토
-  private String errorDescription; // 에러메시지
+  @JsonUnwrapped
+  private ErrorResponse errorResponse;
 }
