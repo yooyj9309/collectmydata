@@ -24,7 +24,7 @@ public class AccountTransaction {
   private BigDecimal transAmt;
   private String transOrgCode;
   private String transId;
-  private Integer totalInstallCnt;
+  private int totalInstallCnt;
   private String merchantName;
   private String transTitle;
   private String transCategory;

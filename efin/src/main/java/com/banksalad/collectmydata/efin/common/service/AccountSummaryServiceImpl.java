@@ -91,6 +91,29 @@ public class AccountSummaryServiceImpl implements AccountSummaryService {
     accountSummaryRepository.saveAll(accountSummaryEntities);
   }
 
+  @Override
+  public void updateTransactionResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      String responseCode) {
+    // 권면 상관없이 subkey 기준으로 결제내역을 주기때문에 subkey 일치하는 모든 계좌 responseCode 업데이트
+    List<AccountSummaryEntity> accountSummaryEntities =
+        getAccountSummaryEntities(banksaladUserId, organizationId, accountSummary.getSubKey());
+    accountSummaryEntities.forEach(accountSummaryEntity ->
+        accountSummaryEntity.setTransactionResponseCode(responseCode));
+    accountSummaryRepository.saveAll(accountSummaryEntities);
+
+  }
+
+  @Override
+  public void updateTransactionSyncedAt(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      LocalDateTime syncStartedAt) {
+    // 권면 상관없이 subkey 기준으로 결제내역을 주기때문에 subkey 일치하는 모든 계좌 syncedAt 업데이트
+    List<AccountSummaryEntity> accountSummaryEntities =
+        getAccountSummaryEntities(banksaladUserId, organizationId, accountSummary.getSubKey());
+    accountSummaryEntities.forEach(accountSummaryEntity ->
+        accountSummaryEntity.setTransactionSyncedAt(syncStartedAt));
+    accountSummaryRepository.saveAll(accountSummaryEntities);
+  }
+
   private AccountSummaryEntity getAccountSummaryEntity(long banksaladUserId, String organizationId, String subKey,
       String accountId) {
     return accountSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndSubKeyAndAccountId(

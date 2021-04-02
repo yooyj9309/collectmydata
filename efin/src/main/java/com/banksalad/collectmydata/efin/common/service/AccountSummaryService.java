@@ -27,4 +27,9 @@ public interface AccountSummaryService {
   void updatePrepaidTransactionSyncedAt(long banksaladUserId, String organizationId, AccountSummary accountSummary,
       LocalDateTime syncStartedAt);
 
+  void updateTransactionResponseCode(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      String responseCode);
+
+  void updateTransactionSyncedAt(long banksaladUserId, String organizationId, AccountSummary accountSummary,
+      LocalDateTime syncStartedAt);
 }
