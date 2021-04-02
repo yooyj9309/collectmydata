@@ -2,6 +2,7 @@ package com.banksalad.collectmydata.card.collect;
 
 import com.banksalad.collectmydata.card.card.dto.GetCardBasicResponse;
 import com.banksalad.collectmydata.card.card.dto.ListApprovalDomesticResponse;
+import com.banksalad.collectmydata.card.card.dto.ListApprovalOverseasResponse;
 import com.banksalad.collectmydata.card.card.dto.ListBillBasicResponse;
 import com.banksalad.collectmydata.card.card.dto.ListBillDetailResponse;
 import com.banksalad.collectmydata.card.card.dto.ListPaymentsResponse;
@@ -62,6 +63,13 @@ public class Executions {
       Execution.create()
           .exchange(Apis.finance_card_approval_domestic)
           .as(ListApprovalDomesticResponse.class)
+          .build();
+
+  // 6.3.8 해외 승인내역 조회
+  public static final Execution finance_card_approval_overseas =
+      Execution.create()
+          .exchange(Apis.finance_card_approval_overseas)
+          .as(ListApprovalOverseasResponse.class)
           .build();
 
   // 6.3.9 대출상품 목록 조회

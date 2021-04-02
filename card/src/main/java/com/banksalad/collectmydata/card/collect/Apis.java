@@ -39,6 +39,15 @@ public class Apis {
               .build())
           .build();
 
+  public static Api finance_card_approval_overseas =
+      Api.builder()
+          .id("CD04")
+          .name("CD04-해외 승인내역 조회")
+          .endpoint(
+              "/cards/{card_id}/approval-overseas?org_code={org_code}&from_date={from_date}&to_date={to_date}&next_page={next_page}&limit={limit}")
+          .method(HttpMethod.GET.name())
+          .build();
+
   public static Api finance_card_point =
       Api.builder()
           .id("CD11")

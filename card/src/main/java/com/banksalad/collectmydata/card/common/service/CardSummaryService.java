@@ -20,4 +20,10 @@ public interface CardSummaryService {
 
   void updateApprovalDomesticTransactionResponseCode(long banksaladUserId, String organizationId,
       CardSummary cardSummary, String responseCode);
+
+  void updateApprovalOverseasTransactionSyncedAt(long banksaladUserId, String organizationId, CardSummary cardSummary,
+      LocalDateTime syncStartedAt);
+
+  void updateApprovalOverseasTransactionResponseCode(long banksaladUserId, String organizationId,
+      CardSummary cardSummary, String responseCode);
 }

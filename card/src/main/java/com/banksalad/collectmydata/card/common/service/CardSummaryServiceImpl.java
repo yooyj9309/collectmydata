@@ -69,6 +69,26 @@ public class CardSummaryServiceImpl implements CardSummaryService {
     cardSummaryRepository.save(cardSummaryEntity);
   }
 
+  @Override
+  public void updateApprovalOverseasTransactionSyncedAt(long banksaladUserId, String organizationId,
+      CardSummary cardSummary, LocalDateTime syncStartedAt) {
+
+    CardSummaryEntity cardSummaryEntity = getCardSummaryEntity(banksaladUserId, organizationId,
+        cardSummary.getCardId());
+    cardSummaryEntity.setApprovalOverseasTransactionSyncedAt(syncStartedAt);
+    cardSummaryRepository.save(cardSummaryEntity);
+  }
+
+  @Override
+  public void updateApprovalOverseasTransactionResponseCode(long banksaladUserId, String organizationId,
+      CardSummary cardSummary, String responseCode) {
+
+    CardSummaryEntity cardSummaryEntity = getCardSummaryEntity(banksaladUserId, organizationId,
+        cardSummary.getCardId());
+    cardSummaryEntity.setApprovalOverseasTransactionResponseCode(responseCode);
+    cardSummaryRepository.save(cardSummaryEntity);
+  }
+
   private CardSummaryEntity getCardSummaryEntity(long banksaladUserId, String organizationId, String cardId) {
     return cardSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndCardId(
         banksaladUserId,
