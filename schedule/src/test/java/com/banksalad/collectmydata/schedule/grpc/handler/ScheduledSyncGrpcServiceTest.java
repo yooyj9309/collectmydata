@@ -77,7 +77,7 @@ class ScheduledSyncGrpcServiceTest {
     // Then
     assertNull(streamRecorder.getError());
     then(scheduledSyncRepository).should(times(1))
-        .deleteByBanksaladUserIdAndSectorAndIndustryAndOrganizationId(any(), any(), any(), any());
+        .deleteByBanksaladUserIdAndSectorAndIndustryAndOrganizationIdAndConsentId(any(), any(), any(), any(), any());
   }
 
   @Test
@@ -88,7 +88,7 @@ class ScheduledSyncGrpcServiceTest {
     StreamRecorder<UnregisterScheduledSyncResponse> streamRecorder = StreamRecorder.create();
 
     willThrow(new RuntimeException("Test Message")).given(scheduledSyncRepository)
-        .deleteByBanksaladUserIdAndSectorAndIndustryAndOrganizationId(any(), any(), any(), any());
+        .deleteByBanksaladUserIdAndSectorAndIndustryAndOrganizationIdAndConsentId(any(), any(), any(), any(), any());
 
     // When
     scheduledSyncGrpcService.unregisterScheduledSync(unregisterScheduledSyncRequest, streamRecorder);

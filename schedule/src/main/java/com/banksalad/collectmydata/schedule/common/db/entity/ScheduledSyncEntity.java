@@ -20,7 +20,7 @@ import static javax.persistence.GenerationType.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "scheduled_sync")
+@Table(name = "schedule")
 public class ScheduledSyncEntity extends BaseEntity {
 
   @Id
@@ -40,4 +40,12 @@ public class ScheduledSyncEntity extends BaseEntity {
   private String industry;  // TODO : Refactor to ENUM
 
   private String organizationId;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  private String cycle;
+
+  @Column(nullable = false)
+  private String endDate;
 }

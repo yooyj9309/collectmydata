@@ -33,6 +33,9 @@ public class ScheduledSyncGrpcService extends CollectscheduleImplBase {
           .sector(request.getSector())
           .industry(request.getIndustry())
           .organizationId(request.getOrganizationId())
+          .consentId(request.getConsentId())
+          .cycle(request.getCycle())
+          .endDate(request.getEndDate())
           .build();
 
       scheduledSyncRepository.save(scheduledSyncEntity);
@@ -49,9 +52,9 @@ public class ScheduledSyncGrpcService extends CollectscheduleImplBase {
       StreamObserver<UnregisterScheduledSyncResponse> responseObserver) {
     try {
       scheduledSyncRepository
-          .deleteByBanksaladUserIdAndSectorAndIndustryAndOrganizationId(
+          .deleteByBanksaladUserIdAndSectorAndIndustryAndOrganizationIdAndConsentId(
               Long.valueOf(request.getBanksaladUserId()), request.getSector(),
-              request.getIndustry(), request.getOrganizationId());
+              request.getIndustry(), request.getOrganizationId(), request.getConsentId());
 
       responseObserver.onNext(UnregisterScheduledSyncResponse.getDefaultInstance());
       responseObserver.onCompleted();

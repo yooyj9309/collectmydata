@@ -47,6 +47,9 @@ class ScheduledSyncServicePagingTest {
         .sector("finance")
         .industry("card")
         .organizationId("shinhancard")
+        .consentId("11")
+        .cycle("cycle")
+        .endDate("20210401")
         .build();
   }
 }

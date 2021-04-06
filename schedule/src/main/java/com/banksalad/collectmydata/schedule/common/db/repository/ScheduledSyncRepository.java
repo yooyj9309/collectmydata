@@ -7,7 +7,7 @@ import com.banksalad.collectmydata.schedule.common.db.entity.ScheduledSyncEntity
 
 public interface ScheduledSyncRepository extends JpaRepository<ScheduledSyncEntity, Long> {
 
-  void deleteByBanksaladUserIdAndSectorAndIndustryAndOrganizationId(
-      Long banksaladUserId, String sector, String industry, String organizationId
+  void deleteByBanksaladUserIdAndSectorAndIndustryAndOrganizationIdAndConsentId(
+      Long banksaladUserId, String sector, String industry, String organizationId, String consentId
   );
 }
