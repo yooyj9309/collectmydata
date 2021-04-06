@@ -256,7 +256,7 @@ public class CollectExecutorImpl implements CollectExecutor {
     return Optional.ofNullable(pagination)
         .map(Pagination::getNextPage)
         .map(requestJsonNode::get)
-        .map(JsonNode::asText)
+        .map(JsonNode::textValue)
         .orElse(null);
   }
 
@@ -269,7 +269,7 @@ public class CollectExecutorImpl implements CollectExecutor {
       return Optional.ofNullable(pagination)
           .map(Pagination::getNextPage)
           .map(responseJsonNode::get)
-          .map(JsonNode::asText)
+          .map(JsonNode::textValue)
           .orElse(null);
 
     } catch (JsonProcessingException e) {

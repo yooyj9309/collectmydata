@@ -2,7 +2,7 @@
   "rsp_code": "00000",
   "rsp_msg": "rsp_msg",
   "trans_cnt": 2,
-  "next_page": 3,
+  "next_page": "3",
   "trans_list": [
     {
       "trans_dtime": "20210121103000",
