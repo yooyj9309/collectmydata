@@ -21,6 +21,7 @@ import com.banksalad.collectmydata.connect.common.db.entity.ServiceClientIpEntit
 import com.banksalad.collectmydata.connect.common.db.entity.ServiceEntity;
 import com.banksalad.collectmydata.connect.common.db.repository.ApiSyncStatusRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.BanksaladClientSecretRepository;
+import com.banksalad.collectmydata.connect.common.db.repository.OrganizationHistoryRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationOauthTokenRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.OrganizationRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.ServiceClientIpRepository;
@@ -30,8 +31,8 @@ import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
 import com.banksalad.collectmydata.connect.common.enums.SecretType;
 import com.banksalad.collectmydata.connect.common.enums.TokenErrorType;
 import com.banksalad.collectmydata.connect.common.exception.ConnectException;
+import com.banksalad.collectmydata.connect.common.mapper.OrganizationHistoryMapper;
 import com.banksalad.collectmydata.connect.common.mapper.OrganizationMapper;
-import com.banksalad.collectmydata.connect.common.mapper.ServiceClientIpMapper;
 import com.banksalad.collectmydata.connect.common.mapper.ServiceMapper;
 import com.banksalad.collectmydata.connect.common.meters.ConnectMeterRegistry;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationInfo;
@@ -67,15 +68,17 @@ public class SupportServiceImpl implements SupportService {
   private final CollectExecutor collectExecutor;
   private final ConnectMeterRegistry connectMeterRegistry;
   private final OrganizationRepository organizationRepository;
+  private final OrganizationHistoryRepository organizationHistoryRepository;
   private final ApiSyncStatusRepository apiSyncStatusRepository;
   private final BanksaladClientSecretRepository banksaladClientSecretRepository;
   private final OrganizationOauthTokenRepository organizationOauthTokenRepository;
   private final ServiceRepository serviceRepository;
   private final ServiceClientIpRepository serviceClientIpRepository;
 
-  private final OrganizationMapper mapper = Mappers.getMapper(OrganizationMapper.class);
+  private final OrganizationMapper organizationMapper = Mappers.getMapper(OrganizationMapper.class);
+  private final OrganizationHistoryMapper organizationHistoryMapper = Mappers
+      .getMapper(OrganizationHistoryMapper.class);
   private final ServiceMapper serviceMapper = Mappers.getMapper(ServiceMapper.class);
-  private final ServiceClientIpMapper serviceClientIpMapper = Mappers.getMapper(ServiceClientIpMapper.class);
 
   public void syncAllOrganizationInfo() {
     syncOrganizationInfo();
@@ -90,11 +93,11 @@ public class SupportServiceImpl implements SupportService {
 
     Map<String, String> headers = Map.of(AUTHORIZATION, accessToken);
     FinanceOrganizationRequest request = FinanceOrganizationRequest.builder().searchTimestamp(timestamp).build();
-    // 7.1.2 기관 정보 조회 및 적재
 
     ExecutionRequest<FinanceOrganizationRequest> executionRequest = ExecutionUtil
         .assembleExecutionRequest(headers, request);
 
+    // 7.1.2 기관 정보 조회 및 적재
     FinanceOrganizationResponse financeOrganizationResponse = execute(
         Executions.support_get_organization_info, executionRequest);
 
@@ -103,10 +106,20 @@ public class SupportServiceImpl implements SupportService {
       OrganizationEntity entity = organizationRepository.findByOrgCode(orgInfo.getOrgCode())
           .orElse(OrganizationEntity.builder().build());
 
-      mapper.mergeDtoToEntity(orgInfo, entity);
+      organizationMapper.mergeDtoToEntity(orgInfo, entity);
       entity.setSyncedAt(now);
+
       organizationRepository.save(entity);
+      organizationHistoryRepository.save(organizationHistoryMapper.toHistoryEntity(entity));
     }
+
+    apiSyncStatusRepository.save(
+        ApiSyncStatusEntity.builder()
+            .apiId(Executions.support_get_organization_info.getApi().getId())
+            .syncedAt(LocalDateTime.now())
+            .searchTimestamp(financeOrganizationResponse.getSearchTimestamp())
+            .build()
+    );
   }
 
   @Override
@@ -123,50 +136,64 @@ public class SupportServiceImpl implements SupportService {
     ExecutionRequest<FinanceOrganizationRequest> executionRequest = ExecutionUtil
         .assembleExecutionRequest(headers, request);
 
-    // 7.1.2 기관 정보 조회 및 적재
-    FinanceOrganizationServiceResponse executionResponse = execute(Executions.support_get_organization_service_info,
+    // 7.1.3 기관 서비스 조회
+    FinanceOrganizationServiceResponse financeOrganizationServiceResponse = execute(
+        Executions.support_get_organization_service_info,
         executionRequest);
 
     // db 적재
     // 기관 리스트 순회
     // 추후 업데이트시 히스토리 이력이 필요하다면 객체비교로직 추가.
-    for (FinanceOrganizationInfo orgInfo : executionResponse.getOrgList()) {
-      OrganizationEntity organizationEntity = organizationRepository
-          .findByOrgCode(orgInfo.getOrgCode())
-          .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_ORGANIZATION));
+    for (FinanceOrganizationInfo orgInfo : financeOrganizationServiceResponse.getOrgList()) {
+      String orgCode = orgInfo.getOrgCode();
 
-      String organizationId = organizationEntity.getOrganizationId();
+      OrganizationEntity organizationEntity = organizationRepository
+          .findByOrgCode(orgCode)
+          .orElse(null);
+
+      String organizationId = null;
+      if (organizationEntity != null) {
+        organizationId = organizationEntity.getOrganizationId();
+      }
 
       // service 순회
       for (FinanceOrganizationServiceInfo service : orgInfo.getServiceList()) {
         // service db insert;
-        ServiceEntity serviceEntity = serviceRepository.findByOrganizationId(organizationId)
+        ServiceEntity serviceEntity = serviceRepository.findByOrgCodeAndClientId(orgCode, service.getClientId())
             .orElse(ServiceEntity.builder().build());
 
-        serviceMapper.mergeDtoToEntity(service, serviceEntity);
         serviceEntity.setOrganizationId(organizationId);
+        serviceEntity.setOrgCode(orgCode);
+        serviceMapper.mergeDtoToEntity(service, serviceEntity);
         serviceEntity = serviceRepository.save(serviceEntity);
 
+        Long serviceId = serviceEntity.getId();
+        String serviceName = serviceEntity.getServiceName();
+
+        // clientIp 전체 리스트 제거 및 insert
+        serviceClientIpRepository.deleteAllByOrgCodeAndServiceId(orgCode, serviceEntity.getId());
         // serviceIp 순회
         for (FinanceOrganizationServiceIp serviceIp : service.getClientIpList()) {
-          // service ip db insert
-          String serviceName = serviceEntity.getServiceName();
-          Long serviceId = serviceEntity.getId();
-          String clientId = serviceIp.getClientIp();
-
-          ServiceClientIpEntity serviceClientIpEntity = serviceClientIpRepository
-              .findByServiceIdAndClientIp(serviceId, clientId)
-              .orElse(ServiceClientIpEntity.builder().build());
-
-          serviceClientIpMapper.mergeDtoToEntity(serviceIp, serviceClientIpEntity);
-          serviceClientIpEntity.setOrganizationId(organizationId);
-          serviceClientIpEntity.setServiceId(serviceId);
-          serviceClientIpEntity.setServiceName(serviceName);
+          ServiceClientIpEntity serviceClientIpEntity = ServiceClientIpEntity.builder()
+              .serviceId(serviceId)
+              .organizationId(organizationId)
+              .orgCode(orgCode)
+              .serviceName(serviceName)
+              .clientIp(serviceIp.getClientIp())
+              .build();
 
           serviceClientIpRepository.save(serviceClientIpEntity);
         }
       }
     }
+
+    apiSyncStatusRepository.save(
+        ApiSyncStatusEntity.builder()
+            .apiId(Executions.support_get_organization_service_info.getApi().getId())
+            .syncedAt(LocalDateTime.now())
+            .searchTimestamp(financeOrganizationServiceResponse.getSearchTimestamp())
+            .build()
+    );
   }
 
   public String getAccessToken(SecretType secretType) {
@@ -181,7 +208,7 @@ public class SupportServiceImpl implements SupportService {
       BanksaladClientSecretEntity banksaladClientSecretEntity = banksaladClientSecretRepository
           .findBySecretType(secretType.name())
           .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_CLIENT_ID));
-      
+
       FinanceOrganizationTokenRequest request = FinanceOrganizationTokenRequest.builder()
           .grantType(FINANCE_REQUEST_GRANT_TYPE)
           .clientId(banksaladClientSecretEntity.getClientId())

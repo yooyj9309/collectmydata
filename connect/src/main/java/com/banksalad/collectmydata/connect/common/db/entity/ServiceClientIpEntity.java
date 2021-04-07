@@ -29,8 +29,10 @@ public class ServiceClientIpEntity extends BaseEntity {
   @Column(nullable = false)
   private Long serviceId;
 
-  @Column(nullable = false)
   private String organizationId;
+
+  @Column(nullable = false)
+  private String orgCode;
 
   @Column(nullable = false)
   private String serviceName;

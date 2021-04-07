@@ -28,6 +28,8 @@ public class FinanceOrganizationInfo {
   private String address; // 주소
   private String domain; // API 서버 도메인명(또는 IP)
   private String relayOrgCode; //중계기관 기관코드
+  private String industry;
+  private String authType;
 
   //7.1.3 사용 목록
   private int serviceCnt; // 서비스 목록

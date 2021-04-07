@@ -20,6 +20,7 @@ public class FinanceOrganizationServiceResponse {
   private String rspCode;
   private String rspMsg;
   private long searchTimestamp;
+  private int orgCnt;
 
   private List<FinanceOrganizationInfo> orgList;
 }

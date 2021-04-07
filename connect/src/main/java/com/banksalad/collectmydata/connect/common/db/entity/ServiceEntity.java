@@ -26,9 +26,10 @@ public class ServiceEntity extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(nullable = false)
   private String organizationId;
 
+  private String orgCode;
+  
   @Column(nullable = false)
   private String serviceName;
 
