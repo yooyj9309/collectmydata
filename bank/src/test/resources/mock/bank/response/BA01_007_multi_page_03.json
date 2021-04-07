@@ -6,7 +6,7 @@
   "account_cnt": 2,
   "account_list": [
     {
-      "account_num": "1234567893",
+      "account_num": "1245167123",
       "is_consent": true,
       "seqno": 1,
       "prod_name": "뱅크샐러드 대박 적금",
@@ -14,7 +14,7 @@
       "account_status": "01"
     },
     {
-      "account_num": "12345678901",
+      "account_num": "1152167123",
       "is_consent": true,
       "is_foreign_deposit": true,
       "prod_name": "우리은행 외화예금",

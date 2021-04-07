@@ -1,0 +1,17 @@
+{
+  "rsp_code": "000",
+  "rsp_msg": "rsp_msg",
+  "search_timestamp": 100,
+  "reg_date": "20200101",
+  "account_cnt": 1,
+  "account_list": [
+    {
+      "account_num": "123123123",
+      "is_consent": true,
+      "seqno": "a10230",
+      "prod_name": "뱅크샐러드 예금",
+      "account_type": "1002",
+      "account_status": "01"
+    }
+  ]
+}

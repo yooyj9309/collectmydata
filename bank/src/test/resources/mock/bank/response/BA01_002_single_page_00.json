@@ -1,0 +1,32 @@
+{
+  "rsp_code": "000",
+  "rsp_msg": "rsp_msg",
+  "search_timestamp": 100,
+  "reg_date": "20200101",
+  "account_cnt": 1,
+  "account_list": [
+    {
+      "account_num": "1234567890",
+      "is_consent": true,
+      "seqno": "01",
+      "prod_name": "뱅크샐러드 예금",
+      "account_type": "1002",
+      "account_status": "01"
+    },
+    {
+      "account_num": "21323111111",
+      "is_consent": true,
+      "prod_name": "뱅크샐러드 신탁",
+      "account_type": "2002",
+      "account_status": "01"
+    },
+    {
+      "account_num": "789456214567",
+      "is_consent": true,
+      "seqno": "a1234",
+      "prod_name": "뱅크샐러드 전세자금대출",
+      "account_type": "3170",
+      "account_status": "01"
+    }
+  ]
+}
