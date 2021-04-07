@@ -22,3 +22,7 @@ management:
   health:
     livenessState.enabled: true
     readinessState.enabled: true
+
+banksalad:
+  cipher.uri: dns:///cipher-headless:18081
+  collectSchedule.uri: dns:///fixme:8080

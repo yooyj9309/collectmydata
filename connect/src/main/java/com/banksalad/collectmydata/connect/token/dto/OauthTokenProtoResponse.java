@@ -22,6 +22,8 @@ public class OauthTokenProtoResponse {
   public GetAccessTokenResponse toGetAccessTokenResponseProto() {
     return GetAccessTokenResponse.newBuilder()
         .setAccessToken(oauthToken.getAccessToken())
+        .setConsentId(oauthToken.getConsentId())
+        .addAllScope(oauthToken.getScopes())
         .build();
   }
 

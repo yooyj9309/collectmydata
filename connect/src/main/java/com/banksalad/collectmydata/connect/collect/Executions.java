@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.connect.collect;
 
 import com.banksalad.collectmydata.common.collect.execution.Execution;
+import com.banksalad.collectmydata.connect.common.dto.GetConsentResponse;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationResponse;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationServiceResponse;
 import com.banksalad.collectmydata.connect.support.dto.FinanceOrganizationTokenResponse;
@@ -42,5 +43,11 @@ public class Executions {
       Execution.create()
           .exchange(Apis.oauth_revoke_token)
           .as(GetOauthTokenResponse.class)
+          .build();
+
+  public static final Execution common_consent =
+      Execution.create()
+          .exchange(Apis.common_consent)
+          .as(GetConsentResponse.class)
           .build();
 }

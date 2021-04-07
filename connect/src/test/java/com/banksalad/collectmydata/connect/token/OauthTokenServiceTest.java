@@ -13,24 +13,30 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.common.exception.GrpcException;
+import com.banksalad.collectmydata.connect.collect.Executions;
 import com.banksalad.collectmydata.connect.common.db.entity.BanksaladClientSecretEntity;
-import com.banksalad.collectmydata.connect.common.db.repository.BanksaladClientSecretRepository;
-import com.banksalad.collectmydata.connect.common.exception.ConnectException;
 import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
+import com.banksalad.collectmydata.connect.common.db.entity.ConsentEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.OauthTokenEntity;
+import com.banksalad.collectmydata.connect.common.db.repository.BanksaladClientSecretRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;
+import com.banksalad.collectmydata.connect.common.db.repository.ConsentRepository;
 import com.banksalad.collectmydata.connect.common.db.repository.OauthTokenRepository;
+import com.banksalad.collectmydata.connect.common.dto.Consent;
+import com.banksalad.collectmydata.connect.common.dto.GetConsentResponse;
 import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
+import com.banksalad.collectmydata.connect.common.exception.ConnectException;
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
 import com.banksalad.collectmydata.connect.token.dto.GetOauthTokenResponse;
 import com.banksalad.collectmydata.connect.token.dto.OauthToken;
 import com.banksalad.collectmydata.connect.token.service.OauthTokenService;
+import com.github.banksalad.idl.apis.v1.collectschedule.CollectScheduleProto.UnregisterScheduledSyncResponse;
+import com.github.banksalad.idl.apis.v1.collectschedule.CollectscheduleGrpc.CollectscheduleBlockingStub;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.IssueTokenRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RefreshTokenRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeAllTokensRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeTokenRequest;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -40,17 +46,38 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
-import static com.banksalad.collectmydata.connect.common.ConnectConstant.*;
-import static java.lang.Boolean.*;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.ACCESS_TOKEN;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.ACCESS_TOKEN_EXPIRES_AT;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.ACCESS_TOKEN_EXPIRES_IN;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.AUTHORIZATION_CODE;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.CLIENT_ID;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.CLIENT_SECRET;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.CONSENT_ID;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.DOMAIN;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.INDUSTRY;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.ORGANIZATION_CODE;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.ORGANIZATION_OBJECT_ID;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.ORGANIZATION_STATUS;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.REFRESH_TOKEN;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.REFRESH_TOKEN_EXPIRES_AT;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.REFRESH_TOKEN_EXPIRES_IN;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.SCOPE;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.SECTOR;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.TOKEN_TYPE;
+import static java.lang.Boolean.FALSE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+@Transactional
 @SpringBootTest
 @DisplayName("OauthTokenService Test")
 class OauthTokenServiceTest {
@@ -67,10 +94,17 @@ class OauthTokenServiceTest {
   @Autowired
   private BanksaladClientSecretRepository banksaladClientSecretRepository;
 
+  @Autowired
+  private ConsentRepository consentRepository;
+
   @MockBean
   private CollectExecutor collectExecutor;
 
+  @MockBean
+  private CollectscheduleBlockingStub collectscheduleBlockingStub;
+
   private OauthTokenEntity oauthTokenEntity;
+  private ConsentEntity consentEntity;
   private ConnectOrganizationEntity connectOrganizationEntity;
   private BanksaladClientSecretEntity banksaladClientSecretEntity;
 
@@ -79,6 +113,7 @@ class OauthTokenServiceTest {
   @BeforeEach
   void setUp() {
     oauthTokenEntity = getOauthTokenEntity();
+    consentEntity = getConsentEntity();
     connectOrganizationEntity = getConnectOrganizationEntity();
     banksaladClientSecretEntity = getBanksaladClientSecretEntity();
     oauthTokenRepository.save(oauthTokenEntity);
@@ -86,15 +121,7 @@ class OauthTokenServiceTest {
     banksaladClientSecretRepository.save(banksaladClientSecretEntity);
   }
 
-  @AfterEach
-  void tearDown() {
-    oauthTokenRepository.deleteAll();
-    connectOrganizationRepository.deleteAll();
-    connectOrganizationRepository.deleteAll();
-  }
-
   @Test
-  @Transactional
   @DisplayName("access token 조회를 성공하는 테스트")
   void getAccessToken_success() {
     // given
@@ -111,7 +138,6 @@ class OauthTokenServiceTest {
   }
 
   @Test
-  @Transactional
   @DisplayName("access token 조회를 실패하는 테스트 - 없는 banksaladUserId 조회")
   void getAccessToken_fail() {
     // given
@@ -126,7 +152,6 @@ class OauthTokenServiceTest {
   }
 
   @Test
-  @Transactional
   @DisplayName("access token 기한 만료로 토큰 갱신하는 테스트")
   void getAccessToken_refresh() {
     // given
@@ -158,7 +183,6 @@ class OauthTokenServiceTest {
   }
 
   @Test
-  @Transactional
   @DisplayName("access token 발급을 성공하는 테스트")
   void issueToken_success() {
     // given
@@ -167,7 +191,23 @@ class OauthTokenServiceTest {
         oauthTokenEntity.getAuthorizationCode());
 
     GetOauthTokenResponse getOauthTokenResponse = getExternalTokenResponse();
-    when(collectExecutor.execute(any(ExecutionContext.class), any(Execution.class), any(ExecutionRequest.class)))
+
+    GetConsentResponse getConsentResponse = GetConsentResponse.builder()
+        .rspCode("00000")
+        .rspMsg("success")
+        .consent(getConsent())
+        .build();
+
+    when(collectExecutor
+        .execute(any(ExecutionContext.class), eq(Executions.common_consent), any(ExecutionRequest.class)))
+        .thenReturn(
+            ExecutionResponse.builder()
+                .httpStatusCode(HttpStatus.OK.value())
+                .response(getConsentResponse)
+                .build());
+
+    when(collectExecutor
+        .execute(any(ExecutionContext.class), eq(Executions.oauth_issue_token), any(ExecutionRequest.class)))
         .thenReturn(
             ExecutionResponse.builder()
                 .httpStatusCode(HttpStatus.OK.value())
@@ -184,7 +224,6 @@ class OauthTokenServiceTest {
   }
 
   @Test
-  @Transactional
   @DisplayName("access token 발급을 실패하는 테스트 - 없는 organizationId 조회")
   void issueToken_fail() {
     // given
@@ -207,7 +246,6 @@ class OauthTokenServiceTest {
   }
 
   @Test
-  @Transactional
   @DisplayName("access token 갱신을 성공하는 테스트")
   void refreshToken_success() {
     // given
@@ -232,7 +270,6 @@ class OauthTokenServiceTest {
   }
 
   @Test
-  @Transactional
   @DisplayName("access token 갱신을 실패하는 테스트 - 만료된 refresh token")
   void refreshToken_fail() {
     // given
@@ -262,7 +299,6 @@ class OauthTokenServiceTest {
   }
 
   @Test
-  @Transactional
   @DisplayName("access token 폐기를 성공하는 테스트")
   void revokeToken_success() {
     // given
@@ -275,6 +311,10 @@ class OauthTokenServiceTest {
                 .httpStatusCode(HttpStatus.OK.value())
                 .build());
 
+    when(collectscheduleBlockingStub.unregisterScheduledSync(any()))
+        .thenReturn(
+            UnregisterScheduledSyncResponse.getDefaultInstance()
+        );
     // when
     oauthTokenService.revokeToken(request);
 
@@ -286,7 +326,6 @@ class OauthTokenServiceTest {
   }
 
   @Test
-  @Transactional
   @DisplayName("access token 폐기를 실패하는 테스트 - 없는 organizationId 삭제")
   void revokeToken_fail() {
     // given
@@ -306,7 +345,6 @@ class OauthTokenServiceTest {
   }
 
   @Test
-  @Transactional
   @DisplayName("뱅크샐러드 DB에서 토큰 제거 후 기관에 폐기 요청하였으나 예외가 발생한 경우 - 뱅크샐러드 DB에는 토큰 폐기 상태를 유지")
   void revokeToken_transaction_success_external_request_fail() {
     // given
@@ -328,7 +366,6 @@ class OauthTokenServiceTest {
   }
 
   @Test
-  @Transactional
   @DisplayName("모든 access token 폐기를 성공하는 테스트 - 다른 유저의 토큰이 삭제되지 않은 것 포함하여 검증")
   void revokeAllTokens_success() {
     // given
@@ -359,7 +396,6 @@ class OauthTokenServiceTest {
   }
 
   @Test
-  @Transactional
   @DisplayName("존재하지않는 banksaladUserId의 토큰 삭제 요청 시 - 예외가 발생하지 않고 아무 처리없이 정상응답")
   void revokeAllTokens_success_non_existing_user_request() {
     // given
@@ -381,7 +417,6 @@ class OauthTokenServiceTest {
 
   @Test
   @Disabled
-  @Transactional
   @DisplayName("유저의 모든 토큰 제거 과정 중간에 특정 기관에서 예외가 발생한 경우 - 해당 예외 발생 전까지의 과정은 정상 트랜잭션 진행 (진행된 뱅크샐러드 DB에는 토큰 폐기 상태를 유지)")
   void revokeAllTokens_transaction_success_external_request_fail() {
     // given
@@ -478,6 +513,30 @@ class OauthTokenServiceTest {
         .scope(SCOPE)
         .issuedAt(LocalDateTime.now().minusDays(1))
         .refreshedAt(LocalDateTime.now().minusDays(1))
+        .build();
+  }
+
+  private ConsentEntity getConsentEntity() {
+    return consentRepository.save(ConsentEntity.builder()
+        .syncedAt(LocalDateTime.now())
+        .banksaladUserId(BANKSALAD_USER_ID)
+        .organizationId(ORGANIZATION_ID)
+        .consentId(UUID.randomUUID().toString())
+        .scheduled(true)
+        .cycle("07")
+        .endDate("20210423")
+        .purpose("purpose")
+        .period(90)
+        .build());
+  }
+
+  private Consent getConsent() {
+    return Consent.builder()
+        .scheduled(true)
+        .cycle("07")
+        .endDate("20210423")
+        .purpose("purpose")
+        .period(90)
         .build();
   }
 

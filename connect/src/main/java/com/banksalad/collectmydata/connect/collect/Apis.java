@@ -55,4 +55,12 @@ public class Apis {
           .endpoint("/oauth/2.0/revoke")
           .method(HttpMethod.GET.name())
           .build();
+
+  public static Api common_consent =
+      Api.builder()
+          .id("CM02")
+          .name("정보제공-공통-002")
+          .endpoint("/consents?org_code={org_code}")
+          .method(HttpMethod.GET.name())
+          .build();
 }

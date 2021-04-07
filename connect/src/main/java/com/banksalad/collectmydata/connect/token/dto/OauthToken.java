@@ -11,5 +11,6 @@ public class OauthToken {
 
   private final String accessToken;
   private final String refreshToken;
+  private final String consentId;
   private final List<String> scopes;
 }
