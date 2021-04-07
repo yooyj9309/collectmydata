@@ -1,0 +1,22 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": 100,
+  "card_cnt": 2,
+  "card_list": [
+    {
+      "card_id": "card001",
+      "card_num": "123456******456",
+      "is_consent": true,
+      "card_name": "하나카드01",
+      "card_member": 1
+    },
+    {
+      "card_id": "card002",
+      "card_num": "123456******457",
+      "is_consent": true,
+      "card_name": "하나카드02",
+      "card_member": 1
+    }
+  ]
+}

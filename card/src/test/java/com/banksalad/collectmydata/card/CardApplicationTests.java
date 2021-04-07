@@ -10,5 +10,4 @@ class CardApplicationTests {
   @Test
   void contextLoads() {
   }
-
 }

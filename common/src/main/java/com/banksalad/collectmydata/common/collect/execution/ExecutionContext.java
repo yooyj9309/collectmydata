@@ -2,12 +2,14 @@ package com.banksalad.collectmydata.common.collect.execution;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Builder
 @Getter
+@Setter
 public class ExecutionContext {
 
   // TODO : make immutuable
@@ -17,7 +19,7 @@ public class ExecutionContext {
   private final long banksaladUserId;
   private final String organizationId;
   private final String organizationCode;
-  private final String organizationHost;
+  private String organizationHost;
   private final String accessToken;
   private final LocalDateTime syncStartedAt;
 
