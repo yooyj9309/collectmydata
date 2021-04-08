@@ -23,10 +23,6 @@ spring:
       max-lifetime: 60000
     type: com.zaxxer.hikari.HikariDataSource
 
-banksalad:
-  cipher.uri: localhost:9999
-  collectmydata-connect.uri: localhost:9998
-
 logging:
   config: classpath:logback/logback-${spring.profiles.active}.xml
   level:

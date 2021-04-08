@@ -21,7 +21,3 @@ logging:
 
 kafka:
   bootstrap-servers: localhost:9092
-
-banksalad:
-  cipher.uri: localhost:9999
-  collectmydata-connect.uri: localhost:9998

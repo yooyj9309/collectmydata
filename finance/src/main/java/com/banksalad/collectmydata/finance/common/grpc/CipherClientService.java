@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.capital.grpc.client;
+package com.banksalad.collectmydata.finance.common.grpc;
 
 import org.springframework.stereotype.Service;
 

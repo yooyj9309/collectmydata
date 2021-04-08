@@ -10,7 +10,6 @@ import java.util.List;
 public class OauthToken {
 
   private final String accessToken;
-  // TODO: Do we need the following?
-  private final String refreshToken;
+  private final String consentId;
   private final List<String> scopes;
 }

@@ -10,8 +10,6 @@ import com.banksalad.collectmydata.capital.account.dto.GetAccountDetailRequest;
 import com.banksalad.collectmydata.capital.account.dto.ListAccountTransactionsRequest;
 import com.banksalad.collectmydata.capital.collect.Executions;
 import com.banksalad.collectmydata.capital.common.dto.CapitalApiResponse;
-import com.banksalad.collectmydata.capital.common.dto.Organization;
-import com.banksalad.collectmydata.capital.grpc.client.CollectmydataConnectClientService;
 import com.banksalad.collectmydata.capital.oplease.dto.GetOperatingLeaseBasicRequest;
 import com.banksalad.collectmydata.capital.oplease.dto.ListOperatingLeaseTransactionsRequest;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasic;
@@ -31,7 +29,9 @@ import com.banksalad.collectmydata.finance.api.summary.SummaryService;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionRequestHelper;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
+import com.banksalad.collectmydata.finance.common.dto.Organization;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
+import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -189,7 +189,7 @@ public class CapitalApiServiceImpl implements CapitalApiService {
         .executionRequestId(syncRequestId)
         .organizationId(organizationId)
         .organizationCode(organization.getOrganizationCode())
-        .organizationHost(organization.getDomain())
+        .organizationHost(organization.getHostUrl())
         .accessToken(accessToken)
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();

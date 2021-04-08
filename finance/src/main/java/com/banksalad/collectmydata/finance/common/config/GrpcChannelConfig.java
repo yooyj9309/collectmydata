@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.insu.common.config;
+package com.banksalad.collectmydata.finance.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -12,19 +12,22 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
 @Configuration
-public class GrpcClientChannelConfig {
+public class GrpcChannelConfig {
 
-  @Value("${banksalad.cipher.uri}")
-  private String cipherUri;
-
-  @Value("${banksalad.collectmydata-connect.uri}")
-  private String collectmydataConnectUri;
+  @Value("${spring.profiles.active}")
+  private String profile;
 
   private static final String CLIENT_LOAD_BALANCING_POLICY_ROUND_ROBIN = "round_robin";
+  private static final String CIPHER_TARGET = "dns:///cipher-headless:18081";
+  private static final String COLLECTMYDATA_CONNECT_TARGET = "dns:///connect:8080";
+
+  private static final String LOCAL_CIPHER_TARGET = "localhost:9999";
+  private static final String LOCAL_COLLECTMYDATA_CONNECT_TARGET = "localhost:9998";
 
   @Bean
   public ConnectmydataBlockingStub connectmydataBlockingStub() {
-    ManagedChannel connectChannel = ManagedChannelBuilder.forTarget(collectmydataConnectUri)
+    String target = isLocalProfiles(profile) ? LOCAL_COLLECTMYDATA_CONNECT_TARGET : COLLECTMYDATA_CONNECT_TARGET;
+    ManagedChannel connectChannel = ManagedChannelBuilder.forTarget(target)
         .defaultLoadBalancingPolicy(CLIENT_LOAD_BALANCING_POLICY_ROUND_ROBIN)
         .usePlaintext()
         .build();
@@ -33,10 +36,15 @@ public class GrpcClientChannelConfig {
 
   @Bean
   public CipherBlockingStub cipherBlockingStub() {
-    ManagedChannel cipherChannel = ManagedChannelBuilder.forTarget(cipherUri)
+    String target = isLocalProfiles(profile) ? LOCAL_CIPHER_TARGET : CIPHER_TARGET;
+    ManagedChannel cipherChannel = ManagedChannelBuilder.forTarget(target)
         .defaultLoadBalancingPolicy(CLIENT_LOAD_BALANCING_POLICY_ROUND_ROBIN)
         .usePlaintext()
         .build();
     return CipherGrpc.newBlockingStub(cipherChannel);
+  }
+
+  private boolean isLocalProfiles(String profile) {
+    return profile.equals("local") || profile.equals("test");
   }
 }

@@ -1,14 +1,14 @@
 package com.banksalad.collectmydata.telecom;
 
+import org.springframework.stereotype.Service;
+
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.common.enums.SyncRequestType;
 import com.banksalad.collectmydata.finance.api.summary.SummaryService;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
 import com.banksalad.collectmydata.finance.common.dto.OauthToken;
 import com.banksalad.collectmydata.finance.common.dto.Organization;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
-import com.banksalad.collectmydata.finance.common.service.OauthTokenService;
-import com.banksalad.collectmydata.finance.common.service.OrganizationService;
+import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
 import com.banksalad.collectmydata.telecom.collect.Executions;
 import com.banksalad.collectmydata.telecom.common.dto.TelecomApiResponse;
 import com.banksalad.collectmydata.telecom.summary.TelecomSummaryRequestHelper;
@@ -22,9 +22,6 @@ import com.banksalad.collectmydata.telecom.telecom.TelecomTransactionResponseHel
 import com.banksalad.collectmydata.telecom.telecom.dto.ListTelecomPaidTransactionsRequest;
 import com.banksalad.collectmydata.telecom.telecom.dto.ListTelecomTransactionsRequest;
 import com.banksalad.collectmydata.telecom.telecom.dto.TelecomPaidTransaction;
-
-import org.springframework.stereotype.Service;
-
 import com.banksalad.collectmydata.telecom.telecom.dto.TelecomTransaction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,8 +35,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class TelecomApiServiceImpl implements TelecomApiService {
 
-  private final OrganizationService organizationService;
-  private final OauthTokenService oauthTokenService;
+  private final CollectmydataConnectClientService collectmydataConnectClientService;
 
   private final SummaryService<ListTelecomSummariesRequest, TelecomSummary> summaryService;
   private final TransactionApiService<TelecomSummary, ListTelecomTransactionsRequest, TelecomTransaction> telecomTransactionService;
@@ -58,8 +54,8 @@ public class TelecomApiServiceImpl implements TelecomApiService {
   public TelecomApiResponse onDemandRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
       throws ResponseNotOkException {
 
-    final OauthToken oauthToken = oauthTokenService.getOauthToken(banksaladUserId, organizationId);
-    final Organization organization = organizationService.getOrganizationById(organizationId);
+    final OauthToken oauthToken = collectmydataConnectClientService.getAccessToken(banksaladUserId, organizationId);
+    final Organization organization = collectmydataConnectClientService.getOrganization(organizationId);
 
     // Make an execution context
     ExecutionContext executionContext = generateExecutionContext(banksaladUserId, organizationId, oauthToken,
@@ -100,8 +96,8 @@ public class TelecomApiServiceImpl implements TelecomApiService {
   @Override
   public TelecomApiResponse scheduledAdditionalRequestApi(long banksaladUserId, String organizationId,
       String syncRequestId) throws ResponseNotOkException {
-    final OauthToken oauthToken = oauthTokenService.getOauthToken(banksaladUserId, organizationId);
-    final Organization organization = organizationService.getOrganizationById(organizationId);
+    final OauthToken oauthToken = collectmydataConnectClientService.getAccessToken(banksaladUserId, organizationId);
+    final Organization organization = collectmydataConnectClientService.getOrganization(organizationId);
 
     // Make an execution context
     ExecutionContext executionContext = generateExecutionContext(banksaladUserId, organizationId, oauthToken,
