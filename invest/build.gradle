@@ -108,6 +108,7 @@ dependencies {
     }
 
     testImplementation("org.springframework.cloud:spring-cloud-starter-contract-stub-runner")
+    testImplementation("org.springframework.boot:spring-boot-starter-validation:${springBootVersion}")
 
     testImplementation("commons-io:commons-io:2.6")
     testImplementation("com.h2database:h2")
