@@ -1,0 +1,14 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "bill_cnt": 1,
+  "bill_list": [
+    {
+      "charge_amt": 100000,
+      "charge_day": 14,
+      "charge_month": 202103,
+      "paid_out_date": "20210314",
+      "card_type": "01"
+    }
+  ]
+}

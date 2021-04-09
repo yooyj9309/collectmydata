@@ -70,6 +70,8 @@ public class BillServiceImpl<BillRequest, Bill, BillTransactionRequest, BillTran
       if (bills != null && !bills.isEmpty()) {
         responseHelper.saveBills(executionContext, bills);
         billAll.addAll(bills);
+
+        System.out.println("***\nnext_page: "+nextPage+"\nbills: "+bills+"\nnext_page: "+executionResponse.getNextPage()+"\n***");
       }
 
       nextPage = executionResponse.getNextPage();
