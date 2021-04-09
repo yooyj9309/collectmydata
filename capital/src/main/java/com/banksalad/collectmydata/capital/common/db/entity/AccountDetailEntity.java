@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.capital.common.db.entity;
 
 import com.banksalad.collectmydata.finance.common.db.entity.BaseEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,7 +16,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity

@@ -25,6 +25,7 @@ public class TestHelper {
   public static final MydataSector SECTOR = MydataSector.FINANCE;
   public static final Industry INDUSTRY = Industry.CAPITAL;
   public static final LocalDateTime SYNCED_AT = DateUtil.toLocalDateTime("20210301", "011010");
+  public static final LocalDateTime NOW = LocalDateTime.now(DateUtil.UTC_ZONE_ID);
   public static final long BANKSALAD_USER_ID = 1L;
   public static final String ORGANIZATION_ID = "X-loan";
   public static final String ORGANIZATION_CODE = "10041004";
@@ -74,7 +75,7 @@ public class TestHelper {
         .organizationCode(ORGANIZATION_CODE)
         .organizationHost("http://" + ORGANIZATION_HOST + ":" + port)
         .accessToken("test")
-        .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+        .syncStartedAt(NOW)
         .build();
   }
 
