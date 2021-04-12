@@ -1,0 +1,15 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": 200,
+  "insu_cnt": 1,
+  "insu_list": [
+    {
+      "insu_num": "12345678900",
+      "is_consent": true,
+      "prod_name": "묻지도 따지지도않고 암보험",
+      "insu_type": "05",
+      "insu_status": "02"
+    }
+  ]
+}

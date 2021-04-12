@@ -97,7 +97,7 @@ public class ExecutionTest {
   }
 
   @Test
-  @DisplayName("6.5.1 보험 기본정보 조회")
+  @DisplayName("6.5.1 보험 목록 조회")
   public void getInsuranceSummariesApiTest() {
     ExecutionContext executionContext = getExecutionContext();
 
@@ -116,12 +116,12 @@ public class ExecutionTest {
         .isEqualTo(
             ListInsuranceSummariesResponse.builder()
                 .rspCode("00000")
-                .rspMsg("success")
-                .searchTimestamp(1000L)
+                .rspMsg("성공")
+                .searchTimestamp(200)
                 .insuCnt(1)
                 .insuList(List.of(
                     InsuranceSummary.builder()
-                        .insuNum("123456789")
+                        .insuNum("12345678900")
                         .consent(true)
                         .prodName("묻지도 따지지도않고 암보험")
                         .insuType("05")
@@ -542,7 +542,7 @@ public class ExecutionTest {
             aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/IS01_001_single_page_00.json"))));
+                .withBody(readText("classpath:mock/response/IS01_004_single_page_00.json"))));
 
     // 6.5.2 보험 기본정보 조회
     wireMockServer.stubFor(post(urlMatching("/insurances/basic"))
