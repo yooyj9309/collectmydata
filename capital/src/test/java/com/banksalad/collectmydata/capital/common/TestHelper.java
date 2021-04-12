@@ -3,14 +3,9 @@ package com.banksalad.collectmydata.capital.common;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransactionInterest;
 import com.banksalad.collectmydata.capital.account.dto.ListAccountTransactionsResponse;
-import com.banksalad.collectmydata.capital.common.mapper.AccountTransactionInterestMapper;
-import com.banksalad.collectmydata.capital.common.mapper.AccountTransactionMapper;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.crypto.HashUtil;
-import com.banksalad.collectmydata.common.enums.Industry;
-import com.banksalad.collectmydata.common.enums.MydataSector;
 import com.banksalad.collectmydata.common.util.DateUtil;
-import org.mapstruct.factory.Mappers;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -21,20 +16,16 @@ import static com.banksalad.collectmydata.common.util.NumberUtil.bigDecimalOf;
 
 public class TestHelper {
 
-  public static final int AMOUNT_SCALE = 3;
-  public static final MydataSector SECTOR = MydataSector.FINANCE;
-  public static final Industry INDUSTRY = Industry.CAPITAL;
-  public static final LocalDateTime SYNCED_AT = DateUtil.toLocalDateTime("20210301", "011010");
   public static final LocalDateTime NOW = LocalDateTime.now(DateUtil.UTC_ZONE_ID);
   public static final long BANKSALAD_USER_ID = 1L;
   public static final String ORGANIZATION_ID = "X-loan";
   public static final String ORGANIZATION_CODE = "10041004";
   public static final String ORGANIZATION_HOST = "localhost";
   public static final String ACCOUNT_NUM = "1234567890";
+  public static final String ACCOUNT_NUM2 = "5678567856785678";
   public static final String SEQNO1 = "1";
   public static final String SEQNO2 = "2";
   public static final String TRANS_DTIME = "20210121103000";
-  public static final int TRANSACTION_YEAR_MONTH = Integer.parseInt(TRANS_DTIME.substring(0, 6));
   public static final String TRANS_NO = "1";
   public static final String TRANS_TYPE = "01";
   public static final BigDecimal TRANS_AMT = bigDecimalOf(100.001, 3);
@@ -42,29 +33,37 @@ public class TestHelper {
   public static final BigDecimal PRINCIPAL_AMT = bigDecimalOf(1000.000, 3);
   public static final BigDecimal INT_AMT = bigDecimalOf(5L, 3);
   public static final int INT_CNT = 1;
-  public static final int INT_NO = 1;
-  public static final String UNIQUE_TRANS_NO = HashUtil.hashCat(TRANS_DTIME, TRANS_NO, BALANCE_AMT.toString());
   public static final String INT_START_DATE = "20200101";
   public static final String INT_END_DATE = "20200131";
   public static final BigDecimal INT_RATE = bigDecimalOf(3.124, 3);
   public static final String INT_TYPE = "01";
-  public static final String ACCESS_TOKEN = "abc.def.ghi";
   public static final String ACCOUNT_TYPE = "3100";
   public static final String ACCOUNT_STATUS = "01";
   public static final String PRODUCT_NAME = "X-론 직장인 신용대출";
-  public static final int LIMIT = 2;
   public static final String REP_CODE_OK = "00000";
   public static final String REP_MSG_OK = "rsp_msg";
-  public static final String FROM_DATE = "20210121";
-  public static final String TO_DATE = "20210122";
   public static final String[] ENTITY_IGNORE_FIELD = {"id", "syncedAt", "createdAt", "createdBy", "updatedAt",
       "updatedBy"};
-  public static final int FIXED_DELAY = 100;
 
-  private static final AccountTransactionMapper accountTransactionMapper = Mappers
-      .getMapper(AccountTransactionMapper.class);
-  private static final AccountTransactionInterestMapper accountTransactionInterestMapper = Mappers
-      .getMapper(AccountTransactionInterestMapper.class);
+  // testTemplate에서 사용되는 부분
+  public static final LocalDateTime OLD_SYNCED_AT = DateUtil.toLocalDateTime("20210401", "101000");
+  public static final LocalDateTime NEW_SYNCED_AT = LocalDateTime.now(DateUtil.UTC_ZONE_ID);
+  public static final long SEARCH_TIMESTAMP_0 = 0L;
+  public static final long SEARCH_TIMESTAMP_100 = 100L;
+  public static final long SEARCH_TIMESTAMP_200 = 200L;
+
+  public static ExecutionContext getExecutionContext() {
+    return ExecutionContext.builder()
+        .syncRequestId(UUID.randomUUID().toString())
+        .banksaladUserId(BANKSALAD_USER_ID)
+        .organizationId(ORGANIZATION_ID)
+        .executionRequestId(UUID.randomUUID().toString())
+        .organizationCode(ORGANIZATION_CODE)
+        .organizationHost("http://" + ORGANIZATION_HOST)
+        .accessToken("test")
+        .syncStartedAt(NOW)
+        .build();
+  }
 
   public static ExecutionContext getExecutionContext(int port) {
     return ExecutionContext.builder()

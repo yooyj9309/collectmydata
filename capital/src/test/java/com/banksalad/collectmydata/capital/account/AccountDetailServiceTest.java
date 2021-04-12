@@ -1,5 +1,9 @@
 package com.banksalad.collectmydata.capital.account;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+
 import com.banksalad.collectmydata.capital.account.context.provider.AccountDetailInvocationContextProvider;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetail;
 import com.banksalad.collectmydata.capital.account.dto.GetAccountDetailRequest;
@@ -21,11 +25,6 @@ import com.banksalad.collectmydata.finance.test.template.dto.BareMain;
 import com.banksalad.collectmydata.finance.test.template.dto.BareParent;
 import com.banksalad.collectmydata.finance.test.template.dto.BareResponse;
 import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
@@ -82,6 +81,7 @@ public class AccountDetailServiceTest {
 
   private AccountDetailHistoryMapper historyMapper = Mappers.getMapper(AccountDetailHistoryMapper.class);
 
+
   private static WireMockServer wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
 
   private ExecutionContext executionContext;
@@ -103,7 +103,7 @@ public class AccountDetailServiceTest {
 
     wireMockServer.stop();
   }
-
+  
   /*
   컴포지션을 이용한 템플릿 패턴을 적용한다.
   이 파일은 summary 테스트를 위한 템플릿 메써드이므로 수정하지 않는다.

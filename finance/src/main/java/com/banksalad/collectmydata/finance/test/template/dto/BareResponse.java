@@ -14,7 +14,8 @@ public class BareResponse {
   private String mockId;
 
   // Optional: 200인 경우 설정하지 않아도 된다. Summary service의 예외상황을 테스트한 경우에만 설정한다.
-  private Integer status;
+  @Builder.Default
+  private Integer status = 200;
 
   // Optional: "00000"인 경우 설정하지 않아도 된다. Summary service의 예외상황을 테스트한 경우에만 설정한다.
   private String rspCode;

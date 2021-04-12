@@ -3,7 +3,6 @@ package com.banksalad.collectmydata.finance.test.template.dto;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.common.db.entity.UserSyncStatusEntity;
-
 import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,7 +47,12 @@ public class TestCase {
   private List<BareRequest> requestParams;
 
   /* Expected */
+  
+  private boolean errorOccurred;
 
+  private Class<?> expectedExceptionClazz;
+
+  private String expectedExceptionMessage;
   // Mandotory: 응답코드 등 최소한의 응답 객체
   @NotNull
   private List<BareResponse> expectedResponses;

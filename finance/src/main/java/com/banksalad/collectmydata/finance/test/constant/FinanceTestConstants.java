@@ -14,6 +14,7 @@ public class FinanceTestConstants {
   public static final LocalDateTime NEW_SYNCED_AT = LocalDateTime.now(DateUtil.UTC_ZONE_ID);
   public static final long BANKSALAD_USER_ID = 1L;
 
+  public static final long ZERO_USS_ST = 0L;
   public static final long OLD_USS_ST = 100L;
   public static final long NEW_USS_ST = 200L;
   public static final long OLD_ST1 = 1000L;
