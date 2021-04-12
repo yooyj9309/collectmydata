@@ -44,19 +44,21 @@ public class IrpAccountBasicEntity extends BaseEntity {
 
   private String seqno;
 
-  @Column(precision = 18, scale = 3)
+  @Column(nullable = false, precision = 18, scale = 3)
   private BigDecimal accumAmt;
 
-  @Column(precision = 18, scale = 3)
+  @Column(nullable = false, precision = 18, scale = 3)
   private BigDecimal evalAmt;
 
-  @Column(precision = 18, scale = 3)
+  @Column(nullable = false, precision = 18, scale = 3)
   private BigDecimal employerAmt;
 
-  @Column(precision = 18, scale = 3)
+  @Column(nullable = false, precision = 18, scale = 3)
   private BigDecimal employeeAmt;
 
+  @Column(nullable = false)
   private String issueDate;
 
+  @Column(nullable = false)
   private String firstDepositDate;
 }
