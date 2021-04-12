@@ -1,8 +1,8 @@
 {
-  "rsp_code": "000",
+  "rsp_code": "00000",
   "rsp_msg": "rep_msg",
-  "search_timestamp": 1000,
-  "holder_name": "대출차주명",
+  "search_timestamp": 2000,
+  "holder_name": "김뱅샐",
   "issue_date": "20210210",
   "exp_date": "20221231",
   "last_offered_rate": 2.117,

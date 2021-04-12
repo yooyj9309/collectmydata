@@ -42,8 +42,17 @@ public class TestHelper {
   public static final String PRODUCT_NAME = "X-론 직장인 신용대출";
   public static final String REP_CODE_OK = "00000";
   public static final String REP_MSG_OK = "rsp_msg";
-  public static final String[] ENTITY_IGNORE_FIELD = {"id", "syncedAt", "createdAt", "createdBy", "updatedAt",
-      "updatedBy"};
+  public static final String[] ENTITY_IGNORE_FIELD = {"id", "syncedAt", "createdAt", "createdBy", "updatedAt", "updatedBy"};
+  public static final int FIXED_DELAY = 100;
+  public static final String HOLDER_NAME = "김뱅샐";
+  public static final String ISSUE_DATE = "20210210";
+  public static final String EXP_DATE = "20221231";
+  public static final BigDecimal LAST_OFFERED_RATE = BigDecimal.valueOf(2.117);
+  public static final String REPAY_DATE = "03";
+  public static final String REPAY_METHOD = "01";
+  public static final String REPAY_ORG_CODE = "B01";
+  public static final String REPAY_ACCOUNT_NUM = "11022212345";
+
 
   // testTemplate에서 사용되는 부분
   public static final LocalDateTime OLD_SYNCED_AT = DateUtil.toLocalDateTime("20210401", "101000");

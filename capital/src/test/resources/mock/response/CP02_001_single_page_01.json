@@ -1,0 +1,13 @@
+{
+  "rsp_code": "40404",
+  "rsp_msg": "해지된 계좌번호",
+  "search_timestamp": 0,
+  "holder_name": "",
+  "issue_date": "",
+  "exp_date": "",
+  "last_offered_rate": 0,
+  "repay_date": "",
+  "repay_method": "",
+  "repay_org_code": "",
+  "repay_account_num": ""
+}
