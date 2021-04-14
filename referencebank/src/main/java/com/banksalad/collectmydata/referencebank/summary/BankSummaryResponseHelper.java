@@ -38,13 +38,18 @@ public class BankSummaryResponseHelper implements SummaryResponseHelper<AccountS
     ListAccountSummariesResponse listAccountSummariesResponse = (ListAccountSummariesResponse) response;
 
     OrganizationUserEntity organizationUserEntity = organizationUserRepository
-        .findByBanksaladUserIdAndOrganizationId(executionContext.getBanksaladUserId(), executionContext.getOrganizationId())
+        .findByBanksaladUserIdAndOrganizationId(executionContext.getBanksaladUserId(),
+            executionContext.getOrganizationId())
         .orElse(OrganizationUserEntity.builder()
             .syncedAt(executionContext.getSyncStartedAt())
             .banksaladUserId(executionContext.getBanksaladUserId())
             .organizationId(executionContext.getOrganizationId())
             .regDate(listAccountSummariesResponse.getRegDate())
             .build());
+    organizationUserEntity.setConsentId(executionContext.getConsentId());
+    organizationUserEntity.setSyncRequestId(executionContext.getSyncRequestId());
+    organizationUserEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+    organizationUserEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
 
     organizationUserRepository.save(organizationUserEntity);
   }
@@ -66,6 +71,10 @@ public class BankSummaryResponseHelper implements SummaryResponseHelper<AccountS
     accountSummaryEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
     accountSummaryEntity.setOrganizationId(executionContext.getOrganizationId());
     accountSummaryEntity.setSyncedAt(executionContext.getSyncStartedAt());
+    accountSummaryEntity.setConsentId(executionContext.getConsentId());
+    accountSummaryEntity.setSyncRequestId(executionContext.getSyncRequestId());
+    accountSummaryEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+    accountSummaryEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
     accountSummaryRepository.save(accountSummaryEntity);
   }
 }

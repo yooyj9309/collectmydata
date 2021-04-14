@@ -12,7 +12,10 @@ import com.banksalad.collectmydata.finance.api.summary.SummaryService;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionRequestHelper;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
+import com.banksalad.collectmydata.finance.common.dto.OauthToken;
+import com.banksalad.collectmydata.finance.common.dto.Organization;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
+import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
 import com.banksalad.collectmydata.referencebank.collect.Executions;
 import com.banksalad.collectmydata.referencebank.common.dto.BankApiResponse;
 import com.banksalad.collectmydata.referencebank.deposit.dto.DepositAccountBasic;
@@ -39,6 +42,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public class BankApiServiceImpl implements BankApiService {
 
+  private final CollectmydataConnectClientService connectClientService;
+
   private final SummaryService<ListAccountSummariesRequest, AccountSummary> accountSummaryService;
   private final AccountInfoService<AccountSummary, GetDepositAccountBasicRequest, DepositAccountBasic> depositAccountBasicApiService;
   private final AccountInfoService<AccountSummary, GetDepositAccountDetailRequest, List<DepositAccountDetail>> depositAccountDetailApiService;
@@ -60,14 +65,18 @@ public class BankApiServiceImpl implements BankApiService {
   public BankApiResponse requestApi(long banksaladUserId, String organizationId, String syncRequestId,
       SyncRequestType syncRequestType) throws ResponseNotOkException {
 
+    final OauthToken oauthToken = connectClientService.getAccessToken(banksaladUserId, organizationId);
+    final Organization organization = connectClientService.getOrganization(organizationId);
+
     // TODO : Organization service
     ExecutionContext executionContext = ExecutionContext.builder()
         .banksaladUserId(banksaladUserId)
-        .executionRequestId(syncRequestId)
-        .organizationId(organizationId)
-        .organizationCode("020")
-        .organizationHost("http://localhost:9090")
-        .accessToken("fixme")
+        .consentId(oauthToken.getConsentId())
+        .syncRequestId(syncRequestId)
+        .organizationId(organization.getOrganizationId())
+        .organizationCode(organization.getOrganizationCode())
+        .organizationHost(organization.getHostUrl())
+        .accessToken(oauthToken.getAccessToken())
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
 

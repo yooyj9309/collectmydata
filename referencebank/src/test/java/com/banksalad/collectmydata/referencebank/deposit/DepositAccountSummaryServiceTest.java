@@ -1,11 +1,5 @@
 package com.banksalad.collectmydata.referencebank.deposit;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.summary.SummaryRequestHelper;
@@ -16,6 +10,13 @@ import com.banksalad.collectmydata.referencebank.common.db.entity.AccountSummary
 import com.banksalad.collectmydata.referencebank.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.referencebank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.referencebank.summary.dto.ListAccountSummariesRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
@@ -36,6 +37,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -76,7 +78,8 @@ class DepositAccountSummaryServiceTest {
 
   private ExecutionContext initExecutionContext() {
     return ExecutionContext.builder()
-        .syncRequestId(UUID.randomUUID().toString())
+        .consentId("consentId1")
+        .syncRequestId("syncRequestId1")
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
         .executionRequestId(UUID.randomUUID().toString())
@@ -102,6 +105,8 @@ class DepositAccountSummaryServiceTest {
             "1");
 
     Assertions.assertThat(accountSummaryEntity.isPresent()).isTrue();
+    assertEquals("consentId1", accountSummaryEntity.get().getConsentId());
+    assertEquals("syncRequestId1", accountSummaryEntity.get().getSyncRequestId());
   }
 
   @Test

@@ -13,6 +13,7 @@ import java.util.UUID;
 public class ExecutionContext {
 
   // TODO : make immutuable
+  private final String consentId;
   private final String syncRequestId;
   //  private final String executionRequestId;
   private String executionRequestId;

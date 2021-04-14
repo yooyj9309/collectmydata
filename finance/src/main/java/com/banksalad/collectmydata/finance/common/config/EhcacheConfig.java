@@ -21,7 +21,7 @@ public class EhcacheConfig {
     configuration = new MutableConfiguration<Object, Object>()
         .setTypes(Object.class, Object.class)
         .setStoreByValue(false)
-        .setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(new Duration(TimeUnit.SECONDS, 1)));
+        .setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(new Duration(TimeUnit.MINUTES, 5)));
   }
 
   @Bean
