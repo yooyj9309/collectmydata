@@ -44,6 +44,7 @@ public class AccountSummaryEntity extends BaseEntity {
   @Column(nullable = false, name = "is_consent", columnDefinition = "BIT", length = 1)
   private Boolean consent;
 
+  @Column(nullable = false)
   private String accountName;
 
   @Column(nullable = false)
