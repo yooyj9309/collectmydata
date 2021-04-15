@@ -21,6 +21,8 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
+
 @Component
 @RequiredArgsConstructor
 public class DepositAccountDetailInfoResponseHelper implements
@@ -81,7 +83,7 @@ public class DepositAccountDetailInfoResponseHelper implements
     }
 
     // upsert deposit account detail and insert history if needed
-    if (!ObjectComparator.isSame(depositAccountDetailEntity, existingDepositAccountDetailEntity, "syncedAt")) {
+    if (!ObjectComparator.isSame(depositAccountDetailEntity, existingDepositAccountDetailEntity, ENTITY_EXCLUDE_FIELD)) {
       depositAccountDetailRepository.save(depositAccountDetailEntity);
       depositAccountDetailHistoryRepository
           .save(depositAccountDetailHistoryMapper.toHistoryEntity(depositAccountDetailEntity));

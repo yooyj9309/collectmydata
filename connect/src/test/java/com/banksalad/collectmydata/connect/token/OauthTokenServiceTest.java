@@ -415,47 +415,47 @@ class OauthTokenServiceTest {
     assertThat(afterOauthTokenEntities).usingRecursiveComparison().isEqualTo(beforeOauthTokenEntities);
   }
 
-  @Test
-  @Disabled
-  @DisplayName("유저의 모든 토큰 제거 과정 중간에 특정 기관에서 예외가 발생한 경우 - 해당 예외 발생 전까지의 과정은 정상 트랜잭션 진행 (진행된 뱅크샐러드 DB에는 토큰 폐기 상태를 유지)")
-  void revokeAllTokens_transaction_success_external_request_fail() {
-    // given
-    final int ERROR_INDEX = TOTAL_ORGANIZATION_SIZE - 1; // must be less than TOTAL_ORGANIZATION_COUNT
-
-    initRepository();
-    List<Organization> organizations = getOrganizations();
-    List<OauthTokenEntity> oauthTokenEntities = oauthTokenRepository.findAll();
-    List<ConnectOrganizationEntity> connectOrganizationEntities = connectOrganizationRepository.findAll();
-
-//    doThrow(new GrpcException())
-//        .when(collectExecutor)
-//        .revokeToken(organizations.get(ERROR_INDEX), oauthTokenEntities.get(ERROR_INDEX).getAccessToken());
-
-    Long banksaladUserId = oauthTokenEntities.get(0).getBanksaladUserId();
-    RevokeAllTokensRequest request = getRevokeAllTokensRequest(banksaladUserId.toString());
-
-    // when, then
-    for (int i = 0; i < TOTAL_ORGANIZATION_SIZE; i++) {
-      String errorOrganizationId = connectOrganizationEntities.get(i).getOrganizationId();
-      assertThat(oauthTokenRepository
-          .findByBanksaladUserIdAndOrganizationId(banksaladUserId, errorOrganizationId))
-          .isNotEmpty();
-    }
-    assertThrows(GrpcException.class, () -> oauthTokenService.revokeAllTokens(request));
-
-    for (int i = 0; i <= ERROR_INDEX; i++) {
-      String errorOrganizationId = connectOrganizationEntities.get(i).getOrganizationId();
-      assertThat(oauthTokenRepository
-          .findByBanksaladUserIdAndOrganizationId(banksaladUserId, errorOrganizationId))
-          .isEmpty();
-    }
-    for (int i = ERROR_INDEX + 1; i < TOTAL_ORGANIZATION_SIZE; i++) {
-      String errorOrganizationId = connectOrganizationEntities.get(i).getOrganizationId();
-      assertThat(oauthTokenRepository
-          .findByBanksaladUserIdAndOrganizationId(banksaladUserId, errorOrganizationId))
-          .isNotEmpty();
-    }
-  }
+//  @Test
+//  @Disabled
+//  @DisplayName("유저의 모든 토큰 제거 과정 중간에 특정 기관에서 예외가 발생한 경우 - 해당 예외 발생 전까지의 과정은 정상 트랜잭션 진행 (진행된 뱅크샐러드 DB에는 토큰 폐기 상태를 유지)")
+//  void revokeAllTokens_transaction_success_external_request_fail() {
+//    // given
+//    final int ERROR_INDEX = TOTAL_ORGANIZATION_SIZE - 1; // must be less than TOTAL_ORGANIZATION_COUNT
+//
+//    initRepository();
+//    List<Organization> organizations = getOrganizations();
+//    List<OauthTokenEntity> oauthTokenEntities = oauthTokenRepository.findAll();
+//    List<ConnectOrganizationEntity> connectOrganizationEntities = connectOrganizationRepository.findAll();
+//
+////    doThrow(new GrpcException())
+////        .when(collectExecutor)
+////        .revokeToken(organizations.get(ERROR_INDEX), oauthTokenEntities.get(ERROR_INDEX).getAccessToken());
+//
+//    Long banksaladUserId = oauthTokenEntities.get(0).getBanksaladUserId();
+//    RevokeAllTokensRequest request = getRevokeAllTokensRequest(banksaladUserId.toString());
+//
+//    // when, then
+//    for (int i = 0; i < TOTAL_ORGANIZATION_SIZE; i++) {
+//      String errorOrganizationId = connectOrganizationEntities.get(i).getOrganizationId();
+//      assertThat(oauthTokenRepository
+//          .findByBanksaladUserIdAndOrganizationId(banksaladUserId, errorOrganizationId))
+//          .isNotEmpty();
+//    }
+//    assertThrows(GrpcException.class, () -> oauthTokenService.revokeAllTokens(request));
+//
+//    for (int i = 0; i <= ERROR_INDEX; i++) {
+//      String errorOrganizationId = connectOrganizationEntities.get(i).getOrganizationId();
+//      assertThat(oauthTokenRepository
+//          .findByBanksaladUserIdAndOrganizationId(banksaladUserId, errorOrganizationId))
+//          .isEmpty();
+//    }
+//    for (int i = ERROR_INDEX + 1; i < TOTAL_ORGANIZATION_SIZE; i++) {
+//      String errorOrganizationId = connectOrganizationEntities.get(i).getOrganizationId();
+//      assertThat(oauthTokenRepository
+//          .findByBanksaladUserIdAndOrganizationId(banksaladUserId, errorOrganizationId))
+//          .isNotEmpty();
+//    }
+//  }
 
   private void initRepository() {
     List<OauthTokenEntity> oauthTokenEntities = new ArrayList<>();

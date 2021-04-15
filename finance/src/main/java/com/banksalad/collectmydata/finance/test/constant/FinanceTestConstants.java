@@ -6,6 +6,11 @@ import java.time.LocalDateTime;
 
 public class FinanceTestConstants {
 
+  public static final String[] IGNORING_ENTITY_FIELDS = {"id", "createdAt", "createdBy", "updatedAt",
+      "updatedBy"};
+
+  public static final String CONSENT_ID = "consent_id1";
+  public static final String SYNC_REQUEST_ID = "sync_request_id1";
   public static final String ORGANIZATION_ID = "organization_id1";
   public static final String ORGANIZATION_CODE = "organization_code1";
   public static final String ORGANIZATION_HOST = "localhost";
@@ -19,7 +24,7 @@ public class FinanceTestConstants {
   public static final long NEW_USS_ST = 200L;
   public static final long OLD_ST1 = 1000L;
   public static final long NEW_ST1 = 1100L;
-  public static final long OLD_ST2 = 0L;
+  public static final long OLD_ST2 = 2000L;
   public static final long NEW_ST2 = 2100L;
 
   // TODO: enum

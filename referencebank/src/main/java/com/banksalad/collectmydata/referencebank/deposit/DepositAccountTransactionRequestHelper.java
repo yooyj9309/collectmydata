@@ -60,7 +60,7 @@ public class DepositAccountTransactionRequestHelper implements
         .seqno(accountSummary.getSeqno())
         .fromDate(dateFormatter.format(fromDate))
         .toDate(dateFormatter.format(toDate))
-        .nextPage(null)
+        .nextPage(nextPage)
         .limit(DEFAULT_LIMIT)
         .build();
   }

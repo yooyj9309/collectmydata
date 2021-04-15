@@ -43,6 +43,9 @@ public class Apis {
           .name("수신계좌 거래내역 조회")
           .endpoint("/accounts/deposit/transactions")
           .method(HttpMethod.POST.name())
+          .pagination(Pagination.builder()
+              .nextPage("next_page")
+              .build())
           .build();
 
   //6.2.5 투자상품 계좌 기본 정보 조회

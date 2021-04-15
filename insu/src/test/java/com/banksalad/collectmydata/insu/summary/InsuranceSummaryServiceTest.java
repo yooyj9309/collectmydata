@@ -49,130 +49,130 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest
-@Transactional
-@DisplayName("보험-001 보험 목록 조회")
-public class InsuranceSummaryServiceTest implements
-    ServiceTest<InsuranceSummaryEntity, InsuranceSummaryEntity, InsuranceSummaryInvocationContextProvider> {
-
-  @Autowired
-  private SummaryService<ListInsuranceSummariesRequest, InsuranceSummary> service;
-
-  @Autowired
-  private SummaryRequestHelper<ListInsuranceSummariesRequest> requestHelper;
-
-  @Autowired
-  private SummaryResponseHelper<InsuranceSummary> responseHelper;
-
-  @Autowired
-  private UserSyncStatusRepository userSyncStatusRepository;
-
-  @Autowired
-  private InsuranceSummaryRepository repository;
-
-  private static final WireMockServer wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
-
-  @BeforeAll
-  static void setup() {
-    wireMockServer.start();
-  }
-
-  @AfterAll
-  static void tearDown() {
-    wireMockServer.resetAll();
-    wireMockServer.stop();
-  }
-
-  /*
-    컴포지션을 이용한 템플릿 패턴을 적용한다.
-    이 파일은 summary 테스트를 위한 템플릿 메써드이므로 수정하지 않는다.
-    대신 testcase.SummaryTestCase 만을 수정한다.
-     */
-  @TestTemplate
-  @ExtendWith(InsuranceSummaryInvocationContextProvider.class)
-  public void unitTests(TestCase testCase) throws ResponseNotOkException {
-
-    // Given
-    prepareRepositories(testCase);
-
-    final Execution execution = testCase.getExecution();
-    final String apiId = execution.getApi().getId();
-    ExecutionContext executionContext = testCase.getExecutionContext();
-    final long bankSaladUserId = executionContext.getBanksaladUserId();
-    final String organizationId = executionContext.getOrganizationId();
-    final int expectedMainSize = (testCase.getExpectedMains() == null) ? 0 : testCase.getExpectedMains().size();
-    final String organizationHost = "http://" + executionContext.getOrganizationHost() + ":" + wireMockServer.port();
-    final long searchTimestamp = (testCase.getUserSyncStatusEntities() == null) ? 0
-        : testCase.getUserSyncStatusEntities().get(0).getSearchTimestamp();
-
-    executionContext.setOrganizationHost(organizationHost);
-    stubMockServer(apiId, testCase.getExpectedResponses(), searchTimestamp);
-
-    final Integer status = testCase.getExpectedResponses().get(0).getStatus();
-    if (status != null && status != 200) {
-      // When
-      ResponseNotOkException responseNotOkException = assertThrows(ResponseNotOkException.class,
-          () -> service.listAccountSummaries(executionContext, testCase.getExecution(), requestHelper, responseHelper));
-
-      final BareResponse expectedResponse = testCase.getExpectedResponses().get(0);
-      assertAll("오류 코드 확인",
-          () -> assertEquals(testCase.getUserSyncStatusEntities().size(), userSyncStatusRepository.count()),
-          () -> assertEquals(expectedResponse.getStatus(), responseNotOkException.getStatusCode()),
-          () -> assertEquals(expectedResponse.getRspCode(), responseNotOkException.getResponseCode())
-      );
-    } else {
-      /* When */
-      service.listAccountSummaries(executionContext, execution, requestHelper, responseHelper);
-
-      final UserSyncStatusEntity actualUserSyncStatus = userSyncStatusRepository
-          .findByBanksaladUserIdAndOrganizationIdAndApiId(bankSaladUserId, organizationId, apiId)
-          .orElseThrow(() -> new CollectmydataRuntimeException("No record found"));
-      assertAll("userSyncStatus 확인",
-          () -> verifyEquals(testCase.getExpectedUserSyncStatusSyncedAt(), actualUserSyncStatus.getSyncedAt())
-      );
-
-      final List<InsuranceSummaryEntity> actualMains = repository.findAll();
-      assertAll("main 확인",
-          () -> assertEquals(expectedMainSize, actualMains.size()),
-          () -> {
-            for (int i = 0; i < expectedMainSize; i++) {
-              final BareMain expectedMain = testCase.getExpectedMains().get(i);
-              final InsuranceSummaryEntity actualMain = actualMains.get(i);
-              verifyEquals(expectedMain.getSyncedAt(), actualMain.getSyncedAt());
-            }
-          }
-      );
-    }
-  }
-
-  private void prepareRepositories(TestCase testCase) {
-    if (testCase.getUserSyncStatusEntities() != null) {
-      userSyncStatusRepository.saveAll(testCase.getUserSyncStatusEntities());
-    }
-    if (testCase.getSummaryEntities() != null) {
-      testCase.getSummaryEntities().stream().flatMap(Stream::ofNullable)
-          .forEach(o -> repository.save(((InsuranceSummaryEntity) o)));
-    }
-  }
-
-  private void stubMockServer(String apiId, List<BareResponse> expectedResponses, long searchTimestamp) {
-    for (final BareResponse response : expectedResponses) {
-      final String fileName = apiId + "_" + response.getMockId() + ".json";
-      final int status = (response.getStatus() == null) ? 200 : response.getStatus();
-      wireMockServer.stubFor(get(urlMatching(INSURANCE_SUMMARY_URL_REGEX))
-          .withQueryParam("org_code", equalTo(ORGANIZATION_CODE))
-          .withQueryParam("search_timestamp", equalTo(String.valueOf(searchTimestamp)))
-          .willReturn(
-              aResponse()
-                  .withStatus(status)
-                  .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                  .withBody(readText("classpath:mock/response/" + fileName))));
-    }
-  }
-
-  private void verifyEquals(LocalDateTime expected, LocalDateTime actual) {
-
-    // OS에 따라 DB가 microsecond 단위에서 반올림 발생하여 보정한다.
-    assertThat(actual).isCloseTo(expected, within(1, ChronoUnit.MICROS));
-  }
-}
+//@SpringBootTest
+//@Transactional
+//@DisplayName("보험-001 보험 목록 조회")
+//public class InsuranceSummaryServiceTest implements
+//    ServiceTest<InsuranceSummaryEntity, InsuranceSummaryEntity, InsuranceSummaryInvocationContextProvider> {
+//
+//  @Autowired
+//  private SummaryService<ListInsuranceSummariesRequest, InsuranceSummary> service;
+//
+//  @Autowired
+//  private SummaryRequestHelper<ListInsuranceSummariesRequest> requestHelper;
+//
+//  @Autowired
+//  private SummaryResponseHelper<InsuranceSummary> responseHelper;
+//
+//  @Autowired
+//  private UserSyncStatusRepository userSyncStatusRepository;
+//
+//  @Autowired
+//  private InsuranceSummaryRepository repository;
+//
+//  private static final WireMockServer wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
+//
+//  @BeforeAll
+//  static void setup() {
+//    wireMockServer.start();
+//  }
+//
+//  @AfterAll
+//  static void tearDown() {
+//    wireMockServer.resetAll();
+//    wireMockServer.stop();
+//  }
+//
+//  /*
+//    컴포지션을 이용한 템플릿 패턴을 적용한다.
+//    이 파일은 summary 테스트를 위한 템플릿 메써드이므로 수정하지 않는다.
+//    대신 testcase.SummaryTestCase 만을 수정한다.
+//     */
+//  @TestTemplate
+//  @ExtendWith(InsuranceSummaryInvocationContextProvider.class)
+//  public void unitTests(TestCase testCase) throws ResponseNotOkException {
+//
+//    // Given
+//    prepareRepositories(testCase);
+//
+//    final Execution execution = testCase.getExecution();
+//    final String apiId = execution.getApi().getId();
+//    ExecutionContext executionContext = testCase.getExecutionContext();
+//    final long bankSaladUserId = executionContext.getBanksaladUserId();
+//    final String organizationId = executionContext.getOrganizationId();
+//    final int expectedMainSize = (testCase.getExpectedMains() == null) ? 0 : testCase.getExpectedMains().size();
+//    final String organizationHost = "http://" + executionContext.getOrganizationHost() + ":" + wireMockServer.port();
+//    final long searchTimestamp = (testCase.getUserSyncStatusEntities() == null) ? 0
+//        : testCase.getUserSyncStatusEntities().get(0).getSearchTimestamp();
+//
+//    executionContext.setOrganizationHost(organizationHost);
+//    stubMockServer(apiId, testCase.getExpectedResponses(), searchTimestamp);
+//
+//    final Integer status = testCase.getExpectedResponses().get(0).getStatus();
+//    if (status != null && status != 200) {
+//      // When
+//      ResponseNotOkException responseNotOkException = assertThrows(ResponseNotOkException.class,
+//          () -> service.listAccountSummaries(executionContext, testCase.getExecution(), requestHelper, responseHelper));
+//
+//      final BareResponse expectedResponse = testCase.getExpectedResponses().get(0);
+//      assertAll("오류 코드 확인",
+//          () -> assertEquals(testCase.getUserSyncStatusEntities().size(), userSyncStatusRepository.count()),
+//          () -> assertEquals(expectedResponse.getStatus(), responseNotOkException.getStatusCode()),
+//          () -> assertEquals(expectedResponse.getRspCode(), responseNotOkException.getResponseCode())
+//      );
+//    } else {
+//      /* When */
+//      service.listAccountSummaries(executionContext, execution, requestHelper, responseHelper);
+//
+//      final UserSyncStatusEntity actualUserSyncStatus = userSyncStatusRepository
+//          .findByBanksaladUserIdAndOrganizationIdAndApiId(bankSaladUserId, organizationId, apiId)
+//          .orElseThrow(() -> new CollectmydataRuntimeException("No record found"));
+//      assertAll("userSyncStatus 확인",
+//          () -> verifyEquals(testCase.getExpectedUserSyncStatusSyncedAt(), actualUserSyncStatus.getSyncedAt())
+//      );
+//
+//      final List<InsuranceSummaryEntity> actualMains = repository.findAll();
+//      assertAll("main 확인",
+//          () -> assertEquals(expectedMainSize, actualMains.size()),
+//          () -> {
+//            for (int i = 0; i < expectedMainSize; i++) {
+//              final BareMain expectedMain = testCase.getExpectedMains().get(i);
+//              final InsuranceSummaryEntity actualMain = actualMains.get(i);
+//              verifyEquals(expectedMain.getSyncedAt(), actualMain.getSyncedAt());
+//            }
+//          }
+//      );
+//    }
+//  }
+//
+//  private void prepareRepositories(TestCase testCase) {
+//    if (testCase.getUserSyncStatusEntities() != null) {
+//      userSyncStatusRepository.saveAll(testCase.getUserSyncStatusEntities());
+//    }
+//    if (testCase.getSummaryEntities() != null) {
+//      testCase.getSummaryEntities().stream().flatMap(Stream::ofNullable)
+//          .forEach(o -> repository.save(((InsuranceSummaryEntity) o)));
+//    }
+//  }
+//
+//  private void stubMockServer(String apiId, List<BareResponse> expectedResponses, long searchTimestamp) {
+//    for (final BareResponse response : expectedResponses) {
+//      final String fileName = apiId + "_" + response.getMockId() + ".json";
+//      final int status = (response.getStatus() == null) ? 200 : response.getStatus();
+//      wireMockServer.stubFor(get(urlMatching(INSURANCE_SUMMARY_URL_REGEX))
+//          .withQueryParam("org_code", equalTo(ORGANIZATION_CODE))
+//          .withQueryParam("search_timestamp", equalTo(String.valueOf(searchTimestamp)))
+//          .willReturn(
+//              aResponse()
+//                  .withStatus(status)
+//                  .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+//                  .withBody(readText("classpath:mock/response/" + fileName))));
+//    }
+//  }
+//
+//  private void verifyEquals(LocalDateTime expected, LocalDateTime actual) {
+//
+//    // OS에 따라 DB가 microsecond 단위에서 반올림 발생하여 보정한다.
+//    assertThat(actual).isCloseTo(expected, within(1, ChronoUnit.MICROS));
+//  }
+//}

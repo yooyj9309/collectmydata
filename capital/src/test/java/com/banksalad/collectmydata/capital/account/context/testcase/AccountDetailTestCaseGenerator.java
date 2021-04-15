@@ -179,7 +179,7 @@ public class AccountDetailTestCaseGenerator extends TestCaseGenerator {
   private static AccountSummaryEntity generateSummaryEntity2() {
     return AccountSummaryEntity.builder()
         .syncedAt(OLD_SYNCED_AT)
-        .detailSearchTimestamp(OLD_ST2)
+        .detailSearchTimestamp(0L)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
         .seqno(SEQNO2)

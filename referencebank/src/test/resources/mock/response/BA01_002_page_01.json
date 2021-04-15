@@ -1,0 +1,18 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": 100,
+  "reg_date": "20200101",
+  "next_page": "002",
+  "account_cnt": 1,
+  "account_list": [
+    {
+      "account_num": "1234567893",
+      "is_consent": true,
+      "seqno": "1",
+      "prod_name": "뱅크샐러드 대박 적금",
+      "account_type": "1003",
+      "account_status": "01"
+    }
+  ]
+}

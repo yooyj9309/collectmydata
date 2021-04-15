@@ -61,6 +61,7 @@ dependencies {
 
     // apache commons
     implementation("org.apache.commons:commons-lang3:${apacheCommonsVersion}")
+    implementation("commons-io:commons-io:2.6")
 
     // log
     implementation("org.slf4j:slf4j-api:${slf4jVersion}")
@@ -78,6 +79,9 @@ dependencies {
     // lombok
     compileOnly("org.projectlombok:lombok:${lombokVersion}")
     annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+
+    // openjdk
+    implementation("org.openjdk.jol:jol-core:0.15")
 
     // valid
     implementation("org.springframework.boot:spring-boot-starter-validation:${springBootVersion}")

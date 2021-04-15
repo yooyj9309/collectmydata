@@ -31,6 +31,7 @@ public class ExecutionContext {
 
   public ExecutionContext copyWith(String executionRequestId) {
     return ExecutionContext.builder()
+        .consentId(consentId)
         .syncRequestId(syncRequestId)
         .executionRequestId(executionRequestId)
         .banksaladUserId(banksaladUserId)

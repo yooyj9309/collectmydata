@@ -21,6 +21,8 @@ import org.mapstruct.factory.Mappers;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
+
 @Component
 @RequiredArgsConstructor
 public class DepositAccountTransactionResponseHelper implements
@@ -72,7 +74,7 @@ public class DepositAccountTransactionResponseHelper implements
 
       // upsert deposit account transaction
       if (!ObjectComparator
-          .isSame(depositAccountTransactionEntity, existingDepositAccountTransactionEntity, "syncedAt")) {
+          .isSame(depositAccountTransactionEntity, existingDepositAccountTransactionEntity, ENTITY_EXCLUDE_FIELD)) {
         depositAccountTransactionRepository.save(depositAccountTransactionEntity);
       }
     }
@@ -97,7 +99,7 @@ public class DepositAccountTransactionResponseHelper implements
     String transDtime = depositAccountTransaction.getTransDtime();
     String yearMonthString = transDtime.substring(0, 6);
 
-    return Integer.valueOf(yearMonthString);
+    return Integer.parseInt(yearMonthString);
   }
 
   private String generateUniqueTransNo(DepositAccountTransaction depositAccountTransaction) {

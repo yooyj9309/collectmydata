@@ -8,8 +8,11 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
-    jpa:
-      show-sql: true
+  main:
+    banner-mode: off
+  output:
+    ansi:
+      enabled: always
 
 logging:
   config: classpath:logback/logback-${spring.profiles.active}.xml

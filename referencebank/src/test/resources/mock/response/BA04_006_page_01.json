@@ -1,0 +1,14 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "trans_cnt": 1,
+  "trans_list": [
+    {
+      "trans_dtime": "20210102102000",
+      "trans_type": "03",
+      "trans_class": "입금",
+      "trans_amt": 10000.000,
+      "balance_amt": 30000.000
+    }
+  ]
+}

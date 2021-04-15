@@ -1,5 +1,7 @@
 package com.banksalad.collectmydata.referencebank.common.db.entity;
 
+import com.banksalad.collectmydata.finance.common.db.entity.BaseEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,7 +21,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "account_summary")
@@ -46,7 +48,7 @@ public class AccountSummaryEntity extends BaseEntity {
 
   private String seqno;
 
-  @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
+  @Column(columnDefinition = "TINYINT", length = 1)
   private Boolean isForeignDeposit;
 
   @Column(nullable = false)

@@ -1,5 +1,7 @@
 package com.banksalad.collectmydata.referencebank.common.db.entity;
 
+import com.banksalad.collectmydata.finance.common.db.entity.BaseEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
+
 @Component
 @RequiredArgsConstructor
 public class DepositAccountBasicInfoResponseHelper implements AccountInfoResponseHelper<AccountSummary, DepositAccountBasic> {
@@ -64,7 +66,7 @@ public class DepositAccountBasicInfoResponseHelper implements AccountInfoRespons
     }
 
     // upsert deposit account basic and insert history if needed
-    if (!ObjectComparator.isSame(depositAccountBasicEntity, existingDepositAccountBasicEntity, "syncedAt")) {
+    if (!ObjectComparator.isSame(depositAccountBasicEntity, existingDepositAccountBasicEntity, ENTITY_EXCLUDE_FIELD)) {
       depositAccountBasicRepository.save(depositAccountBasicEntity);
       depositAccountBasicHistoryRepository.save(depositAccountBasicHistoryMapper.toHistoryEntity(depositAccountBasicEntity));
     }

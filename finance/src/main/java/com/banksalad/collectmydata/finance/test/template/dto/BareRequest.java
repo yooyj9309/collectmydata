@@ -7,5 +7,7 @@ import lombok.Getter;
 @Getter
 public class BareRequest {
 
+  private Long searchTimestamp;
+
   private String nextPage;
 }
