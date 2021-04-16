@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.capital.template;
+package com.banksalad.collectmydata.capital.template.provider;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.extension.ExtensionContext;

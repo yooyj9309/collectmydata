@@ -1,8 +1,0 @@
-{
-  "rsp_code": "00000",
-  "rsp_msg": "성공",
-  "search_timestamp": 1100,
-  "balance_amt": 30000.123,
-  "loan_principal": 20000.456,
-  "next_repay_date": "20201114"
-}

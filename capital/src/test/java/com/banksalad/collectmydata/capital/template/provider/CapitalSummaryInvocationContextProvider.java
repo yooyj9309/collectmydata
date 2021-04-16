@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.capital.template;
+package com.banksalad.collectmydata.capital.template.provider;
 
 import com.banksalad.collectmydata.capital.testcase.CapitalSummaryTestCaseGenerator;
 import com.banksalad.collectmydata.finance.test.template.dto.TestCase;

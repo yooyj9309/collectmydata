@@ -1,43 +1,7 @@
 package com.banksalad.collectmydata.capital.summary;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
-import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
-import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
-import com.banksalad.collectmydata.capital.summary.dto.ListAccountSummariesRequest;
-import com.banksalad.collectmydata.capital.template.CapitalSummaryInvocationContextProvider;
-import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.finance.api.summary.SummaryRequestHelper;
-import com.banksalad.collectmydata.finance.api.summary.SummaryResponseHelper;
-import com.banksalad.collectmydata.finance.api.summary.SummaryService;
-import com.banksalad.collectmydata.finance.common.db.repository.ApiLogRepository;
-import com.banksalad.collectmydata.finance.common.db.repository.UserSyncStatusRepository;
-import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
-import com.banksalad.collectmydata.finance.test.template.dto.BareResponse;
-import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
-import com.github.tomakehurst.wiremock.WireMockServer;
-import org.apache.http.entity.ContentType;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.TestTemplate;
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import java.util.List;
-
-import static com.banksalad.collectmydata.capital.common.TestHelper.ENTITY_IGNORE_FIELD;
-import static com.banksalad.collectmydata.capital.common.TestHelper.ORGANIZATION_CODE;
 import static com.banksalad.collectmydata.capital.common.TestHelper.getExecutionContext;
-import static com.banksalad.collectmydata.capital.util.FileUtil.readText;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

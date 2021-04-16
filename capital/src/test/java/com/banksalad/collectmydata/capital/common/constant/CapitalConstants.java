@@ -8,5 +8,4 @@ public final class CapitalConstants {
   public static final String ACCOUNT_NUM2 = "5678567856785678";
   public static final String SEQNO1 = "1";
   public static final String SEQNO2 = "2";
-
 }
