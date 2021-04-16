@@ -29,7 +29,7 @@ public class InsuranceBasicRequestHelper implements
     return GetInsuranceBasicRequest.builder()
         .orgCode(executionContext.getOrganizationCode())
         .insuNum(insuranceSummary.getInsuNum())
-        .searchTimestamp(insuranceSummary.getPaymentSearchTimestamp())
+        .searchTimestamp(insuranceSummary.getBasicSearchTimestamp())
         .build();
   }
 }
