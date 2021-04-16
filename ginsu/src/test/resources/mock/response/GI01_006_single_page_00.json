@@ -1,0 +1,15 @@
+{
+  "rsp_code": "000",
+  "rsp_msg": "성공",
+  "search_timestamp": 200,
+  "insu_cnt": 1,
+  "insu_list": [
+    {
+      "insu_num": "1111111111",
+      "is_consent": true,
+      "prod_name": "상품명2",
+      "insu_type": "20",
+      "insu_status": "01"
+    }
+  ]
+}
