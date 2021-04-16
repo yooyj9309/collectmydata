@@ -97,5 +97,8 @@ public class Apis {
           .name("대출 상품 계좌 거래내역 조회")
           .endpoint("/accounts/loan/transactions")
           .method(HttpMethod.POST.name())
+          .pagination(Pagination.builder()
+              .nextPage("next_page")
+              .build())
           .build();
 }
