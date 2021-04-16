@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.referencebank.template.testcase;
+package com.banksalad.collectmydata.card.template.testcase;
 
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.finance.test.template.dto.BareRequest;
@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.Map;
 
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_ST1;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_USS_ST;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SYSTEM_FAILURE;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.STATUS_INTERNAL_SERVER_ERROR;
@@ -18,7 +19,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 템플릿 메써드에 전달할 invocation context를 생성하기 위하여 모든 test case들을 여기에서 생성한다.
  */
 @RequiredArgsConstructor
-public class AccountSummaryTestCaseGenerator<GParent, Parent, Main, Child> {
+public class CardSummaryTestCaseGenerator<GParent, Parent, Main, Child> {
 
   private final Execution execution;
   private final Map<String, GParent> gParentMap;
@@ -34,7 +35,7 @@ public class AccountSummaryTestCaseGenerator<GParent, Parent, Main, Child> {
             .parentEntities(List.of(parentMap.get("parent1")))
             .execution(execution)
             .requestParams(List.of(
-                BareRequest.builder().searchTimestamp(OLD_USS_ST).nextPage(null).build()
+                BareRequest.builder().searchTimestamp(OLD_USS_ST).build()
             ))
             .expectedResponses(List.of(
                 BareResponse.builder().mockId("001_page_01")
@@ -44,18 +45,16 @@ public class AccountSummaryTestCaseGenerator<GParent, Parent, Main, Child> {
             .build()
         ,
         TestCase.<GParent, Parent, Main, Child>builder()
-            .displayName("002. 기존 0건 + 1건 추가 + 1건 추가")
+            .displayName("002. 기존 0건 + 1건 추가")
             .execution(execution)
             .requestParams(List.of(
-                BareRequest.builder().searchTimestamp(0L).nextPage(null).build(),
-                BareRequest.builder().searchTimestamp(0L).nextPage("002").build()
+                BareRequest.builder().searchTimestamp(0L).build()
             ))
             .expectedResponses(List.of(
-                BareResponse.builder().mockId("002_page_01").build(),
-                BareResponse.builder().mockId("002_page_02").build()
+                BareResponse.builder().mockId("002_page_01").build()
             ))
             .expectedParentEntities(List.of(parentMap.get("newParent1")))
-            .expectedMainEntities(List.of(mainMap.get("newMain1"), mainMap.get("newMain2")))
+            .expectedMainEntities(List.of(mainMap.get("newMain1")))
             .build()
         ,
         TestCase.<GParent, Parent, Main, Child>builder()
@@ -64,7 +63,7 @@ public class AccountSummaryTestCaseGenerator<GParent, Parent, Main, Child> {
             .mainEntities(List.of(mainMap.get("main1")))
             .execution(execution)
             .requestParams(List.of(
-                BareRequest.builder().searchTimestamp(OLD_USS_ST).nextPage(null).build()
+                BareRequest.builder().searchTimestamp(OLD_USS_ST).build()
             ))
             .expectedResponses(List.of(
                 BareResponse.builder().mockId("003_page_01").build()
@@ -79,7 +78,7 @@ public class AccountSummaryTestCaseGenerator<GParent, Parent, Main, Child> {
             .mainEntities(List.of(mainMap.get("main1")))
             .execution(execution)
             .requestParams(List.of(
-                BareRequest.builder().searchTimestamp(OLD_USS_ST).nextPage(null).build()
+                BareRequest.builder().searchTimestamp(OLD_USS_ST).build()
             ))
             .expectedResponses(List.of(
                 BareResponse.builder().mockId("004_page_01").build()
@@ -94,7 +93,7 @@ public class AccountSummaryTestCaseGenerator<GParent, Parent, Main, Child> {
             .mainEntities(List.of(mainMap.get("main1")))
             .execution(execution)
             .requestParams(List.of(
-                BareRequest.builder().searchTimestamp(OLD_USS_ST).nextPage(null).build()
+                BareRequest.builder().searchTimestamp(OLD_USS_ST).build()
             ))
             .expectedResponses(List.of(
                 BareResponse.builder().mockId("005_page_01").build()
@@ -110,7 +109,7 @@ public class AccountSummaryTestCaseGenerator<GParent, Parent, Main, Child> {
             .mainEntities(List.of(mainMap.get("main1")))
             .execution(execution)
             .requestParams(List.of(
-                BareRequest.builder().searchTimestamp(OLD_USS_ST).nextPage(null).build()
+                BareRequest.builder().searchTimestamp(OLD_USS_ST).build()
             ))
             .expectedResponses(List.of(
                 BareResponse.builder().mockId("006_page_01").build()

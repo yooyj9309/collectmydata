@@ -16,6 +16,7 @@ import com.banksalad.collectmydata.finance.api.userbase.UserBaseResponseHelper;
 import com.banksalad.collectmydata.finance.api.userbase.UserBaseService;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -36,6 +37,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
+@Transactional
 @DisplayName("대출상품 목록 조회")
 class LoanSummaryServiceTest {
 

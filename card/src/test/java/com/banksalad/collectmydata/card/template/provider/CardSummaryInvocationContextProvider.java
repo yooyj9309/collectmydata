@@ -1,11 +1,11 @@
-package com.banksalad.collectmydata.referencebank.template.provider;
+package com.banksalad.collectmydata.card.template.provider;
 
+import com.banksalad.collectmydata.card.collect.Executions;
+import com.banksalad.collectmydata.card.common.db.entity.CardSummaryEntity;
+import com.banksalad.collectmydata.card.template.testcase.CardSummaryTestCaseGenerator;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.finance.common.db.entity.UserSyncStatusEntity;
 import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
-import com.banksalad.collectmydata.referencebank.collect.Executions;
-import com.banksalad.collectmydata.referencebank.common.db.entity.AccountSummaryEntity;
-import com.banksalad.collectmydata.referencebank.template.testcase.AccountSummaryTestCaseGenerator;
 
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -20,18 +20,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static com.banksalad.collectmydata.card.common.constant.CardConstants.CARD_ID1;
+import static com.banksalad.collectmydata.card.common.constant.CardConstants.CARD_ID2;
+import static com.banksalad.collectmydata.card.common.constant.CardConstants.CARD_MEMBER;
+import static com.banksalad.collectmydata.card.common.constant.CardConstants.CARD_NAME1;
+import static com.banksalad.collectmydata.card.common.constant.CardConstants.CARD_NAME2;
+import static com.banksalad.collectmydata.card.common.constant.CardConstants.CARD_NUM1;
+import static com.banksalad.collectmydata.card.common.constant.CardConstants.CARD_NUM2;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
-import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_USS_ST;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_USS_ST;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
-import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 
-public class AccountSummaryInvocationContextProvider implements TestTemplateInvocationContextProvider {
+public class CardSummaryInvocationContextProvider implements TestTemplateInvocationContextProvider {
 
-  private static final Execution execution = Executions.finance_bank_summaries;
+  private static final Execution execution = Executions.finance_card_summaries;
 
   @Override
   public boolean supportsTestTemplate(ExtensionContext context) {
@@ -55,44 +60,41 @@ public class AccountSummaryInvocationContextProvider implements TestTemplateInvo
         "updatedParent1", parent1.toBuilder().syncedAt(NEW_SYNCED_AT).searchTimestamp(NEW_USS_ST).build()
     );
 
-    AccountSummaryEntity main1 = AccountSummaryEntity.builder()
+    CardSummaryEntity main1 = CardSummaryEntity.builder()
         .syncedAt(OLD_SYNCED_AT)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
-        .accountNum("1234567893")
-        .isConsent(true)
-        .isForeignDeposit(false)
-        .seqno("1")
-        .prodName("뱅크샐러드 대박 적금")
-        .accountType("1003")
-        .accountStatus("01")
+        .cardId(CARD_ID1)
+        .cardNum(CARD_NUM1)
+        .consent(true)
+        .cardName(CARD_NAME1)
+        .cardMember(CARD_MEMBER)
         .build();
-    AccountSummaryEntity main2 = AccountSummaryEntity.builder()
+    CardSummaryEntity main2 = CardSummaryEntity.builder()
         .syncedAt(OLD_SYNCED_AT)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
-        .accountNum("1234567894")
-        .isConsent(true)
-        .isForeignDeposit(true)
-        .prodName("우리은행 외화예금")
-        .accountType("1002")
-        .accountStatus("01")
+        .cardId(CARD_ID2)
+        .cardNum(CARD_NUM2)
+        .consent(true)
+        .cardName(CARD_NAME2)
+        .cardMember(CARD_MEMBER)
         .build();
-    Map<String, AccountSummaryEntity> mainMap = Map.of(
+    Map<String, CardSummaryEntity> mainMap = Map.of(
         "main1", main1,
-        "updatedMain1", main1.toBuilder().syncedAt(NEW_SYNCED_AT).prodName("뱅크샐러드 대박 적금 II").build(),
+        "updatedMain1", main1.toBuilder().syncedAt(NEW_SYNCED_AT).cardName("하나카드03").build(),
         "newMain1", main1.toBuilder().syncedAt(NEW_SYNCED_AT).build(),
         "newMain2", main2.toBuilder().syncedAt(NEW_SYNCED_AT).build()
     );
 
-    AccountSummaryTestCaseGenerator<Object, UserSyncStatusEntity, AccountSummaryEntity, Object> generator =
-        new AccountSummaryTestCaseGenerator<>(execution, null, parentMap, mainMap, null);
+    CardSummaryTestCaseGenerator<Object, UserSyncStatusEntity, CardSummaryEntity, Object> generator =
+        new CardSummaryTestCaseGenerator<>(execution, null, parentMap, mainMap, null);
 
     return generator.generate().stream().map(this::invocationContext);
   }
 
   private TestTemplateInvocationContext invocationContext(
-      TestCase<Object, UserSyncStatusEntity, AccountSummaryEntity, Object> testCase) {
+      TestCase<Object, UserSyncStatusEntity, CardSummaryEntity, Object> testCase) {
 
     return new TestTemplateInvocationContext() {
       @Override
