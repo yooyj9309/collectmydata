@@ -1,0 +1,19 @@
+{
+  "rsp_code": "000",
+  "rsp_msg": "성공",
+  "search_timestamp": 1000,
+  "issue_date": "20210101",
+  "exp_date": "20300201",
+  "face_amt": 11111.111,
+  "insured_count": 2,
+  "insured_list": [
+    {
+      "insured_name": "피보험자1"
+    },
+    {
+      "insured_name": "피보험자2"
+    }
+  ],
+  "pay_due": "02",
+  "pay_amt": 11111.111
+}

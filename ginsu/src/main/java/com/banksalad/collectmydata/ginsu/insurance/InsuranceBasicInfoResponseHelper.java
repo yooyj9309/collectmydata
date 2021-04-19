@@ -25,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
@@ -82,21 +84,29 @@ public class InsuranceBasicInfoResponseHelper implements AccountInfoResponseHelp
     }
 
     // delete insert insured
-    insuredRepository
-        .deleteInsuredByBanksaladUserIdAndOrganizationIdAndInsuNum(banksaladUserId, organizationId, insuNum);
+    List<Insured> existingInsureds = insuredRepository
+        .findByBanksaladUserIdAndOrganizationIdAndInsuNum(banksaladUserId, organizationId, insuNum)
+        .stream()
+        .map(insuredMapper::entityToDto)
+        .collect(Collectors.toList());
 
-    short insuredNo = 0;
-    for (Insured insured : insuranceBasic.getInsuredList()) {
-      InsuredEntity insuredEntity = insuredMapper.dtoToEntity(insured);
-      insuredEntity.setBanksaladUserId(banksaladUserId);
-      insuredEntity.setOrganizationId(organizationId);
-      insuredEntity.setSyncedAt(syncedAt);
-      insuredEntity.setInsuNum(insuNum);
-      insuredEntity.setInsuredNo(insuredNo++);
-      insuredEntity.setInsuredName(insured.getInsuredName());
+    if (!ObjectComparator.isSameListIgnoreOrder(insuranceBasic.getInsuredList(), existingInsureds)) {
+      insuredRepository
+          .deleteInsuredByBanksaladUserIdAndOrganizationIdAndInsuNum(banksaladUserId, organizationId, insuNum);
 
-      insuredRepository.save(insuredEntity);
-      insuredHistoryRepository.save(insuredHistoryMapper.toHistoryEntity(insuredEntity));
+      short insuredNo = 1;
+      for (Insured insured : insuranceBasic.getInsuredList()) {
+        InsuredEntity insuredEntity = insuredMapper.dtoToEntity(insured);
+        insuredEntity.setBanksaladUserId(banksaladUserId);
+        insuredEntity.setOrganizationId(organizationId);
+        insuredEntity.setSyncedAt(syncedAt);
+        insuredEntity.setInsuNum(insuNum);
+        insuredEntity.setInsuredNo(insuredNo++);
+        insuredEntity.setInsuredName(insured.getInsuredName());
+
+        insuredRepository.save(insuredEntity);
+        insuredHistoryRepository.save(insuredHistoryMapper.toHistoryEntity(insuredEntity));
+      }
     }
   }
 

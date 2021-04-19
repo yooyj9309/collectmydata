@@ -10,4 +10,5 @@ public interface InsuredMapper {
 
   InsuredEntity dtoToEntity(Insured insured);
 
+  Insured entityToDto(InsuredEntity insuredEntity);
 }
