@@ -1,21 +1,14 @@
 package com.banksalad.collectmydata.common.message;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.banksalad.collectmydata.common.enums.FinanceIndustry;
 
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class PublishmentRequestedMessage {
+public interface PublishmentRequestedMessage {
 
-  private long banksaladUserId;
-  private String organizationId;
-  private String syncRequestId;
-  private String apiResponseBody;
+  FinanceIndustry getFinanceIndustry();
+
+  long getBanksaladUserId();
+
+  String getOrganizationId();
+
+  String getSyncRequestId();
 }

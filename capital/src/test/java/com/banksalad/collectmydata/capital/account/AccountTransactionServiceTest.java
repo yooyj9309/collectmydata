@@ -1,10 +1,5 @@
 package com.banksalad.collectmydata.capital.account;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
 import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
 import com.banksalad.collectmydata.capital.account.dto.ListAccountTransactionsRequest;
 import com.banksalad.collectmydata.capital.collect.Executions;
@@ -20,6 +15,12 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionRequestHelper;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
@@ -119,13 +120,12 @@ public class AccountTransactionServiceTest {
     );
     saveAccountSummary(LocalDateTime.of(2021, 01, 01, 10, 00));
 
-    List<AccountTransaction> accountTransactions = accountTransactionService
+    accountTransactionService
         .listTransactions(context, Executions.capital_get_account_transactions, requestHelper, responseHelper);
 
     List<AccountTransactionEntity> accountTransactionEntities = accountTransactionRepository.findAll();
     List<AccountTransactionInterestEntity> accountTransactionInterestEntities = accountTransactionInterestRepository
         .findAll();
-    assertEquals(0, accountTransactions.size());
     assertEquals(0, accountTransactionEntities.size());
     assertEquals(0, accountTransactionInterestEntities.size());
   }
@@ -140,13 +140,12 @@ public class AccountTransactionServiceTest {
     );
     saveAccountSummary(LocalDateTime.of(2021, 02, 01, 10, 00));
 
-    List<AccountTransaction> accountTransactions = accountTransactionService
+    accountTransactionService
         .listTransactions(context, Executions.capital_get_account_transactions, requestHelper, responseHelper);
     List<AccountTransactionEntity> accountTransactionEntities = accountTransactionRepository.findAll();
     List<AccountTransactionInterestEntity> accountTransactionInterestEntities = accountTransactionInterestRepository
         .findAll();
 
-    assertEquals(2, accountTransactions.size());
     assertEquals(2, accountTransactionEntities.size());
     assertEquals(3, accountTransactionInterestEntities.size());
 
@@ -199,13 +198,12 @@ public class AccountTransactionServiceTest {
     );
     saveAccountSummary(LocalDateTime.of(2021, 03, 01, 10, 00));
 
-    List<AccountTransaction> accountTransactions = accountTransactionService
+    accountTransactionService
         .listTransactions(context, Executions.capital_get_account_transactions, requestHelper, responseHelper);
     List<AccountTransactionEntity> accountTransactionEntities = accountTransactionRepository.findAll();
     List<AccountTransactionInterestEntity> accountTransactionInterestEntities = accountTransactionInterestRepository
         .findAll();
 
-    assertEquals(3, accountTransactions.size());
     assertEquals(3, accountTransactionEntities.size());
     assertEquals(3, accountTransactionInterestEntities.size());
 

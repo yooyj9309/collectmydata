@@ -1,10 +1,5 @@
 package com.banksalad.collectmydata.capital.oplease;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
 import com.banksalad.collectmydata.capital.collect.Executions;
 import com.banksalad.collectmydata.capital.common.TestHelper;
 import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
@@ -20,6 +15,12 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
@@ -91,12 +92,11 @@ public class OperatingLeaseBasicServiceTest {
   public void getOperatingLeaseBasic_success() {
     ExecutionContext context = TestHelper.getExecutionContext(wireMockServer.port());
     saveAccountSummary();
-    List<OperatingLeaseBasic> operatingLeaseBasics = operatingLeaseBasicService
+    operatingLeaseBasicService
         .listAccountInfos(context, Executions.capital_get_operating_lease_basic, requestHelper, responseHelper);
 
     List<OperatingLeaseEntity> operatingLeaseEntities = operatingLeaseRepository.findAll();
     List<OperatingLeaseHistoryEntity> operatingLeaseHistoryEntities = operatingLeaseHistoryRepository.findAll();
-    assertEquals(1, operatingLeaseBasics.size());
     assertEquals(1, operatingLeaseEntities.size());
     assertEquals(1, operatingLeaseHistoryEntities.size());
 

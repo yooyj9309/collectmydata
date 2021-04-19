@@ -1,11 +1,5 @@
 package com.banksalad.collectmydata.insu.loan;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
@@ -21,8 +15,14 @@ import com.banksalad.collectmydata.insu.common.db.repository.LoanTransactionRepo
 import com.banksalad.collectmydata.insu.common.util.TestHelper;
 import com.banksalad.collectmydata.insu.loan.dto.ListLoanTransactionRequest;
 import com.banksalad.collectmydata.insu.loan.dto.LoanTransaction;
-import com.banksalad.collectmydata.insu.loan.dto.LoanTransactionInterest;
 import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
@@ -88,44 +88,44 @@ class LoanTransactionServiceTest {
     saveLoanSummaryEntity(LocalDateTime.of(2021, 03, 15, 10, 00));
 
     // When
-    List<LoanTransaction> loanTransactions = transactionApiService
+    transactionApiService
         .listTransactions(executionContext, Executions.insurance_get_loan_transactions, requestHelper, responseHelper);
 
     List<LoanTransactionEntity> loanTransactionEntities = loanTransactionRepository.findAll();
     List<LoanTransactionInterestEntity> loanTransactionInterestEntities = loanTransactionInterestRepository.findAll();
 
     // Then
-    assertEquals(2, loanTransactions.size());
     assertEquals(2, loanTransactionEntities.size());
     assertEquals(3, loanTransactionInterestEntities.size());
 
-    assertThat(loanTransactions.get(0)).usingRecursiveComparison()
-        .isEqualTo(
-            LoanTransaction.builder()
-                .transNo("trans#2")
-                .transDtime("20210121103000")
-                .currencyCode("KRW")
-                .loanPaidAmt(new BigDecimal("1000.312"))
-                .intPaidAmt(new BigDecimal("18000.712"))
-                .intCnt(2)
-                .intList(
-                    List.of(
-                        LoanTransactionInterest.builder()
-                            .intStartDate("20201201")
-                            .intEndDate("20201231")
-                            .intRate(new BigDecimal("4.112"))
-                            .intType("02")
-                            .build(),
-                        LoanTransactionInterest.builder()
-                            .intStartDate("20201201")
-                            .intEndDate("20201231")
-                            .intRate(new BigDecimal("3.012"))
-                            .intType("01")
-                            .build()
-                    )
-                )
-                .build()
-        );
+    // TODO : compare with db
+//    assertThat(loanTransactions.get(0)).usingRecursiveComparison()
+//        .isEqualTo(
+//            LoanTransaction.builder()
+//                .transNo("trans#2")
+//                .transDtime("20210121103000")
+//                .currencyCode("KRW")
+//                .loanPaidAmt(new BigDecimal("1000.312"))
+//                .intPaidAmt(new BigDecimal("18000.712"))
+//                .intCnt(2)
+//                .intList(
+//                    List.of(
+//                        LoanTransactionInterest.builder()
+//                            .intStartDate("20201201")
+//                            .intEndDate("20201231")
+//                            .intRate(new BigDecimal("4.112"))
+//                            .intType("02")
+//                            .build(),
+//                        LoanTransactionInterest.builder()
+//                            .intStartDate("20201201")
+//                            .intEndDate("20201231")
+//                            .intRate(new BigDecimal("3.012"))
+//                            .intType("01")
+//                            .build()
+//                    )
+//                )
+//                .build()
+//        );
 
     assertThat(loanTransactionEntities.get(0)).usingRecursiveComparison()
         .ignoringFields(ENTITY_IGNORE_FIELD)

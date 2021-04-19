@@ -1,12 +1,5 @@
 package com.banksalad.collectmydata.invest.account;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
@@ -19,6 +12,14 @@ import com.banksalad.collectmydata.invest.common.db.entity.AccountProductEntity;
 import com.banksalad.collectmydata.invest.common.db.repository.AccountProductRepository;
 import com.banksalad.collectmydata.invest.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.invest.summary.dto.AccountSummary;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
@@ -100,14 +101,12 @@ class AccountProductServiceTest {
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
 
-    List<List<AccountProduct>> accountProducts = accountProductService
+    accountProductService
         .listAccountInfos(executionContext, Executions.finance_invest_account_products, requestHelper, responseHelper);
 
     List<AccountProductEntity> accountProductEntities = accountProductRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNum(BANKSALAD_USER_ID, ORGANIZATION_ID, "1234567890");
 
-    assertEquals(1, accountProducts.size());
-    assertEquals(2, accountProducts.get(0).size());
     assertEquals(2, accountProductEntities.size());
   }
 

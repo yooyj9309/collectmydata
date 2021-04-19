@@ -1,7 +1,5 @@
 package com.banksalad.collectmydata.ginsu;
 
-import org.springframework.stereotype.Service;
-
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.enums.SyncRequestType;
 import com.banksalad.collectmydata.common.util.DateUtil;
@@ -16,20 +14,21 @@ import com.banksalad.collectmydata.finance.api.transaction.TransactionRequestHel
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.banksalad.collectmydata.ginsu.collect.Executions;
-import com.banksalad.collectmydata.ginsu.common.dto.GinsuApiResponse;
 import com.banksalad.collectmydata.ginsu.insurance.dto.GetInsuranceBasicRequest;
 import com.banksalad.collectmydata.ginsu.insurance.dto.InsuranceBasic;
 import com.banksalad.collectmydata.ginsu.insurance.dto.InsuranceTransaction;
 import com.banksalad.collectmydata.ginsu.insurance.dto.ListInsuranceTransactionsRequest;
 import com.banksalad.collectmydata.ginsu.summary.dto.InsuranceSummary;
 import com.banksalad.collectmydata.ginsu.summary.dto.ListInsuranceSummariesRequest;
+
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @Service
@@ -50,7 +49,7 @@ public class GinsuApiServiceImpl implements GinsuApiService {
   private final TransactionResponseHelper<InsuranceSummary, InsuranceTransaction> insuranceTransactionResponseHelper;
 
   @Override
-  public GinsuApiResponse requestApi(long banksaladUserId, String organizationId, String syncRequestId,
+  public void requestApi(long banksaladUserId, String organizationId, String syncRequestId,
       SyncRequestType syncRequestType) throws ResponseNotOkException {
 
     ExecutionContext executionContext = ExecutionContext.builder()
@@ -69,15 +68,12 @@ public class GinsuApiServiceImpl implements GinsuApiService {
         summaryResponseHelper
     );
 
-    AtomicReference<GinsuApiResponse> ginsuApiResponse = new AtomicReference<>();
-    ginsuApiResponse.set(GinsuApiResponse.builder().build());
-
     CompletableFuture.allOf(
-        CompletableFuture.supplyAsync(
+        CompletableFuture.runAsync(
             () -> insuranceBasicApiService.listAccountInfos(executionContext, Executions.finance_ginsu_insurance_basic,
                 insuranceBasicInfoRequestHelper, insuranceBasicInfoResponseHelper)),
 
-        CompletableFuture.supplyAsync(
+        CompletableFuture.runAsync(
             () -> insuranceTransactionApiService.listTransactions(
                 executionContext,
                 Executions.finance_ginsu_insurance_transaction,
@@ -85,7 +81,5 @@ public class GinsuApiServiceImpl implements GinsuApiService {
                 insuranceTransactionResponseHelper)
         )
     ).join();
-
-    return ginsuApiResponse.get();
   }
 }

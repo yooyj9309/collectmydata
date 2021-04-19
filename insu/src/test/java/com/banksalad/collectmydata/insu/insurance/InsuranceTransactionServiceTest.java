@@ -1,10 +1,5 @@
 package com.banksalad.collectmydata.insu.insurance;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionRequestHelper;
@@ -18,6 +13,12 @@ import com.banksalad.collectmydata.insu.common.util.TestHelper;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceTransaction;
 import com.banksalad.collectmydata.insu.insurance.dto.ListInsuranceTransactionsRequest;
 import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
@@ -78,26 +79,26 @@ public class InsuranceTransactionServiceTest {
     );
 
     saveAndGetInsuranceSummary();
-    List<InsuranceTransaction> insuranceTransactions = transactionApiService.listTransactions(context,
+    transactionApiService.listTransactions(context,
         Executions.insurance_get_transactions, requestHelper, responseHelper);
 
     List<InsuranceTransactionEntity> insuranceTransactionEntities = insuranceTransactionRepository.findAll();
 
-    assertEquals(3, insuranceTransactions.size());
     assertEquals(3, insuranceTransactionEntities.size());
 
-    assertThat(insuranceTransactions.get(0)).usingRecursiveComparison()
-        .isEqualTo(
-            InsuranceTransaction.builder()
-                .insuNum("123456789")
-                .transDate("20200103")
-                .transAppliedMonth("202001")
-                .transNo(1)
-                .paidAmt(new BigDecimal("12345.123"))
-                .currencyCode("AFA")
-                .payMethod("01")
-                .build()
-        );
+    // TODO : compare with db
+//    assertThat(insuranceTransactions.get(0)).usingRecursiveComparison()
+//        .isEqualTo(
+//            InsuranceTransaction.builder()
+//                .insuNum("123456789")
+//                .transDate("20200103")
+//                .transAppliedMonth("202001")
+//                .transNo(1)
+//                .paidAmt(new BigDecimal("12345.123"))
+//                .currencyCode("AFA")
+//                .payMethod("01")
+//                .build()
+//        );
 
     assertThat(insuranceTransactionEntities.get(1)).usingRecursiveComparison()
         .ignoringFields(ENTITY_IGNORE_FIELD)

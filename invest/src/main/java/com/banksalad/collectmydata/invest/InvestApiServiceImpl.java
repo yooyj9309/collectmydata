@@ -1,7 +1,5 @@
 package com.banksalad.collectmydata.invest;
 
-import org.springframework.stereotype.Service;
-
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.enums.SyncRequestType;
 import com.banksalad.collectmydata.common.util.DateUtil;
@@ -22,9 +20,11 @@ import com.banksalad.collectmydata.invest.account.dto.GetAccountBasicRequest;
 import com.banksalad.collectmydata.invest.account.dto.ListAccountProductsRequest;
 import com.banksalad.collectmydata.invest.account.dto.ListAccountTransactionsRequest;
 import com.banksalad.collectmydata.invest.collect.Executions;
-import com.banksalad.collectmydata.invest.common.dto.InvestApiResponse;
 import com.banksalad.collectmydata.invest.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.invest.summary.dto.ListAccountSummariesRequest;
+
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +32,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @Service
@@ -56,7 +55,7 @@ public class InvestApiServiceImpl implements InvestApiService {
   private final AccountInfoResponseHelper<AccountSummary, List<AccountProduct>> accountProductInfoResponseHelper;
 
   @Override
-  public InvestApiResponse requestApi(long banksaladUserId, String organizationId, String syncRequestId,
+  public void requestApi(long banksaladUserId, String organizationId, String syncRequestId,
       SyncRequestType syncRequestType) throws ResponseNotOkException {
 
     ExecutionContext executionContext = ExecutionContext.builder()
@@ -72,24 +71,19 @@ public class InvestApiServiceImpl implements InvestApiService {
         .listAccountSummaries(executionContext, Executions.finance_invest_accounts, accountSummaryRequestHelper,
             accountSummaryResponseHelper);
 
-    AtomicReference<InvestApiResponse> investApiResponseAtomicReference = new AtomicReference<>();
-    investApiResponseAtomicReference.set(InvestApiResponse.builder().build());
-
     CompletableFuture.allOf(
-        CompletableFuture.supplyAsync(() -> accountBasicInfoService
+        CompletableFuture.runAsync(() -> accountBasicInfoService
             .listAccountInfos(executionContext, Executions.finance_invest_account_basic, accountBasicInfoRequestHelper,
                 accountBasicInfoResponseHelper)),
 
-        CompletableFuture.supplyAsync(() -> accountTransactionApiService
+        CompletableFuture.runAsync(() -> accountTransactionApiService
             .listTransactions(executionContext, Executions.finance_invest_account_transactions,
                 accountTransactionRequestHelper, accountTransactionResponseHelper)),
 
-        CompletableFuture.supplyAsync(() -> accountProductInfoService
+        CompletableFuture.runAsync(() -> accountProductInfoService
             .listAccountInfos(executionContext, Executions.finance_invest_account_products,
                 accountProductInfoRequestHelper, accountProductInfoResponseHelper))
     ).join();
-
-    return investApiResponseAtomicReference.get();
   }
 }
 

@@ -8,6 +8,7 @@ import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.finance.api.userbase.dto.UserBaseResponse;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
+import com.banksalad.collectmydata.finance.common.service.FinanceMessageService;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ public class UserBaseServiceImpl<UserBaseRequest, UserBaseInfo> implements UserB
 
   private final CollectExecutor collectExecutor;
   private final UserSyncStatusService userSyncStatusService;
+  private final FinanceMessageService financeMessageService;
 
   @Override
   public void getUserBaseInfo(
@@ -34,6 +36,18 @@ public class UserBaseServiceImpl<UserBaseRequest, UserBaseInfo> implements UserB
       Execution execution,
       UserBaseRequestHelper<UserBaseRequest> requestHelper,
       UserBaseResponseHelper<UserBaseInfo> responseHelper
+  ) throws ResponseNotOkException {
+
+    getUserBaseInfo(executionContext, execution, requestHelper, responseHelper, null);
+  }
+
+  @Override
+  public void getUserBaseInfo(
+      ExecutionContext executionContext,
+      Execution execution,
+      UserBaseRequestHelper<UserBaseRequest> requestHelper,
+      UserBaseResponseHelper<UserBaseInfo> responseHelper,
+      UserbasePublishmentHelper publishmentHelper
   ) throws ResponseNotOkException {
 
     /* copy ExecutionContext for new executionRequestId */
@@ -61,6 +75,12 @@ public class UserBaseServiceImpl<UserBaseRequest, UserBaseInfo> implements UserB
 
     /* save response */
     responseHelper.saveUserBaseInfo(executionContextLocal, userBaseInfo);
+
+    // TODO : remove if condition after applying client code
+    if (publishmentHelper != null) {
+      financeMessageService.producePublishmentRequested(publishmentHelper.getMessageTopic(),
+          publishmentHelper.makePublishmentRequestedMessage(executionContext));
+    }
 
     /* update user_sync_status, search_timestamp */
     userSyncStatusService.updateUserSyncStatus(

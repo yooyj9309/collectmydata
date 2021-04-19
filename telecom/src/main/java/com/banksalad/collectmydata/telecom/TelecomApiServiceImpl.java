@@ -1,7 +1,5 @@
 package com.banksalad.collectmydata.telecom;
 
-import org.springframework.stereotype.Service;
-
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.summary.SummaryService;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
@@ -10,7 +8,6 @@ import com.banksalad.collectmydata.finance.common.dto.Organization;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
 import com.banksalad.collectmydata.telecom.collect.Executions;
-import com.banksalad.collectmydata.telecom.common.dto.TelecomApiResponse;
 import com.banksalad.collectmydata.telecom.summary.TelecomSummaryRequestHelper;
 import com.banksalad.collectmydata.telecom.summary.TelecomSummaryResponseHelper;
 import com.banksalad.collectmydata.telecom.summary.dto.ListTelecomSummariesRequest;
@@ -23,11 +20,13 @@ import com.banksalad.collectmydata.telecom.telecom.dto.ListTelecomPaidTransactio
 import com.banksalad.collectmydata.telecom.telecom.dto.ListTelecomTransactionsRequest;
 import com.banksalad.collectmydata.telecom.telecom.dto.TelecomPaidTransaction;
 import com.banksalad.collectmydata.telecom.telecom.dto.TelecomTransaction;
+
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -51,7 +50,7 @@ public class TelecomApiServiceImpl implements TelecomApiService {
   private final TelecomPaidTransactionResponseHelper telecomPaidTransactionResponseHelper;
 
   @Override
-  public TelecomApiResponse onDemandRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
+  public void onDemandRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
       throws ResponseNotOkException {
 
     final OauthToken oauthToken = collectmydataConnectClientService.getAccessToken(banksaladUserId, organizationId);
@@ -66,9 +65,6 @@ public class TelecomApiServiceImpl implements TelecomApiService {
         .listAccountSummaries(executionContext, Executions.finance_telecom_summaries, telecomSummaryRequestHelper,
             telecomSummaryResponseHelper);
 
-    AtomicReference<TelecomApiResponse> telecomApiResponseAtomicReference = new AtomicReference<>();
-    telecomApiResponseAtomicReference.set(TelecomApiResponse.builder().build());
-
     // TODO: Replace with 6.9.2.
     CompletableFuture<Void> telecomBillFuture = CompletableFuture.completedFuture(null);
 
@@ -76,25 +72,22 @@ public class TelecomApiServiceImpl implements TelecomApiService {
     CompletableFuture<Void> telecomTransactionFuture = CompletableFuture.completedFuture(null);
 
     CompletableFuture<Void> telecomPaidTransactionFuture = CompletableFuture
-        .supplyAsync(() -> telecomPaidTransactionService
+        .runAsync(() -> telecomPaidTransactionService
             .listTransactions(executionContext, Executions.finance_telecom_paid_transactions,
-                telecomPaidTransactionRequestHelper, telecomPaidTransactionResponseHelper))
-        .thenAccept(telecomPaidTransactions -> telecomApiResponseAtomicReference.get()
-            .setTelecomPaidTransactions(telecomPaidTransactions));
+                telecomPaidTransactionRequestHelper, telecomPaidTransactionResponseHelper));
 
     Stream.of(telecomBillFuture, telecomTransactionFuture, telecomPaidTransactionFuture).map(CompletableFuture::join);
-
-    return telecomApiResponseAtomicReference.get();
   }
 
   @Override
-  public TelecomApiResponse scheduledBasicRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
+  public void scheduledBasicRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
       throws ResponseNotOkException {
-    return onDemandRequestApi(banksaladUserId, organizationId, syncRequestId);
+
+    onDemandRequestApi(banksaladUserId, organizationId, syncRequestId);
   }
 
   @Override
-  public TelecomApiResponse scheduledAdditionalRequestApi(long banksaladUserId, String organizationId,
+  public void scheduledAdditionalRequestApi(long banksaladUserId, String organizationId,
       String syncRequestId) throws ResponseNotOkException {
     final OauthToken oauthToken = collectmydataConnectClientService.getAccessToken(banksaladUserId, organizationId);
     final Organization organization = collectmydataConnectClientService.getOrganization(organizationId);
@@ -107,27 +100,20 @@ public class TelecomApiServiceImpl implements TelecomApiService {
         .listAccountSummaries(executionContext, Executions.finance_telecom_summaries, telecomSummaryRequestHelper,
             telecomSummaryResponseHelper);
 
-    AtomicReference<TelecomApiResponse> atomicReference = new AtomicReference<>();
-    atomicReference.set(TelecomApiResponse.builder().build());
-
     CompletableFuture.allOf(
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> telecomTransactionService
                     .listTransactions(executionContext, Executions.finance_telecom_transactions,
-                        telecomTransactionRequestHelper, telecomTransactionResponseHelper))
-            .thenAccept(atomicReference.get()::setTelecomTransactions),
+                        telecomTransactionRequestHelper, telecomTransactionResponseHelper)),
 
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> telecomPaidTransactionService
                     .listTransactions(executionContext, Executions.finance_telecom_paid_transactions,
                         telecomPaidTransactionRequestHelper,
                         telecomPaidTransactionResponseHelper))
-            .thenAccept(atomicReference.get()::setTelecomPaidTransactions)
     ).join();
-
-    return atomicReference.get();
   }
 
   private ExecutionContext generateExecutionContext(long banksaladUserId, String organizationId, OauthToken oauthToken,

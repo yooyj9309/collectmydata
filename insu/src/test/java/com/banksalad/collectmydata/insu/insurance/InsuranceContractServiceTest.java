@@ -34,10 +34,8 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static com.banksalad.collectmydata.insu.common.util.FileUtil.readText;
 import static com.banksalad.collectmydata.insu.common.util.TestHelper.ACCESS_TOKEN;
@@ -110,30 +108,29 @@ public class InsuranceContractServiceTest {
         .build();
     insuredRepository.save(insuredEntity);
 
-    List<InsuranceContract> insuranceContracts = subInfoService
-        .listAccountInfos(context, Executions.insurance_get_contract, requestHelper, responseHelper)
-        .stream()
-        .flatMap(Collection::stream)
-        .collect(Collectors.toList());
+    subInfoService
+        .listAccountInfos(context, Executions.insurance_get_contract, requestHelper, responseHelper);
+
     List<InsuranceContractEntity> insuranceContractEntities = insuranceContractRepository.findAll();
     List<InsuranceContractHistoryEntity> insuranceContractHistoryEntities = insuranceContractHistoryRepository
         .findAll();
-    assertEquals(2, insuranceContracts.size());
     assertEquals(2, insuranceContractEntities.size());
     assertEquals(2, insuranceContractHistoryEntities.size());
-    assertThat(insuranceContracts.get(0)).usingRecursiveComparison()
-        .isEqualTo(
-            InsuranceContract.builder()
-                .insuNum("123456789")
-                .insuredNo("01")
-                .contractName("묻지도따지지도않고")
-                .contractStatus("02")
-                .contractExpDate("99991231")
-                .contractFaceAmt(new BigDecimal("153212463.135"))
-                .currencyCode("KRW")
-                .required(true)
-                .build()
-        );
+
+    // TODO : compare with db
+//    assertThat(insuranceContracts.get(0)).usingRecursiveComparison()
+//        .isEqualTo(
+//            InsuranceContract.builder()
+//                .insuNum("123456789")
+//                .insuredNo("01")
+//                .contractName("묻지도따지지도않고")
+//                .contractStatus("02")
+//                .contractExpDate("99991231")
+//                .contractFaceAmt(new BigDecimal("153212463.135"))
+//                .currencyCode("KRW")
+//                .required(true)
+//                .build()
+//        );
 
     assertThat(insuranceContractEntities.get(0)).usingRecursiveComparison()
         .ignoringFields(ENTITY_IGNORE_FIELD)

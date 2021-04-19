@@ -1,8 +1,5 @@
 package com.banksalad.collectmydata.finance.api.transaction;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
@@ -10,15 +7,19 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
+import com.banksalad.collectmydata.finance.common.service.FinanceMessageService;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
 
 @Slf4j
 @Service
@@ -30,16 +31,22 @@ public class TransactionApiServiceImpl<Summary, TransactionRequest, Transaction>
 
   private final CollectExecutor collectExecutor;
   private final UserSyncStatusService userSyncStatusService;
+  private final FinanceMessageService financeMessageService;
 
-  private final Executor executor;
-
-  public List<Transaction> listTransactions(
+  public void listTransactions(
       ExecutionContext executionContext,
       Execution execution,
       TransactionRequestHelper<Summary, TransactionRequest> requestHelper,
       TransactionResponseHelper<Summary, Transaction> responseHelper
   ) {
-    List<Transaction> transactionsAll = new ArrayList<>();
+    listTransactions(executionContext, execution, requestHelper, responseHelper, null);
+  }
+
+  @Override
+  public void listTransactions(ExecutionContext executionContext, Execution execution,
+      TransactionRequestHelper<Summary, TransactionRequest> requestHelper,
+      TransactionResponseHelper<Summary, Transaction> responseHelper,
+      TransactionPublishmentHelper<Summary> publishmentHelper) {
 
     List<Summary> summaries = requestHelper.listSummaries(executionContext);
 
@@ -55,6 +62,7 @@ public class TransactionApiServiceImpl<Summary, TransactionRequest, Transaction>
       LocalDateTime toDateTime = DateUtil.utcLocalDateTimeToKstLocalDateTime(executionContext.getSyncStartedAt());
 
       String nextPage = null;
+      boolean hasNextPage = false;
       boolean isAllPaginationResponseOk = true;
 
       do {
@@ -83,11 +91,19 @@ public class TransactionApiServiceImpl<Summary, TransactionRequest, Transaction>
         /* Skip saving when no transaction exist. */
         if (transactions != null && transactions.size() != 0) {
           responseHelper.saveTransactions(executionContext, summary, transactions);
-          transactionsAll.addAll(transactions);
         }
 
+        hasNextPage = StringUtils.hasLength(executionResponse.getNextPage()) && !executionResponse.getNextPage().equals(nextPage);
         nextPage = executionResponse.getNextPage();
-      } while (executionResponse.getNextPage() != null && executionResponse.getNextPage().length() > 0);
+
+        /* publish */
+        // TODO : remove if condition after applying client code
+        if (publishmentHelper != null) {
+          financeMessageService.producePublishmentRequested(publishmentHelper.getMessageTopic(),
+              publishmentHelper.makePublishmentRequestedMessage(executionContext, summary, hasNextPage));
+        }
+
+      } while (hasNextPage);
 
       /* update transaction_synced_at, response_code */
       if (isAllPaginationResponseOk) {
@@ -102,8 +118,6 @@ public class TransactionApiServiceImpl<Summary, TransactionRequest, Transaction>
         executionContext.getSyncStartedAt(),
         0L
     );
-
-    return transactionsAll;
   }
 
 //  @Override

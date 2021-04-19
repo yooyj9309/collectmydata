@@ -1,11 +1,5 @@
 package com.banksalad.collectmydata.insu.insurance;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
@@ -24,8 +18,14 @@ import com.banksalad.collectmydata.insu.common.db.repository.InsuredRepository;
 import com.banksalad.collectmydata.insu.common.util.TestHelper;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceBasic;
-import com.banksalad.collectmydata.insu.insurance.dto.Insured;
 import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
@@ -91,7 +91,7 @@ public class InsuranceBasicServiceTest {
     ExecutionContext context = TestHelper.getExecutionContext(wireMockServer.port());
     saveInsuranceSummary(0);
 
-    List<InsuranceBasic> insuranceBasics = accountInfoService
+    accountInfoService
         .listAccountInfos(context, Executions.insurance_get_basic, requestHelper, responseHelper);
 
     List<InsuranceBasicEntity> insurancebasicEntities = insuranceBasicRepository.findAll();
@@ -101,7 +101,6 @@ public class InsuranceBasicServiceTest {
 
     assertEquals(1, insurancebasicEntities.size());
     assertEquals(1, insuranceBasicHistoryEntities.size());
-    assertEquals(1, insuranceBasics.size());
     assertEquals(1, insuredEntities.size());
     assertEquals(1, insuredHistoryEntities.size());
     assertThat(insurancebasicEntities.get(0)).usingRecursiveComparison()
@@ -126,28 +125,29 @@ public class InsuranceBasicServiceTest {
                 .build()
         );
 
-    assertThat(insuranceBasics.get(0)).usingRecursiveComparison()
-        .isEqualTo(
-            InsuranceBasic.builder()
-                .renewable(false)
-                .issueDate("20200101")
-                .expDate("99991231")
-                .faceAmt(new BigDecimal("53253.333"))
-                .currencyCode("KRW")
-                .variable(true)
-                .universal(true)
-                .pensionRcvStartDate("20200101")
-                .pensionRcvCycle("3M")
-                .loanable(true)
-                .insuredCount(1)
-                .insuredList(List.of(
-                    Insured.builder()
-                        .insuredNo("01")
-                        .insuredName("뱅샐")
-                        .build()
-                ))
-                .build()
-        );
+    // TODO : compare with db
+//    assertThat(insuranceBasics.get(0)).usingRecursiveComparison()
+//        .isEqualTo(
+//            InsuranceBasic.builder()
+//                .renewable(false)
+//                .issueDate("20200101")
+//                .expDate("99991231")
+//                .faceAmt(new BigDecimal("53253.333"))
+//                .currencyCode("KRW")
+//                .variable(true)
+//                .universal(true)
+//                .pensionRcvStartDate("20200101")
+//                .pensionRcvCycle("3M")
+//                .loanable(true)
+//                .insuredCount(1)
+//                .insuredList(List.of(
+//                    Insured.builder()
+//                        .insuredNo("01")
+//                        .insuredName("뱅샐")
+//                        .build()
+//                ))
+//                .build()
+//        );
 
     assertThat(insuredEntities.get(0)).usingRecursiveComparison()
         .ignoringFields(ENTITY_IGNORE_FIELD)

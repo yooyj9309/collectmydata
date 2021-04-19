@@ -1,10 +1,5 @@
 package com.banksalad.collectmydata.capital.account;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
 import com.banksalad.collectmydata.capital.account.dto.AccountBasic;
 import com.banksalad.collectmydata.capital.account.dto.GetAccountBasicRequest;
 import com.banksalad.collectmydata.capital.collect.Executions;
@@ -21,6 +16,12 @@ import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHe
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
 import com.banksalad.collectmydata.finance.common.db.entity.UserSyncStatusEntity;
 import com.banksalad.collectmydata.finance.common.db.repository.UserSyncStatusRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
@@ -145,7 +146,7 @@ public class AccountBasicServiceTest {
     accountSummaryRepository.save(accountSummaryEntity);
 
     // when
-    List<AccountBasic> accountBasics = accountBasicService
+    accountBasicService
         .listAccountInfos(executionContext, Executions.capital_get_account_basic, accountBasicRequestHelper,
             accountBasicResponseHelper);
 

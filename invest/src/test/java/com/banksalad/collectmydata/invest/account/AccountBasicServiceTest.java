@@ -1,12 +1,5 @@
 package com.banksalad.collectmydata.invest.account;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
@@ -19,6 +12,14 @@ import com.banksalad.collectmydata.invest.common.db.entity.AccountBasicEntity;
 import com.banksalad.collectmydata.invest.common.db.repository.AccountBasicRepository;
 import com.banksalad.collectmydata.invest.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.invest.summary.dto.AccountSummary;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
@@ -37,7 +38,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
@@ -101,14 +101,13 @@ class AccountBasicServiceTest {
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
 
-    List<AccountBasic> accountBasics = accountBasicService
+    accountBasicService
         .listAccountInfos(executionContext, Executions.finance_invest_account_basic, accountInfoRequestHelper,
             accountInfoResponseHelper);
 
     Optional<AccountBasicEntity> accountBasicEntity = accountBasicRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNum(BANKSALAD_USER_ID, ORGANIZATION_ID, "1234567890");
 
-    assertEquals(1, accountBasics.size());
     assertTrue(accountBasicEntity.isPresent());
   }
 

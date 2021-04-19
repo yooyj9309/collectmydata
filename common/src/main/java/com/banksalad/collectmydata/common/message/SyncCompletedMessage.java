@@ -1,5 +1,7 @@
 package com.banksalad.collectmydata.common.message;
 
+import com.banksalad.collectmydata.common.enums.SyncRequestType;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,5 +19,5 @@ public class SyncCompletedMessage {
   private long banksaladUserId;
   private String organizationId;
   private String syncRequestId;
-  private String syncResponseBody;
+  private SyncRequestType syncRequestType;
 }

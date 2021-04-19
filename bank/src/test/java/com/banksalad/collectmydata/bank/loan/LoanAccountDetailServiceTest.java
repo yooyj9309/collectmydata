@@ -1,12 +1,5 @@
 package com.banksalad.collectmydata.bank.loan;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
 import com.banksalad.collectmydata.bank.common.collect.Executions;
 import com.banksalad.collectmydata.bank.common.db.entity.LoanAccountDetailEntity;
 import com.banksalad.collectmydata.bank.common.db.repository.LoanAccountDetailRepository;
@@ -20,6 +13,14 @@ import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
@@ -109,7 +110,7 @@ public class LoanAccountDetailServiceTest {
         .when(accountSummaryService.listSummariesConsented(BANKSALAD_USER_ID, ORGANIZATION_ID, BankAccountType.LOAN))
         .thenReturn(getAccountSummaries());
 
-    List<LoanAccountDetail> loanAccountDetails = loanAccountDetailApiService.listAccountInfos(
+    loanAccountDetailApiService.listAccountInfos(
         executionContext,
         Executions.finance_bank_loan_account_detail,
         loanAccountDetailInfoRequestHelper,
@@ -124,7 +125,6 @@ public class LoanAccountDetailServiceTest {
             "1"
         );
 
-    assertThat(loanAccountDetails.size()).isEqualTo(1);
     assertThat(loanAccountDetailEntity.isPresent()).isTrue();
   }
 

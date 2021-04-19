@@ -1,12 +1,5 @@
 package com.banksalad.collectmydata.bank.invest;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
 import com.banksalad.collectmydata.bank.common.collect.Executions;
 import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountBasicEntity;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountBasicRepository;
@@ -20,6 +13,14 @@ import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
@@ -110,7 +111,7 @@ class InvestAccountBasicServiceTest {
         .when(accountSummaryService.listSummariesConsented(BANKSALAD_USER_ID, ORGANIZATION_ID, BankAccountType.INVEST))
         .thenReturn(getAccountSummaries());
 
-    List<InvestAccountBasic> investAccountBasics = investAccountBasicApiService.listAccountInfos(
+    investAccountBasicApiService.listAccountInfos(
         executionContext,
         Executions.finance_bank_invest_account_basic,
         investAccountBasicInfoRequestHelper,
@@ -125,7 +126,6 @@ class InvestAccountBasicServiceTest {
             "1"
         );
 
-    assertThat(investAccountBasics.size()).isEqualTo(1);
     assertThat(investAccountBasicEntity.isPresent()).isTrue();
   }
 

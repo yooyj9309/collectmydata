@@ -1,7 +1,5 @@
 package com.banksalad.collectmydata.insu;
 
-import org.springframework.stereotype.Service;
-
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
@@ -21,7 +19,6 @@ import com.banksalad.collectmydata.insu.car.dto.CarInsuranceTransaction;
 import com.banksalad.collectmydata.insu.car.dto.GetCarInsuranceRequest;
 import com.banksalad.collectmydata.insu.car.dto.ListCarInsuranceTransactionsRequest;
 import com.banksalad.collectmydata.insu.collect.Executions;
-import com.banksalad.collectmydata.insu.common.dto.InsuApiResponse;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsuranceBasicRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsurancePaymentRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.InsuranceBasic;
@@ -41,15 +38,15 @@ import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.summary.dto.ListInsuranceSummariesRequest;
 import com.banksalad.collectmydata.insu.summary.dto.ListLoanSummariesRequest;
 import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
+
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -108,7 +105,7 @@ public class InsuApiServiceImpl implements InsuApiService {
   private final CollectmydataConnectClientService collectmydataConnectClientService;
 
   @Override
-  public InsuApiResponse onDemandRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
+  public void onDemandRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
       throws ResponseNotOkException {
     Organization organization = collectmydataConnectClientService.getOrganization(organizationId);
     String accessToken = "fixme"; //TODO 토큰 조회 로직 추가하여 적용
@@ -123,40 +120,32 @@ public class InsuApiServiceImpl implements InsuApiService {
     loanSummaryService.listAccountSummaries(
         executionContext, Executions.insurance_get_loan_summaries, loanSummaryRequestHelper, loanSummaryResponseHelper);
 
-    AtomicReference<InsuApiResponse> atomicReference = new AtomicReference<>();
-    atomicReference.set(InsuApiResponse.builder().build());
-
     CompletableFuture.allOf(
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> insuranceBasicService
                     .listAccountInfos(executionContext, Executions.insurance_get_basic, insuranceBasicRequestHelper,
-                        insuranceBasicResponseHelper))
-            .thenAccept(atomicReference.get()::setInsuranceBasics),
+                        insuranceBasicResponseHelper)),
 
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> insuranceContractService
                     .listAccountInfos(executionContext, Executions.insurance_get_contract,
                         insuranceContractRequestHelper,
-                        insuranceContractResponseHelper))
-            .thenApply(lists -> lists.stream().flatMap(Collection::stream).collect(Collectors.toList()))
-            .thenAccept(atomicReference.get()::setInsuranceContracts),
+                        insuranceContractResponseHelper)),
 
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> insurancePaymentService
                     .listAccountInfos(executionContext, Executions.insurance_get_payment, insurancePaymentRequestHelper,
-                        insurancePaymentResponseHelper))
-            .thenAccept(atomicReference.get()::setInsurancePayments),
+                        insurancePaymentResponseHelper)),
 
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> insuranceTransactionService
                     .listTransactions(executionContext, Executions.insurance_get_transactions,
                         insuranceTransactionRequestHelper,
-                        insuranceTransactionResponseHelper))
-            .thenAccept(atomicReference.get()::setInsuranceTransactions),
+                        insuranceTransactionResponseHelper)),
 // TODO :
 //        CompletableFuture
 //            .supplyAsync(
@@ -166,47 +155,41 @@ public class InsuApiServiceImpl implements InsuApiService {
 //            .thenAccept(atomicReference.get()::setCarInsurances),
 
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> carInsuranceTransactionService
                     .listTransactions(executionContext, Executions.insurance_get_car_transactions,
                         carInsuranceTransactionRequestHelper,
-                        carInsuranceTransactionResponseHelper))
-            .thenAccept(atomicReference.get()::setCarInsuranceTransactions),
+                        carInsuranceTransactionResponseHelper)),
 
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> loanBasicService
                     .listAccountInfos(executionContext, Executions.insurance_get_loan_basic, loanBasicRequestHelper,
-                        loanBasicResponseHelper))
-            .thenAccept(atomicReference.get()::setLoanBasics),
+                        loanBasicResponseHelper)),
 
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> loanDetailService
                     .listAccountInfos(executionContext, Executions.insurance_get_loan_detail, loanDetailRequestHelper,
-                        loanDetailResponseHelper))
-            .thenAccept(atomicReference.get()::setLoanDetails),
+                        loanDetailResponseHelper)),
 
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> loanTransactionService
                     .listTransactions(executionContext, Executions.insurance_get_loan_transactions,
                         loanTransactionRequestHelper,
                         loanTransactionResponseHelper))
-            .thenAccept(atomicReference.get()::setLoanTransactions)
     ).join();
-
-    return atomicReference.get();
   }
 
   @Override
-  public InsuApiResponse scheduledBasicRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
+  public void scheduledBasicRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
       throws ResponseNotOkException {
-    return onDemandRequestApi(banksaladUserId, organizationId, syncRequestId);
+    onDemandRequestApi(banksaladUserId, organizationId, syncRequestId);
   }
 
   @Override
-  public InsuApiResponse scheduledAdditionalRequestApi(long banksaladUserId, String organizationId,
+  public void scheduledAdditionalRequestApi(long banksaladUserId, String organizationId,
       String syncRequestId) throws ResponseNotOkException {
     Organization organization = collectmydataConnectClientService.getOrganization(organizationId);
     String accessToken = "fixme"; //TODO 토큰 조회 로직 추가하여 적용
@@ -221,43 +204,34 @@ public class InsuApiServiceImpl implements InsuApiService {
     loanSummaryService.listAccountSummaries(
         executionContext, Executions.insurance_get_loan_summaries, loanSummaryRequestHelper, loanSummaryResponseHelper);
 
-    AtomicReference<InsuApiResponse> atomicReference = new AtomicReference<>();
-    atomicReference.set(InsuApiResponse.builder().build());
-
     CompletableFuture.allOf(
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> insuranceTransactionService
                     .listTransactions(executionContext, Executions.insurance_get_transactions,
                         insuranceTransactionRequestHelper,
-                        insuranceTransactionResponseHelper))
-            .thenAccept(atomicReference.get()::setInsuranceTransactions),
+                        insuranceTransactionResponseHelper)),
 
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> carInsuranceTransactionService
                     .listTransactions(executionContext, Executions.insurance_get_car_transactions,
                         carInsuranceTransactionRequestHelper,
-                        carInsuranceTransactionResponseHelper))
-            .thenAccept(atomicReference.get()::setCarInsuranceTransactions),
+                        carInsuranceTransactionResponseHelper)),
 
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> loanDetailService
                     .listAccountInfos(executionContext, Executions.insurance_get_loan_detail, loanDetailRequestHelper,
-                        loanDetailResponseHelper))
-            .thenAccept(atomicReference.get()::setLoanDetails),
+                        loanDetailResponseHelper)),
 
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> loanTransactionService
                     .listTransactions(executionContext, Executions.insurance_get_loan_transactions,
                         loanTransactionRequestHelper,
                         loanTransactionResponseHelper))
-            .thenAccept(atomicReference.get()::setLoanTransactions)
     ).join();
-
-    return atomicReference.get();
   }
 
   private ExecutionContext generateExecutionContext(long banksaladUserId, String organizationId, String syncRequestId,

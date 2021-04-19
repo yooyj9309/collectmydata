@@ -1,8 +1,5 @@
 package com.banksalad.collectmydata.finance.api.bill;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
@@ -13,6 +10,11 @@ import com.banksalad.collectmydata.finance.api.bill.dto.BillResponse;
 import com.banksalad.collectmydata.finance.api.bill.dto.BillTransactionResponse;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,6 +52,7 @@ public class BillServiceImpl<BillRequest, Bill, BillTransactionRequest, BillTran
     LocalDateTime toDateTime = DateUtil.utcLocalDateTimeToKstLocalDateTime(executionContext.getSyncStartedAt());
 
     String nextPage = null;
+    boolean hasNextPage = false;
     ExecutionResponse<BillResponse> executionResponse;
 
     do {
@@ -71,11 +74,14 @@ public class BillServiceImpl<BillRequest, Bill, BillTransactionRequest, BillTran
         responseHelper.saveBills(executionContext, bills);
         billAll.addAll(bills);
 
-        System.out.println("***\nnext_page: "+nextPage+"\nbills: "+bills+"\nnext_page: "+executionResponse.getNextPage()+"\n***");
+        System.out.println(
+            "***\nnext_page: " + nextPage + "\nbills: " + bills + "\nnext_page: " + executionResponse.getNextPage() + "\n***");
       }
 
+      hasNextPage = StringUtils.hasLength(executionResponse.getNextPage()) && !executionResponse.getNextPage().equals(nextPage);
       nextPage = executionResponse.getNextPage();
-    } while (executionResponse.getNextPage() != null && executionResponse.getNextPage().length() > 0);
+
+    } while (hasNextPage);
 
     userSyncStatusService.updateUserSyncStatus(
         executionContext.getBanksaladUserId(),
@@ -104,7 +110,9 @@ public class BillServiceImpl<BillRequest, Bill, BillTransactionRequest, BillTran
     for (Bill bill : bills) {
       /* copy ExecutionContext for new executionRequestId */
       ExecutionContext executionContextLocal = executionContext.copyWith(ExecutionContext.generateExecutionRequestId());
+
       String nextPage = null;
+      boolean hasNextPage = false;
 
       do {
         executionResponse = collectExecutor.execute(
@@ -131,8 +139,9 @@ public class BillServiceImpl<BillRequest, Bill, BillTransactionRequest, BillTran
           billDetailsAll.addAll(billTransactions);
         }
 
+        hasNextPage = StringUtils.hasLength(executionResponse.getNextPage()) && !executionResponse.getNextPage().equals(nextPage);
         nextPage = executionResponse.getNextPage();
-      } while (executionResponse.getNextPage() != null && executionResponse.getNextPage().length() > 0);
+      } while (hasNextPage);
     }
 
     userSyncStatusService.updateUserSyncStatus(

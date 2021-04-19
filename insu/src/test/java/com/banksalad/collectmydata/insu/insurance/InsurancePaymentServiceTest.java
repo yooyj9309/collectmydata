@@ -1,10 +1,5 @@
 package com.banksalad.collectmydata.insu.insurance;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
@@ -20,6 +15,12 @@ import com.banksalad.collectmydata.insu.common.util.TestHelper;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsurancePaymentRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.InsurancePayment;
 import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.http.HttpStatus;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
@@ -88,32 +89,32 @@ class InsurancePaymentServiceTest {
     saveInsuranceSummary(0);
 
     // When
-    List<InsurancePayment> insurancePayments = accountInfoService
+    accountInfoService
         .listAccountInfos(executionContext, Executions.insurance_get_payment, requestHelper, responseHelper);
     List<InsurancePaymentEntity> insurancePaymentEntities = insurancePaymentRepository.findAll();
     List<InsurancePaymentHistoryEntity> insurancePaymentHistoryRepositories = insurancePaymentHistoryRepository
         .findAll();
 
-    assertEquals(1, insurancePayments.size());
     assertEquals(1, insurancePaymentEntities.size());
     assertEquals(1, insurancePaymentHistoryRepositories.size());
 
+    // TODO: compare with db
     //Then
-    assertThat(insurancePayments.get(0)).usingRecursiveComparison()
-        .isEqualTo(
-            InsurancePayment.builder()
-                .insuNum("1234567812345678")
-                .payDue("01")
-                .payCycle("1M")
-                .payCnt(1)
-                .payOrgCode("1234")
-                .payDate("03")
-                .payEndDate("20210320")
-                .payAmt(new BigDecimal("30000.123"))
-                .currencyCode("KRW")
-                .autoPay(true)
-                .build()
-        );
+//    assertThat(insurancePayments.get(0)).usingRecursiveComparison()
+//        .isEqualTo(
+//            InsurancePayment.builder()
+//                .insuNum("1234567812345678")
+//                .payDue("01")
+//                .payCycle("1M")
+//                .payCnt(1)
+//                .payOrgCode("1234")
+//                .payDate("03")
+//                .payEndDate("20210320")
+//                .payAmt(new BigDecimal("30000.123"))
+//                .currencyCode("KRW")
+//                .autoPay(true)
+//                .build()
+//        );
 
     assertThat(insurancePaymentEntities.get(0)).usingRecursiveComparison()
         .ignoringFields(ENTITY_IGNORE_FIELD)

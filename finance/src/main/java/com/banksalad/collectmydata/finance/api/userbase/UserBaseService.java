@@ -12,4 +12,12 @@ public interface UserBaseService<UserBaseRequest, UserBaseInfo> {
       UserBaseRequestHelper<UserBaseRequest> requestHelper,
       UserBaseResponseHelper<UserBaseInfo> responseHelper
   ) throws ResponseNotOkException;
+
+  void getUserBaseInfo(
+      ExecutionContext executionContext,
+      Execution execution,
+      UserBaseRequestHelper<UserBaseRequest> requestHelper,
+      UserBaseResponseHelper<UserBaseInfo> responseHelper,
+      UserbasePublishmentHelper publishmentHelper
+  ) throws ResponseNotOkException;
 }

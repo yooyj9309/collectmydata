@@ -1,7 +1,5 @@
 package com.banksalad.collectmydata.capital;
 
-import org.springframework.stereotype.Service;
-
 import com.banksalad.collectmydata.capital.account.dto.AccountBasic;
 import com.banksalad.collectmydata.capital.account.dto.AccountDetail;
 import com.banksalad.collectmydata.capital.account.dto.AccountTransaction;
@@ -9,7 +7,6 @@ import com.banksalad.collectmydata.capital.account.dto.GetAccountBasicRequest;
 import com.banksalad.collectmydata.capital.account.dto.GetAccountDetailRequest;
 import com.banksalad.collectmydata.capital.account.dto.ListAccountTransactionsRequest;
 import com.banksalad.collectmydata.capital.collect.Executions;
-import com.banksalad.collectmydata.capital.common.dto.CapitalApiResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.GetOperatingLeaseBasicRequest;
 import com.banksalad.collectmydata.capital.oplease.dto.ListOperatingLeaseTransactionsRequest;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasic;
@@ -32,12 +29,14 @@ import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHe
 import com.banksalad.collectmydata.finance.common.dto.Organization;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
+
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @Service
@@ -71,22 +70,25 @@ public class CapitalApiServiceImpl implements CapitalApiService {
   private final TransactionResponseHelper<AccountSummary, OperatingLeaseTransaction> operatingLeaseTransactionResponseHelper;
 
   @Override
-  public CapitalApiResponse requestApi(long banksaladUserId, String organizationId, String syncRequestId,
+  public void requestApi(long banksaladUserId, String organizationId, String syncRequestId,
       SyncRequestType syncRequestType) throws ResponseNotOkException, CollectException {
     switch (syncRequestType) {
       case ONDEMAND:
-        return requestApiOnDemand(banksaladUserId, organizationId, syncRequestId, syncRequestType);
+        requestApiOnDemand(banksaladUserId, organizationId, syncRequestId, syncRequestType);
+        break;
       case SCHEDULED_BASIC:
-        return requestApiScheduledBasic(banksaladUserId, organizationId, syncRequestId, syncRequestType);
+        requestApiScheduledBasic(banksaladUserId, organizationId, syncRequestId, syncRequestType);
+        break;
       case SCHEDULED_ADDITIONAL:
-        return requestApiScheduledAdditional(banksaladUserId, organizationId, syncRequestId, syncRequestType);
+        requestApiScheduledAdditional(banksaladUserId, organizationId, syncRequestId, syncRequestType);
+        break;
       default:
         log.error("Fail to specify RequestType: {}", syncRequestType);
         throw new CollectException("undefined syncRequestType"); // TODO
     }
   }
 
-  private CapitalApiResponse requestApiOnDemand(long banksaladUserId, String organizationId, String syncRequestId,
+  private void requestApiOnDemand(long banksaladUserId, String organizationId, String syncRequestId,
       SyncRequestType syncRequestType)
       throws ResponseNotOkException {
     Organization organization = collectmydataConnectClientService.getOrganization(organizationId);
@@ -98,54 +100,43 @@ public class CapitalApiServiceImpl implements CapitalApiService {
     accountSummaryService.listAccountSummaries(
         executionContext, Executions.capital_get_accounts, accountSummaryRequestHelper, accountSummaryResponseHelper);
 
-    AtomicReference<CapitalApiResponse> atomicReference = new AtomicReference<>();
-    atomicReference.set(CapitalApiResponse.builder().build());
-
     CompletableFuture.allOf(
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> accountBasicService
                     .listAccountInfos(executionContext, Executions.capital_get_account_basic, accountBasicRequestHelper,
-                        accountBasicResponseHelper))
-            .thenAccept(atomicReference.get()::setAccountBasics),
+                        accountBasicResponseHelper)),
 
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> accountDetailService.listAccountInfos(executionContext, Executions.capital_get_account_detail,
-                    accountDetailRequestHelper, accountDetailResponseHelper))
-            .thenAccept(atomicReference.get()::setAccountDetails),
+                    accountDetailRequestHelper, accountDetailResponseHelper)),
 
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> accountTransactionService
                     .listTransactions(executionContext, Executions.capital_get_account_transactions,
-                        accountTransactionRequestHelper, accountTransactionResponseHelper))
-            .thenAccept(atomicReference.get()::setAccountTransactions),
+                        accountTransactionRequestHelper, accountTransactionResponseHelper)),
 
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> operatingLeaseBasicService
                     .listAccountInfos(executionContext, Executions.capital_get_operating_lease_basic,
-                        operatingLeaseRequestHelper, operatingLeaseResponseHelper))
-            .thenAccept(atomicReference.get()::setOperatingLeaseBasics),
+                        operatingLeaseRequestHelper, operatingLeaseResponseHelper)),
 
         CompletableFuture
-            .supplyAsync(() -> operatingLeaseTransactionService
+            .runAsync(() -> operatingLeaseTransactionService
                 .listTransactions(executionContext, Executions.capital_get_operating_lease_transactions,
                     operatingLeaseTransactionRequestHelper, operatingLeaseTransactionResponseHelper))
-            .thenAccept(atomicReference.get()::setOperatingLeasesTransactions)
     ).join();
-
-    return atomicReference.get();
   }
 
-  private CapitalApiResponse requestApiScheduledBasic(long banksaladUserId, String organizationId, String syncRequestId,
-      SyncRequestType syncRequestType)
-      throws ResponseNotOkException {
-    return requestApiOnDemand(banksaladUserId, organizationId, syncRequestId, syncRequestType);
+  private void requestApiScheduledBasic(long banksaladUserId, String organizationId, String syncRequestId,
+      SyncRequestType syncRequestType) throws ResponseNotOkException {
+    requestApiOnDemand(banksaladUserId, organizationId, syncRequestId, syncRequestType);
   }
 
-  private CapitalApiResponse requestApiScheduledAdditional(long banksaladUserId, String organizationId,
+  private void requestApiScheduledAdditional(long banksaladUserId, String organizationId,
       String syncRequestId, SyncRequestType syncRequestType) throws ResponseNotOkException {
     Organization organization = collectmydataConnectClientService.getOrganization(organizationId);
     String accessToken = "fixme"; //TODO 토큰 조회 로직 추가하여 적용
@@ -156,30 +147,22 @@ public class CapitalApiServiceImpl implements CapitalApiService {
     accountSummaryService.listAccountSummaries(
         executionContext, Executions.capital_get_accounts, accountSummaryRequestHelper, accountSummaryResponseHelper);
 
-    AtomicReference<CapitalApiResponse> atomicReference = new AtomicReference<>();
-    atomicReference.set(CapitalApiResponse.builder().build());
-
     CompletableFuture.allOf(
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> accountDetailService.listAccountInfos(executionContext, Executions.capital_get_account_detail,
-                    accountDetailRequestHelper, accountDetailResponseHelper))
-            .thenAccept(atomicReference.get()::setAccountDetails),
+                    accountDetailRequestHelper, accountDetailResponseHelper)),
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> accountTransactionService
                     .listTransactions(executionContext, Executions.capital_get_account_transactions,
-                        accountTransactionRequestHelper, accountTransactionResponseHelper))
-            .thenAccept(atomicReference.get()::setAccountTransactions),
+                        accountTransactionRequestHelper, accountTransactionResponseHelper)),
         CompletableFuture
-            .supplyAsync(
+            .runAsync(
                 () -> operatingLeaseTransactionService
                     .listTransactions(executionContext, Executions.capital_get_operating_lease_transactions,
                         operatingLeaseTransactionRequestHelper, operatingLeaseTransactionResponseHelper))
-            .thenAccept(atomicReference.get()::setOperatingLeasesTransactions)
     ).join();
-
-    return atomicReference.get();
   }
 
   private ExecutionContext generateExecutionContext(long banksaladUserId, String organizationId, String syncRequestId,

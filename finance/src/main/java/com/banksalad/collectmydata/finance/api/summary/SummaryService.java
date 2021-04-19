@@ -6,10 +6,19 @@ import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkExcepti
 
 public interface SummaryService<SummaryRequest, Summary> {
 
+  @Deprecated
   void listAccountSummaries(
       ExecutionContext executionContext,
       Execution execution,
       SummaryRequestHelper<SummaryRequest> requestHelper,
       SummaryResponseHelper<Summary> responseHelper
+  ) throws ResponseNotOkException;
+
+  void listAccountSummaries(
+      ExecutionContext executionContext,
+      Execution execution,
+      SummaryRequestHelper<SummaryRequest> requestHelper,
+      SummaryResponseHelper<Summary> responseHelper,
+      SummaryPublishmentHelper publishmentHelper
   ) throws ResponseNotOkException;
 }

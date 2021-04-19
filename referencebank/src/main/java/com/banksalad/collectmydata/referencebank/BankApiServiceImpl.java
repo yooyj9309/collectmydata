@@ -2,6 +2,8 @@ package com.banksalad.collectmydata.referencebank;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.enums.SyncRequestType;
+import com.banksalad.collectmydata.common.message.MessageTopic;
+import com.banksalad.collectmydata.common.message.SyncCompletedMessage;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
@@ -16,8 +18,8 @@ import com.banksalad.collectmydata.finance.common.dto.OauthToken;
 import com.banksalad.collectmydata.finance.common.dto.Organization;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
+import com.banksalad.collectmydata.finance.common.service.FinanceMessageService;
 import com.banksalad.collectmydata.referencebank.collect.Executions;
-import com.banksalad.collectmydata.referencebank.common.dto.BankApiResponse;
 import com.banksalad.collectmydata.referencebank.deposit.dto.DepositAccountBasic;
 import com.banksalad.collectmydata.referencebank.deposit.dto.DepositAccountDetail;
 import com.banksalad.collectmydata.referencebank.deposit.dto.DepositAccountTransaction;
@@ -35,12 +37,13 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class BankApiServiceImpl implements BankApiService {
+
+  private final FinanceMessageService financeMessageService;
 
   private final CollectmydataConnectClientService connectClientService;
 
@@ -62,7 +65,7 @@ public class BankApiServiceImpl implements BankApiService {
   private final TransactionResponseHelper<AccountSummary, DepositAccountTransaction> depositAccountTransactionResponseHelper;
 
   @Override
-  public BankApiResponse requestApi(long banksaladUserId, String organizationId, String syncRequestId,
+  public void requestApi(long banksaladUserId, String organizationId, String syncRequestId,
       SyncRequestType syncRequestType) throws ResponseNotOkException {
 
     final OauthToken oauthToken = connectClientService.getAccessToken(banksaladUserId, organizationId);
@@ -80,37 +83,32 @@ public class BankApiServiceImpl implements BankApiService {
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
 
-    AtomicReference<BankApiResponse> bankApiResponseAtomicReference = new AtomicReference<>();
-    bankApiResponseAtomicReference.set(BankApiResponse.builder().build());
-
     accountSummaryService.listAccountSummaries(
         executionContext, Executions.finance_bank_summaries, bankSummaryRequestHelper, bankSummaryResponseHelper);
 
-    // TODO : decide how to set response
     CompletableFuture.allOf(
-        CompletableFuture.supplyAsync(() -> depositAccountBasicApiService.listAccountInfos(
+        CompletableFuture.runAsync(() -> depositAccountBasicApiService.listAccountInfos(
             executionContext, Executions.finance_bank_deposit_account_basic, depositAccountBasicInfoRequestHelper,
-            depositAccountInfoBasicResponseHelper))
-//            .thenAccept(
-//                depositAccountBasics -> bankApiResponseAtomicReference.get().setDepositAccountBasicss(depositAccountBasics))
-        ,
+            depositAccountInfoBasicResponseHelper)),
 
-        CompletableFuture.supplyAsync(() -> depositAccountDetailApiService.listAccountInfos(
+        CompletableFuture.runAsync(() -> depositAccountDetailApiService.listAccountInfos(
             executionContext, Executions.finance_bank_deposit_account_detail, depositAccountDetailInfoRequestHelper,
-            depositAccountDetailInfoResponseHelper))
-//            .thenAccept(
-//                depositAccountDetails -> bankApiResponseAtomicReference.get().setDepositAccountDetails(depositAccountDetails))
-        ,
+            depositAccountDetailInfoResponseHelper)),
 
-        CompletableFuture.supplyAsync(
+        CompletableFuture.runAsync(
             () -> depositTransactionApiService
                 .listTransactions(executionContext, Executions.finance_bank_deposit_account_transaction,
                     depositAccountTransactionRequestHelper, depositAccountTransactionResponseHelper))
-            .thenAccept(depositAccountTransactions -> bankApiResponseAtomicReference.get()
-                .setDepositAccountTransactions(depositAccountTransactions))
-
     ).join();
-
-    return bankApiResponseAtomicReference.get();
+    
+    /* produce sync completed */
+    financeMessageService.produceSyncCompleted(
+        MessageTopic.bankSyncCompleted,
+        SyncCompletedMessage.builder()
+            .banksaladUserId(executionContext.getBanksaladUserId())
+            .organizationId(executionContext.getOrganizationId())
+            .syncRequestId(executionContext.getSyncRequestId())
+            .syncRequestType(syncRequestType)
+            .build());
   }
 }

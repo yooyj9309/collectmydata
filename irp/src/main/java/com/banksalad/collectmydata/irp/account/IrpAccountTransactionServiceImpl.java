@@ -1,7 +1,5 @@
 package com.banksalad.collectmydata.irp.account;
 
-import org.springframework.stereotype.Service;
-
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionRequestHelper;
@@ -10,10 +8,11 @@ import com.banksalad.collectmydata.irp.collect.Executions;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummary;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountTransaction;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountTransactionRequest;
+
+import org.springframework.stereotype.Service;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -28,9 +27,9 @@ public class IrpAccountTransactionServiceImpl implements
   private final TransactionResponseHelper<IrpAccountSummary, IrpAccountTransaction> irpAccountTransactionResponseHelper;
 
   @Override
-  public List<IrpAccountTransaction> listTransactions(ExecutionContext executionContext) {
+  public void listTransactions(ExecutionContext executionContext) {
 
-    return irpAccountTransactionApiService
+    irpAccountTransactionApiService
         .listTransactions(executionContext, Executions.irp_get_transactions, irpAccountTransactionRequestHelper,
             irpAccountTransactionResponseHelper);
   }
