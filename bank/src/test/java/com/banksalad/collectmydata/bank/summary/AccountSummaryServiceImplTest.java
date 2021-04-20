@@ -129,7 +129,7 @@ public class AccountSummaryServiceImplTest {
 
     // then
     List<AccountSummaryEntity> accountSummaryEntities = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true);
+        .findByBanksaladUserIdAndOrganizationIdAndConsentIsTrue(BANKSALAD_USER_ID, ORGANIZATION_ID);
 
     assertThat(accountSummaryEntities.size()).isEqualTo(3);
 
@@ -163,7 +163,7 @@ public class AccountSummaryServiceImplTest {
 
     // then
     List<AccountSummaryEntity> accountSummaryEntities = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true);
+        .findByBanksaladUserIdAndOrganizationIdAndConsentIsTrue(BANKSALAD_USER_ID, ORGANIZATION_ID);
 
     assertThat(accountSummaryEntities.size()).isEqualTo(1);
 
@@ -200,7 +200,7 @@ public class AccountSummaryServiceImplTest {
 
     // then
     List<AccountSummaryEntity> accountSummaryEntities = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true);
+        .findByBanksaladUserIdAndOrganizationIdAndConsentIsTrue(BANKSALAD_USER_ID, ORGANIZATION_ID);
 
     assertThat(accountSummaryEntities.size()).isEqualTo(2);
 
@@ -237,7 +237,7 @@ public class AccountSummaryServiceImplTest {
 
     // then
     List<AccountSummaryEntity> accountSummaryEntities = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true);
+        .findByBanksaladUserIdAndOrganizationIdAndConsentIsTrue(BANKSALAD_USER_ID, ORGANIZATION_ID);
 
     assertThat(accountSummaryEntities.size()).isEqualTo(1);
 
@@ -280,7 +280,7 @@ public class AccountSummaryServiceImplTest {
 
     // then
     List<AccountSummaryEntity> accountSummaryEntities = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true);
+        .findByBanksaladUserIdAndOrganizationIdAndConsentIsTrue(BANKSALAD_USER_ID, ORGANIZATION_ID);
 
     assertThat(accountSummaryEntities.size()).isEqualTo(1);
 
@@ -317,7 +317,7 @@ public class AccountSummaryServiceImplTest {
 
     // then
     List<AccountSummaryEntity> accountSummaryEntities = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true);
+        .findByBanksaladUserIdAndOrganizationIdAndConsentIsTrue(BANKSALAD_USER_ID, ORGANIZATION_ID);
 
     assertThat(accountSummaryEntities.size()).isEqualTo(4);
 
@@ -355,7 +355,7 @@ public class AccountSummaryServiceImplTest {
     assertThat(responseNotOkException.getResponseMessage()).isEqualTo("시스템장애");
 
     List<AccountSummaryEntity> accountSummaryEntities = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndConsent(BANKSALAD_USER_ID, ORGANIZATION_ID, true);
+        .findByBanksaladUserIdAndOrganizationIdAndConsentIsTrue(BANKSALAD_USER_ID, ORGANIZATION_ID);
 
     assertThat(accountSummaryEntities.size()).isEqualTo(1);
 

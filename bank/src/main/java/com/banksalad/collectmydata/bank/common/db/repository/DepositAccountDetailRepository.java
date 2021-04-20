@@ -13,4 +13,7 @@ public interface DepositAccountDetailRepository extends JpaRepository<DepositAcc
       Long banksaladUserId, String organizationId, String accountNum, String seqno, String currencyCode);
 
   List<DepositAccountDetailEntity> findByBanksaladUserIdAndOrganizationId(Long banksaladUserId, String organizationId);
+
+  List<DepositAccountDetailEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(Long banksaladUserId,
+      String organizationId, String accountNum, String seqno);
 }

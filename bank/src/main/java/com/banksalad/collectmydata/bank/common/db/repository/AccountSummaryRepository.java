@@ -10,13 +10,21 @@ import java.util.Optional;
 
 public interface AccountSummaryRepository extends JpaRepository<AccountSummaryEntity, Long> {
 
-  Optional<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(long banksaladUserId,
+  Optional<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(Long banksaladUserId,
       String organizationId, String accountNum, String seqno);
 
-  List<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndConsent(long banksaladUserId,
-      String organizationId, boolean consent);
+  List<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndConsentIsTrue(Long banksaladUserId,
+      String organizationId);
 
   List<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndConsentIsTrueAndAccountTypeIn(
-      long banksaladUserId, String organizationId, Collection<String> accountTypes);
+      Long banksaladUserId, String organizationId, Collection<String> accountTypes);
 
+  List<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndBasicResponseCodeNotInAndConsentIsTrue(
+      Long banksaladUserId, String organizationId, String[] responseCode);
+
+  List<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndDetailResponseCodeNotInAndConsentIsTrue(
+      Long banksaladUserId, String organizationId, String[] responseCode);
+
+  Optional<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransactionResponseCodeNotInAndConsentIsTrue(
+      Long banksaladUserId, String organizationId, String accountNum, String seqno, String[] responseCode);
 }

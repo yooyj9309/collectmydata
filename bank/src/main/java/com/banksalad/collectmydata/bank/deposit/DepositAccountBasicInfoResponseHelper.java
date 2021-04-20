@@ -54,11 +54,12 @@ public class DepositAccountBasicInfoResponseHelper implements
 
     // load existing account entity
     DepositAccountBasicEntity existingDepositAccountBasicEntity = depositAccountBasicRepository
-        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndCurrencyCode(
             executionContext.getBanksaladUserId(),
             executionContext.getOrganizationId(),
             accountSummary.getAccountNum(),
-            accountSummary.getSeqno())
+            accountSummary.getSeqno(),
+            depositAccountBasic.getCurrencyCode())
         .orElse(null);
 
     // copy PK for update

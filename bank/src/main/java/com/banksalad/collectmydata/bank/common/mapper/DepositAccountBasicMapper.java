@@ -2,6 +2,7 @@ package com.banksalad.collectmydata.bank.common.mapper;
 
 import com.banksalad.collectmydata.bank.common.db.entity.DepositAccountBasicEntity;
 import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountBasic;
+import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountBasicResponse;
 import com.banksalad.collectmydata.common.mapper.BigDecimalMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -18,4 +19,6 @@ public interface DepositAccountBasicMapper {
       }
   )
   DepositAccountBasicEntity dtoToEntity(DepositAccountBasic depositAccountBasic);
+
+  DepositAccountBasicResponse entityToResponseDto(DepositAccountBasicEntity depositAccountBasicEntity);
 }
