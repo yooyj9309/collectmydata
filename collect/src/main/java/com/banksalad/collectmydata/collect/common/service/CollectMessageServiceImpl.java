@@ -7,7 +7,7 @@ import com.banksalad.collectmydata.common.message.SyncRequestedMessage;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
-import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,12 +26,23 @@ public class CollectMessageServiceImpl implements CollectMessageService {
   }
 
   @Override
-  public ListenableFuture<SendResult<String, String>> produceBankSyncRequested(SyncRequestedMessage syncRequestedMessage) {
+  public void produceBankSyncRequested(SyncRequestedMessage syncRequestedMessage) {
     final String message;
 
     try {
       message = objectMapper.writeValueAsString(syncRequestedMessage);
-      return kafkaTemplate.send(MessageTopic.bankSyncRequested, message);
+      kafkaTemplate.send(MessageTopic.bankSyncRequested, message).addCallback(new ListenableFutureCallback<>() {
+        @Override
+        public void onSuccess(SendResult<String, String> result) {
+          log.debug("Produce syncCompletedMessage. syncRequestId: {} ", syncRequestedMessage.getSyncRequestId());
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+          log.error("Fail to produce syncCompletedMessage. syncRequestId: {}, exception: {}",
+              syncRequestedMessage.getSyncRequestId(), t.getMessage(), t);
+        }
+      });
 
     } catch (JsonProcessingException e) {
       throw new CollectRuntimeException("Fail to serialize message", e);

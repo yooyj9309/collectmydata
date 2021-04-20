@@ -47,21 +47,12 @@ dependencies {
     // spring
     implementation("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
     implementation("org.springframework.boot:spring-boot-starter-webflux:${springBootVersion}")
-    implementation("org.springframework.boot:spring-boot-starter-data-redis:${springBootVersion}")
 
     // kafka
     implementation("org.springframework.kafka:spring-kafka:${springKafkaVersion}")
 
-    // armeria
-    implementation platform("com.linecorp.armeria:armeria-bom:${armeriaVersion}")
-    implementation platform('io.netty:netty-bom:4.1.54.Final')
-
-    implementation("com.linecorp.armeria:armeria-spring-boot2-webflux-starter:${armeriaVersion}")
-    implementation("com.linecorp.armeria:armeria-grpc:${armeriaVersion}")
-
     // apache commons-pool2
     implementation("org.apache.commons:commons-pool2:2.9.0")
-
 
     // grpc
     implementation("io.grpc:grpc-context:${grpcVersion}")
@@ -118,7 +109,6 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
 
     testImplementation("io.projectreactor:reactor-test:3.4.2")
-
 }
 
 test {

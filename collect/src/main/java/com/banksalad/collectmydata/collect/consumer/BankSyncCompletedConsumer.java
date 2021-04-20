@@ -1,31 +1,24 @@
 package com.banksalad.collectmydata.collect.consumer;
 
-import com.banksalad.collectmydata.collect.common.service.RedisPubSubService;
-import com.banksalad.collectmydata.common.message.ConsumerGroupId;
-import com.banksalad.collectmydata.common.message.MessageTopic;
-
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class BankSyncCompletedConsumer {
 
   private final ObjectMapper objectMapper;
-  private final RedisPubSubService redisPubSubService;
 
-  public BankSyncCompletedConsumer(ObjectMapper objectMapper, RedisPubSubService redisPubSubService) {
-    this.objectMapper = objectMapper;
-    this.redisPubSubService = redisPubSubService;
-  }
+  // TODO : implement completed consumer
 
-  @KafkaListener(
-      topics = MessageTopic.bankSyncCompleted,
-      containerFactory = "kafkaListenerContainerFactory",
-      groupId = ConsumerGroupId.collectConsumerGroupId)
+  //  @KafkaListener(
+//      topics = MessageTopic.bankSyncCompleted,
+//      containerFactory = "kafkaListenerContainerFactory",
+//      groupId = ConsumerGroupId.collectConsumerGroupId)
   public void consume(String source) {
 
 //    try {

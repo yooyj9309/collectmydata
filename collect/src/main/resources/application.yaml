@@ -1,6 +1,8 @@
 spring:
   profiles:
     active: local
+  main:
+    web-application-type: none
   application:
     name: collectmydata-collect
 
@@ -25,6 +27,17 @@ management:
   health:
     livenessState.enabled: true
     readinessState.enabled: true
+
+grpc:
+  port: 18081
+  enable-reflection: true
+  enabled: true
+  in-process-server-name: collectmydata-collect-server-process
+  shutdownGrace: 30
+
+connect-server:
+  host: connect
+  port: 8080
 
 uri:
   user: dns:///user-headless:18081
