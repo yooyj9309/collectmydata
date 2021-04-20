@@ -1,5 +1,7 @@
 package com.banksalad.collectmydata.card.loan;
 
+import org.springframework.stereotype.Component;
+
 import com.banksalad.collectmydata.card.common.db.entity.LoanLongTermEntity;
 import com.banksalad.collectmydata.card.common.db.entity.LoanLongTermHistoryEntity;
 import com.banksalad.collectmydata.card.common.db.repository.LoanLongTermHistoryRepository;
@@ -12,9 +14,6 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.userbase.UserBaseResponseHelper;
 import com.banksalad.collectmydata.finance.api.userbase.dto.UserBaseResponse;
-
-import org.springframework.stereotype.Component;
-
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
@@ -60,19 +59,21 @@ public class LoanLongTermResponseHelper implements UserBaseResponseHelper<List<L
 
     List<LoanLongTermEntity> loanLongTermEntities = new ArrayList<>();
     List<LoanLongTermHistoryEntity> loanLongTermHistoryEntities = new ArrayList<>();
-    for (int i = 0; i < loanLongTerms.size(); i++) {
-      LoanLongTerm loanLongTerm = loanLongTerms.get(i);
+    short loanLongTermNo = 0;
+
+    for (LoanLongTerm loanLongTerm : loanLongTerms) {
       LoanLongTermEntity loanLongTermEntity = loanLongTermMapper.dtoToEntity(loanLongTerm);
       loanLongTermEntity.setSyncedAt(syncedAt);
       loanLongTermEntity.setBanksaladUserId(banksaladUserId);
       loanLongTermEntity.setOrganizationId(organizationId);
-      loanLongTermEntity.setLoanLongTermNo(i);
+      loanLongTermEntity.setLoanLongTermNo(loanLongTermNo++);
       loanLongTermEntity.setCreatedBy(String.valueOf(banksaladUserId));
       loanLongTermEntity.setUpdatedBy(String.valueOf(banksaladUserId));
 
       loanLongTermEntities.add(loanLongTermEntity);
       loanLongTermHistoryEntities.add(loanLongTermHistoryMapper.toHistoryEntity(loanLongTermEntity));
     }
+
     loanLongTermRepository.saveAll(loanLongTermEntities);
     loanLongTermHistoryRepository.saveAll(loanLongTermHistoryEntities);
   }

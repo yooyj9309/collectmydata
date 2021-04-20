@@ -45,7 +45,7 @@ public class BillDetailEntity extends BaseEntity {
   private String seqno;
 
   @Column(nullable = false)
-  private Integer billDetailNo;
+  private Short billDetailNo;
 
   @Column(nullable = false)
   private String cardId;

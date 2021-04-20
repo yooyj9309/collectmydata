@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "revolving")
 public class RevolvingEntity extends BaseEntity {
-  
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -40,7 +40,7 @@ public class RevolvingEntity extends BaseEntity {
   private String organizationId;
 
   @Column(nullable = false)
-  private Integer revolvingNo;
+  private Short revolvingNo;
 
   @Column(nullable = false)
   private Integer revolvingMonth;

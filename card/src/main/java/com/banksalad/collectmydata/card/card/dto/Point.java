@@ -8,8 +8,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,7 +17,7 @@ public class Point {
 
   private String pointName;
 
-  private BigDecimal remainPointAmt;
+  private Long remainPointAmt;
 
-  private BigDecimal expiringPointAmt;
+  private Long expiringPointAmt;
 }

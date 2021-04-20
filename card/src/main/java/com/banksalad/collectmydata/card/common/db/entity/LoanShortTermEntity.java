@@ -40,7 +40,7 @@ public class LoanShortTermEntity extends BaseEntity {
   private String organizationId;
 
   @Column(nullable = false)
-  private Integer loanShortTermNo;
+  private Short loanShortTermNo;
 
   @Column(nullable = false)
   private String loanDtime;

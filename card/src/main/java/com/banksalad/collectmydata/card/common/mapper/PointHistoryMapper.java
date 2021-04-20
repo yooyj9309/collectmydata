@@ -1,10 +1,7 @@
 package com.banksalad.collectmydata.card.common.mapper;
 
-import com.banksalad.collectmydata.card.common.db.entity.CardEntity;
-import com.banksalad.collectmydata.card.common.db.entity.CardHistoryEntity;
 import com.banksalad.collectmydata.card.common.db.entity.PointEntity;
 import com.banksalad.collectmydata.card.common.db.entity.PointHistoryEntity;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

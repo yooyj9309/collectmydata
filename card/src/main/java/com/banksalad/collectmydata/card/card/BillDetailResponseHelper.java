@@ -65,7 +65,7 @@ public class BillDetailResponseHelper implements BillTransactionResponseHelper<B
           billDetailEntity.setOrganizationId(executionContext.getOrganizationId());
           billDetailEntity.setChargeMonth(billBasic.getChargeMonth());
           billDetailEntity.setSeqno(billBasic.getSeqno());
-          billDetailEntity.setBillDetailNo(nextBillDetailNo.incrementAndGet());
+          billDetailEntity.setBillDetailNo((short) nextBillDetailNo.incrementAndGet());
           return billDetailEntity;
         }).collect(Collectors.toList());
 

@@ -38,7 +38,7 @@ public class LoanLongTermHistoryEntity extends BaseEntity {
   private String organizationId;
 
   @Column(nullable = false)
-  private Integer loanLongTermNo;
+  private Short loanLongTermNo;
 
   @Column(nullable = false)
   private String loanDtime;

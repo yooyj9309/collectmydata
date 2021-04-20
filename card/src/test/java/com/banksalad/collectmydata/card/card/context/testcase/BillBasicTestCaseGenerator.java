@@ -183,7 +183,7 @@ public class BillBasicTestCaseGenerator extends TestCaseGenerator {
             .banksaladUserId(BANKSALAD_USER_ID)
             .organizationId(ORGANIZATION_ID)
             .chargeAmt(NumberUtil.bigDecimalOf(100000, 3))
-            .chargeDay(14)
+            .chargeDay((byte) 14)
             .chargeMonth(202103)
             .paidOutDate("20210314")
             .cardType("01")

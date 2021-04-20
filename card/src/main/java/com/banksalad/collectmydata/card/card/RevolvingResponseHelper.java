@@ -1,5 +1,7 @@
 package com.banksalad.collectmydata.card.card;
 
+import org.springframework.stereotype.Component;
+
 import com.banksalad.collectmydata.card.card.dto.ListRevolvingsResponse;
 import com.banksalad.collectmydata.card.card.dto.Revolving;
 import com.banksalad.collectmydata.card.common.db.entity.RevolvingEntity;
@@ -12,9 +14,6 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.userbase.UserBaseResponseHelper;
 import com.banksalad.collectmydata.finance.api.userbase.dto.UserBaseResponse;
-
-import org.springframework.stereotype.Component;
-
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
@@ -73,9 +72,10 @@ public class RevolvingResponseHelper implements UserBaseResponseHelper<List<Revo
       revolvingEntity.setSyncedAt(syncedAt);
       revolvingEntity.setBanksaladUserId(banksaladUserId);
       revolvingEntity.setOrganizationId(organizationId);
-      revolvingEntity.setRevolvingNo(i);
+      revolvingEntity.setRevolvingNo((short) i);
       revolvingEntity.setCreatedBy(String.valueOf(banksaladUserId));
       revolvingEntity.setUpdatedBy(String.valueOf(banksaladUserId));
+      revolvingEntity.setReqDate(revolving.getReqDate());
 
       revolvingEntities.add(revolvingEntity);
       revolvingHistoryEntities.add(revolvingHistoryMapper.toHistoryEntity(revolvingEntity));

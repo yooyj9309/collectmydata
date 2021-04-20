@@ -1,5 +1,7 @@
 package com.banksalad.collectmydata.card.loan;
 
+import org.springframework.stereotype.Component;
+
 import com.banksalad.collectmydata.card.common.db.entity.LoanShortTermEntity;
 import com.banksalad.collectmydata.card.common.db.entity.LoanShortTermHistoryEntity;
 import com.banksalad.collectmydata.card.common.db.repository.LoanShortTermHistoryRepository;
@@ -12,9 +14,6 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.userbase.UserBaseResponseHelper;
 import com.banksalad.collectmydata.finance.api.userbase.dto.UserBaseResponse;
-
-import org.springframework.stereotype.Component;
-
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
@@ -60,19 +59,21 @@ public class LoanShortTermResponseHelper implements UserBaseResponseHelper<List<
 
     List<LoanShortTermEntity> loanShortTermEntities = new ArrayList<>();
     List<LoanShortTermHistoryEntity> loanShortTermHistoryEntities = new ArrayList<>();
-    for (int i = 0; i < loanShortTerms.size(); i++) {
-      LoanShortTerm loanShortTerm = loanShortTerms.get(i);
+    short loanShortTermNo = 0;
+
+    for (LoanShortTerm loanShortTerm : loanShortTerms) {
       LoanShortTermEntity loanShortTermEntity = loanShortTermMapper.dtoToEntity(loanShortTerm);
       loanShortTermEntity.setSyncedAt(syncedAt);
       loanShortTermEntity.setBanksaladUserId(banksaladUserId);
       loanShortTermEntity.setOrganizationId(organizationId);
-      loanShortTermEntity.setLoanShortTermNo(i);
+      loanShortTermEntity.setLoanShortTermNo(loanShortTermNo++);
       loanShortTermEntity.setCreatedBy(String.valueOf(banksaladUserId));
       loanShortTermEntity.setUpdatedBy(String.valueOf(banksaladUserId));
 
       loanShortTermEntities.add(loanShortTermEntity);
       loanShortTermHistoryEntities.add(loanShortTermHistoryMapper.toHistoryEntity(loanShortTermEntity));
     }
+    
     loanShortTermRepository.saveAll(loanShortTermEntities);
     loanShortTermHistoryRepository.saveAll(loanShortTermHistoryEntities);
   }

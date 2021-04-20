@@ -50,8 +50,9 @@ public class BillEntity extends BaseEntity {
   @Column(nullable = false, precision = 18, scale = 3)
   private BigDecimal chargeAmt;
 
+  // TODO jayden-lee 결제일 데이터 타입이 N이기 때문에 Byte. 향후 aN으로 변경 되면, String 으로 타입 변경 예정
   @Column(nullable = false)
-  private Integer chargeDay;
+  private Byte chargeDay;
 
   @Column(nullable = false)
   private String paidOutDate;

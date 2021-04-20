@@ -1,5 +1,7 @@
 package com.banksalad.collectmydata.card.card;
 
+import org.springframework.stereotype.Component;
+
 import com.banksalad.collectmydata.card.card.dto.ListPointsResponse;
 import com.banksalad.collectmydata.card.card.dto.Point;
 import com.banksalad.collectmydata.card.common.db.entity.PointEntity;
@@ -12,9 +14,6 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.userbase.UserBaseResponseHelper;
 import com.banksalad.collectmydata.finance.api.userbase.dto.UserBaseResponse;
-
-import org.springframework.stereotype.Component;
-
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
@@ -49,6 +48,7 @@ public class PointResponseHelper implements UserBaseResponseHelper<List<Point>> 
     List<PointEntity> pointEntities = new ArrayList<>();
     List<PointHistoryEntity> pointHistoryEntities = new ArrayList<>();
 
+    int pointNo = 0;
     for (Point point : points) {
       PointEntity pointEntity = pointMapper.dtoToEntity(point);
       pointEntity.setSyncedAt(syncedAt);
@@ -56,6 +56,7 @@ public class PointResponseHelper implements UserBaseResponseHelper<List<Point>> 
       pointEntity.setOrganizationId(organizationId);
       pointEntity.setCreatedBy(String.valueOf(banksaladUserId));
       pointEntity.setUpdatedBy(String.valueOf(banksaladUserId));
+      pointEntity.setPointNo((short) pointNo++);
 
       PointEntity existingPointEntity = pointRepository
           .findByBanksaladUserIdAndOrganizationIdAndPointName(banksaladUserId, organizationId, point.getPointName())

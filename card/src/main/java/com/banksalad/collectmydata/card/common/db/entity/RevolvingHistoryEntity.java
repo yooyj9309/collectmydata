@@ -40,7 +40,7 @@ public class RevolvingHistoryEntity extends BaseEntity {
   private String organizationId;
 
   @Column(nullable = false)
-  private Integer revolvingNo;
+  private Short revolvingNo;
 
   @Column(nullable = false)
   private Integer revolvingMonth;
