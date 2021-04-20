@@ -39,6 +39,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux:${springBootVersion}")
     implementation("org.springframework.boot:spring-boot-starter-aop:${springBootVersion}")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-cache:${springBootVersion}")
 
     // armeria
     implementation platform("com.linecorp.armeria:armeria-bom:${armeriaVersion}")
@@ -57,6 +58,10 @@ dependencies {
     implementation("io.github.lognet:grpc-spring-boot-starter:${grpcSpringBootVersion}")
     testImplementation("io.grpc:grpc-testing:1.30.0")
 
+    // ehcache
+    implementation("org.ehcache:ehcache:3.6.2")
+    implementation("javax.cache:cache-api:1.1.0")
+    
     // httpclient
     implementation("org.apache.httpcomponents:httpclient:4.5.12")
 

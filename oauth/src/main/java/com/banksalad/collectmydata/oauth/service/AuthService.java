@@ -1,10 +1,10 @@
 package com.banksalad.collectmydata.oauth.service;
 
-import com.banksalad.collectmydata.oauth.dto.UserAuthInfo;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 
-import java.util.Map;
+import com.banksalad.collectmydata.oauth.dto.UserAuthInfo;
 
 public interface AuthService {
 
-  public UserAuthInfo getUserAuthInfo(String organizationId, Map<String, String> headers);
+  public UserAuthInfo getUserAuthInfo(String organizationId, ServerHttpRequest httpRequest);
 }

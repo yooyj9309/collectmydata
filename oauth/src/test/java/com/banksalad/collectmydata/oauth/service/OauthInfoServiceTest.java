@@ -1,17 +1,16 @@
 package com.banksalad.collectmydata.oauth.service;
 
 
-import com.banksalad.collectmydata.common.exception.CollectException;
-import com.banksalad.collectmydata.oauth.common.enums.MydataSector;
-import com.banksalad.collectmydata.oauth.common.enums.OauthErrorType;
-import com.banksalad.collectmydata.oauth.common.exception.OauthException;
-import com.banksalad.collectmydata.oauth.dto.Organization;
-import com.banksalad.collectmydata.oauth.util.OauthTestUtil;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.banksalad.collectmydata.common.enums.MydataSector;
+import com.banksalad.collectmydata.common.exception.CollectException;
+import com.banksalad.collectmydata.oauth.common.enums.OauthErrorType;
+import com.banksalad.collectmydata.oauth.common.exception.OauthException;
+import com.banksalad.collectmydata.oauth.dto.Organization;
+import com.banksalad.collectmydata.oauth.util.OauthTestUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

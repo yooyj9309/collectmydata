@@ -1,7 +1,7 @@
 package com.banksalad.collectmydata.oauth.dto;
 
-import com.banksalad.collectmydata.oauth.common.enums.MydataSector;
-
+import com.banksalad.collectmydata.common.enums.Industry;
+import com.banksalad.collectmydata.common.enums.MydataSector;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,6 +13,6 @@ public class Organization {
   private String organizationCode;
   private String organizationObjectId;
   private String organizationHost;
-  private String industry; // TODO 해당부분 6개? 또는 마이데이터 이외의 기관 들어오는경우 enum으로 수정
+  private Industry industry; // TODO 해당부분 6개? 또는 마이데이터 이외의 기관 들어오는경우 enum으로 수정
   private MydataSector mydataSector;
 }

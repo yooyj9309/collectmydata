@@ -1,13 +1,13 @@
 package com.banksalad.collectmydata.oauth.service;
 
-import com.banksalad.collectmydata.oauth.common.enums.MydataSector;
-import com.banksalad.collectmydata.oauth.common.enums.OauthErrorType;
-import com.banksalad.collectmydata.oauth.common.exception.OauthException;
-import com.banksalad.collectmydata.oauth.dto.Organization;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import com.banksalad.collectmydata.common.enums.MydataSector;
+import com.banksalad.collectmydata.oauth.common.enums.OauthErrorType;
+import com.banksalad.collectmydata.oauth.common.exception.OauthException;
+import com.banksalad.collectmydata.oauth.dto.Organization;
 
 @Service
 public class OauthInfoServiceImpl implements OauthInfoService {

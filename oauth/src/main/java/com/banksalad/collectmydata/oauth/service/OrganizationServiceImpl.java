@@ -1,14 +1,13 @@
 package com.banksalad.collectmydata.oauth.service;
 
-import com.banksalad.collectmydata.oauth.common.db.UserEntity;
-import com.banksalad.collectmydata.oauth.common.enums.MydataSector;
-import com.banksalad.collectmydata.oauth.dto.Organization;
-import com.banksalad.collectmydata.oauth.grpc.client.ConnectClient;
-
 import org.springframework.stereotype.Service;
 
+import com.banksalad.collectmydata.common.enums.Industry;
+import com.banksalad.collectmydata.common.enums.MydataSector;
+import com.banksalad.collectmydata.oauth.common.db.UserEntity;
+import com.banksalad.collectmydata.oauth.dto.Organization;
+import com.banksalad.collectmydata.oauth.grpc.client.ConnectClient;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
-import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,12 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 public class OrganizationServiceImpl implements OrganizationService {
 
   private final ConnectClient connectClient;
-
-  @PostConstruct
-  public void init() {
-    // connect에서 가져온 값 저장.
-    // 해당부분을 사용하지않는다면 해당부분은 제거해도 무방.
-  }
 
   @Override
   public Organization getOrganizationByObjectId(String organizationObjectId) {
@@ -42,7 +35,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         .organizationId(response.getOrganizationId())
         .organizationCode(response.getOrganizationCode())
         .organizationHost(response.getDomain())
-        .industry(response.getIndustry())
+        .industry(Industry.getIndustry(response.getIndustry()))
         .organizationObjectId(organizationObjectId)
         .build();
   }

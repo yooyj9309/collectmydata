@@ -1,12 +1,12 @@
 package com.banksalad.collectmydata.oauth.grpc.client;
 
-import com.banksalad.collectmydata.oauth.common.enums.OauthErrorType;
-import com.banksalad.collectmydata.oauth.common.exception.OauthException;
-
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import com.banksalad.collectmydata.oauth.common.enums.OauthErrorType;
+import com.banksalad.collectmydata.oauth.common.exception.OauthException;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataGrpc.ConnectmydataBlockingStub;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationIdRequest;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationObjectidRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.IssueTokenRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.IssueTokenResponse;
@@ -18,15 +18,16 @@ public class ConnectClient {
 
   private final ConnectmydataBlockingStub connectmydataBlockingStub;
 
-  public GetOrganizationResponse getOrganization(String organizationId) {
-    GetOrganizationByOrganizationIdRequest request = GetOrganizationByOrganizationIdRequest.newBuilder()
-        .setOrganizationId(organizationId)
+  @Cacheable(value = "organizationCache", key = "#organizationObjectId")
+  public GetOrganizationResponse getOrganization(String organizationObjectId) {
+    GetOrganizationByOrganizationObjectidRequest request = GetOrganizationByOrganizationObjectidRequest.newBuilder()
+        .setOrganizationObjectid(organizationObjectId)
         .build();
 
     try {
-      return connectmydataBlockingStub.getOrganizationByOrganizationId(request);
+      return connectmydataBlockingStub.getOrganizationByOrganizationObjectid(request);
     } catch (Exception e) {
-      throw new OauthException(OauthErrorType.FAILED_CONNECT_ORGANIZATION_RPC, organizationId);
+      throw new OauthException(OauthErrorType.FAILED_CONNECT_ORGANIZATION_RPC, organizationObjectId);
     }
   }
 

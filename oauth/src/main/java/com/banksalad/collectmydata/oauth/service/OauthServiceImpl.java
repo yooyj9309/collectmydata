@@ -1,5 +1,9 @@
 package com.banksalad.collectmydata.oauth.service;
 
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
+
 import com.banksalad.collectmydata.oauth.common.db.UserEntity;
 import com.banksalad.collectmydata.oauth.common.enums.AuthorizationResultType;
 import com.banksalad.collectmydata.oauth.common.enums.OauthErrorType;
@@ -12,16 +16,12 @@ import com.banksalad.collectmydata.oauth.dto.IssueTokenRequest;
 import com.banksalad.collectmydata.oauth.dto.OauthPageRequest;
 import com.banksalad.collectmydata.oauth.dto.Organization;
 import com.banksalad.collectmydata.oauth.dto.UserAuthInfo;
-
-import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
-
+import io.netty.util.internal.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -37,11 +37,11 @@ public class OauthServiceImpl implements OauthService {
   public static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
 
   @Override
-  public String ready(OauthPageRequest oauthPageRequest, Model model, Map<String, String> headers) {
+  public String ready(ServerHttpRequest httpRequest, OauthPageRequest oauthPageRequest, Model model) {
     // banksalad token을 통해 user정보조회, organizationObjectId를 통해 organization조회
     Organization organization = organizationService
         .getOrganizationByObjectId(oauthPageRequest.getOrganizationObjectId());
-    UserAuthInfo userAuthInfo = authService.getUserAuthInfo(organization.getOrganizationId(), headers);
+    UserAuthInfo userAuthInfo = authService.getUserAuthInfo(organization.getOrganizationId(), httpRequest);
 
     // 유저정보 저장및 key return
     String state = generateStateAndKeepUserInfo(userAuthInfo, organization);
@@ -62,7 +62,9 @@ public class OauthServiceImpl implements OauthService {
     UserEntity userEntity = getUserInfo(issueTokenRequest.getState());
 
     // error param 검증
-    validateError(issueTokenRequest.getError(), userEntity.getOrganizationId());
+    if (!StringUtil.isNullOrEmpty(issueTokenRequest.getError())) {
+      validateError(issueTokenRequest.getError(), userEntity.getOrganizationId());
+    }
 
     // 토큰발급
     organizationService.issueToken(userEntity, issueTokenRequest.getCode());
