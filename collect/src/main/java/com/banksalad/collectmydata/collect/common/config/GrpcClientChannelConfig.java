@@ -2,6 +2,7 @@ package com.banksalad.collectmydata.collect.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import com.github.banksalad.idl.apis.v1.cipher.CipherGrpc;
 import com.github.banksalad.idl.apis.v1.cipher.CipherGrpc.CipherBlockingStub;
@@ -14,7 +15,7 @@ import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-//@Configuration
+@Configuration
 public class GrpcClientChannelConfig {
 
   @Value("${connect-server.host}")

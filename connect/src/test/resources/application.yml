@@ -12,6 +12,9 @@ spring:
     name: sa
     password:
 
+grpc:
+  port: 0
+
 management:
   metrics:
     export:

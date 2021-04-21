@@ -1,10 +1,11 @@
 spring:
   profiles:
     active: local
-  main:
-    web-application-type: none
   application:
     name: collectmydata-collect
+
+server:
+  port: 18082
 
 logging:
   config: classpath:logback/logback-${spring.profiles.active}.xml
@@ -36,8 +37,8 @@ grpc:
   shutdownGrace: 30
 
 connect-server:
-  host: connect
-  port: 8080
+  host: collectmydata-connect
+  port: 18081
 
 uri:
   user: dns:///user-headless:18081

@@ -47,19 +47,16 @@ dependencies {
     // valid
     implementation("org.springframework.boot:spring-boot-starter-validation:${springBootVersion}")
 
-    // armeria
-    implementation platform("com.linecorp.armeria:armeria-bom:${armeriaVersion}")
-    implementation platform('io.netty:netty-bom:4.1.54.Final')
-    implementation("com.linecorp.armeria:armeria-spring-boot2-webflux-starter:${armeriaVersion}")
-    implementation("com.linecorp.armeria:armeria-grpc:${armeriaVersion}")
     // grpc
     implementation("io.grpc:grpc-context:${grpcVersion}")
     implementation("io.grpc:grpc-api:${grpcVersion}")
     implementation("io.grpc:grpc-netty:${grpcVersion}")
     implementation("io.grpc:grpc-stub:${grpcVersion}")
     implementation("io.grpc:grpc-protobuf:${grpcVersion}")
+
     implementation("io.github.lognet:grpc-spring-boot-starter:${grpcSpringBootVersion}")
     testImplementation("io.grpc:grpc-testing:1.30.0")
+
     // httpclient
     implementation("org.apache.httpcomponents:httpclient:4.5.12")
 
@@ -68,15 +65,19 @@ dependencies {
 
     // DB
     implementation("org.mariadb.jdbc:mariadb-java-client:2.6.0")
+
     // AWS
     implementation("software.amazon.awssdk:kms:2.14.21")
+
     // log
     implementation("org.slf4j:slf4j-api:${slf4jVersion}")
     implementation("org.slf4j:jcl-over-slf4j:${slf4jVersion}")
     implementation("ch.qos.logback:logback-classic:${logbackVersion}")
+
     // logback json
     implementation("ch.qos.logback.contrib:logback-json-classic:0.1.5")
     implementation("ch.qos.logback.contrib:logback-jackson:0.1.5")
+
     // application monitoring
     implementation("io.micrometer:micrometer-core:${micrometerVersion}")
     implementation("io.micrometer:micrometer-registry-statsd:${micrometerVersion}")
@@ -95,6 +96,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}") {
         exclude group: "org.junit.vintage", module: "junit-vintage-engine"
     }
+
     testImplementation("org.springframework.cloud:spring-cloud-starter-contract-stub-runner")
     testImplementation("commons-io:commons-io:2.6")
     testImplementation("com.h2database:h2")
@@ -103,8 +105,6 @@ dependencies {
     testImplementation("io.projectreactor:reactor-test:3.4.2")
     testCompile("org.projectlombok:lombok:${lombokVersion}")
     testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
-    // temp dependency for dev
-    implementation("com.h2database:h2")
 }
 test {
     useJUnitPlatform()

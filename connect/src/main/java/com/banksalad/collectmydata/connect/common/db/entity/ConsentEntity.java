@@ -50,7 +50,7 @@ public class ConsentEntity extends BaseEntity {
 
   @Column(nullable = false)
   private String purpose;
-
-  @Column(nullable = false)
+  
+  @Column(nullable = false, columnDefinition = "TINYINT", length = 4)
   private Integer period;
 }

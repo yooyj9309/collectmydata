@@ -61,7 +61,7 @@ public class OauthTokenHistoryEntity extends BaseEntity {
 
   private String tokenType;
 
-  @Column(nullable = false)
+  @Column(nullable = false, name = "scopeEncrypted")
   private String scope;
 
   private LocalDateTime issuedAt;

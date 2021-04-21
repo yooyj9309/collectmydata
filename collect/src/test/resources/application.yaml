@@ -3,3 +3,6 @@ spring:
     active: test
   application:
     name: collectmydata-collect
+
+grpc:
+  port: 0

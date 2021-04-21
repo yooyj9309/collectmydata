@@ -1,9 +1,8 @@
 package com.banksalad.collectmydata.connect.grpc.handler;
 
-import org.springframework.stereotype.Service;
-
 import com.banksalad.collectmydata.common.exception.GrpcException;
 import com.banksalad.collectmydata.connect.common.service.ValidatorService;
+import com.banksalad.collectmydata.connect.grpc.handler.interceptor.StatsUnaryServerInterceptor;
 import com.banksalad.collectmydata.connect.grpc.validator.GetAccessTokenRequestValidator;
 import com.banksalad.collectmydata.connect.grpc.validator.GetOrganizationRequestValidator;
 import com.banksalad.collectmydata.connect.grpc.validator.IssueTokenRequestValidator;
@@ -16,6 +15,7 @@ import com.banksalad.collectmydata.connect.organization.service.OrganizationServ
 import com.banksalad.collectmydata.connect.token.dto.OauthToken;
 import com.banksalad.collectmydata.connect.token.dto.OauthTokenProtoResponse;
 import com.banksalad.collectmydata.connect.token.service.OauthTokenService;
+
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataGrpc;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenResponse;
@@ -35,9 +35,10 @@ import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeT
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.lognet.springboot.grpc.GRpcService;
 
 @Slf4j
-@Service
+@GRpcService(interceptors = {StatsUnaryServerInterceptor.class})
 @RequiredArgsConstructor
 public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase {
 

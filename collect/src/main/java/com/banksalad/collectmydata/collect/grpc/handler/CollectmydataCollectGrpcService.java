@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.collect.grpc.handler;
 
 import com.banksalad.collectmydata.collect.common.service.CollectMessageService;
+import com.banksalad.collectmydata.collect.grpc.client.ConnectClientService;
 import com.banksalad.collectmydata.collect.grpc.handler.interceptor.StatsUnaryServerInterceptor;
 import com.banksalad.collectmydata.common.enums.Industry;
 import com.banksalad.collectmydata.common.enums.Sector;
@@ -19,6 +20,7 @@ import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatacardProto.Syn
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatacardProto.SyncCollectmydatacardResponse;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatainvestProto.SyncCollectmydatainvestRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatainvestProto.SyncCollectmydatainvestResponse;
+import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CollectmydataCollectGrpcService extends CollectmydataGrpc.CollectmydataImplBase {
 
+  private final ConnectClientService connectClientService;
   private final CollectMessageService collectMessageService;
 
   @Override
@@ -52,12 +55,11 @@ public class CollectmydataCollectGrpcService extends CollectmydataGrpc.Collectmy
       StreamObserver<SyncCollectmydatabankResponse> responseObserver) {
 
     try {
-      // TODO : implement connect interface
-//      GetOrganizationResponse getOrganizationResponse = connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid());
+      GetOrganizationResponse getOrganizationResponse = connectClientService
+          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid());
 
       long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-//      String organizationId = getOrganizationResponse.getOrganizationId();
-      String organizationId = "woori_bank";
+      String organizationId = getOrganizationResponse.getOrganizationId();
       String syncRequestId =
           StringUtils.hasLength(request.getSyncRequestId()) ? request.getSyncRequestId() : UUID.randomUUID().toString();
 
