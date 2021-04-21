@@ -1,0 +1,13 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "trans_cnt": 1,
+  "trans_list": [
+    {
+      "trans_date": "20210301",
+      "trans_amt": "1500",
+      "merchant_name": "편의점A",
+      "trans_title": "풍선껌A"
+    }
+  ]
+}

@@ -55,6 +55,9 @@ public class TestCase<GParent, Parent, Main, Child> {
   @NotNull
   private List<BareResponse> expectedResponses;
 
+  // 조부모 테이블의 예상 결과 레코드 상태를 지정한다.
+  private List<GParent> expectedGParentEntities;
+
   // 부모 테이블의 예상 결과 레코드 상태를 지정한다.
   private List<Parent> expectedParentEntities;
 

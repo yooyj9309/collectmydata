@@ -4,9 +4,9 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
 import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
-import com.banksalad.collectmydata.telecom.common.db.entity.PaidTransactionEntity;
-import com.banksalad.collectmydata.telecom.common.db.repository.PaidTransactionRepository;
-import com.banksalad.collectmydata.telecom.common.mapper.PaidTransactionMapper;
+import com.banksalad.collectmydata.telecom.common.db.entity.TelecomPaidTransactionEntity;
+import com.banksalad.collectmydata.telecom.common.db.repository.TelecomPaidTransactionRepository;
+import com.banksalad.collectmydata.telecom.common.mapper.TelecomPaidTransactionMapper;
 import com.banksalad.collectmydata.telecom.common.service.TelecomSummaryService;
 import com.banksalad.collectmydata.telecom.summary.dto.TelecomSummary;
 import com.banksalad.collectmydata.telecom.telecom.dto.ListTelecomPaidTransactionsResponse;
@@ -27,8 +27,9 @@ public class TelecomPaidTransactionResponseHelper implements
     TransactionResponseHelper<TelecomSummary, TelecomPaidTransaction> {
 
   private final TelecomSummaryService telecomSummaryService;
-  private final PaidTransactionRepository paidTransactionRepository;
-  private final PaidTransactionMapper paidTransactionMapper = Mappers.getMapper(PaidTransactionMapper.class);
+  private final TelecomPaidTransactionRepository telecomPaidTransactionRepository;
+  private final TelecomPaidTransactionMapper telecomPaidTransactionMapper = Mappers.getMapper(
+      TelecomPaidTransactionMapper.class);
 
   @Override
   public List<TelecomPaidTransaction> getTransactionsFromResponse(TransactionResponse transactionResponse) {
@@ -52,29 +53,29 @@ public class TelecomPaidTransactionResponseHelper implements
     // Remove transactions in the previous toDate (current fromDate).
     // 지난 번 조회 때의 마지막 날에 속해 있는 결제내역은 모두 삭제한다.
     int transactionYearMonth = generateTransactionYearMonth(fromDateKst);
-    paidTransactionRepository
+    telecomPaidTransactionRepository
         .deleteByBanksaladUserIdAndOrganizationIdAndMgmtIdAndTransactionYearMonthAndTransDate(
             banksaladUserId, organizationId, mgmtId, transactionYearMonth, fromDateKst);
 
     // Save new transactions.
     // 기존 결제내역과 조회 필요없이 API로부터 받은 모든 내역을 저장한다.
-    List<PaidTransactionEntity> paidTransactionEntities = new ArrayList<>();
+    List<TelecomPaidTransactionEntity> paidTransactionEntities = new ArrayList<>();
 //    int paidTransactionNo = 1;
     for (TelecomPaidTransaction telecomPaidTransaction : telecomPaidTransactions) {
       transactionYearMonth = generateTransactionYearMonth(telecomPaidTransaction.getTransDate());
-      PaidTransactionEntity paidTransactionEntity = paidTransactionMapper.dtoToEntity(telecomPaidTransaction);
-      paidTransactionEntity.setTransactionYearMonth(transactionYearMonth);
-      paidTransactionEntity.setSyncedAt(syncedAt);
-      paidTransactionEntity.setBanksaladUserId(banksaladUserId);
-      paidTransactionEntity.setOrganizationId(organizationId);
-      paidTransactionEntity.setMgmtId(mgmtId);
+      TelecomPaidTransactionEntity telecomPaidTransactionEntity = telecomPaidTransactionMapper.dtoToEntity(telecomPaidTransaction);
+      telecomPaidTransactionEntity.setTransactionYearMonth(transactionYearMonth);
+      telecomPaidTransactionEntity.setSyncedAt(syncedAt);
+      telecomPaidTransactionEntity.setBanksaladUserId(banksaladUserId);
+      telecomPaidTransactionEntity.setOrganizationId(organizationId);
+      telecomPaidTransactionEntity.setMgmtId(mgmtId);
 //      paidTransactionEntity.setPaidTransactionNo(paidTransactionNo);
-      paidTransactionEntity.setCreatedBy(String.valueOf(banksaladUserId));
+      telecomPaidTransactionEntity.setCreatedBy(String.valueOf(banksaladUserId));
 
-      paidTransactionEntities.add(paidTransactionEntity);
+      paidTransactionEntities.add(telecomPaidTransactionEntity);
 //      paidTransactionNo++;
     }
-    paidTransactionRepository.saveAll(paidTransactionEntities);
+    telecomPaidTransactionRepository.saveAll(paidTransactionEntities);
   }
 
   @Override

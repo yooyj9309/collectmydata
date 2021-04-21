@@ -1,6 +1,6 @@
 package com.banksalad.collectmydata.referencebank.common.constant;
 
-public final class BankConstants {
+public final class BankTestConstants {
 
   public static final String ACCOUNT_NUM1 = "account_num1";
   public static final String ACCOUNT_NUM2 = "account_num2";

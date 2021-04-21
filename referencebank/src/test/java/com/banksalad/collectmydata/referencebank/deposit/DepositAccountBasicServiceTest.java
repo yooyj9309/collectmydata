@@ -3,7 +3,6 @@ package com.banksalad.collectmydata.referencebank.deposit;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
-import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
 import com.banksalad.collectmydata.referencebank.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.referencebank.common.db.entity.DepositAccountBasicEntity;
@@ -117,6 +116,11 @@ public class DepositAccountBasicServiceTest extends
 
     mainService
         .listAccountInfos(testCase.getExecutionContext(), testCase.getExecution(), requestHelper, responseHelper);
+  }
+
+  @Override
+  protected void validateGParents(List<Object> expectedGParents) {
+    
   }
 
   @Override

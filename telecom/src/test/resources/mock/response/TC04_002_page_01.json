@@ -1,19 +1,20 @@
 {
   "rsp_code": "00000",
   "rsp_msg": "성공",
+  "next_page": "002",
   "trans_cnt": 2,
   "trans_list": [
     {
-      "trans_date": "20210202",
+      "trans_date": "20210101",
       "trans_amt": "1500",
       "merchant_name": "편의점A",
       "trans_title": "풍선껌A"
     },
     {
-      "trans_date": "20210203",
-      "trans_amt": "28000",
-      "merchant_name": "식당C",
-      "trans_title": "파스타D"
+      "trans_date": "20210201",
+      "trans_amt": "1500",
+      "merchant_name": "편의점A",
+      "trans_title": "풍선껌A"
     }
   ]
 }

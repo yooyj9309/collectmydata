@@ -1,237 +1,159 @@
 package com.banksalad.collectmydata.telecom.telecom;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
-import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.common.util.DateUtil;
-import com.banksalad.collectmydata.finance.api.summary.SummaryService;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
-import com.banksalad.collectmydata.finance.common.db.repository.UserSyncStatusRepository;
-import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
-import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
-import com.banksalad.collectmydata.telecom.collect.Executions;
-import com.banksalad.collectmydata.telecom.common.db.entity.PaidTransactionEntity;
+import com.banksalad.collectmydata.finance.api.transaction.TransactionRequestHelper;
+import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
+import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
+import com.banksalad.collectmydata.telecom.common.db.entity.TelecomPaidTransactionEntity;
 import com.banksalad.collectmydata.telecom.common.db.entity.TelecomSummaryEntity;
-import com.banksalad.collectmydata.telecom.common.db.repository.PaidTransactionRepository;
+import com.banksalad.collectmydata.telecom.common.db.repository.TelecomPaidTransactionRepository;
 import com.banksalad.collectmydata.telecom.common.db.repository.TelecomSummaryRepository;
-import com.banksalad.collectmydata.telecom.common.mapper.PaidTransactionMapper;
-import com.banksalad.collectmydata.telecom.common.mapper.TelecomSummaryMapper;
-import com.banksalad.collectmydata.telecom.common.service.TelecomSummaryService;
-import com.banksalad.collectmydata.telecom.summary.TelecomSummaryRequestHelper;
-import com.banksalad.collectmydata.telecom.summary.TelecomSummaryResponseHelper;
-import com.banksalad.collectmydata.telecom.summary.dto.ListTelecomSummariesRequest;
 import com.banksalad.collectmydata.telecom.summary.dto.TelecomSummary;
 import com.banksalad.collectmydata.telecom.telecom.dto.ListTelecomPaidTransactionsRequest;
 import com.banksalad.collectmydata.telecom.telecom.dto.TelecomPaidTransaction;
+import com.banksalad.collectmydata.telecom.template.ServiceTest;
+import com.banksalad.collectmydata.telecom.template.provider.TelecomPaidTransactionInvocationContextProvider;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.http.entity.ContentType;
+import javax.transaction.Transactional;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.mapstruct.factory.Mappers;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.List;
 
-import static com.banksalad.collectmydata.telecom.util.FileUtil.readText;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.IGNORING_ENTITY_FIELDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
-@Slf4j
-@TestMethodOrder(MethodOrderer.MethodName.class)
-@SpringBootTest
-public class TelecomPaidTransactionServiceTest {
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Transactional
+@DisplayName("통신-004 결제내역 조회")
+public class TelecomPaidTransactionServiceTest extends
+    ServiceTest<Object, TelecomSummaryEntity, TelecomPaidTransactionEntity, Object> {
 
-  private static final int FIXED_DELAY = 0;
-  private static final String ACCESS_TOKEN = "xxx.yyy.zzz";
-  private static final Long BANKSALAD_USER_ID = 1L;
-  private static final String ORGANIZATION_ID = "x-telecom";
-  private static final String ORGANIZATION_CODE = "020";
-  private static final String ORGANIZATION_HOST = "http://localhost";
-  // TODO: finance TransactionApiServiceImpl.java가 바뀐다면 수정
-  private static final LocalDateTime SYNCED_AT = DateUtil.toLocalDateTime("20210301", "011010");
-  private static final int TRANSACTION_YEARMONTH = 202103;
+  private static final WireMockServer wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
+  @Autowired
+  private TransactionApiService<TelecomSummary, ListTelecomPaidTransactionsRequest, TelecomPaidTransaction> mainService;
+  @Autowired
+  private TransactionRequestHelper<TelecomSummary, ListTelecomPaidTransactionsRequest> requestHelper;
+  @Autowired
+  private TransactionResponseHelper<TelecomSummary, TelecomPaidTransaction> responseHelper;
+  @Autowired
+  private TelecomSummaryRepository parentRepository;
+  @Autowired
+  private TelecomPaidTransactionRepository mainRepository;
 
-  private static final WireMockServer wiremock = new WireMockServer(WireMockSpring.options().dynamicPort());
-  private final TelecomSummaryMapper telecomSummaryMapper = Mappers.getMapper(TelecomSummaryMapper.class);
-  private final PaidTransactionMapper paidTransactionMapper = Mappers.getMapper(PaidTransactionMapper.class);
+  @BeforeAll
+  static void setUp() {
 
-  @Autowired
-  private TelecomSummaryService telecomSummaryService;
-  @Autowired
-  private UserSyncStatusRepository userSyncStatusRepository;
-  @Autowired
-  private UserSyncStatusService userSyncStatusService;
-
-  @Autowired
-  private SummaryService<ListTelecomSummariesRequest, TelecomSummary> summaryService;
-  @Autowired
-  private TelecomSummaryRequestHelper telecomSummaryRequestHelper;
-  @Autowired
-  private TelecomSummaryResponseHelper telecomSummaryResponseHelper;
-  @Autowired
-  private TelecomSummaryRepository telecomSummaryRepository;
-
-  @Autowired
-  private TransactionApiService<TelecomSummary, ListTelecomPaidTransactionsRequest, TelecomPaidTransaction> telecomPaidtransactionService;
-  @Autowired
-  private TelecomPaidTransactionRequestHelper telecomPaidTransactionRequestHelper;
-  @Autowired
-  private TelecomPaidTransactionResponseHelper telecomPaidTransactionResponseHelper;
-  @Autowired
-  private PaidTransactionRepository paidTransactionRepository;
-
-  private static ExecutionContext executionContext;
-
-  @BeforeEach
-  public void start() {
-    wiremock.start();
-  }
-
-  @AfterEach
-  public void finish() {
-    wiremock.resetAll();
-    paidTransactionRepository.deleteAll();
+    wireMockServer.start();
   }
 
   @AfterAll
-  public static void close() {
-    wiremock.shutdown();
+  static void shutDown() {
+
+    wireMockServer.shutdown();
   }
 
-  @Test
-  public void test00_init() throws ResponseNotOkException {
-    final String MGMT_ID = "1234567890";
-    final long SEARCH_TIMSTAMP = 0;
+  @AfterEach
+  void tearDown() {
 
-    userSyncStatusRepository.deleteAll();
-    telecomSummaryRepository.deleteAll();
-    paidTransactionRepository.deleteAll();
-
-    stubForListSummary(SEARCH_TIMSTAMP, "01");
-
-    executionContext = initExecutionContext();
-
-    summaryService
-        .listAccountSummaries(executionContext, Executions.finance_telecom_summaries, telecomSummaryRequestHelper,
-            telecomSummaryResponseHelper);
-    TelecomSummaryEntity telecomSummaryEntity = telecomSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndMgmtId(BANKSALAD_USER_ID, ORGANIZATION_ID, MGMT_ID)
-        .orElse(null);
-    assert telecomSummaryEntity != null;
-    telecomSummaryEntity.setPaidTransactionSyncedAt(SYNCED_AT);
-    telecomSummaryRepository.save(telecomSummaryEntity);
+    wireMockServer.resetAll();
   }
 
-  @Test
-  @DisplayName("6.9.4 (1) 결제내역 조회: 빈 내역")
-  public void test01_listPaidTransaction_single_00() {
-    final String MGMT_ID = "1234567890";
+  @TestTemplate
+  @ExtendWith(TelecomPaidTransactionInvocationContextProvider.class)
+  public void unitTests(TestCase<Object, TelecomSummaryEntity, TelecomPaidTransactionEntity, Object> testCase) {
 
-    // Given
-    stubForListPaidTransaction("single", "00");
+    prepare(testCase, wireMockServer);
 
-    // When
-    telecomPaidtransactionService
-        .listTransactions(executionContext, Executions.finance_telecom_paid_transactions,
-            telecomPaidTransactionRequestHelper, telecomPaidTransactionResponseHelper);
-    PaidTransactionEntity paidTransactionEntity = paidTransactionRepository
-        .findByBanksaladUserIdAndOrganizationIdAndMgmtIdAndTransactionYearMonth(
-            BANKSALAD_USER_ID, ORGANIZATION_ID, MGMT_ID, TRANSACTION_YEARMONTH)
-        .orElse(null);
+    runMainService(testCase);
 
-    // Then
-    assertNull(paidTransactionEntity);
+    validate(testCase);
   }
 
-  @Test
-  @DisplayName("6.9.4 (2) 결제내역 조회: Single 첫번째 페이지")
-  public void test02_listPaidTransaction_single_01() {
-    final String MGMT_ID = "1234567890";
+  @Override
+  protected void saveGParents(List<Object> objects) {
 
-    // Given
-    stubForListPaidTransaction("single", "01");
-
-    // When
-    telecomPaidtransactionService
-        .listTransactions(executionContext, Executions.finance_telecom_paid_transactions,
-            telecomPaidTransactionRequestHelper, telecomPaidTransactionResponseHelper);
-    PaidTransactionEntity paidTransactionEntity = paidTransactionRepository
-        .findByBanksaladUserIdAndOrganizationIdAndMgmtIdAndTransactionYearMonth(
-            BANKSALAD_USER_ID, ORGANIZATION_ID, MGMT_ID, TRANSACTION_YEARMONTH)
-        .orElse(null);
-
-    // Then
-    assertEquals(2, paidTransactionRepository.count());
   }
 
-  @Test
-  @DisplayName("6.9.4 (3) 결제내역 조회: Multiple 페이지")
-  public void test03_listPaidTransaction_multiple() {
-    final String MGMT_ID = "1234567890";
+  @Override
+  protected void saveParents(List<TelecomSummaryEntity> accountSummaryEntities) {
 
-    // Given
-    stubForListPaidTransaction("multiple", "01");
-    stubForListPaidTransaction("multiple", "02");
-
-    // When
-    telecomPaidtransactionService
-        .listTransactions(executionContext, Executions.finance_telecom_paid_transactions,
-            telecomPaidTransactionRequestHelper, telecomPaidTransactionResponseHelper);
-    PaidTransactionEntity paidTransactionEntity = paidTransactionRepository
-        .findByBanksaladUserIdAndOrganizationIdAndMgmtIdAndTransactionYearMonth(
-            BANKSALAD_USER_ID, ORGANIZATION_ID, MGMT_ID, TRANSACTION_YEARMONTH)
-        .orElse(null);
-
-    // Then
-    assertEquals(3, paidTransactionRepository.count());
+    /* DB save()에 의해서 testCase의 summaries가 오염되므로 복제본을 만들어야 한다. */
+    accountSummaryEntities
+        .forEach(accountSummaryEntity -> parentRepository.save(accountSummaryEntity.toBuilder().build()));
   }
 
-  private static ExecutionContext initExecutionContext() {
-    return ExecutionContext.builder()
-        .syncRequestId(UUID.randomUUID().toString())
-        .banksaladUserId(BANKSALAD_USER_ID)
-        .organizationId(ORGANIZATION_ID)
-        .executionRequestId(UUID.randomUUID().toString())
-        .organizationCode(ORGANIZATION_CODE)
-        .organizationHost(ORGANIZATION_HOST + ":" + wiremock.port())
-        .accessToken(ACCESS_TOKEN)
-        .syncStartedAt(SYNCED_AT)
-        .build();
+  @Override
+  protected void saveMains(List<TelecomPaidTransactionEntity> depositAccountBasicEntities) {
+
+    depositAccountBasicEntities
+        .forEach(depositAccountBasicEntity -> mainRepository.save(depositAccountBasicEntity.toBuilder().build()));
   }
 
-  private void stubForListSummary(long searchTimestamp, String seq) {
-    wiremock.stubFor(get(urlMatching("/telecoms.*"))
-        .withQueryParam("org_code", equalTo(ORGANIZATION_CODE))
-        .withQueryParam("search_timestamp", equalTo(String.valueOf(searchTimestamp)))
-        .willReturn(
-            aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/TC01_single_page_" + seq + ".json"))));
+  @Override
+  protected void saveChildren(List<Object> objects) {
+
   }
 
-  private void stubForListPaidTransaction(String paging, String seq) {
-    wiremock.stubFor(post(urlMatching("/telecoms/paid-transactions"))
-        .withRequestBody(equalToJson(readText("classpath:mock/request/TC04_" + paging + "_page_" + seq + ".json")))
-        .willReturn(
-            aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/TC04_" + paging + "_page_" + seq + ".json"))));
+  @Override
+  protected void runMainService(
+      TestCase<Object, TelecomSummaryEntity, TelecomPaidTransactionEntity, Object> testCase) {
+
+    mainService
+        .listTransactions(testCase.getExecutionContext(), testCase.getExecution(), requestHelper, responseHelper);
+  }
+
+  @Override
+  protected void validateGParents(List<Object> expectedGParents) {
+    
+  }
+
+  @Override
+  protected void validateParents(List<TelecomSummaryEntity> expectedParents) {
+
+    final List<TelecomSummaryEntity> actualParents = parentRepository.findAll();
+
+    assertAll("*** Parent 확인 ***",
+        () -> assertEquals(expectedParents.size(), actualParents.size()),
+        () -> {
+          for (int i = 0; i < expectedParents.size(); i++) {
+            assertThat(actualParents.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedParents.get(i));
+          }
+        }
+    );
+  }
+
+  @Override
+  protected void validateMains(List<TelecomPaidTransactionEntity> expectedMains) {
+
+    final List<TelecomPaidTransactionEntity> actualMains = mainRepository.findAll();
+
+    assertAll("*** Main 확인 ***",
+        () -> assertEquals(expectedMains.size(), actualMains.size()),
+        () -> {
+          for (int i = 0; i < expectedMains.size(); i++) {
+            assertThat(actualMains.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedMains.get(i));
+          }
+        }
+    );
+  }
+
+  @Override
+  protected void validateChildren(List<Object> expectedChildren) {
+
   }
 }

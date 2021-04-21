@@ -121,6 +121,11 @@ public class AccountSummaryServiceTest extends
   }
 
   @Override
+  protected void validateGParents(List<Object> expectedGParents) {
+    
+  }
+
+  @Override
   protected void validateParents(List<UserSyncStatusEntity> expectedParents) {
 
     final List<UserSyncStatusEntity> actualParents = parentRepository.findAll();

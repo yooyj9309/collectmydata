@@ -1,5 +1,6 @@
 {
   "rsp_code": "00000",
   "rsp_msg": "성공",
-  "trans_cnt": 0
+  "trans_cnt": 0,
+  "trans_list": []
 }

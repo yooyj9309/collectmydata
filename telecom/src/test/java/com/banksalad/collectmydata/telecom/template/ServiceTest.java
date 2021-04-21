@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.referencebank.template;
+package com.banksalad.collectmydata.telecom.template;
 
 import com.banksalad.collectmydata.common.collect.api.Api;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;

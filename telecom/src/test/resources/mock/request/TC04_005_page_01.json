@@ -1,0 +1,7 @@
+{
+  "org_code": "organization_code1",
+  "mgmt_id": "mgmt_id1",
+  "from_date": "20210401",
+  "to_date": "${json-unit.any-string}",
+  "limit": 500
+}
