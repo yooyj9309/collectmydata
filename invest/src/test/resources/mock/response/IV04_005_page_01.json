@@ -1,0 +1,24 @@
+{
+  "rsp_code": "000",
+  "rsp_msg": "성공",
+  "search_timestamp": 1100,
+  "prod_cnt": 1,
+  "prod_list": [
+    {
+      "prod_type": "401",
+      "prod_type_detail":"국내주식",
+      "prod_code": "005930",
+      "prod_name":"삼성전자",
+      "purchase_amt": 10000.000,
+      "holding_num": 100,
+      "avail_for_sale_num": 100,
+      "eval_amt": 20000.000,
+      "issue_date": "20210101",
+      "paid_in_amt": 30000.000,
+      "withdrawal_amt": 40000.000,
+      "last_paid_in_date": "20210201",
+      "rcv_amt": 50000.000,
+      "currency_code": "KRW"
+    }
+  ]
+}
