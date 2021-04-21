@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.invest.collect;
 
 import com.banksalad.collectmydata.common.collect.api.Api;
+import com.banksalad.collectmydata.common.collect.api.Pagination;
 
 public class Apis {
 
@@ -33,6 +34,9 @@ public class Apis {
           .name("6.4.3 계좌 거래내역 조회")
           .endpoint("/accounts/transactions")
           .method(HttpMethod.POST.name())
+          .pagination(Pagination.builder()
+              .nextPage("next_page")
+              .build())
           .build();
 
   // 6.4.4 계좌 상품정보 조회 API

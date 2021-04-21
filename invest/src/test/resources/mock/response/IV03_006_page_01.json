@@ -1,0 +1,20 @@
+{
+  "rsp_code": "000",
+  "rsp_msg": "성공",
+  "trans_cnt": 1,
+  "trans_list": [
+    {
+      "prod_name": "주식1",
+      "prod_code": "401",
+      "trans_dtime": "20210101000000",
+      "trans_type": "301",
+      "trans_type_detail": "입금",
+      "trans_num": 100,
+      "base_amt": 10000.0000,
+      "trans_amt": 20000.000,
+      "settle_amt": 30000.000,
+      "balance_amt": 40000.000,
+      "currency_code": "KRW"
+    }
+  ]
+}
