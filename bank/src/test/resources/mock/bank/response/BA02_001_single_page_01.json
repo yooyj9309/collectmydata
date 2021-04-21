@@ -1,0 +1,12 @@
+{
+  "rsp_code": "40404",
+  "rsp_msg": "해지된 계좌번호",
+  "search_timestamp": 0,
+  "saving_method": "",
+  "holder_name": "",
+  "issue_date": "",
+  "exp_date": null,
+  "currency_code": null,
+  "commit_amt": null,
+  "monthly_paid_in_amt": null
+}
