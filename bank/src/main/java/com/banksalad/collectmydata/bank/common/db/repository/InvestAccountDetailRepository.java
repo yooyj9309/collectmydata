@@ -10,11 +10,9 @@ import java.util.Optional;
 public interface InvestAccountDetailRepository extends JpaRepository<InvestAccountDetailEntity, Long> {
 
   Optional<InvestAccountDetailEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndCurrencyCode(
-      Long banksaladUserId,
-      String organizationId,
-      String accountNum,
-      String seqno,
-      String currencyCode);
+      Long banksaladUserId, String organizationId, String accountNum, String seqno, String currencyCode);
 
-  List<InvestAccountDetailEntity> findByBanksaladUserIdAndOrganizationId(Long banksaladUserId, String organizationId);
+  // TODO : 6.2.6 투자상품 계좌 추가정보 조회 시 account_num & seqno 조합으로 unique key를 만들 수 있는지 확인
+  Optional<InvestAccountDetailEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(Long banksaladUserId,
+      String organizationId, String accountNum, String seqno);
 }

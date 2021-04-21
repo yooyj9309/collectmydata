@@ -19,8 +19,7 @@ public class DepositAccountDetailResponse {
 
   private String seqno;
 
-  @Builder.Default
-  private String currencyCode = "KRW";
+  private String currencyCode;
 
   private BigDecimal balanceAmt;
 

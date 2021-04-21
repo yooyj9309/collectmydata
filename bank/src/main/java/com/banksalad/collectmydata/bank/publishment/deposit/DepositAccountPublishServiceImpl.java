@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.INVALID_RESPONSE_CODE;
+
 @Service
 @RequiredArgsConstructor
 public class DepositAccountPublishServiceImpl implements DepositAccountPublishService {
@@ -45,8 +47,6 @@ public class DepositAccountPublishServiceImpl implements DepositAccountPublishSe
       .getMapper(DepositAccountDetailMapper.class);
   private final DepositAccountTransactionMapper depositAccountTransactionMapper = Mappers
       .getMapper(DepositAccountTransactionMapper.class);
-
-  private final String[] INVALID_RESPONSE_CODE = {"40305", "40404"};
 
   @Override
   public List<DepositAccountBasicResponse> getDepositAccountBasicResponses(
@@ -109,15 +109,14 @@ public class DepositAccountPublishServiceImpl implements DepositAccountPublishSe
     long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
     String organizationId = connectClientService.getOrganizationResponse(request.getOrganizationObjectid())
         .getOrganizationId();
-    String accountNum = request.getAccountNum();
-    String seqno = request.getSeqno().getValue();
     LocalDateTime createdAt = LocalDateTime.ofEpochSecond(request.getCreatedAfterMs(), 0, ZoneOffset.UTC);
     int limit = Long.valueOf(request.getLimit()).intValue();
 
     /* load summary entities (is_consent = true & response_code != 40305, 40404) */
     AccountSummaryEntity accountSummaryEntity = accountSummaryRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransactionResponseCodeNotInAndConsentIsTrue(
-            banksaladUserId, organizationId, accountNum, seqno, INVALID_RESPONSE_CODE)
+            banksaladUserId, organizationId, request.getAccountNum(), request.getSeqno().getValue(),
+            INVALID_RESPONSE_CODE)
         .orElse(null); // TODO : check if null, response should be empty list? or throw exception?
 
     /* load transaction entities and mapping to dto */
@@ -125,7 +124,8 @@ public class DepositAccountPublishServiceImpl implements DepositAccountPublishSe
     if (accountSummaryEntity != null) {
       Page<DepositAccountTransactionEntity> depositAccountTransactionEntities = depositAccountTransactionRepository
           .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndCreatedAtAfter(
-              banksaladUserId, organizationId, accountNum, seqno, createdAt, PageRequest.of(0, limit));
+              banksaladUserId, organizationId, request.getAccountNum(), request.getSeqno().getValue(), createdAt,
+              PageRequest.of(0, limit));
 
       depositAccountTransactionResponses = depositAccountTransactionEntities.stream()
           .map(depositAccountTransactionEntity ->

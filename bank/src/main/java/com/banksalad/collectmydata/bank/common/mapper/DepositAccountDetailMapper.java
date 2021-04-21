@@ -9,6 +9,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.ReportingPolicy;
 
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.CURRENCY_KRW;
+
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = BigDecimalMapper.class)
 public interface DepositAccountDetailMapper {
 
@@ -21,5 +23,6 @@ public interface DepositAccountDetailMapper {
   )
   DepositAccountDetailEntity dtoToEntity(DepositAccountDetail depositAccountDetail);
 
+  @Mapping(target = "currencyCode", defaultValue = CURRENCY_KRW)
   DepositAccountDetailResponse entityToResponseDto(DepositAccountDetailEntity depositAccountDetailEntity);
 }

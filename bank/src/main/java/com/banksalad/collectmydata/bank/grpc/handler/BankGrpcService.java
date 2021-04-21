@@ -8,6 +8,13 @@ import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountDe
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountDetailsProtoResponse;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountTransactionResponse;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountTransactionsProtoResponse;
+import com.banksalad.collectmydata.bank.publishment.invest.InvestAccountPublishService;
+import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountBasicResponse;
+import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountBasicsProtoResponse;
+import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountDetailResponse;
+import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountDetailsProtoResponse;
+import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountTransactionResponse;
+import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountTransactionsProtoResponse;
 import com.banksalad.collectmydata.bank.publishment.summary.AccountSummaryPublishService;
 import com.banksalad.collectmydata.bank.publishment.deposit.DepositAccountPublishService;
 import com.banksalad.collectmydata.bank.publishment.summary.dto.AccountSummaryResponse;
@@ -22,6 +29,12 @@ import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.Lis
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankDepositAccountDetailsResponse;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankDepositAccountTransactionsRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankDepositAccountTransactionsResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankInvestAccountBasicsRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankInvestAccountBasicsResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankInvestAccountDetailsRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankInvestAccountDetailsResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankInvestAccountTransactionsRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankInvestAccountTransactionsResponse;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +48,7 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
 
   private final AccountSummaryPublishService accountSummaryPublishService;
   private final DepositAccountPublishService depositAccountPublishService;
+  private final InvestAccountPublishService investAccountPublishService;
 
   @Override
   public void listBankAccountSummaries(ListBankAccountSummariesRequest request,
@@ -49,11 +63,14 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
 
       responseObserver.onNext(accountSummariesProtoResponse.toListBankAccountSummariesResponseProto());
       responseObserver.onCompleted();
+
     } catch (GrpcException e) {
+      log.error("listBankAccountSummaries gRPC error message, {}", e.getMessage(), e);
       responseObserver.onError(e.handle());
+
     } catch (Exception e) {
-      log.error("listBankAccountSummaries error message, {}", e.getMessage(), e);
-      responseObserver.onError(new GrpcException().handle());
+      log.error("listBankAccountSummaries unknown error message, {}", e.getMessage(), e);
+      responseObserver.onError(e);
     }
   }
 
@@ -70,11 +87,14 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
 
       responseObserver.onNext(depositAccountBasicsProtoResponse.toListBankDepositAccountBasicsResponseProto());
       responseObserver.onCompleted();
+
     } catch (GrpcException e) {
+      log.error("listBankDepositAccountBasics gRPC error message, {}", e.getMessage(), e);
       responseObserver.onError(e.handle());
+
     } catch (Exception e) {
-      log.error("listBankDepositAccountBasics error message, {}", e.getMessage(), e);
-      responseObserver.onError(new GrpcException().handle());
+      log.error("listBankDepositAccountBasics unknown error message, {}", e.getMessage(), e);
+      responseObserver.onError(e);
     }
   }
 
@@ -92,11 +112,14 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
 
       responseObserver.onNext(depositAccountDetailsProtoResponse.toListBankDepositAccountDetailsResponseProto());
       responseObserver.onCompleted();
+
     } catch (GrpcException e) {
+      log.error("listBankDepositAccountDetails gRPC error message, {}", e.getMessage(), e);
       responseObserver.onError(e.handle());
+
     } catch (Exception e) {
-      log.error("listBankDepositAccountDetails error message, {}", e.getMessage(), e);
-      responseObserver.onError(new GrpcException().handle());
+      log.error("listBankDepositAccountDetails unknown error message, {}", e.getMessage(), e);
+      responseObserver.onError(e);
     }
   }
 
@@ -113,11 +136,86 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
 
       responseObserver.onNext(depositAccountTransactionsProtoResponse.toListBankDepositAccountTransactionsResponseProto());
       responseObserver.onCompleted();
+
     } catch (GrpcException e) {
+      log.error("listBankDepositAccountTransactions gRPC error message, {}", e.getMessage(), e);
       responseObserver.onError(e.handle());
+
     } catch (Exception e) {
-      log.error("listBankDepositAccountTransactions error message, {}", e.getMessage(), e);
-      responseObserver.onError(new GrpcException().handle());
+      log.error("listBankDepositAccountTransactions unknown error message, {}", e.getMessage(), e);
+      responseObserver.onError(e);
+    }
+  }
+
+  @Override
+  public void listBankInvestAccountBasics(ListBankInvestAccountBasicsRequest request,
+      StreamObserver<ListBankInvestAccountBasicsResponse> responseObserver) {
+    try {
+      // TODO : validate parameter value
+      List<InvestAccountBasicResponse> investAccountBasicResponses = investAccountPublishService
+          .getInvestAccountBasicResponses(request);
+      InvestAccountBasicsProtoResponse investAccountBasicsProtoResponse = InvestAccountBasicsProtoResponse.builder()
+          .investAccountBasicResponses(investAccountBasicResponses)
+          .build();
+
+      responseObserver.onNext(investAccountBasicsProtoResponse.toListBankInvestAccountBasicsResponse());
+      responseObserver.onCompleted();
+
+    } catch (GrpcException e) {
+      log.error("listBankInvestAccountBasics gRPC error message, {}", e.getMessage(), e);
+      responseObserver.onError(e.handle());
+
+    } catch (Exception e) {
+      log.error("listBankInvestAccountBasics unknown error message, {}", e.getMessage(), e);
+      responseObserver.onError(e);
+    }
+  }
+
+  @Override
+  public void listBankInvestAccountDetails(ListBankInvestAccountDetailsRequest request,
+      StreamObserver<ListBankInvestAccountDetailsResponse> responseObserver) {
+    try {
+      // TODO : validate parameter value
+      List<InvestAccountDetailResponse> investAccountDetailResponses = investAccountPublishService
+          .getInvestAccountDetailResponses(request);
+      InvestAccountDetailsProtoResponse investAccountDetailsProtoResponse = InvestAccountDetailsProtoResponse.builder()
+          .investAccountDetailResponses(investAccountDetailResponses)
+          .build();
+
+      responseObserver.onNext(investAccountDetailsProtoResponse.toListBankInvestAccountDetailsResponse());
+      responseObserver.onCompleted();
+
+    } catch (GrpcException e) {
+      log.error("listBankInvestAccountDetails gRPC error message, {}", e.getMessage(), e);
+      responseObserver.onError(e.handle());
+
+    } catch (Exception e) {
+      log.error("listBankInvestAccountDetails unknown error message, {}", e.getMessage(), e);
+      responseObserver.onError(e);
+    }
+  }
+
+  @Override
+  public void listBankInvestAccountTransactions(ListBankInvestAccountTransactionsRequest request,
+      StreamObserver<ListBankInvestAccountTransactionsResponse> responseObserver) {
+    try {
+      // TODO : validate parameter value
+      List<InvestAccountTransactionResponse> investAccountTransactionResponses = investAccountPublishService
+          .getInvestAccountTransactionResponses(request);
+      InvestAccountTransactionsProtoResponse investAccountTransactionsProtoResponse = InvestAccountTransactionsProtoResponse.builder()
+          .investAccountTransactionResponses(investAccountTransactionResponses)
+          .build();
+
+      responseObserver.onNext(investAccountTransactionsProtoResponse.toListBankInvestAccountTransactionsResponse());
+      responseObserver.onCompleted();
+
+    } catch (GrpcException e) {
+      log.error("listBankInvestAccountTransactions gRPC error message, {}", e.getMessage(), e);
+      responseObserver.onError(e.handle());
+
+    } catch (Exception e) {
+      log.error("listBankInvestAccountTransactions unknown error message, {}", e.getMessage(), e);
+      responseObserver.onError(e);
     }
   }
 }

@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.bank.publishment.deposit.dto;
+package com.banksalad.collectmydata.bank.publishment.invest.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class DepositAccountBasicResponse {
+public class InvestAccountDetailResponse {
 
   private String accountNum;
 
@@ -21,17 +21,13 @@ public class DepositAccountBasicResponse {
 
   private String currencyCode;
 
-  private String savingMethod;
+  private BigDecimal balanceAmt;
 
-  private String holderName;
+  private BigDecimal evalAmt;
 
-  private String issueDate;
+  private BigDecimal invPrincipal;
 
-  private String expDate;
-
-  private BigDecimal commitAmt;
-
-  private BigDecimal monthlyPaidInAmt;
+  private BigDecimal fundNum;
 
   private LocalDateTime createdAt;
 
