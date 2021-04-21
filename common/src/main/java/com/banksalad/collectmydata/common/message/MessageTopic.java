@@ -11,7 +11,7 @@ public class MessageTopic {
 
   public static final String cardSyncRequested = "cardSyncRequested";
   public static final String cardPublishmentRequested = "cardPublishmentRequested";
-  public static final String cardSyncCompleted = "bankSyncCompleted";
+  public static final String cardSyncCompleted = "cardSyncCompleted";
 
   public static final String investSyncRequested = "investSyncRequested";
   public static final String investPublishmentRequested = "investPublishmentRequested";
