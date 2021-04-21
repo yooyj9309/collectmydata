@@ -1,0 +1,11 @@
+{
+  "rsp_code": "000",
+  "rsp_msg": "성공",
+  "search_timestamp": 1000,
+  "issue_date": "20210101",
+  "is_tax_benefits": "true",
+  "withholdings_amt": "10000.000",
+  "credit_loan_amt": "20000.000",
+  "mortgage_amt": "30000.000",
+  "currency_code": "KRW"
+}
