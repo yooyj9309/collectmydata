@@ -2,5 +2,7 @@
   "org_code": "organization_code1",
   "account_num": "accountNum1",
   "seqno": "1",
-  "search_timestamp": 1000
+  "from_date": "20210401",
+  "to_date": "${json-unit.any-string}",
+  "limit": 500
 }

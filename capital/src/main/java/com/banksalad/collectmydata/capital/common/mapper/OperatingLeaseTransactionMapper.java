@@ -6,7 +6,6 @@ import com.banksalad.collectmydata.common.mapper.BigDecimalMapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.ReportingPolicy;
 
@@ -18,6 +17,5 @@ public interface OperatingLeaseTransactionMapper {
           @Mapping(target = "transAmt", qualifiedByName = "BigDecimalScale3")
       }
   )
-  OperatingLeaseTransactionEntity dtoToEntity(OperatingLeaseTransaction operatingLeaseTransaction,
-      @MappingTarget OperatingLeaseTransactionEntity operatingLeaseTransactionEntity);
+  OperatingLeaseTransactionEntity dtoToEntity(OperatingLeaseTransaction operatingLeaseTransaction);
 }

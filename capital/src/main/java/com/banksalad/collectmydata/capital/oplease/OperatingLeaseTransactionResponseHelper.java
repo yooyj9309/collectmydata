@@ -1,22 +1,26 @@
 package com.banksalad.collectmydata.capital.oplease;
 
-import org.springframework.stereotype.Component;
-
 import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseTransactionEntity;
-import com.banksalad.collectmydata.capital.common.mapper.OperatingLeaseTransactionMapper;
 import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseTransactionRepository;
+import com.banksalad.collectmydata.capital.common.mapper.OperatingLeaseTransactionMapper;
 import com.banksalad.collectmydata.capital.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.capital.oplease.dto.ListOperatingLeaseTransactionsResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseTransaction;
 import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
 import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
+
+import org.springframework.stereotype.Component;
+
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
 @Component
 @RequiredArgsConstructor
@@ -39,19 +43,9 @@ public class OperatingLeaseTransactionResponseHelper implements
       List<OperatingLeaseTransaction> operatingLeaseTransactions) {
     for (OperatingLeaseTransaction operatingLeaseTransaction : operatingLeaseTransactions) {
 
-      /* load existing entity */
-      OperatingLeaseTransactionEntity operatingLeaseTransactionEntity = operatingLeaseTransactionRepository
-          .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransDtimeAndTransNoAndTransactionYearMonth(
-              executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
-              accountSummary.getAccountNum(), accountSummary.getSeqno(),
-              operatingLeaseTransaction.getTransDtime(), operatingLeaseTransaction.getTransNo(),
-              Integer.parseInt(operatingLeaseTransaction.getTransDtime().substring(0, 6)))
-          .orElseGet(() -> OperatingLeaseTransactionEntity.builder().build());
-
       /* mapping dto to entity */
-      operatingLeaseTransactionEntity = operatingLeaseTransactionMapper
-          .dtoToEntity(operatingLeaseTransaction, operatingLeaseTransactionEntity);
-
+      OperatingLeaseTransactionEntity operatingLeaseTransactionEntity = operatingLeaseTransactionMapper
+          .dtoToEntity(operatingLeaseTransaction);
       operatingLeaseTransactionEntity
           .setTransactionYearMonth(Integer.parseInt(operatingLeaseTransaction.getTransDtime().substring(0, 6)));
       operatingLeaseTransactionEntity.setSyncedAt(executionContext.getSyncStartedAt());
@@ -60,8 +54,27 @@ public class OperatingLeaseTransactionResponseHelper implements
       operatingLeaseTransactionEntity.setAccountNum(accountSummary.getAccountNum());
       operatingLeaseTransactionEntity.setSeqno(accountSummary.getSeqno());
 
+      /* load existing entity */
+      OperatingLeaseTransactionEntity existingOperatingLeaseTransactionEntity = operatingLeaseTransactionRepository
+          .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransDtimeAndTransNoAndTransactionYearMonth(
+              executionContext.getBanksaladUserId(),
+              executionContext.getOrganizationId(),
+              accountSummary.getAccountNum(),
+              accountSummary.getSeqno(),
+              operatingLeaseTransaction.getTransDtime(),
+              operatingLeaseTransaction.getTransNo(),
+              Integer.parseInt(operatingLeaseTransaction.getTransDtime().substring(0, 6)))
+          .orElseGet(() -> OperatingLeaseTransactionEntity.builder().build());
+
+      if (existingOperatingLeaseTransactionEntity != null) {
+        operatingLeaseTransactionEntity.setId(existingOperatingLeaseTransactionEntity.getId());
+      }
+
       /* upsert entity */
-      operatingLeaseTransactionRepository.save(operatingLeaseTransactionEntity);
+      if (!ObjectComparator
+          .isSame(operatingLeaseTransactionEntity, existingOperatingLeaseTransactionEntity, ENTITY_EXCLUDE_FIELD)) {
+        operatingLeaseTransactionRepository.save(operatingLeaseTransactionEntity);
+      }
     }
   }
 

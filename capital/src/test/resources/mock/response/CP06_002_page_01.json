@@ -1,0 +1,20 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "next_page": "002",
+  "trans_cnt": 2,
+  "trans_list": [
+    {
+      "trans_dtime": "20210217093000",
+      "trans_no": "trans#1",
+      "trans_type": "03",
+      "trans_amt": 1000.3
+    },
+    {
+      "trans_dtime": "20210217093000",
+      "trans_no": "trans#2",
+      "trans_type": "01",
+      "trans_amt": 0.0
+    }
+  ]
+}

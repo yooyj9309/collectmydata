@@ -1,7 +1,6 @@
 {
   "rsp_code": "00000",
-  "rsp_msg": "rsp_msg",
-  "next_page": null,
+  "rsp_msg": "성공",
   "trans_cnt": 1,
   "trans_list": [
     {
