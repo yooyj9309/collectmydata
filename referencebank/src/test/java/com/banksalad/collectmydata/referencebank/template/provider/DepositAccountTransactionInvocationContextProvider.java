@@ -107,7 +107,6 @@ public class DepositAccountTransactionInvocationContextProvider implements TestT
         main3.getBalanceAmt().toString()));
     Map<String, DepositAccountTransactionEntity> mainMap = Map.of(
         "main1", main1,
-        "updatedMain1", main1.toBuilder().syncedAt(NEW_SYNCED_AT).paidInCnt((short) 2).build(),
         "newMain1", main1.toBuilder().syncedAt(NEW_SYNCED_AT).build(),
         "newMain2", main2.toBuilder().syncedAt(NEW_SYNCED_AT).build(),
         "newMain3", main3.toBuilder().syncedAt(NEW_SYNCED_AT).build()

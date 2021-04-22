@@ -2,7 +2,6 @@ package com.banksalad.collectmydata.referencebank.deposit;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.crypto.HashUtil;
-import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
 import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
 import com.banksalad.collectmydata.referencebank.common.db.entity.DepositAccountTransactionEntity;
@@ -20,8 +19,6 @@ import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
 @Component
 @RequiredArgsConstructor
@@ -55,7 +52,7 @@ public class DepositAccountTransactionResponseHelper implements
       depositAccountTransactionEntity.setSeqno(accountSummary.getSeqno());
       depositAccountTransactionEntity.setUniqueTransNo(generateUniqueTransNo(depositAccountTransaction));
 
-      // load existing deposit account transaction
+      // Load existing transaction.
       DepositAccountTransactionEntity existingDepositAccountTransactionEntity = depositAccountTransactionRepository
           .findByTransactionYearMonthAndBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndCurrencyCodeAndUniqueTransNo(
               depositAccountTransactionEntity.getTransactionYearMonth(),
@@ -64,19 +61,16 @@ public class DepositAccountTransactionResponseHelper implements
               depositAccountTransactionEntity.getAccountNum(),
               depositAccountTransactionEntity.getSeqno(),
               depositAccountTransactionEntity.getCurrencyCode(),
-              depositAccountTransactionEntity.getUniqueTransNo());
+              depositAccountTransactionEntity.getUniqueTransNo())
+          .orElse(null);
 
-      // copy PK for update
+      // Skip the existing transaction.
       if (existingDepositAccountTransactionEntity != null) {
-        depositAccountTransactionEntity
-            .setId(existingDepositAccountTransactionEntity.getId());
+        continue;
       }
 
-      // upsert deposit account transaction
-      if (!ObjectComparator
-          .isSame(depositAccountTransactionEntity, existingDepositAccountTransactionEntity, ENTITY_EXCLUDE_FIELD)) {
-        depositAccountTransactionRepository.save(depositAccountTransactionEntity);
-      }
+      // Insert the new transaction.
+      depositAccountTransactionRepository.save(depositAccountTransactionEntity);
     }
   }
 
@@ -84,7 +78,8 @@ public class DepositAccountTransactionResponseHelper implements
   public void saveTransactionSyncedAt(ExecutionContext executionContext, AccountSummary accountSummary,
       LocalDateTime syncStartedAt) {
     accountSummaryService
-        .updateTransactionSyncedAt(executionContext.getBanksaladUserId(), executionContext.getOrganizationId(), accountSummary,
+        .updateTransactionSyncedAt(executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
+            accountSummary,
             syncStartedAt);
   }
 
