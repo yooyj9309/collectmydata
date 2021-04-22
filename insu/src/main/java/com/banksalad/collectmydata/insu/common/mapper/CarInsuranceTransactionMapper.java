@@ -18,6 +18,5 @@ public interface CarInsuranceTransactionMapper {
           @Mapping(target = "paidAmt", qualifiedByName = "BigDecimalScale3")
       }
   )
-  CarInsuranceTransactionEntity dtoToEntity(CarInsuranceTransaction carInsuranceTransaction,
-      @MappingTarget CarInsuranceTransactionEntity carInsuranceTransactionEntity);
+  CarInsuranceTransactionEntity dtoToEntity(CarInsuranceTransaction carInsuranceTransaction);
 }

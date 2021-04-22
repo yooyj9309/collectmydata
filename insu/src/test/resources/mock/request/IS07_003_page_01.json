@@ -1,0 +1,8 @@
+{
+  "org_code": "organization_code1",
+  "insu_num": "123456789",
+  "car_number": "60무1234",
+  "from_date": "${json-unit.any-string}",
+  "to_date": "${json-unit.any-string}",
+  "limit": 100
+}

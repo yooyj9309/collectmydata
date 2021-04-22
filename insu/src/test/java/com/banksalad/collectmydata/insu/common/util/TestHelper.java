@@ -20,7 +20,8 @@ public class TestHelper {
 
   public static final MydataSector SECTOR = MydataSector.FINANCE;
   public static final Industry INDUSTRY = Industry.INSU;
-  public static final LocalDateTime SYNCED_AT = LocalDateTime.now();
+  public static final LocalDateTime NOW = LocalDateTime.now();
+  public static final LocalDateTime SYNCED_AT = DateUtil.toLocalDateTime("20210401","101000");
   public static final long BANKSALAD_USER_ID = 1L;
   public static final String ORGANIZATION_ID = "X-loan";
   public static final String ORGANIZATION_CODE = "020";
@@ -42,7 +43,7 @@ public class TestHelper {
         .organizationCode(ORGANIZATION_CODE)
         .organizationHost("http://" + ORGANIZATION_HOST + ":" + port)
         .accessToken("test")
-        .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+        .syncStartedAt(NOW)
         .build();
   }
 

@@ -1,138 +1,164 @@
 package com.banksalad.collectmydata.insu.car;
 
-import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
-import com.banksalad.collectmydata.finance.api.transaction.TransactionRequestHelper;
-import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
+import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
 import com.banksalad.collectmydata.insu.car.dto.CarInsurance;
 import com.banksalad.collectmydata.insu.car.dto.CarInsuranceTransaction;
 import com.banksalad.collectmydata.insu.car.dto.ListCarInsuranceTransactionsRequest;
-import com.banksalad.collectmydata.insu.car.service.CarInsuranceService;
-import com.banksalad.collectmydata.insu.collect.Executions;
-import com.banksalad.collectmydata.insu.common.service.InsuranceSummaryService;
-import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
+import com.banksalad.collectmydata.insu.common.db.entity.CarInsuranceEntity;
+import com.banksalad.collectmydata.insu.common.db.entity.CarInsuranceTransactionEntity;
+import com.banksalad.collectmydata.insu.common.db.entity.InsuranceSummaryEntity;
+import com.banksalad.collectmydata.insu.common.db.repository.CarInsuranceRepository;
+import com.banksalad.collectmydata.insu.common.db.repository.CarInsuranceTransactionRepository;
+import com.banksalad.collectmydata.insu.common.db.repository.InsuranceSummaryRepository;
+import com.banksalad.collectmydata.insu.template.ServiceTest;
+import com.banksalad.collectmydata.insu.template.provider.CarInsuranceTransactionInvocationContextProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import org.apache.http.entity.ContentType;
+import javax.transaction.Transactional;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.banksalad.collectmydata.insu.common.util.FileUtil.readText;
-import static com.banksalad.collectmydata.insu.common.util.TestHelper.BANKSALAD_USER_ID;
-import static com.banksalad.collectmydata.insu.common.util.TestHelper.ORGANIZATION_ID;
-import static com.banksalad.collectmydata.insu.common.util.TestHelper.getExecutionContext;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static org.mockito.Mockito.when;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.IGNORING_ENTITY_FIELDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DisplayName("자동차보험 거래내역 서비스 테스트")
-class CarInsuranceTransactionServiceTest {
+@SpringBootTest
+@Transactional
+@DisplayName("보험-007 자동차보험 거래내역 조회")
+public class CarInsuranceTransactionServiceTest extends
+    ServiceTest<InsuranceSummaryEntity, CarInsuranceEntity, CarInsuranceTransactionEntity, Object> {
 
   @Autowired
-  private TransactionApiService<CarInsurance, ListCarInsuranceTransactionsRequest, CarInsuranceTransaction> carInsuranceTransactionApiService;
+  private TransactionApiService<CarInsurance, ListCarInsuranceTransactionsRequest, CarInsuranceTransaction> mainService;
 
   @Autowired
-  private TransactionRequestHelper<CarInsurance, ListCarInsuranceTransactionsRequest> carInsuranceTransactionRequestHelper;
+  private CarInsuranceTransactionRequestHelper requestHelper;
 
   @Autowired
-  private TransactionResponseHelper<CarInsurance, CarInsuranceTransaction> carInsuranceTransactionResponseHelper;
+  private CarInsuranceTransactionResponseHelper responseHelper;
 
-  @MockBean
-  private CarInsuranceService carInsuranceService;
+  @Autowired
+  private InsuranceSummaryRepository gParentRepository;
 
-  @MockBean
-  private InsuranceSummaryService insuranceSummaryService;
+  @Autowired
+  private CarInsuranceRepository parentRepository;
 
-  private static WireMockServer wireMockServer;
+  @Autowired
+  private CarInsuranceTransactionRepository mainRepository;
+
+  private static WireMockServer wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
 
   @BeforeAll
-  static void setup() {
-    wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
+  static void setUp() {
+
     wireMockServer.start();
-    setupMockServer();
+  }
+
+  @AfterEach
+  void tearDown() {
+
+    wireMockServer.resetAll();
   }
 
   @AfterAll
-  static void tearDown() {
-    wireMockServer.shutdown();
+  static void shutDown() {
+
+    wireMockServer.stop();
   }
 
-  @Test
-  @DisplayName("6.5.7 자동차보험 거래내역 조회")
-  void carInsuranceTransaction_transactionService_listTransactions_test() {
-    // given
-    LocalDateTime timeOnlyForTest = LocalDateTime.of(2020, 3, 2, 1, 0, 0);
-    ExecutionContext executionContext = getExecutionContext(wireMockServer.port(), timeOnlyForTest);
+  @TestTemplate
+  @ExtendWith(CarInsuranceTransactionInvocationContextProvider.class)
+  public void unitTests(
+      TestCase<InsuranceSummaryEntity, CarInsuranceEntity, CarInsuranceTransactionEntity, Object> testCase) {
 
-    final String INSURANCE_NUM = "123456789";
-    when(insuranceSummaryService.listSummariesConsented(BANKSALAD_USER_ID, ORGANIZATION_ID))
-        .thenReturn(List.of(
-            InsuranceSummary.builder()
-                .insuNum(INSURANCE_NUM)
-                .consent(true)
-                .prodName("묻지도 따지지도않고 암보험")
-                .insuType("05")
-                .insuStatus("02")
-                .build()
-        ));
-    when(carInsuranceService.listCarInsurances(BANKSALAD_USER_ID, ORGANIZATION_ID, INSURANCE_NUM))
-        .thenReturn(List.of(
-            CarInsurance.builder()
-                .insuNum(INSURANCE_NUM)
-                .carNumber("60무1234")
-                .transactionSyncedAt(LocalDateTime.of(2020, 1, 1, 1, 0, 0))
-                .build()
-        ));
+    prepare(testCase, wireMockServer);
 
-    // when
-    // TODO : change to compare with db
-    carInsuranceTransactionApiService
-        .listTransactions(executionContext, Executions.insurance_get_car_transactions,
-            carInsuranceTransactionRequestHelper, carInsuranceTransactionResponseHelper);
+    runMainService(testCase);
 
-    // then
-//    assertThat(carInsuranceTransactions).usingRecursiveComparison().isEqualTo(
-//        List.of(
-//            CarInsuranceTransaction.builder()
-//                .faceAmt(BigDecimal.valueOf(900000))
-//                .transNo(2)
-//                .paidAmt(BigDecimal.valueOf(450000))
-//                .payMethod("02")
-//                .build(),
-//            CarInsuranceTransaction.builder()
-//                .faceAmt(BigDecimal.valueOf(100000))
-//                .transNo(3)
-//                .paidAmt(BigDecimal.valueOf(70000))
-//                .payMethod("04")
-//                .build()
-//        )
-//    );
+    validate(testCase);
   }
 
-  private static void setupMockServer() {
-    // 6.5.7 자동차보험 거래내역 조회 : single page 조회
-    wireMockServer.stubFor(post(urlMatching("/insurances/car/transactions"))
-        .withRequestBody(
-            equalToJson(readText("classpath:mock/request/IS07_002_single_page_00.json")))
-        .willReturn(
-            aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/IS07_002_single_page_00.json"))));
+  @Override
+  protected void saveGParents(List<InsuranceSummaryEntity> insuranceSummaryEntities) {
+
+    insuranceSummaryEntities
+        .forEach(insuranceSummaryEntity -> gParentRepository.save(insuranceSummaryEntity.toBuilder().build()));
+  }
+
+  @Override
+  protected void saveParents(List<CarInsuranceEntity> accountSummaryEntities) {
+
+    /* DB save()에 의해서 testCase의 summaries가 오염되므로 복제본을 만들어야 한다. */
+    accountSummaryEntities
+        .forEach(accountSummaryEntity -> parentRepository.save(accountSummaryEntity.toBuilder().build()));
+  }
+
+  @Override
+  protected void saveMains(List<CarInsuranceTransactionEntity> depositAccountBasicEntities) {
+
+    depositAccountBasicEntities
+        .forEach(depositAccountBasicEntity -> mainRepository.save(depositAccountBasicEntity.toBuilder().build()));
+  }
+
+  @Override
+  protected void saveChildren(List<Object> objects) {
+
+  }
+
+  @Override
+  protected void runMainService(
+      TestCase<InsuranceSummaryEntity, CarInsuranceEntity, CarInsuranceTransactionEntity, Object> testCase) {
+
+    mainService
+        .listTransactions(testCase.getExecutionContext(), testCase.getExecution(), requestHelper, responseHelper);
+  }
+
+  @Override
+  protected void validateParents(List<CarInsuranceEntity> expectedParents) {
+
+    final List<CarInsuranceEntity> actualParents = parentRepository.findAll();
+
+    assertAll("*** Parent 확인 ***",
+        () -> assertEquals(expectedParents.size(), actualParents.size()),
+        () -> {
+          for (int i = 0; i < expectedParents.size(); i++) {
+            assertThat(actualParents.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedParents.get(i));
+          }
+        }
+    );
+  }
+
+  @Override
+  protected void validateMains(List<CarInsuranceTransactionEntity> expectedMains) {
+
+    final List<CarInsuranceTransactionEntity> actualMains = mainRepository.findAll();
+
+    assertAll("*** Main 확인 ***",
+        () -> assertEquals(expectedMains.size(), actualMains.size()),
+        () -> {
+          for (int i = 0; i < expectedMains.size(); i++) {
+            assertThat(actualMains.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedMains.get(i));
+          }
+        }
+    );
+  }
+
+  @Override
+  protected void validateChildren(List<Object> expectedChildren) {
+
   }
 }

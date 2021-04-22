@@ -12,7 +12,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -20,7 +19,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "oauth_token")

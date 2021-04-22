@@ -123,11 +123,6 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")
 
     testImplementation("io.projectreactor:reactor-test:3.4.2")
-
-//    implementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}") {
-//        exclude group: "org.junit.vintage", module: "junit-vintage-engine"
-//    }
-//    implementation("com.github.tomakehurst:wiremock:2.27.2")
 }
 
 test {

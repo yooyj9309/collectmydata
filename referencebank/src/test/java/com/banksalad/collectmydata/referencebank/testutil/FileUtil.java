@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+@Deprecated
 public class FileUtil {
 
   public static String readText(String fileInClassPath) {

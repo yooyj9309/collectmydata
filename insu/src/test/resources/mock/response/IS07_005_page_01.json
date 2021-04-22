@@ -1,14 +1,9 @@
 {
   "rsp_code": "00000",
-  "rsp_msg": "success",
-  "trans_cnt": 2,
+  "rsp_msg": "성공",
+  "next_page": null,
+  "trans_cnt": 1,
   "trans_list": [
-    {
-      "face_amt": 900000,
-      "trans_no": 2,
-      "paid_amt": 450000,
-      "pay_method": "02"
-    },
     {
       "face_amt": 100000,
       "trans_no": 3,

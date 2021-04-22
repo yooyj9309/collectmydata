@@ -1,10 +1,10 @@
 package com.banksalad.collectmydata.insu.car;
 
-import org.springframework.stereotype.Component;
-
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
 import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
+import com.banksalad.collectmydata.finance.common.constant.FinanceConstant;
 import com.banksalad.collectmydata.insu.car.dto.CarInsurance;
 import com.banksalad.collectmydata.insu.car.dto.CarInsuranceTransaction;
 import com.banksalad.collectmydata.insu.car.dto.ListCarInsuranceTransactionsResponse;
@@ -12,6 +12,9 @@ import com.banksalad.collectmydata.insu.car.service.CarInsuranceService;
 import com.banksalad.collectmydata.insu.common.db.entity.CarInsuranceTransactionEntity;
 import com.banksalad.collectmydata.insu.common.db.repository.CarInsuranceTransactionRepository;
 import com.banksalad.collectmydata.insu.common.mapper.CarInsuranceTransactionMapper;
+
+import org.springframework.stereotype.Component;
+
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
@@ -39,25 +42,31 @@ public class CarInsuranceTransactionResponseHelper implements
       List<CarInsuranceTransaction> carInsuranceTransactions) {
 
     for (CarInsuranceTransaction carInsuranceTransaction : carInsuranceTransactions) {
-      /* load existing entity */
-      CarInsuranceTransactionEntity carInsuranceTransactionEntity = carInsuranceTransactionRepository
-          .findByBanksaladUserIdAndOrganizationIdAndInsuNumAndCarNumberAndTransNo(
-              executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
-              carInsurance.getInsuNum(), carInsurance.getCarNumber(), carInsuranceTransaction.getTransNo())
-          .orElseGet(() -> CarInsuranceTransactionEntity.builder().build());
-
       /* mapping dto to entity */
-      carInsuranceTransactionEntity = carInsuranceTransactionMapper
-          .dtoToEntity(carInsuranceTransaction, carInsuranceTransactionEntity);
-
+      CarInsuranceTransactionEntity carInsuranceTransactionEntity = carInsuranceTransactionMapper
+          .dtoToEntity(carInsuranceTransaction);
       carInsuranceTransactionEntity.setSyncedAt(executionContext.getSyncStartedAt());
       carInsuranceTransactionEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
       carInsuranceTransactionEntity.setOrganizationId(executionContext.getOrganizationId());
       carInsuranceTransactionEntity.setInsuNum(carInsurance.getInsuNum());
       carInsuranceTransactionEntity.setCarNumber(carInsurance.getCarNumber());
 
-      /* upsert entity */
-      carInsuranceTransactionRepository.save(carInsuranceTransactionEntity);
+      /* load existing entity */
+      CarInsuranceTransactionEntity existingCarInsuranceTransactionEntity = carInsuranceTransactionRepository
+          .findByBanksaladUserIdAndOrganizationIdAndInsuNumAndCarNumberAndTransNo(
+              executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
+              carInsurance.getInsuNum(), carInsurance.getCarNumber(), carInsuranceTransaction.getTransNo())
+          .orElse(null);
+
+      if (existingCarInsuranceTransactionEntity != null) {
+        carInsuranceTransactionEntity.setId(existingCarInsuranceTransactionEntity.getId());
+      }
+
+      if (!ObjectComparator
+          .isSame(carInsuranceTransactionEntity, existingCarInsuranceTransactionEntity,
+              FinanceConstant.ENTITY_EXCLUDE_FIELD)) {
+        carInsuranceTransactionRepository.save(carInsuranceTransactionEntity);
+      }
     }
   }
 
