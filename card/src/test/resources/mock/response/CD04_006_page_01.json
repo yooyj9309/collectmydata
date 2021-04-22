@@ -1,0 +1,17 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "approved_cnt": 1,
+  "approved_list": [
+    {
+      "approved_num": "001",
+      "status": "01",
+      "pay_type": "01",
+      "approved_dtime": "20210301091000",
+      "merchant_name": "StartBucks",
+      "approved_amt": 5000,
+      "country_code": "US",
+      "currency_code": "USD"
+    }
+  ]
+}

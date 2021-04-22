@@ -1,0 +1,18 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "approved_cnt": 1,
+  "approved_list": [
+    {
+      "approved_num": "003",
+      "status": "02",
+      "pay_type": "01",
+      "approved_dtime": "20210302103000",
+      "merchant_name": "YangYang",
+      "approved_amt": 3000,
+      "country_code": "KR",
+      "currency_code": "KRW",
+      "krw_amt": 3000
+    }
+  ]
+}

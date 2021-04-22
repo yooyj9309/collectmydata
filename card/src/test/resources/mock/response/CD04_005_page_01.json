@@ -1,0 +1,19 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "approved_cnt": 1,
+  "approved_list": [
+    {
+      "approved_num": "002",
+      "status": "02",
+      "pay_type": "01",
+      "approved_dtime": "20210302101000",
+      "cancel_dtime": "20210302102000",
+      "merchant_name": "GigaCoffee",
+      "approved_amt": 15000,
+      "country_code": "KR",
+      "currency_code": "KRW",
+      "krw_amt": 15000
+    }
+  ]
+}

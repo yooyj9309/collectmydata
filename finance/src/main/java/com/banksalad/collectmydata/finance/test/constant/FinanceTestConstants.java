@@ -15,9 +15,12 @@ public class FinanceTestConstants {
   public static final String ORGANIZATION_CODE = "organization_code1";
   public static final String ORGANIZATION_HOST = "localhost";
   public static final String ACCESS_TOKEN = "xxx.yyy.zzz";
-  public static final LocalDateTime OLD_SYNCED_AT = DateUtil.toLocalDateTime("20210401", "101000");
+  public static final String OLD_DATE = "20210401";
+  public static final LocalDateTime OLD_SYNCED_AT = DateUtil.toLocalDateTime(OLD_DATE, "101000");
   public static final LocalDateTime NEW_SYNCED_AT = LocalDateTime.now(DateUtil.UTC_ZONE_ID);
   public static final long BANKSALAD_USER_ID = 1L;
+
+  public static final String NEXT_PAGE = "002";
 
   public static final long ZERO_USS_ST = 0L;
   public static final long OLD_USS_ST = 100L;

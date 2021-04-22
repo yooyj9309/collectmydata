@@ -46,6 +46,9 @@ public class Apis {
           .endpoint(
               "/cards/{card_id}/approval-overseas?org_code={org_code}&from_date={from_date}&to_date={to_date}&next_page={next_page}&limit={limit}")
           .method(HttpMethod.GET.name())
+          .pagination(Pagination.builder()
+              .nextPage("next_page")
+              .build())
           .build();
 
   public static Api finance_card_point =

@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.banksalad.collectmydata.common.util.FileUtil.readText;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ACCESS_TOKEN;
@@ -85,7 +87,7 @@ public abstract class ServiceTest<GParent, Parent, Main, Child> {
       WireMockServer wireMockServer) {
 
     final Api api = testCase.getExecution().getApi();
-    final String urlRegex = api.getEndpoint().substring(0, api.getEndpoint().indexOf("?")) + ".*";
+    final String urlRegex = getUrlRegex(api.getEndpoint());
 
     for (int i = 0; i < testCase.getExpectedResponses().size(); i++) {
       final BareRequest request = testCase.getRequestParams().get(i);
@@ -217,5 +219,16 @@ public abstract class ServiceTest<GParent, Parent, Main, Child> {
 
     // OS에 따라 DB가 microsecond 단위에서 반올림 발생하여 보정한다.
     assertThat(actual).isCloseTo(expected, within(1, ChronoUnit.MICROS));
+  }
+
+  private String getUrlRegex(String endpoint) {
+
+    final String stopRegex = "[?{]";
+
+    Pattern pattern = Pattern.compile(stopRegex);
+    Matcher matcher = pattern.matcher(endpoint);
+    int firstIndex = matcher.find() ? matcher.start() : -1;
+
+    return endpoint.substring(0, firstIndex) + ".*";
   }
 }
