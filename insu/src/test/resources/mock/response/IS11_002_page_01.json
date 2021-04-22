@@ -1,0 +1,22 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "success",
+  "search_timestamp": 100,
+  "loan_cnt": 2,
+  "loan_list": [
+    {
+      "account_num": "accountNum01",
+      "is_consent": true,
+      "prod_name": "01",
+      "account_type": "01",
+      "account_status": "01"
+    },
+    {
+      "account_num": "accountNum02",
+      "is_consent": true,
+      "prod_name": "02",
+      "account_type": "02",
+      "account_status": "02"
+    }
+  ]
+}
