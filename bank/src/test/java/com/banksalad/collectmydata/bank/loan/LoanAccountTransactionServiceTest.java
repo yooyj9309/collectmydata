@@ -96,10 +96,10 @@ public class LoanAccountTransactionServiceTest extends
   }
 
   @Override
-  protected void saveMains(List<LoanAccountTransactionEntity> depositAccountBasicEntities) {
+  protected void saveMains(List<LoanAccountTransactionEntity> loanAccountTransactionEntities) {
 
-    depositAccountBasicEntities
-        .forEach(depositAccountBasicEntity -> mainRepository.save(depositAccountBasicEntity.toBuilder().build()));
+    loanAccountTransactionEntities
+        .forEach(loanAccountTransactionEntity -> mainRepository.save(loanAccountTransactionEntity.toBuilder().build()));
   }
 
   @Override
