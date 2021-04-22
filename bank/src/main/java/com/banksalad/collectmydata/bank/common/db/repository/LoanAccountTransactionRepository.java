@@ -8,13 +8,7 @@ import java.util.Optional;
 
 public interface LoanAccountTransactionRepository extends JpaRepository<LoanAccountTransactionEntity, Long> {
 
-  Optional<LoanAccountTransactionEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndCurrencyCodeAndSeqnoAndUniqueTransNoAndTransactionYearMonth(
-      Long banksaladUserId,
-      String organizationId,
-      String accountNum,
-      String currencyCode,
-      String seqno,
-      String uniqueTransNo,
-      Integer transactionYearMonth
-  );
+  Optional<LoanAccountTransactionEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndUniqueTransNoAndTransactionYearMonth(
+      Long banksaladUserId, String organizationId, String accountNum, String seqno, String uniqueTransNo,
+      Integer transactionYearMonth);
 }

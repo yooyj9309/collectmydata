@@ -47,8 +47,6 @@ public class LoanAccountTransactionEntity extends BaseEntity {
 
   private String seqno;
 
-  private String currencyCode;
-
   @Column(nullable = false)
   private String uniqueTransNo;
 

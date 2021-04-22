@@ -24,7 +24,6 @@ import org.mapstruct.factory.Mappers;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.CURRENCY_KRW;
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
 @Component
@@ -68,17 +67,11 @@ public class LoanAccountTransactionResponseHelper implements
       loanAccountTransactionEntity.setSeqno(accountSummary.getSeqno());
       loanAccountTransactionEntity.setUniqueTransNo(uniqueTransNo);
 
-      if (loanAccountTransactionEntity.getCurrencyCode() == null
-          || loanAccountTransactionEntity.getCurrencyCode().length() == 0) {
-        loanAccountTransactionEntity.setCurrencyCode(CURRENCY_KRW);
-      }
-
       LoanAccountTransactionEntity existingLoanAccountTransactionEntity = loanAccountTransactionRepository
-          .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndCurrencyCodeAndSeqnoAndUniqueTransNoAndTransactionYearMonth(
+          .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndUniqueTransNoAndTransactionYearMonth(
               loanAccountTransactionEntity.getBanksaladUserId(),
               loanAccountTransactionEntity.getOrganizationId(),
               loanAccountTransactionEntity.getAccountNum(),
-              loanAccountTransactionEntity.getCurrencyCode(),
               loanAccountTransactionEntity.getSeqno(),
               loanAccountTransactionEntity.getUniqueTransNo(),
               loanAccountTransactionEntity.getTransactionYearMonth()
