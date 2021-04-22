@@ -1,0 +1,9 @@
+{
+  "rsp_code": "000",
+  "rsp_msg": "rsp_msg",
+  "search_timestamp": 1100,
+  "standard_fund_code": "standard_101",
+  "paid_in_type": "01",
+  "issue_date": "20200101",
+  "exp_date": "20201231"
+}
