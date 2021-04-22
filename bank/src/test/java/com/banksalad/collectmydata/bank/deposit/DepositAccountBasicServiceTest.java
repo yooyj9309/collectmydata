@@ -30,6 +30,7 @@ import com.banksalad.collectmydata.finance.common.db.repository.UserSyncStatusRe
 import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.entity.ContentType;
 import org.assertj.core.api.Assertions;
+import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -139,43 +140,43 @@ class DepositAccountBasicServiceTest {
     assertThat(depositAccountBasicHistoryRepository.findAll().isEmpty()).isTrue();
   }
 
-  @Test
-  @DisplayName("#2 기존 0건 + 신규 1건")
-  void getDepositAccountBasic_success_01() {
-    // given
-    setupMockServer2();
-    ExecutionContext executionContext = getExecutionContext(wireMockServer.port());
-
-    AccountSummaryEntity accountSummaryEntity = getAccountSummaryEntity(0L);
-    accountSummaryRepository.save(accountSummaryEntity);
-
-    // when
-    depositAccountBasicService.listAccountInfos(executionContext, Executions.finance_bank_deposit_account_basic,
-        depositAccountBasicInfoRequestHelper, depositAccountBasicInfoResponseHelper);
-
-    // then
-    /* check #1 : userSyncStatusEntity - syncedAt */
-    UserSyncStatusEntity userSyncStatusEntity = userSyncStatusRepository
-        .findByBanksaladUserIdAndOrganizationIdAndApiId(BANKSALAD_USER_ID, ORGANIZATION_ID,
-            Executions.finance_bank_deposit_account_basic.getApi().getId())
-        .orElseGet(() -> UserSyncStatusEntity.builder().build());
-    assertThat(userSyncStatusEntity.getSyncedAt())
-        .isEqualTo(executionContext.getSyncStartedAt());
-
-    /* check #2 : accountSummaryEntity - searchTimestamp */
-    assertThat(accountSummaryRepository.findAll().size()).isEqualTo(1);
-    assertThat(accountSummaryRepository.findAll().get(0).getBasicSearchTimestamp())
-        .isEqualTo(1000);
-
-    /* check #3 : depositAccountBasicEntity */
-    assertThat(depositAccountBasicRepository.findAll().size()).isEqualTo(1);
-    assertThat(depositAccountBasicRepository.findAll()).usingRecursiveComparison().ignoringFields(ENTITY_IGNORE_FIELD)
-        .isEqualTo(List.of(getDepositAccountBasicEntity()));
-
-    /* check #4 : depositAccountBasicEntity and depositAccountBasicHistoryEntity */
-    assertThat(depositAccountBasicRepository.findAll()).usingRecursiveComparison().ignoringFields(ENTITY_IGNORE_FIELD)
-        .isEqualTo(depositAccountBasicHistoryRepository.findAll());
-  }
+//  @Test
+//  @DisplayName("#2 기존 0건 + 신규 1건")
+//  void getDepositAccountBasic_success_01() {
+//    // given
+//    setupMockServer2();
+//    ExecutionContext executionContext = getExecutionContext(wireMockServer.port());
+//
+//    AccountSummaryEntity accountSummaryEntity = getAccountSummaryEntity(0L);
+//    accountSummaryRepository.save(accountSummaryEntity);
+//
+//    // when
+//    depositAccountBasicService.listAccountInfos(executionContext, Executions.finance_bank_deposit_account_basic,
+//        depositAccountBasicInfoRequestHelper, depositAccountBasicInfoResponseHelper);
+//
+//    // then
+//    /* check #1 : userSyncStatusEntity - syncedAt */
+//    UserSyncStatusEntity userSyncStatusEntity = userSyncStatusRepository
+//        .findByBanksaladUserIdAndOrganizationIdAndApiId(BANKSALAD_USER_ID, ORGANIZATION_ID,
+//            Executions.finance_bank_deposit_account_basic.getApi().getId())
+//        .orElseGet(() -> UserSyncStatusEntity.builder().build());
+//    assertThat(userSyncStatusEntity.getSyncedAt())
+//        .isEqualTo(executionContext.getSyncStartedAt());
+//
+//    /* check #2 : accountSummaryEntity - searchTimestamp */
+//    assertThat(accountSummaryRepository.findAll().size()).isEqualTo(1);
+//    assertThat(accountSummaryRepository.findAll().get(0).getBasicSearchTimestamp())
+//        .isEqualTo(1000);
+//
+//    /* check #3 : depositAccountBasicEntity */
+//    assertThat(depositAccountBasicRepository.findAll().size()).isEqualTo(1);
+//    assertThat(depositAccountBasicRepository.findAll()).usingRecursiveComparison().ignoringFields(ENTITY_IGNORE_FIELD)
+//        .isEqualTo(List.of(getDepositAccountBasicEntity()));
+//
+//    /* check #4 : depositAccountBasicEntity and depositAccountBasicHistoryEntity */
+//    assertThat(depositAccountBasicRepository.findAll()).usingRecursiveComparison().ignoringFields(ENTITY_IGNORE_FIELD)
+//        .isEqualTo(depositAccountBasicHistoryRepository.findAll());
+//  }
 
   @Test
   @DisplayName("#3 기존 1건 + 신규 1건")
@@ -431,14 +432,14 @@ class DepositAccountBasicServiceTest {
 
   private static void setupMockServer2() {
     // #2 : 기존 0건 + 신규 1건
-    wireMockServer.stubFor(post(urlMatching("/accounts/deposit/basic"))
-        .withRequestBody(
-            equalToJson(readText("classpath:mock/bank/request/BA02_002_single_page_01.json")))
-        .willReturn(
-            aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/bank/response/BA02_002_single_page_01.json"))));
+//    wireMockServer.stubFor(post(urlMatching("/accounts/deposit/basic"))
+//        .withRequestBody(
+//            equalToJson(readText("classpath:mock/bank/request/BA02_002_single_page_01.json")))
+//        .willReturn(
+//            aResponse()
+//                .withStatus(HttpStatus.OK.value())
+//                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
+//                .withBody(readText("classpath:mock/bank/response/BA02_002_single_page_01.json"))));
   }
 
   private static void setupMockServer3() {
