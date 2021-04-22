@@ -28,7 +28,7 @@ public class LoanDetailRequestHelper implements AccountInfoRequestHelper<GetLoan
     return GetLoanDetailRequest.builder()
         .orgCode(executionContext.getOrganizationCode())
         .accountNum(loanSummary.getAccountNum())
-        .searchTimestamp(loanSummary.getBasicSearchTimestamp())
+        .searchTimestamp(loanSummary.getDetailSearchTimestamp())
         .build();
   }
 }
