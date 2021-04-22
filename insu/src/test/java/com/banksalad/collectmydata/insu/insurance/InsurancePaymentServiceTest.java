@@ -1,184 +1,154 @@
 package com.banksalad.collectmydata.insu.insurance;
 
-import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
-import com.banksalad.collectmydata.insu.collect.Executions;
+import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
 import com.banksalad.collectmydata.insu.common.db.entity.InsurancePaymentEntity;
-import com.banksalad.collectmydata.insu.common.db.entity.InsurancePaymentHistoryEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceSummaryEntity;
-import com.banksalad.collectmydata.insu.common.db.repository.InsurancePaymentHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsurancePaymentRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceSummaryRepository;
-import com.banksalad.collectmydata.insu.common.util.TestHelper;
 import com.banksalad.collectmydata.insu.insurance.dto.GetInsurancePaymentRequest;
 import com.banksalad.collectmydata.insu.insurance.dto.InsurancePayment;
 import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
 
+import com.banksalad.collectmydata.insu.template.ServiceTest;
+import com.banksalad.collectmydata.insu.template.provider.InsurancePaymentInvocationContextProvider;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
-import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.banksalad.collectmydata.insu.common.util.FileUtil.readText;
-import static com.banksalad.collectmydata.insu.common.util.TestHelper.BANKSALAD_USER_ID;
-import static com.banksalad.collectmydata.insu.common.util.TestHelper.ENTITY_IGNORE_FIELD;
-import static com.banksalad.collectmydata.insu.common.util.TestHelper.ORGANIZATION_ID;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static java.lang.Boolean.TRUE;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.IGNORING_ENTITY_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Transactional
-@SpringBootTest
-class InsurancePaymentServiceTest {
+@DisplayName("보험-005 보험 납입정보 조회")
+class InsurancePaymentServiceTest extends ServiceTest<Object, InsuranceSummaryEntity, InsurancePaymentEntity, Object> {
 
   @Autowired
-  private AccountInfoService<InsuranceSummary, GetInsurancePaymentRequest, InsurancePayment> accountInfoService;
-
+  private AccountInfoService<InsuranceSummary, GetInsurancePaymentRequest, InsurancePayment> mainService;
   @Autowired
   private AccountInfoRequestHelper<GetInsurancePaymentRequest, InsuranceSummary> requestHelper;
-
   @Autowired
   private AccountInfoResponseHelper<InsuranceSummary, InsurancePayment> responseHelper;
-
   @Autowired
-  private InsurancePaymentRepository insurancePaymentRepository;
-
+  private InsuranceSummaryRepository parentRepository;
   @Autowired
-  private InsurancePaymentHistoryRepository insurancePaymentHistoryRepository;
+  private InsurancePaymentRepository mainRepository;
 
-  @Autowired
-  private InsuranceSummaryRepository insuranceSummaryRepository;
-
-  private static WireMockServer wireMockServer;
+  public static final WireMockServer wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
 
   @BeforeAll
-  static void setup() {
-    wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
+  static void setUp() {
+
     wireMockServer.start();
-    setUpMockServer();
   }
 
   @AfterAll
-  static void tearDown() {
+  static void shutDown() {
+
     wireMockServer.shutdown();
   }
 
-  @Test
-  @DisplayName("6.5.5 보험 납입정보 조회 서비스 테스트1. 성공케이스")
-  void insurancePayment_success() {
-    // Given
-    ExecutionContext executionContext = TestHelper.getExecutionContext(wireMockServer.port());
-    saveInsuranceSummary(0);
+  @AfterEach
+  void tearDown() {
 
-    // When
-    accountInfoService
-        .listAccountInfos(executionContext, Executions.insurance_get_payment, requestHelper, responseHelper);
-    List<InsurancePaymentEntity> insurancePaymentEntities = insurancePaymentRepository.findAll();
-    List<InsurancePaymentHistoryEntity> insurancePaymentHistoryRepositories = insurancePaymentHistoryRepository
-        .findAll();
-
-    assertEquals(1, insurancePaymentEntities.size());
-    assertEquals(1, insurancePaymentHistoryRepositories.size());
-
-    // TODO: compare with db
-    //Then
-//    assertThat(insurancePayments.get(0)).usingRecursiveComparison()
-//        .isEqualTo(
-//            InsurancePayment.builder()
-//                .insuNum("1234567812345678")
-//                .payDue("01")
-//                .payCycle("1M")
-//                .payCnt(1)
-//                .payOrgCode("1234")
-//                .payDate("03")
-//                .payEndDate("20210320")
-//                .payAmt(new BigDecimal("30000.123"))
-//                .currencyCode("KRW")
-//                .autoPay(true)
-//                .build()
-//        );
-
-    assertThat(insurancePaymentEntities.get(0)).usingRecursiveComparison()
-        .ignoringFields(ENTITY_IGNORE_FIELD)
-        .isEqualTo(
-            InsurancePaymentEntity.builder()
-                .banksaladUserId(BANKSALAD_USER_ID)
-                .organizationId(ORGANIZATION_ID)
-                .insuNum("1234567812345678")
-                .payDue("01")
-                .payCycle("1M")
-                .payCnt(1)
-                .payOrgCode("1234")
-                .payDate("03")
-                .payEndDate("20210320")
-                .payAmt(new BigDecimal("30000.123"))
-                .currencyCode("KRW")
-                .autoPay(true)
-                .build()
-        );
-
-    assertThat(insurancePaymentHistoryRepositories.get(0)).usingRecursiveComparison()
-        .ignoringFields(ENTITY_IGNORE_FIELD)
-        .isEqualTo(
-            InsurancePaymentHistoryEntity.builder()
-                .banksaladUserId(BANKSALAD_USER_ID)
-                .organizationId(ORGANIZATION_ID)
-                .insuNum("1234567812345678")
-                .payDue("01")
-                .payCycle("1M")
-                .payCnt(1)
-                .payOrgCode("1234")
-                .payDate("03")
-                .payEndDate("20210320")
-                .payAmt(new BigDecimal("30000.123"))
-                .currencyCode("KRW")
-                .autoPay(true)
-                .build()
-        );
+    wireMockServer.resetAll();
   }
 
-  public void saveInsuranceSummary(long searchTimestamp) {
-    insuranceSummaryRepository.save(
-        InsuranceSummaryEntity.builder()
-            .syncedAt(LocalDateTime.now())
-            .banksaladUserId(BANKSALAD_USER_ID)
-            .organizationId(ORGANIZATION_ID)
-            .insuNum("1234567812345678")
-            .consent(TRUE)
-            .insuType("05")
-            .prodName("묻지도 따지지도않고 암보험")
-            .insuStatus("02")
-            .paymentSearchTimestamp(searchTimestamp)
-            .build()
+  @TestTemplate
+  @ExtendWith(InsurancePaymentInvocationContextProvider.class)
+  public void unitTests(TestCase<Object, InsuranceSummaryEntity, InsurancePaymentEntity, Object> testCase) {
+
+    prepare(testCase, wireMockServer);
+
+    runMainService(testCase);
+
+    validate(testCase);
+  }
+
+  @Override
+  protected void saveGParents(List<Object> objects) {
+
+  }
+
+  @Override
+  protected void saveParents(List<InsuranceSummaryEntity> insuranceSummaryEntities) {
+
+    /* DB save()에 의해서 testCase의 summaries가 오염되므로 복제본을 만들어야 한다. */
+    insuranceSummaryEntities
+        .forEach(insuranceSummaryEntity -> parentRepository.save(insuranceSummaryEntity.toBuilder().build()));
+  }
+
+  @Override
+  protected void saveMains(List<InsurancePaymentEntity> insurancePaymentEntities) {
+
+    insurancePaymentEntities
+        .forEach(insurancePaymentEntity -> mainRepository.save(insurancePaymentEntity.toBuilder().build()));
+  }
+
+  @Override
+  protected void saveChildren(List<Object> objects) {
+
+  }
+
+  @Override
+  protected void runMainService(
+      TestCase<Object, InsuranceSummaryEntity, InsurancePaymentEntity, Object> testCase) {
+
+    mainService
+        .listAccountInfos(testCase.getExecutionContext(), testCase.getExecution(), requestHelper, responseHelper);
+  }
+
+  @Override
+  protected void validateParents(List<InsuranceSummaryEntity> expectedParents) {
+
+    final List<InsuranceSummaryEntity> actualParents = parentRepository.findAll();
+
+    assertAll("*** Parent 확인 ***",
+        () -> assertEquals(expectedParents.size(), actualParents.size()),
+        () -> {
+          for (int i = 0; i < expectedParents.size(); i++) {
+            assertThat(actualParents.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedParents.get(i));
+          }
+        }
     );
   }
 
-  private static void setUpMockServer() {
-    wireMockServer.stubFor(post(urlMatching("/insurances/payment.*"))
-        .withRequestBody(
-            equalToJson(readText("classpath:mock/request/IS05_001_single_page_00.json")))
-        .willReturn(
-            aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/IS05_001_single_page_00.json"))));
+  @Override
+  protected void validateMains(List<InsurancePaymentEntity> expectedMains) {
+
+    final List<InsurancePaymentEntity> actualMains = mainRepository.findAll();
+
+    assertAll("*** Main 확인 ***",
+        () -> assertEquals(expectedMains.size(), actualMains.size()),
+        () -> {
+          for (int i = 0; i < expectedMains.size(); i++) {
+            assertThat(actualMains.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedMains.get(i));
+          }
+        }
+    );
+  }
+
+  @Override
+  protected void validateChildren(List<Object> expectedChildren) {
+
   }
 }

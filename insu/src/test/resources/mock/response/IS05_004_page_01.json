@@ -1,0 +1,14 @@
+{
+  "rsp_code": "000",
+  "rsp_msg": "rsp_msg",
+  "search_timestamp": 1000,
+  "pay_due": "01",
+  "pay_cycle": "1M",
+  "pay_cnt" : 1,
+  "pay_org_code" :"1234",
+  "pay_date": "01",
+  "pay_end_date": "20210320",
+  "pay_amt": 10000.000,
+  "currency_code": "KRW",
+  "is_auto_pay": true
+}
