@@ -11,12 +11,9 @@ import com.banksalad.collectmydata.bank.grpc.client.ConnectClientService;
 import com.banksalad.collectmydata.bank.publishment.summary.dto.AccountSummaryResponse;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankAccountSummariesRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
@@ -26,7 +23,6 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static java.lang.Boolean.*;
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -50,7 +46,7 @@ class AccountSummaryPublishServiceImplTest {
   void getAccountSummaryResponses_success() {
     // given
     accountSummaryRepository.save(getAccountSummaryEntity());
-    when(connectClientService.getOrganizationResponse(any())).thenReturn(
+    when(connectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
         GetOrganizationResponse.newBuilder()
             .setSector("sector")
             .setIndustry("industry")

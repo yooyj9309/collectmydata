@@ -5,8 +5,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
-import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountBasicEntity;
-import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountDetailEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountTransactionEntity;
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountBasicRepository;
@@ -55,7 +53,7 @@ public class InvestAccountPublishServiceImpl implements InvestAccountPublishServ
     // TODO : type casting & load entity 중복코드 공통화
     /* type casting */
     long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-    String organizationId = connectClientService.getOrganizationResponse(request.getOrganizationObjectid())
+    String organizationId = connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
         .getOrganizationId();
 
     /* load summary entities (is_consent = true & response_code != 40305, 40404) */
@@ -80,7 +78,7 @@ public class InvestAccountPublishServiceImpl implements InvestAccountPublishServ
       ListBankInvestAccountDetailsRequest request) {
     /* type casting */
     long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-    String organizationId = connectClientService.getOrganizationResponse(request.getOrganizationObjectid())
+    String organizationId = connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
         .getOrganizationId();
 
     /* load summary entities (is_consent = true & response_code != 40305, 40404) */
@@ -105,7 +103,7 @@ public class InvestAccountPublishServiceImpl implements InvestAccountPublishServ
       ListBankInvestAccountTransactionsRequest request) {
     /* type casting */
     long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-    String organizationId = connectClientService.getOrganizationResponse(request.getOrganizationObjectid())
+    String organizationId = connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
         .getOrganizationId();
     LocalDateTime createdAt = LocalDateTime.ofEpochSecond(request.getCreatedAfterMs(), 0, ZoneOffset.UTC);
     int limit = Long.valueOf(request.getLimit()).intValue();

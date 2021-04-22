@@ -27,7 +27,7 @@ public class AccountSummaryPublishServiceImpl implements AccountSummaryPublishSe
   public List<AccountSummaryResponse> getAccountSummaryResponses(ListBankAccountSummariesRequest request) {
     /* type casting */
     long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-    String organizationId = connectClientService.getOrganizationResponse(request.getOrganizationObjectid())
+    String organizationId = connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
         .getOrganizationId();
 
     /* load summary entities (is_consent = true) */

@@ -53,7 +53,7 @@ public class DepositAccountPublishServiceImpl implements DepositAccountPublishSe
       ListBankDepositAccountBasicsRequest request) {
     /* type casting */
     long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-    String organizationId = connectClientService.getOrganizationResponse(request.getOrganizationObjectid())
+    String organizationId = connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
         .getOrganizationId();
 
     /* load summary entities (is_consent = true & response_code != 40305, 40404) */
@@ -80,7 +80,7 @@ public class DepositAccountPublishServiceImpl implements DepositAccountPublishSe
       ListBankDepositAccountDetailsRequest request) {
     /* type casting */
     long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-    String organizationId = connectClientService.getOrganizationResponse(request.getOrganizationObjectid())
+    String organizationId = connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
         .getOrganizationId();
 
     /* load summary entities (is_consent = true & response_code != 40305, 40404) */
@@ -107,7 +107,7 @@ public class DepositAccountPublishServiceImpl implements DepositAccountPublishSe
       ListBankDepositAccountTransactionsRequest request) {
     /* type casting */
     long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-    String organizationId = connectClientService.getOrganizationResponse(request.getOrganizationObjectid())
+    String organizationId = connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
         .getOrganizationId();
     LocalDateTime createdAt = LocalDateTime.ofEpochSecond(request.getCreatedAfterMs(), 0, ZoneOffset.UTC);
     int limit = Long.valueOf(request.getLimit()).intValue();

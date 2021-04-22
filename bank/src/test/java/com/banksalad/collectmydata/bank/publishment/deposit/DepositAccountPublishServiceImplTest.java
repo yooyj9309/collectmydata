@@ -17,13 +17,11 @@ import com.banksalad.collectmydata.bank.grpc.client.ConnectClientService;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountBasicResponse;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountDetailResponse;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountTransactionResponse;
-import com.banksalad.collectmydata.common.crypto.HashUtil;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankDepositAccountBasicsRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankDepositAccountDetailsRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankDepositAccountTransactionsRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
 import com.google.protobuf.StringValue;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +36,6 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -75,7 +72,7 @@ class DepositAccountPublishServiceImplTest {
     // given
     accountSummaryRepository.save(getAccountSummaryEntity());
     depositAccountBasicRepository.save(getDepositAccountBasicEntity());
-    when(connectClientService.getOrganizationResponse(any())).thenReturn(
+    when(connectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
         GetOrganizationResponse.newBuilder()
             .setSector("sector")
             .setIndustry("industry")
@@ -99,7 +96,7 @@ class DepositAccountPublishServiceImplTest {
     // given
     accountSummaryRepository.save(getAccountSummaryEntity());
     depositAccountDetailRepository.save(getDepositAccountDetailEntity());
-    when(connectClientService.getOrganizationResponse(any())).thenReturn(
+    when(connectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
         GetOrganizationResponse.newBuilder()
             .setSector("sector")
             .setIndustry("industry")
@@ -123,7 +120,7 @@ class DepositAccountPublishServiceImplTest {
     // given
     accountSummaryRepository.save(getAccountSummaryEntity());
     depositAccountTransactionRepository.save(getDepositAccountTransactionEntity());
-    when(connectClientService.getOrganizationResponse(any())).thenReturn(
+    when(connectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
         GetOrganizationResponse.newBuilder()
             .setSector("sector")
             .setIndustry("industry")

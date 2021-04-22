@@ -1,5 +1,7 @@
 package com.banksalad.collectmydata.bank.deposit;
 
+import org.springframework.stereotype.Component;
+
 import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.enums.FinanceIndustry;
@@ -9,6 +11,7 @@ import com.banksalad.collectmydata.common.message.PublishmentRequestedBankMessag
 import com.banksalad.collectmydata.common.message.PublishmentRequestedMessage;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionPublishmentHelper;
 
+@Component
 public class DepositAccountTransactionPublishmentHelper implements TransactionPublishmentHelper<AccountSummary> {
 
   private static final FinanceIndustry financeIndustry = FinanceIndustry.BANK;

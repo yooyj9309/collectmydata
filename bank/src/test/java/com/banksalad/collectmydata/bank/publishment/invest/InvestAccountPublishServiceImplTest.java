@@ -22,10 +22,8 @@ import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.Lis
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankInvestAccountTransactionsRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
 import com.google.protobuf.StringValue;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -38,7 +36,6 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -74,7 +71,7 @@ class InvestAccountPublishServiceImplTest {
     // given
     accountSummaryRepository.save(getAccountSummaryEntity());
     investAccountBasicRepository.save(getInvestAccountBasicEntity());
-    when(connectClientService.getOrganizationResponse(any())).thenReturn(
+    when(connectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
         GetOrganizationResponse.newBuilder()
             .setSector("sector")
             .setIndustry("industry")
@@ -98,7 +95,7 @@ class InvestAccountPublishServiceImplTest {
     // given
     accountSummaryRepository.save(getAccountSummaryEntity());
     investAccountDetailRepository.save(getInvestAccountDetailEntity());
-    when(connectClientService.getOrganizationResponse(any())).thenReturn(
+    when(connectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
         GetOrganizationResponse.newBuilder()
             .setSector("sector")
             .setIndustry("industry")
@@ -121,7 +118,7 @@ class InvestAccountPublishServiceImplTest {
     // given
     accountSummaryRepository.save(getAccountSummaryEntity());
     investAccountTransactionRepository.save(getInvestAccountTransactionEntity());
-    when(connectClientService.getOrganizationResponse(any())).thenReturn(
+    when(connectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
         GetOrganizationResponse.newBuilder()
             .setSector("sector")
             .setIndustry("industry")

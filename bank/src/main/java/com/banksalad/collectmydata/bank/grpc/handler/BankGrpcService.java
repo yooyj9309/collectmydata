@@ -248,7 +248,7 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       List<LoanAccountBasicResponse> loanAccountBasicResponses = loanAccountPublishService
           .getLoanAccountBasicResponses(
               Long.valueOf(request.getBanksaladUserId()),
-              connectClientService.getOrganizationResponse(request.getOrganizationObjectid()).getOrganizationId());
+              connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId());
       LoanAccountBasicsProtoResponse loanAccountBasicsProtoResponse = LoanAccountBasicsProtoResponse.builder()
           .loanAccountBasicResponses(loanAccountBasicResponses)
           .build();
@@ -274,7 +274,7 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       List<LoanAccountDetailResponse> loanAccountDetailResponses = loanAccountPublishService
           .getLoanAccountDetailResponses(
               Long.valueOf(request.getBanksaladUserId()),
-              connectClientService.getOrganizationResponse(request.getOrganizationObjectid()).getOrganizationId());
+              connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId());
       LoanAccountDetailsProtoResponse loanAccountDetailsProtoResponse = LoanAccountDetailsProtoResponse.builder()
           .loanAccountDetailResponses(loanAccountDetailResponses)
           .build();
@@ -300,7 +300,7 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       List<LoanAccountTransactionResponse> loanAccountTransactionsProtoResponses = loanAccountPublishService
           .getLoanAccountTransactionResponse(
               Long.valueOf(request.getBanksaladUserId()),
-              connectClientService.getOrganizationResponse(request.getOrganizationObjectid()).getOrganizationId(),
+              connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId(),
               request.getAccountNum(),
               request.getSeqno().getValue(),
               LocalDateTime.ofEpochSecond(request.getCreatedAfterMs(), 0, ZoneOffset.UTC),
