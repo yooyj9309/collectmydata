@@ -1,0 +1,9 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "success",
+  "search_timestamp": 1100,
+  "loan_start_date": "20200101",
+  "loan_exp_date": "20200131",
+  "repay_method": "02",
+  "insu_num": "01"
+}

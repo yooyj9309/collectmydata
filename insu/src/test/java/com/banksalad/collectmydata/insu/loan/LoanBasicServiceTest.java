@@ -1,157 +1,156 @@
 package com.banksalad.collectmydata.insu.loan;
 
-import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
-import com.banksalad.collectmydata.insu.collect.Executions;
+import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
 import com.banksalad.collectmydata.insu.common.db.entity.LoanBasicEntity;
-import com.banksalad.collectmydata.insu.common.db.entity.LoanBasicHistoryEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.LoanSummaryEntity;
-import com.banksalad.collectmydata.insu.common.db.repository.LoanBasicHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanBasicRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanSummaryRepository;
-import com.banksalad.collectmydata.insu.common.util.TestHelper;
 import com.banksalad.collectmydata.insu.loan.dto.GetLoanBasicRequest;
 import com.banksalad.collectmydata.insu.loan.dto.LoanBasic;
 import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
 
+import com.banksalad.collectmydata.insu.template.ServiceTest;
+import com.banksalad.collectmydata.insu.template.provider.LoanBasicInvocationContextProvider;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
-import org.apache.http.entity.ContentType;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.banksalad.collectmydata.insu.common.util.FileUtil.readText;
-import static com.banksalad.collectmydata.insu.common.util.TestHelper.ACCOUNT_NUM;
-import static com.banksalad.collectmydata.insu.common.util.TestHelper.BANKSALAD_USER_ID;
-import static com.banksalad.collectmydata.insu.common.util.TestHelper.ENTITY_IGNORE_FIELD;
-import static com.banksalad.collectmydata.insu.common.util.TestHelper.ORGANIZATION_ID;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.IGNORING_ENTITY_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
-public class LoanBasicServiceTest {
-
-  private static WireMockServer wireMockServer;
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Transactional
+@DisplayName("보험-009 대출상품 기본정보 조회")
+public class LoanBasicServiceTest extends
+    ServiceTest<Object, LoanSummaryEntity, LoanBasicEntity, Object> {
 
   @Autowired
-  private AccountInfoService<LoanSummary, GetLoanBasicRequest, LoanBasic> accountInfoService;
-
+  private AccountInfoService<LoanSummary, GetLoanBasicRequest, LoanBasic> mainService;
   @Autowired
   private AccountInfoRequestHelper<GetLoanBasicRequest, LoanSummary> requestHelper;
-
   @Autowired
   private AccountInfoResponseHelper<LoanSummary, LoanBasic> responseHelper;
-
   @Autowired
-  private LoanBasicRepository loanBasicRepository;
-
+  private LoanSummaryRepository parentRepository;
   @Autowired
-  private LoanBasicHistoryRepository loanBasicHistoryRepository;
+  private LoanBasicRepository mainRepository;
 
-  @Autowired
-  private LoanSummaryRepository loanSummaryRepository;
+  public static final WireMockServer wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
 
   @BeforeAll
-  static void setup() {
-    wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
+  static void setUp() {
+
     wireMockServer.start();
-    setupMockServer();
   }
 
-  @Test
-  @Transactional
-  @DisplayName("6.5.9 (1) 대출상품 추가정보 조회: 신규 케이스")
-  public void listLoanBasics_succeed_1_of_1() {
-    ExecutionContext executionContext = TestHelper.getExecutionContext(wireMockServer.port());
-    saveLoanSummaryEntity();
+  @AfterAll
+  static void shutDown() {
 
-    accountInfoService
-        .listAccountInfos(executionContext, Executions.insurance_get_loan_basic, requestHelper, responseHelper);
-    List<LoanBasicEntity> loanBasicEntities = loanBasicRepository.findAll();
-    List<LoanBasicHistoryEntity> loanBasicHistoryEntities = loanBasicHistoryRepository.findAll();
-
-    assertEquals(1, loanBasicEntities.size());
-    assertEquals(1, loanBasicHistoryEntities.size());
-
-    // TODO : compare with db
-//    assertThat(loanBasics.get(0)).usingRecursiveComparison()
-//        .isEqualTo(
-//            LoanBasic.builder()
-//                .loanStartDate("20210305")
-//                .loanExpDate("20300506")
-//                .repayMethod("03")
-//                .insuNum("123456789")
-//                .build()
-//        );
-//
-//    assertThat(loanBasics.get(0)).usingRecursiveComparison()
-//        .ignoringFields(ENTITY_IGNORE_FIELD)
-//        .isEqualTo(
-//            LoanBasicEntity.builder()
-//                .banksaladUserId(BANKSALAD_USER_ID)
-//                .organizationId(ORGANIZATION_ID)
-//                .accountNum(ACCOUNT_NUM)
-//                .loanStartDate("20210305")
-//                .loanExpDate("20300506")
-//                .repayMethod("03")
-//                .insuNum("123456789")
-//                .build()
-//        );
-
-    assertThat(loanBasicHistoryEntities.get(0)).usingRecursiveComparison()
-        .ignoringFields(ENTITY_IGNORE_FIELD)
-        .isEqualTo(
-            LoanBasicHistoryEntity.builder()
-                .banksaladUserId(BANKSALAD_USER_ID)
-                .organizationId(ORGANIZATION_ID)
-                .accountNum(ACCOUNT_NUM)
-                .loanStartDate("20210305")
-                .loanExpDate("20300506")
-                .repayMethod("03")
-                .insuNum("123456789")
-                .build()
-        );
+    wireMockServer.shutdown();
   }
 
-  private static void setupMockServer() {
-    // 6.5.9 대출상품 기본정보 조회
-    wireMockServer.stubFor(post(urlMatching("/loans/basic"))
-        .withRequestBody(
-            equalToJson(readText("classpath:mock/request/IS12_001_single_page_00.json")))
-        .willReturn(
-            aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/IS12_001_single_page_00.json"))));
+  @AfterEach
+  void tearDown() {
+
+    wireMockServer.resetAll();
   }
 
-  private void saveLoanSummaryEntity() {
-    loanSummaryRepository.save(LoanSummaryEntity.builder()
-        .syncedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
-        .banksaladUserId(BANKSALAD_USER_ID)
-        .organizationId(ORGANIZATION_ID)
-        .accountNum(ACCOUNT_NUM)
-        .consent(true)
-        .prodName("좋은 보험대출")
-        .accountType("3400")
-        .accountStatus("01")
-        .build());
+  @TestTemplate
+  @ExtendWith(LoanBasicInvocationContextProvider.class)
+  public void unitTests(TestCase<Object, LoanSummaryEntity, LoanBasicEntity, Object> testCase) {
+
+    prepare(testCase, wireMockServer);
+
+    runMainService(testCase);
+
+    validate(testCase);
   }
 
+  @Override
+  protected void saveGParents(List<Object> objects) {
+
+  }
+
+  @Override
+  protected void saveParents(List<LoanSummaryEntity> loanSummaryEntities) {
+
+    /* DB save()에 의해서 testCase의 summaries가 오염되므로 복제본을 만들어야 한다. */
+    loanSummaryEntities
+        .forEach(loanSummaryEntity -> parentRepository.save(loanSummaryEntity.toBuilder().build()));
+  }
+
+  @Override
+  protected void saveMains(List<LoanBasicEntity> loanBasicEntities) {
+
+    loanBasicEntities
+        .forEach(loanBasicEntity -> mainRepository.save(loanBasicEntity.toBuilder().build()));
+  }
+
+  @Override
+  protected void saveChildren(List<Object> objects) {
+
+  }
+
+  @Override
+  protected void runMainService(
+      TestCase<Object, LoanSummaryEntity, LoanBasicEntity, Object> testCase) {
+
+    mainService
+        .listAccountInfos(testCase.getExecutionContext(), testCase.getExecution(), requestHelper, responseHelper);
+  }
+
+  @Override
+  protected void validateParents(List<LoanSummaryEntity> expectedParents) {
+
+    final List<LoanSummaryEntity> actualParents = parentRepository.findAll();
+
+    assertAll("*** Parent 확인 ***",
+        () -> assertEquals(expectedParents.size(), actualParents.size()),
+        () -> {
+          for (int i = 0; i < expectedParents.size(); i++) {
+            assertThat(actualParents.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedParents.get(i));
+          }
+        }
+    );
+  }
+
+  @Override
+  protected void validateMains(List<LoanBasicEntity> expectedMains) {
+
+    final List<LoanBasicEntity> actualMains = mainRepository.findAll();
+
+    assertAll("*** Main 확인 ***",
+        () -> assertEquals(expectedMains.size(), actualMains.size()),
+        () -> {
+          for (int i = 0; i < expectedMains.size(); i++) {
+            assertThat(actualMains.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedMains.get(i));
+          }
+        }
+    );
+  }
+
+  @Override
+  protected void validateChildren(List<Object> expectedChildren) {
+
+  }
 }
+
