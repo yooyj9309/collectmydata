@@ -2,6 +2,7 @@ package com.banksalad.collectmydata.bank.common.mapper;
 
 import com.banksalad.collectmydata.bank.common.db.entity.LoanAccountDetailEntity;
 import com.banksalad.collectmydata.bank.loan.dto.LoanAccountDetail;
+import com.banksalad.collectmydata.bank.publishment.loan.dto.LoanAccountDetailResponse;
 import com.banksalad.collectmydata.common.mapper.BigDecimalMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -18,4 +19,6 @@ public interface LoanAccountDetailMapper {
       }
   )
   LoanAccountDetailEntity dtoToEntity(LoanAccountDetail loanAccountDetail);
+
+  LoanAccountDetailResponse entityToResponseDto(LoanAccountDetailEntity loanAccountDetailEntity);
 }

@@ -17,4 +17,8 @@ public interface LoanAccountTransactionInterestMapper {
       }
   )
   LoanAccountTransactionInterestEntity dtoToEntity(LoanAccountTransactionInterest loanAccountTransactionInterest);
+
+  // TODO : change duplicated naming
+  com.banksalad.collectmydata.bank.publishment.loan.dto.LoanAccountTransactionInterest entityToResponseDto(
+      LoanAccountTransactionInterestEntity loanAccountTransactionInterestEntity);
 }

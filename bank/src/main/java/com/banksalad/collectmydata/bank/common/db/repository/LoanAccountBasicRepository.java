@@ -10,10 +10,5 @@ import java.util.Optional;
 public interface LoanAccountBasicRepository extends JpaRepository<LoanAccountBasicEntity, Long> {
 
   Optional<LoanAccountBasicEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
-      Long banksaladUserId,
-      String organizationId,
-      String accountNum,
-      String seqNo);
-
-  List<LoanAccountBasicEntity> findByBanksaladUserIdAndOrganizationId(Long banksaladUserId, String organizationId);
+      Long banksaladUserId, String organizationId, String accountNum, String seqNo);
 }

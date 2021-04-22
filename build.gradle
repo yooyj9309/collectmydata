@@ -3,7 +3,7 @@ version '1.0-SNAPSHOT'
 
 
 ext {
-    idlVersion = "20210415.a9bb140.RELEASE"
+    idlVersion = "20210422.52a02ad.RELEASE"
 
     springBootVersion = "2.4.1"
     springDependencyVersion = "1.0.10.RELEASE"

@@ -69,5 +69,4 @@ public class LoanAccountTransactionEntity extends BaseEntity {
 
   @Column(nullable = false, precision = 18, scale = 3)
   private BigDecimal intAmt;
-
 }
