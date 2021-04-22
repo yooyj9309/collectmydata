@@ -1,154 +1,154 @@
 package com.banksalad.collectmydata.bank.loan;
 
-import com.banksalad.collectmydata.bank.common.collect.Executions;
-import com.banksalad.collectmydata.bank.common.db.entity.LoanAccountDetailEntity;
-import com.banksalad.collectmydata.bank.common.db.repository.LoanAccountDetailRepository;
-import com.banksalad.collectmydata.bank.common.enums.BankAccountType;
-import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
-import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountDetailRequest;
-import com.banksalad.collectmydata.bank.loan.dto.LoanAccountDetail;
-import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
-import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.common.util.DateUtil;
-import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
-import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
-import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
 
+import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
+import com.banksalad.collectmydata.bank.common.db.entity.LoanAccountDetailEntity;
+import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
+import com.banksalad.collectmydata.bank.common.db.repository.LoanAccountDetailRepository;
+import com.banksalad.collectmydata.bank.loan.dto.GetLoanAccountDetailRequest;
+import com.banksalad.collectmydata.bank.loan.dto.LoanAccountDetail;
+import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
+import com.banksalad.collectmydata.bank.template.ServiceTest;
+import com.banksalad.collectmydata.bank.template.provider.LoanAccountDetailInvocationContextProvider;
+import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
+import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
+import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
+import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
 import com.github.tomakehurst.wiremock.WireMockServer;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.http.entity.ContentType;
+import javax.transaction.Transactional;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
-import static com.banksalad.collectmydata.bank.testutil.FileUtil.readText;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.IGNORING_ENTITY_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Slf4j
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@DisplayName("대출 계좌 추가 정보 서비스 테스트")
-public class LoanAccountDetailServiceTest {
-
-  public static final WireMockServer wiremock = new WireMockServer(WireMockSpring.options().dynamicPort());
-
-  private static final Long BANKSALAD_USER_ID = 1L;
-  private static final String ORGANIZATION_ID = "woori_bank";
-  private static final String ORGANIZATION_HOST = "http://localhost";
+@Transactional
+@DisplayName("은행-009 대출상품계좌 추가정보 조회")
+public class LoanAccountDetailServiceTest extends
+    ServiceTest<Object, AccountSummaryEntity, LoanAccountDetailEntity, Object> {
 
   @Autowired
-  private AccountInfoService<AccountSummary, GetLoanAccountDetailRequest, LoanAccountDetail> loanAccountDetailApiService;
-
+  private AccountInfoService<AccountSummary, GetLoanAccountDetailRequest, LoanAccountDetail> mainService;
   @Autowired
-  private AccountInfoRequestHelper<GetLoanAccountDetailRequest, AccountSummary> loanAccountDetailInfoRequestHelper;
-
+  private AccountInfoRequestHelper<GetLoanAccountDetailRequest, AccountSummary> requestHelper;
   @Autowired
-  private AccountInfoResponseHelper<AccountSummary, LoanAccountDetail> loanAccountInfoDetailResponseHelper;
-
-  @MockBean
-  private AccountSummaryService accountSummaryService;
-
+  private AccountInfoResponseHelper<AccountSummary, LoanAccountDetail> responseHelper;
   @Autowired
-  private LoanAccountDetailRepository loanAccountDetailRepository;
+  private AccountSummaryRepository parentRepository;
+  @Autowired
+  private LoanAccountDetailRepository mainRepository;
 
-  @BeforeEach
-  public void setupClass() {
-    wiremock.start();
-  }
+  public static final WireMockServer wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
 
-  @AfterEach
-  public void after() {
-    wiremock.resetAll();
+  @BeforeAll
+  static void setUp() {
+
+    wireMockServer.start();
   }
 
   @AfterAll
-  public static void clean() {
-    wiremock.shutdown();
+  static void shutDown() {
+
+    wireMockServer.shutdown();
   }
 
-  private ExecutionContext initExecutionContext() {
-    return ExecutionContext.builder()
-        .banksaladUserId(BANKSALAD_USER_ID)
-        .organizationId(ORGANIZATION_ID)
-        .syncRequestId(UUID.randomUUID().toString())
-        .executionRequestId(UUID.randomUUID().toString())
-        .accessToken("test")
-        .organizationCode("020")
-        .organizationHost(ORGANIZATION_HOST + ":" + wiremock.port())
-        .executionRequestId(UUID.randomUUID().toString())
-        .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
-        .build();
+  @AfterEach
+  void tearDown() {
+
+    wireMockServer.resetAll();
   }
 
-  @Test
-  @DisplayName("대출 계좌 추가 정보 조회 테스트")
-  public void step_01_listLoanAccountDetails_success() throws Exception {
-    setupServerLoanAccountDetail();
+  @TestTemplate
+  @ExtendWith(LoanAccountDetailInvocationContextProvider.class)
+  public void unitTests(TestCase<Object, AccountSummaryEntity, LoanAccountDetailEntity, Object> testCase) {
 
-    /* execution context */
-    ExecutionContext executionContext = initExecutionContext();
+    prepare(testCase, wireMockServer);
 
-    Mockito
-        .when(accountSummaryService.listSummariesConsented(BANKSALAD_USER_ID, ORGANIZATION_ID, BankAccountType.LOAN))
-        .thenReturn(getAccountSummaries());
+    runMainService(testCase);
 
-    loanAccountDetailApiService.listAccountInfos(
-        executionContext,
-        Executions.finance_bank_loan_account_detail,
-        loanAccountDetailInfoRequestHelper,
-        loanAccountInfoDetailResponseHelper
+    validate(testCase);
+  }
+
+  @Override
+  protected void saveGParents(List<Object> objects) {
+
+  }
+
+  @Override
+  protected void saveParents(List<AccountSummaryEntity> accountSummaryEntities) {
+
+    /* DB save()에 의해서 testCase의 summaries가 오염되므로 복제본을 만들어야 한다. */
+    accountSummaryEntities
+        .forEach(accountSummaryEntity -> parentRepository.save(accountSummaryEntity.toBuilder().build()));
+  }
+
+  @Override
+  protected void saveMains(List<LoanAccountDetailEntity> loanAccountDetailEntities) {
+
+    loanAccountDetailEntities
+        .forEach(loanAccountDetailEntity -> mainRepository.save(loanAccountDetailEntity.toBuilder().build()));
+  }
+
+  @Override
+  protected void saveChildren(List<Object> objects) {
+
+  }
+
+  @Override
+  protected void runMainService(
+      TestCase<Object, AccountSummaryEntity, LoanAccountDetailEntity, Object> testCase) {
+
+    mainService
+        .listAccountInfos(testCase.getExecutionContext(), testCase.getExecution(), requestHelper, responseHelper);
+  }
+
+  @Override
+  protected void validateParents(List<AccountSummaryEntity> expectedParents) {
+
+    final List<AccountSummaryEntity> actualParents = parentRepository.findAll();
+
+    assertAll("*** Parent 확인 ***",
+        () -> assertEquals(expectedParents.size(), actualParents.size()),
+        () -> {
+          for (int i = 0; i < expectedParents.size(); i++) {
+            assertThat(actualParents.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedParents.get(i));
+          }
+        }
     );
-
-    Optional<LoanAccountDetailEntity> loanAccountDetailEntity = loanAccountDetailRepository
-        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
-            BANKSALAD_USER_ID,
-            ORGANIZATION_ID,
-            "1234567890",
-            "1"
-        );
-
-    assertThat(loanAccountDetailEntity.isPresent()).isTrue();
   }
 
-  private void setupServerLoanAccountDetail() throws Exception {
-    wiremock.stubFor(post(urlMatching("/accounts/loan/detail"))
-        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA22_001_single_page_00.json")))
-        .willReturn(
-            aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/bank/response/BA22_001_single_page_00.json"))));
-  }
+  @Override
+  protected void validateMains(List<LoanAccountDetailEntity> expectedMains) {
 
-  private List<AccountSummary> getAccountSummaries() {
-    return List.of(
-        AccountSummary.builder()
-            .accountNum("1234567890")
-            .accountStatus("01")
-            .accountType("3001")
-            .foreignDeposit(false)
-            .consent(true)
-            .prodName("자유입출식 계좌")
-            .seqno("1")
-            .build()
+    final List<LoanAccountDetailEntity> actualMains = mainRepository.findAll();
+
+    assertAll("*** Main 확인 ***",
+        () -> assertEquals(expectedMains.size(), actualMains.size()),
+        () -> {
+          for (int i = 0; i < expectedMains.size(); i++) {
+            assertThat(actualMains.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedMains.get(i));
+          }
+        }
     );
+  }
+
+  @Override
+  protected void validateChildren(List<Object> expectedChildren) {
+
   }
 }
