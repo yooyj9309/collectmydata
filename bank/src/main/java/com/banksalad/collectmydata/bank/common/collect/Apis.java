@@ -70,6 +70,9 @@ public class Apis {
           .name("투자 상품 계좌 거래내역 조회")
           .endpoint("/accounts/invest/transactions")
           .method(HttpMethod.POST.name())
+          .pagination(Pagination.builder()
+              .nextPage("next_page")
+              .build())
           .build();
 
   //6.2.8 대출상품 기본 정보 조회

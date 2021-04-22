@@ -1,155 +1,157 @@
 package com.banksalad.collectmydata.bank.invest;
 
-import com.banksalad.collectmydata.bank.common.collect.Executions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+
 import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
+import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountTransactionEntity;
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
-import com.banksalad.collectmydata.bank.common.enums.BankAccountType;
-import com.banksalad.collectmydata.bank.common.service.AccountSummaryService;
+import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountTransactionRepository;
 import com.banksalad.collectmydata.bank.invest.dto.InvestAccountTransaction;
 import com.banksalad.collectmydata.bank.invest.dto.ListInvestAccountTransactionsRequest;
 import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
-import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.common.util.DateUtil;
+import com.banksalad.collectmydata.bank.template.ServiceTest;
+import com.banksalad.collectmydata.bank.template.provider.InvestAccountTransactionInvocationContextProvider;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionRequestHelper;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
 import com.github.tomakehurst.wiremock.WireMockServer;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.http.entity.ContentType;
+import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
+import javax.transaction.Transactional;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
-import static com.banksalad.collectmydata.bank.testutil.FileUtil.readText;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.IGNORING_ENTITY_FIELDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Slf4j
-@SpringBootTest
-@DisplayName("투자 계좌 거래내역 조회 테스트")
-public class InvestAccountTransactionServiceTest {
-
-  private static final Long BANKSALAD_USER_ID = 1L;
-  private static final String ORGANIZATION_ID = "woori_bank";
-  private static final String ORGANIZATION_HOST = "http://localhost";
-  private static final WireMockServer wiremock = new WireMockServer(WireMockSpring.options().dynamicPort());
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Transactional
+@DisplayName("은행-007 투자상품계좌 거래내역 조회")
+public class InvestAccountTransactionServiceTest extends
+    ServiceTest<Object, AccountSummaryEntity, InvestAccountTransactionEntity, Object> {
 
   @Autowired
-  private TransactionApiService<AccountSummary, ListInvestAccountTransactionsRequest, InvestAccountTransaction> investTransactionApiService;
+  private TransactionApiService<AccountSummary, ListInvestAccountTransactionsRequest, InvestAccountTransaction> mainService;
   @Autowired
-  private TransactionRequestHelper<AccountSummary, ListInvestAccountTransactionsRequest> investAccountTransactionRequestHelper;
+  private TransactionRequestHelper<AccountSummary, ListInvestAccountTransactionsRequest> requestHelper;
   @Autowired
-  private TransactionResponseHelper<AccountSummary, InvestAccountTransaction> investAccountTransactionResponseHelper;
+  private TransactionResponseHelper<AccountSummary, InvestAccountTransaction> responseHelper;
+  @Autowired
+  private AccountSummaryRepository parentRepository;
+  @Autowired
+  private InvestAccountTransactionRepository mainRepository;
 
-  @MockBean
-  private AccountSummaryService accountSummaryService;
-  @MockBean
-  private AccountSummaryRepository accountSummaryRepository;
+  private static final WireMockServer wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
 
-  @BeforeEach
-  public void setupClass() {
-    wiremock.start();
-  }
+  @BeforeAll
+  static void setUp() {
 
-  @AfterEach
-  public void after() {
-    wiremock.resetAll();
+    wireMockServer.start();
   }
 
   @AfterAll
-  public static void clean() {
-    wiremock.shutdown();
+  static void shutDown() {
+
+    wireMockServer.shutdown();
   }
 
-  private ExecutionContext initExecutionContext() {
-    return ExecutionContext.builder()
-        .syncRequestId(UUID.randomUUID().toString())
-        .banksaladUserId(BANKSALAD_USER_ID)
-        .organizationId(ORGANIZATION_ID)
-        .executionRequestId(UUID.randomUUID().toString())
-        .organizationCode("020")
-        .organizationHost(ORGANIZATION_HOST + ":" + wiremock.port())
-        .accessToken("test")
-        .syncStartedAt(LocalDateTime.of(2021, 07, 31, 0, 0, 0))
-        .build();
+  @AfterEach
+  void tearDown() {
+
+    wireMockServer.resetAll();
   }
 
-  @Test
-  @DisplayName("투자 계좌 상품 거래내역 조회")
-  public void step_01_listInvestAccountTransactions_single_page_success() throws Exception {
-    /* transaction mock server */
-    setupServerInvestAccountTransactionsSinglePage();
+  @TestTemplate
+  @ExtendWith(InvestAccountTransactionInvocationContextProvider.class)
+  public void unitTests(TestCase<Object, AccountSummaryEntity, InvestAccountTransactionEntity, Object> testCase) {
 
-    ExecutionContext executionContext = initExecutionContext();
+    prepare(testCase, wireMockServer);
 
-    Mockito
-        .when(accountSummaryService.listSummariesConsented(BANKSALAD_USER_ID, ORGANIZATION_ID, BankAccountType.INVEST))
-        .thenReturn(List.of(
-            AccountSummary.builder()
-                .accountNum("1234567890")
-                .seqno("01")
-                .accountType(BankAccountType.investAccountTypeCodes.get(0))
-                .foreignDeposit(false)
-                .consent(true)
-                .prodName("뱅크샐러드 대박 적금")
-                .build()
-        ));
+    runMainService(testCase);
 
-    Mockito.when(accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(BANKSALAD_USER_ID, ORGANIZATION_ID, "1234567890",
-            "01"))
-        .thenReturn(Optional.of(
-            AccountSummaryEntity.builder()
-                .banksaladUserId(BANKSALAD_USER_ID)
-                .organizationId(ORGANIZATION_ID)
-                .syncedAt(LocalDateTime.now(DateUtil.KST_ZONE_ID))
-                .accountNum("1234567890")
-                .accountStatus("01")
-                .accountType("2001")
-                .basicSearchTimestamp(0L)
-                .detailSearchTimestamp(0L)
-                .transactionSyncedAt(LocalDateTime.of(2021, 01, 01, 0, 0, 0))
-                .foreignDeposit(false)
-                .consent(true)
-                .prodName("자유입출식 계좌")
-                .seqno("1")
-                .build())
-        );
+    validate(testCase);
+  }
 
-    /* assertions transaction size */
-    // TODO : check test code
-    investTransactionApiService.listTransactions(
-        executionContext, Executions.finance_bank_invest_account_transaction, investAccountTransactionRequestHelper,
-        investAccountTransactionResponseHelper
+  @Override
+  protected void saveGParents(List<Object> objects) {
+
+  }
+
+  @Override
+  protected void saveParents(List<AccountSummaryEntity> accountSummaryEntities) {
+
+    /* DB save()에 의해서 testCase의 summaries가 오염되므로 복제본을 만들어야 한다. */
+    accountSummaryEntities
+        .forEach(accountSummaryEntity -> parentRepository.save(accountSummaryEntity.toBuilder().build()));
+  }
+
+  @Override
+  protected void saveMains(List<InvestAccountTransactionEntity> investAccountTransactionEntities) {
+
+    investAccountTransactionEntities
+        .forEach(
+            investAccountTransactionEntity -> mainRepository.save(investAccountTransactionEntity.toBuilder().build()));
+  }
+
+  @Override
+  protected void saveChildren(List<Object> objects) {
+
+  }
+
+  @Override
+  protected void runMainService(
+      TestCase<Object, AccountSummaryEntity, InvestAccountTransactionEntity, Object> testCase) {
+
+    mainService
+        .listTransactions(testCase.getExecutionContext(), testCase.getExecution(), requestHelper, responseHelper);
+  }
+
+
+  @Override
+  protected void validateParents(List<AccountSummaryEntity> expectedParents) {
+
+    final List<AccountSummaryEntity> actualParents = parentRepository.findAll();
+
+    assertAll("*** Parent 확인 ***",
+        () -> assertEquals(expectedParents.size(), actualParents.size()),
+        () -> {
+          for (int i = 0; i < expectedParents.size(); i++) {
+            assertThat(actualParents.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedParents.get(i));
+          }
+        }
     );
-//    Assertions.assertThat(investAccountTransactions.size()).isEqualTo(2);
   }
 
+  @Override
+  protected void validateMains(List<InvestAccountTransactionEntity> expectedMains) {
 
-  private void setupServerInvestAccountTransactionsSinglePage() {
-    wiremock.stubFor(post(urlMatching("/accounts/invest/transactions"))
-        .withRequestBody(equalToJson(readText("classpath:mock/bank/request/BA13_001_single_page_00.json")))
-        .willReturn(
-            aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/bank/response/BA13_001_single_page_00.json"))));
+    final List<InvestAccountTransactionEntity> actualMains = mainRepository.findAll();
+
+    assertAll("*** Main 확인 ***",
+        () -> assertEquals(expectedMains.size(), actualMains.size()),
+        () -> {
+          for (int i = 0; i < expectedMains.size(); i++) {
+            assertThat(actualMains.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedMains.get(i));
+          }
+        }
+    );
+  }
+
+  @Override
+  protected void validateChildren(List<Object> expectedChildren) {
+
   }
 }

@@ -1,0 +1,26 @@
+{
+  "rsp_code": "000",
+  "rsp_msg": "rsp_msg",
+  "trans_cnt": 2,
+  "trans_list": [
+    {
+      "trans_dtime": "20210102102000",
+      "trans_no": "trans#1",
+      "trans_type": "01",
+      "currency_code": "KRW",
+      "base_amt": 10000.000,
+      "trans_fund_num": 20000.000,
+      "trans_amt": 30000.000,
+      "balance_amt": 40000.000
+    },
+    {
+      "trans_dtime": "20210102232000",
+      "trans_no": "trans#2",
+      "trans_type": "02",
+      "base_amt": 50000.000,
+      "trans_fund_num": 60000.000,
+      "trans_amt": 70000.000,
+      "balance_amt": 80000.000
+    }
+  ]
+}
