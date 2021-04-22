@@ -5,10 +5,10 @@
   "insu_cnt": 1,
   "insu_list": [
     {
-      "insu_num": "123456789",
+      "insu_num": "insuNum02",
       "is_consent": true,
-      "prod_name": "묻지도 따지지도않고 암보험",
-      "insu_type": "05",
+      "prod_name": "02",
+      "insu_type": "02",
       "insu_status": "02"
     }
   ]
