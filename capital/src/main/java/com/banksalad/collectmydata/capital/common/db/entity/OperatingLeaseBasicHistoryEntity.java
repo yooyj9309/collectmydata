@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.capital.common.db.entity;
 
 import com.banksalad.collectmydata.finance.common.db.entity.BaseEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,18 +13,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "operating_lease")
-public class OperatingLeaseEntity extends BaseEntity {
+@Table(name = "operating_lease_history")
+public class OperatingLeaseBasicHistoryEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

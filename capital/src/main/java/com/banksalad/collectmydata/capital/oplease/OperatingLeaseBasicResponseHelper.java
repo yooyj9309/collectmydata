@@ -1,11 +1,9 @@
 package com.banksalad.collectmydata.capital.oplease;
 
-import org.springframework.stereotype.Component;
-
-import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseEntity;
+import com.banksalad.collectmydata.capital.common.db.entity.OperatingLeaseBasicEntity;
+import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseBasicHistoryRepository;
+import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseBasicRepository;
 import com.banksalad.collectmydata.capital.common.mapper.OperatingLeaseHistoryMapper;
-import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseHistoryRepository;
-import com.banksalad.collectmydata.capital.common.db.repository.OperatingLeaseRepository;
 import com.banksalad.collectmydata.capital.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.capital.oplease.dto.GetOperatingLeaseBasicResponse;
 import com.banksalad.collectmydata.capital.oplease.dto.OperatingLeaseBasic;
@@ -14,6 +12,9 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
+
+import org.springframework.stereotype.Component;
+
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
@@ -25,8 +26,8 @@ public class OperatingLeaseBasicResponseHelper implements
     AccountInfoResponseHelper<AccountSummary, OperatingLeaseBasic> {
 
   private final AccountSummaryService accountSummaryService;
-  private final OperatingLeaseRepository operatingLeaseRepository;
-  private final OperatingLeaseHistoryRepository operatingLeaseHistoryRepository;
+  private final OperatingLeaseBasicRepository operatingLeaseBasicRepository;
+  private final OperatingLeaseBasicHistoryRepository operatingLeaseBasicHistoryRepository;
   private final OperatingLeaseHistoryMapper operatingLeaseHistoryMapper = Mappers
       .getMapper(OperatingLeaseHistoryMapper.class);
 
@@ -42,7 +43,7 @@ public class OperatingLeaseBasicResponseHelper implements
     String organizationId = executionContext.getOrganizationId();
 
     // response to entity
-    OperatingLeaseEntity entity = OperatingLeaseEntity.builder()
+    OperatingLeaseBasicEntity entity = OperatingLeaseBasicEntity.builder()
         .syncedAt(executionContext.getSyncStartedAt())
         .banksaladUserId(banksaladUserId)
         .organizationId(organizationId)
@@ -59,21 +60,21 @@ public class OperatingLeaseBasicResponseHelper implements
         .build();
 
     // find existing db
-    OperatingLeaseEntity existingEntity = operatingLeaseRepository
+    OperatingLeaseBasicEntity existingEntity = operatingLeaseBasicRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
             banksaladUserId,
             organizationId,
             accountSummary.getAccountNum(),
             accountSummary.getSeqno()
-        ).orElse(OperatingLeaseEntity.builder().build());
+        ).orElse(OperatingLeaseBasicEntity.builder().build());
 
     if (existingEntity != null) {
       entity.setId(existingEntity.getId());
     }
 
     if (!ObjectComparator.isSame(entity, existingEntity, ENTITY_EXCLUDE_FIELD)) {
-      operatingLeaseRepository.save(entity);
-      operatingLeaseHistoryRepository.save(operatingLeaseHistoryMapper.toHistoryEntity(entity));
+      operatingLeaseBasicRepository.save(entity);
+      operatingLeaseBasicHistoryRepository.save(operatingLeaseHistoryMapper.toHistoryEntity(entity));
     }
   }
 
