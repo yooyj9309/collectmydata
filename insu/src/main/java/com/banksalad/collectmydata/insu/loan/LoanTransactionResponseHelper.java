@@ -55,7 +55,6 @@ public class LoanTransactionResponseHelper implements TransactionResponseHelper<
           .accountNum(loanSummary.getAccountNum())
           .transDtime(loanTransaction.getTransDtime())
           .transNo(loanTransaction.getTransNo())
-          .accountType(loanSummary.getAccountType()) // dusang, 여기에 type이..?
           .currencyCode(loanTransaction.getCurrencyCode())
           .loanPaidAmt(loanTransaction.getLoanPaidAmt())
           .intPaidAmt(loanTransaction.getIntPaidAmt())

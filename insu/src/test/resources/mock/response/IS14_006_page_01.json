@@ -1,0 +1,24 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "success",
+  "next_page": null,
+  "trans_cnt": 1,
+  "trans_list": [
+    {
+      "trans_no": "1",
+      "trans_dtime": "20210102102000",
+      "currency_code": "KRW",
+      "loan_paid_amt": 10000.000,
+      "int_paid_amt": 20000.000,
+      "int_cnt": 1,
+      "int_list": [
+        {
+          "int_start_date": "20201201",
+          "int_end_date": "20201231",
+          "int_rate": 4.112,
+          "int_type": "02"
+        }
+      ]
+    }
+  ]
+}

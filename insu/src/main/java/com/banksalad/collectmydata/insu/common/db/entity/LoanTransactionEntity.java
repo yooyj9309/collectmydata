@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "loan_transaction")
@@ -50,9 +50,6 @@ public class LoanTransactionEntity extends BaseEntity {
   
   @Column(nullable = false)
   private String transDtime;
-
-  @Column(nullable = false)
-  private String accountType;
 
   @Column(nullable = false)
   private String currencyCode;

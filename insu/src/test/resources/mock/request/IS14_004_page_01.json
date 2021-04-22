@@ -1,0 +1,7 @@
+{
+  "org_code": "organization_code1",
+  "account_num": "accountNum1",
+  "from_date": "${json-unit.any-string}",
+  "to_date": "${json-unit.any-string}",
+  "limit": 500
+}
