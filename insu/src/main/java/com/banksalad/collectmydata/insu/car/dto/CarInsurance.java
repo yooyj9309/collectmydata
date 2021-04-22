@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -30,7 +31,7 @@ public class CarInsurance {
   private boolean ownDmgCoverage;
 
   private String selfPayRate;
-  private long selfPayAmt;
+  private BigDecimal selfPayAmt;
 
   /* additional fields */
   private String insuNum;

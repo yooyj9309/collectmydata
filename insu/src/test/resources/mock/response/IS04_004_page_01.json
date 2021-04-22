@@ -1,8 +1,8 @@
 {
   "rsp_code": "00000",
-  "rsp_msg": "success",
+  "rsp_msg": "성공",
   "search_timestamp": 1000,
-  "car_insu_cnt": 2,
+  "car_insu_cnt": 1,
   "car_insu_list": [
     {
       "car_number": "60무1234",
@@ -15,18 +15,6 @@
       "is_own_dmg_coverage": true,
       "self_pay_rate": "01",
       "self_pay_amt": 200000
-    },
-    {
-      "car_number": "60무1234",
-      "car_insu_type": "04",
-      "car_name": "그랜져 IG",
-      "start_date": "20200601",
-      "end_date": "20210601",
-      "contract_age": "21세",
-      "contract_driver": "본인",
-      "is_own_dmg_coverage": false,
-      "self_pay_rate": "02",
-      "self_pay_amt": 30000
     }
   ]
 }
