@@ -1,0 +1,10 @@
+{
+  "rsp_code": "000",
+  "rsp_msg": "rsp_msg",
+  "search_timestamp": 1100,
+  "currency_code": "KRW",
+  "balance_amt": 50000.000,
+  "eval_amt": 60000.000,
+  "inv_principal": 70000.000,
+  "fund_num": 80000.000
+}
