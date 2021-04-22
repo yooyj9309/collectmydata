@@ -1,9 +1,40 @@
 spring:
   profiles:
     active: staging
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+        default_batch_fetch_size: 100
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:mysql://collectmydata-connect-cluster.cluster-ciy3wcu0axct.ap-northeast-2.rds.amazonaws.com:3306/connect?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: collectmydata_connect_was
+    password: ${STG_COLLECTMYDATA_DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 30
+      connection-timeout: 5000
+      validation-timeout: 4000
+      max-lifetime: 60000
+    type: com.zaxxer.hikari.HikariDataSource
 
 organization:
   finance-portal-domain: http://fixme.com
 
 banksalad:
   oauth-callback-url: http://fixme.com
+  cipher.uri: localhost:9999
+  collectSchedule.uri: localhost:9998
+
+logging:
+  config: classpath:logback/logback-${spring.profiles.active}.xml
+  level:
+    com.zaxxer.hikari.HikariConfig: INFO
+    com.zaxxer.hikari: INFO
+    org.hibernate.SQL: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: INFO

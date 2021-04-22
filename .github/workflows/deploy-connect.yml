@@ -51,12 +51,14 @@ jobs:
                   -e ENV \
                   -e SUB_ENV_ID \
                   -e IMAGE_TAG \
+                  -e STG_COLLECTMYDATA_DB_PASSWORD \
                   hairyhenderson/gomplate:v3.5.0-slim -f - | \
                kubectl apply -f -
         env:
           ENV: ${{ github.event.deployment.environment }}
           SUB_ENV_ID: ${{ github.event.deployment.environment }}
           IMAGE_TAG: ${{ github.sha }}
+          STG_COLLECTMYDATA_DB_PASSWORD: ${{ secrets.STG_COLLECTMYDATA_DB_PASSWORD }}
 
       - name: Set deployment status
         if: always()
