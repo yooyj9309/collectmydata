@@ -1,0 +1,22 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "success",
+  "search_timestamp": 1100,
+  "is_renewable": false,
+  "issue_date": "20200101",
+  "exp_date": "99991231",
+  "face_amt": 10000.000,
+  "currency_code": "KRW",
+  "is_variable": true,
+  "is_universal": true,
+  "pension_rcv_start_date": "20200101",
+  "pension_rcv_cycle": "4M",
+  "is_loanable": true,
+  "insured_count": 1,
+  "insured_list": [
+    {
+      "insured_no": "01",
+      "insured_name": "뱅샐"
+    }
+  ]
+}

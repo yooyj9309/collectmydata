@@ -68,6 +68,10 @@ public class InsuranceBasicResponseHelper implements AccountInfoResponseHelper<I
             insuNum
         ).orElse(null);
 
+    if (existingInsuranceBasicEntity != null) {
+      insuranceBasicEntity.setId(existingInsuranceBasicEntity.getId());
+    }
+
     if (!ObjectComparator.isSame(insuranceBasicEntity, existingInsuranceBasicEntity, ENTITY_EXCLUDE_FIELD)) {
       // 보험기본 및 history save;
       insuranceBasicRepository.save(insuranceBasicEntity);
