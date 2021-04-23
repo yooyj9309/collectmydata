@@ -19,18 +19,18 @@
 {{ $namespace := $env }}
 
 # development
-{{ $staging_collectmydata_bank_db_password := getenv "STAGING_COLLECTMYDATA_BANK_DB_PASSWORD" }}
+{{ $stg_collectmydata_bank_db_password := getenv "STG_COLLECTMYDATA_BANK_DB_PASSWORD" }}
 
 # production
-{{ $staging_collectmydata_bank_db_password := getenv "STAGING_COLLECTMYDATA_BANK_DB_PASSWORD" }}
+{{ $stg_collectmydata_bank_db_password := getenv "STG_COLLECTMYDATA_BANK_DB_PASSWORD" }} # PRODUCTION 설정으로 변경
 
 {{ if ne $env $sub_env_id }}
   {{ $namespace = join (slice $env $sub_env_id) "-" }}
 {{ end }}
 
-{{ $mysql_cidr_a := "10.121.6.144/28" }}
-{{ $mysql_cidr_b := "10.121.6.160/28" }}
-{{ $mysql_cidr_c := "10.121.6.176/28" }}
+{{ $mysql_cidr_a := "10.121.9.48/28" }}
+{{ $mysql_cidr_b := "10.121.9.64/28" }}
+{{ $mysql_cidr_c := "10.121.9.80/28" }}
 
 {{ if eq $env "production" }}
   {{ $mysql_cidr_a = "10.131.6.144/28" }}
@@ -141,8 +141,8 @@ spec:
               value: {{ $sub_env_id }}
             - name: NAMESPACE
               value: {{ $namespace }}
-            - name: STAGING_COLLECTMYDATA_BANK_DB_PASSWORD
-              value: {{ $staging_collectmydata_bank_db_password }}
+            - name: STG_COLLECTMYDATA_BANK_DB_PASSWORD
+              value: {{ $stg_collectmydata_bank_db_password }}
           resources:
             limits:
               memory: 8Gi

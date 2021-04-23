@@ -19,7 +19,7 @@
 
 {{ $namespace := $env }}
 
-{{ $stg_collectmydata_db_password := getenv "STG_COLLECTMYDATA_DB_PASSWORD" "" }}
+{{ $stg_collectmydata_connect_db_password := getenv "STG_COLLECTMYDATA_CONNECT_DB_PASSWORD" "" }}
 
 {{ if ne $env $sub_env_id }}
   {{ $namespace = join (slice $env $sub_env_id) "-" }}
@@ -140,8 +140,8 @@ spec:
               value: {{ $sub_env_id }}
             - name: NAMESPACE
               value: {{ $namespace }}
-            - name: STG_COLLECTMYDATA_DB_PASSWORD
-              value: {{ $stg_collectmydata_db_password }}
+            - name: STG_COLLECTMYDATA_CONNECT_DB_PASSWORD
+              value: {{ $stg_collectmydata_connect_db_password }}
           resources:
             limits:
               memory: 8Gi
