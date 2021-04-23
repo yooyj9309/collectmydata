@@ -1,6 +1,7 @@
 {{ $service_name := "collectmydatabank" }}
 
-{{ $service_http_port := "8080" }}
+{{ $service_grpc_port := "18081" }}
+{{ $service_http_port := "18082" }}
 
 {{ $graceful_shutdown_timeout_sec := "30" }}
 
@@ -132,8 +133,11 @@ spec:
         - name: {{ $service_name }}
           image: rainist/{{ $service_name }}:{{ getenv "IMAGE_TAG" }}
           ports:
+            - containerPort: {{ $service_grpc_port }}
+              protocol: TCP
             - containerPort: {{ $service_http_port }}
               protocol: TCP
+
           env:
             - name: ENV
               value: {{ $env }}
@@ -226,12 +230,29 @@ spec:
     - name: http
       protocol: TCP
       port: 8080
-      targetPort: {{ $service_http_port }}
+      targetPort: {{ $service_grpc_port }}
   selector:
     app: {{ $service_name }}
   type: ClusterIP
   sessionAffinity: None
-
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ $service_name }}-headless
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ $service_name }}
+spec:
+  ports:
+    - name: grpc
+      protocol: TCP
+      port: 8080
+      targetPort: {{ $service_grpc_port }}
+  selector:
+    app: {{ $service_name }}
+  clusterIP: None
+  sessionAffinity: None
 ---
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
