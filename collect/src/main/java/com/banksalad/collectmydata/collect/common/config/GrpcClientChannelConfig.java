@@ -8,6 +8,8 @@ import com.github.banksalad.idl.apis.v1.cipher.CipherGrpc;
 import com.github.banksalad.idl.apis.v1.cipher.CipherGrpc.CipherBlockingStub;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataGrpc;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataGrpc.ConnectmydataBlockingStub;
+import com.github.banksalad.idl.apis.v1.finance.FinanceGrpc;
+import com.github.banksalad.idl.apis.v1.finance.FinanceGrpc.FinanceStub;
 import com.github.banksalad.idl.apis.v1.user.UserGrpc;
 import com.github.banksalad.idl.apis.v1.user.UserGrpc.UserBlockingStub;
 import io.grpc.ManagedChannel;
@@ -29,6 +31,9 @@ public class GrpcClientChannelConfig {
 
   @Value("${uri.cipher}")
   private String cipherUri = null;
+
+  @Value("${uri.finance}")
+  private String financeUri = null;
 
   public static final String CLIENT_LOAD_BALANCING_POLICY_ROUND_ROBIN = "round_robin";
 
@@ -56,5 +61,15 @@ public class GrpcClientChannelConfig {
         .usePlaintext()
         .build();
     return CipherGrpc.newBlockingStub(cipherChannel);
+  }
+
+  @Bean
+  public FinanceStub financeStub() {
+    ManagedChannel financeChannel = ManagedChannelBuilder.forTarget(financeUri)
+        .defaultLoadBalancingPolicy(CLIENT_LOAD_BALANCING_POLICY_ROUND_ROBIN)
+        .usePlaintext()
+        .build();
+
+    return FinanceGrpc.newStub(financeChannel);
   }
 }

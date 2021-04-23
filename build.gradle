@@ -1,7 +1,6 @@
 group 'com.banksalad'
 version '1.0-SNAPSHOT'
 
-
 ext {
     idlVersion = "20210422.52a02ad.RELEASE"
 

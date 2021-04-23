@@ -41,6 +41,7 @@ connect-server:
   port: 18081
 
 uri:
+  collectmydataconnect: dns:///collectmydataconnect-headless:18081
   user: dns:///user-headless:18081
   cipher: dns:///cipher-headless:18081
-  connect: dns:///connect-headless:18081
+  finance: dns:///finance-headless:18081

@@ -43,10 +43,10 @@ public class OauthTokenEntity extends BaseEntity {
   @Column(nullable = false)
   private String authorizationCode;
 
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "MEDIUMTEXT")
   private String accessToken;
 
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "MEDIUMTEXT")
   private String refreshToken;
 
   @Column(nullable = false)
@@ -63,7 +63,7 @@ public class OauthTokenEntity extends BaseEntity {
 
   private String tokenType;
 
-  @Column(nullable = false, name = "scopeEncrypted")
+  @Column(nullable = false)
   private String scope;
 
   private LocalDateTime issuedAt;

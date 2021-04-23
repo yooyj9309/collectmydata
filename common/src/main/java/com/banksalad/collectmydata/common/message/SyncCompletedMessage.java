@@ -2,6 +2,8 @@ package com.banksalad.collectmydata.common.message;
 
 import com.banksalad.collectmydata.common.enums.SyncRequestType;
 
+import com.github.banksalad.idl.apis.v1.finance.FinanceProto.CollectmydatabankSyncItem;
+import com.github.banksalad.idl.apis.v1.finance.FinanceProto.NotifyCollectmydatabankSyncedRequest;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,4 +22,14 @@ public class SyncCompletedMessage {
   private String organizationId;
   private String syncRequestId;
   private SyncRequestType syncRequestType;
+
+  public NotifyCollectmydatabankSyncedRequest toNotifyRequest() {
+
+    return NotifyCollectmydatabankSyncedRequest.newBuilder()
+        .setBanksaladUserId(String.valueOf(banksaladUserId))
+        .setCollectmydataSyncRequestUuid(syncRequestId)
+        .setCollectmydatabankSyncItemEnum(CollectmydatabankSyncItem.COLLECTMYDATABANK_SYNC_ITEM_COMPLETED.name())
+        .build();
+  }
 }
+
