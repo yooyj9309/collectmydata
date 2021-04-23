@@ -177,10 +177,14 @@ public abstract class ServiceTest<GParent, Parent, Main, Child> {
   }
 
   protected void validate(TestCase<GParent, Parent, Main, Child> testCase) {
+    final List<GParent> expectedGParents = testCase.getExpectedGParentEntities();
     final List<Parent> expectedParents = testCase.getExpectedParentEntities();
     final List<Main> expectedMains = testCase.getExpectedMainEntities();
     final List<Child> expectedChildren = testCase.getExpectedChildEntities();
 
+    if (expectedGParents != null && expectedGParents.size() > 0) {
+      validateGParents(expectedGParents);
+    }
     if (expectedParents != null && expectedParents.size() > 0) {
       validateParents(expectedParents);
     }
@@ -191,6 +195,8 @@ public abstract class ServiceTest<GParent, Parent, Main, Child> {
       validateChildren(expectedChildren);
     }
   }
+
+  protected abstract void validateGParents(List<GParent> expectedGParents);
 
   protected abstract void validateParents(List<Parent> expectedParents);
 

@@ -1,7 +1,7 @@
 {
   "rsp_code": "00000",
-  "rsp_msg": "rsp_msg",
-  "search_timestamp": 200,
+  "rsp_msg": "성공",
+  "search_timestamp": 100,
   "reg_date": "20210207",
   "account_cnt": 0,
   "account_list": [

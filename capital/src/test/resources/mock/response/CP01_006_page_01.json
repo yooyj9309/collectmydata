@@ -1,0 +1,17 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": 200,
+  "reg_date": "20210207",
+  "account_cnt": 1,
+  "account_list": [
+    {
+      "account_num": "accountNum1",
+      "is_consent": true,
+      "seqno": "1",
+      "prod_name": "상품명3",
+      "account_type": "3100",
+      "account_status": "01"
+    }
+  ]
+}

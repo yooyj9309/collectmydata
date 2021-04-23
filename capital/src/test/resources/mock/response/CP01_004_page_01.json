@@ -1,12 +1,12 @@
 {
   "rsp_code": "00000",
-  "rsp_msg": "rsp_msg",
+  "rsp_msg": "성공",
   "search_timestamp": 200,
   "reg_date": "20210207",
   "account_cnt": 1,
   "account_list": [
     {
-      "account_num": "5678567856785678",
+      "account_num": "accountNum2",
       "is_consent": true,
       "seqno": "2",
       "prod_name": "상품명2",

@@ -121,6 +121,11 @@ public class OperatingLeaseTransactionServiceTest extends
   }
 
   @Override
+  protected void validateGParents(List<Object> expectedGParents) {
+
+  }
+
+  @Override
   protected void validateParents(List<AccountSummaryEntity> expectedParents) {
 
     final List<AccountSummaryEntity> actualParents = parentRepository.findAll();

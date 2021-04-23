@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static com.banksalad.collectmydata.capital.common.constant.CapitalConstants.ACCOUNT_NUM1;
-import static com.banksalad.collectmydata.capital.common.constant.CapitalConstants.ACCOUNT_NUM2;
-import static com.banksalad.collectmydata.capital.common.constant.CapitalConstants.SEQNO1;
-import static com.banksalad.collectmydata.capital.common.constant.CapitalConstants.SEQNO2;
+import static com.banksalad.collectmydata.capital.common.constant.CapitalTestConstants.ACCOUNT_NUM1;
+import static com.banksalad.collectmydata.capital.common.constant.CapitalTestConstants.ACCOUNT_NUM2;
+import static com.banksalad.collectmydata.capital.common.constant.CapitalTestConstants.SEQNO1;
+import static com.banksalad.collectmydata.capital.common.constant.CapitalTestConstants.SEQNO2;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_ST1;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;

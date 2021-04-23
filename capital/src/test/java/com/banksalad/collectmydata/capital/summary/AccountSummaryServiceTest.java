@@ -1,119 +1,165 @@
 package com.banksalad.collectmydata.capital.summary;
 
-import static com.banksalad.collectmydata.capital.common.TestHelper.getExecutionContext;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import com.banksalad.collectmydata.capital.common.db.entity.AccountSummaryEntity;
+import com.banksalad.collectmydata.capital.common.db.repository.AccountSummaryRepository;
+import com.banksalad.collectmydata.capital.summary.dto.AccountSummary;
+import com.banksalad.collectmydata.capital.summary.dto.ListAccountSummariesRequest;
+import com.banksalad.collectmydata.capital.template.ServiceTest;
+import com.banksalad.collectmydata.capital.template.provider.AccountSummaryInvocationContextProvider;
+import com.banksalad.collectmydata.finance.api.summary.SummaryRequestHelper;
+import com.banksalad.collectmydata.finance.api.summary.SummaryResponseHelper;
+import com.banksalad.collectmydata.finance.api.summary.SummaryService;
+import com.banksalad.collectmydata.finance.common.db.entity.UserSyncStatusEntity;
+import com.banksalad.collectmydata.finance.common.db.repository.UserSyncStatusRepository;
+import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
+import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
 
-//@Transactional
-//@SpringBootTest
-//public class AccountSummaryServiceTest {
-//
-//  @Autowired
-//  private SummaryService<ListAccountSummariesRequest, AccountSummary> accountSummaryService;
-//
-//  @Autowired
-//  private SummaryRequestHelper<ListAccountSummariesRequest> accountSummaryRequestHelper;
-//
-//  @Autowired
-//  private SummaryResponseHelper<AccountSummary> accountSummaryResponseHelper;
-//
-//  @Autowired
-//  private AccountSummaryRepository accountSummaryRepository;
-//
-//  @Autowired
-//  private UserSyncStatusRepository userSyncStatusRepository;
-//
-//  @Autowired
-//  private ApiLogRepository apiLogRepository;
-//
-//  private static WireMockServer wireMockServer;
-//
-//
-//  @BeforeAll
-//  static void setup() {
-//    wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
-//    wireMockServer.start();
-//  }
-//
-//  @AfterEach
-//  void cleanBefore() {
-//    accountSummaryRepository.deleteAll(); // dusang, 지워야하나 다른 테스트에서 save가 도중에 되는경우가 존재, 추후 삭제
-//    wireMockServer.resetAll();
-//  }
-//
-//  @AfterAll
-//  static void tearDown() {
-//    wireMockServer.shutdown();
-//  }
-//
-//   @TestTemplate
-//  @ExtendWith(CapitalSummaryInvocationContextProvider.class)
-//  public void unitTest(TestCase testCase) throws ResponseNotOkException {
-//    // executionContext생성
-//    ExecutionContext executionContext = getExecutionContext(wireMockServer.port());
-//
-//    // searchTimestamp, userSyncStatus 적재
-//    long searchTimestamp = 0l;
-//    if (testCase.getUserSyncStatusEntities() != null && testCase.getUserSyncStatusEntities().size() != 0) {
-//      userSyncStatusRepository.save(testCase.getUserSyncStatusEntities().get(0));
-//      searchTimestamp = testCase.getUserSyncStatusEntities().get(0).getSearchTimestamp();
-//    }
-//
-//    if (testCase.getSummaryEntities() != null) {
-//      for (Object accountSummaryEntity : testCase.getSummaryEntities()) {
-//        accountSummaryRepository.save((AccountSummaryEntity) accountSummaryEntity);
-//      }
-//    }
-//
-//    stubForListSummary(searchTimestamp, testCase.getExpectedResponses());
-//
-//    if (testCase.isErrorOccurred()) {
-//      Exception responseException = assertThrows(
-//          Exception.class,
-//          () -> accountSummaryService
-//              .listAccountSummaries(executionContext, testCase.getExecution(), accountSummaryRequestHelper,
-//                  accountSummaryResponseHelper)
-//      );
-//      assertThat(responseException).isInstanceOf(testCase.getExpectedExceptionClazz());
-//    } else {
-//      accountSummaryService.listAccountSummaries(executionContext, testCase.getExecution(), accountSummaryRequestHelper,
-//          accountSummaryResponseHelper);
-//
-//      List<AccountSummaryEntity> accountSummaryEntities = accountSummaryRepository.findAll();
-//      for (int idx = 0; idx < accountSummaryEntities.size(); idx++) {
-//        assertThat(accountSummaryEntities.get(idx)).usingRecursiveComparison()
-//            .ignoringFields(ENTITY_IGNORE_FIELD)
-//            .isEqualTo(testCase.getExpectedMainEntities().get(idx));
-//      }
-//    }
-//  }
-//
-//  private void stubForListSummary(long searchTimestamp, List<BareResponse> bareResponses) {
-//    for (BareResponse bareResponse : bareResponses) {
-//      wireMockServer.stubFor(get(urlMatching("/loans.*"))
-//          .withQueryParam("org_code", equalTo(ORGANIZATION_CODE))
-//          .withQueryParam("search_timestamp", equalTo(String.valueOf(searchTimestamp)))
-//          .willReturn(
-//              aResponse()
-//                  .withStatus(bareResponse.getStatus())
-//                  .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-//                  .withBody(readText("classpath:mock/response/" + bareResponse.getMockId() + ".json"))));
-//
-//    }
-//  }
-//
-//  private static void setupMockServer(HttpStatus httpStatus, String searchTimestamp, String fileName) {
-//    // 6.7.1 계좌목록 조회
-//    wireMockServer.stubFor(get(urlMatching("/loans.*"))
-//        .withQueryParam("org_code", equalTo(ORGANIZATION_CODE))
-//        .withQueryParam("search_timestamp", equalTo(searchTimestamp))
-//        .willReturn(
-//            aResponse()
-//                .withStatus(httpStatus.value())
-//                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-////                .withBody(readText("classpath:mock/response/CP01_001_single_page_01.json"))));
-//                .withBody(readText("classpath:mock/response/" + fileName))));
-//
-//  }
-//}
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+
+import com.github.tomakehurst.wiremock.WireMockServer;
+import javax.transaction.Transactional;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import java.util.List;
+
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.IGNORING_ENTITY_FIELDS;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.STATUS_OK;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Transactional
+@DisplayName("할부금융-001 계좌 목록 조회")
+public class AccountSummaryServiceTest extends
+    ServiceTest<Object, UserSyncStatusEntity, AccountSummaryEntity, Object> {
+
+  private static final WireMockServer wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
+  @Autowired
+  private SummaryService<ListAccountSummariesRequest, AccountSummary> mainService;
+  @Autowired
+  private SummaryRequestHelper<ListAccountSummariesRequest> requestHelper;
+  @Autowired
+  private SummaryResponseHelper<AccountSummary> responseHelper;
+  @Autowired
+  private UserSyncStatusRepository parentRepository;
+  @Autowired
+  private AccountSummaryRepository mainRepository;
+
+  @BeforeAll
+  static void setUp() {
+
+    wireMockServer.start();
+  }
+
+  @AfterAll
+  static void shutDown() {
+
+    wireMockServer.stop();
+  }
+
+  @AfterEach
+  void tearDown() {
+
+    wireMockServer.resetAll();
+  }
+
+  @TestTemplate
+  @ExtendWith(AccountSummaryInvocationContextProvider.class)
+  public void unitTests(TestCase<Object, UserSyncStatusEntity, AccountSummaryEntity, Object> testCase)
+      throws ResponseNotOkException {
+
+    prepare(testCase, wireMockServer);
+
+    final Integer status = testCase.getExpectedResponses().get(testCase.getExpectedResponses().size() - 1).getStatus();
+
+    if (status != null && status != STATUS_OK) { // if (mainService instanceof SummaryService)
+      runAndTestException(testCase);
+    } else {
+      runMainService(testCase);
+    }
+    validate(testCase);
+  }
+
+  @Override
+  protected void saveGParents(List<Object> objects) {
+
+  }
+
+  @Override
+  protected void saveParents(List<UserSyncStatusEntity> userSyncStatusEntities) {
+
+    userSyncStatusEntities
+        .forEach(userSyncStatusEntity -> parentRepository.save(userSyncStatusEntity.toBuilder().build()));
+  }
+
+  @Override
+  protected void saveMains(List<AccountSummaryEntity> accountSummaryEntities) {
+
+    accountSummaryEntities
+        .forEach(accountSummaryEntity -> mainRepository.save(accountSummaryEntity.toBuilder().build()));
+  }
+
+  @Override
+  protected void saveChildren(List<Object> objects) {
+
+  }
+
+  @Override
+  protected void runMainService(TestCase<Object, UserSyncStatusEntity, AccountSummaryEntity, Object> testCase)
+      throws ResponseNotOkException {
+
+    mainService
+        .listAccountSummaries(testCase.getExecutionContext(), testCase.getExecution(), requestHelper, responseHelper);
+  }
+
+  @Override
+  protected void validateGParents(List<Object> expectedGParents) {
+
+  }
+
+  @Override
+  protected void validateParents(List<UserSyncStatusEntity> expectedParents) {
+
+    final List<UserSyncStatusEntity> actualParents = parentRepository.findAll();
+
+    assertAll("*** Parent 확인 ***",
+        () -> assertEquals(expectedParents.size(), actualParents.size()),
+        () -> {
+          for (int i = 0; i < expectedParents.size(); i++) {
+            assertThat(actualParents.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedParents.get(i));
+          }
+        }
+    );
+  }
+
+  @Override
+  protected void validateMains(List<AccountSummaryEntity> expectedMains) {
+
+    final List<AccountSummaryEntity> actualMains = mainRepository.findAll();
+
+    assertAll("*** Main 확인 ***",
+        () -> assertEquals(expectedMains.size(), actualMains.size()),
+        () -> {
+          for (int i = 0; i < expectedMains.size(); i++) {
+            assertThat(actualMains.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedMains.get(i));
+          }
+        }
+    );
+  }
+
+  @Override
+  protected void validateChildren(List<Object> expectedChildren) {
+
+  }
+}

@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import static com.banksalad.collectmydata.common.util.NumberUtil.bigDecimalOf;
 
+@Deprecated
 public class TestHelper {
 
   public static final LocalDateTime NOW = LocalDateTime.now(DateUtil.UTC_ZONE_ID);
