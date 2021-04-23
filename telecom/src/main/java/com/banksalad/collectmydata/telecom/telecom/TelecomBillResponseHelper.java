@@ -1,18 +1,20 @@
 package com.banksalad.collectmydata.telecom.telecom;
 
-import org.springframework.stereotype.Component;
-
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
-import com.banksalad.collectmydata.telecom.common.db.entity.BillEntity;
-import com.banksalad.collectmydata.telecom.common.mapper.BillHistoryMapper;
-import com.banksalad.collectmydata.telecom.common.db.repository.BillHistoryRepository;
-import com.banksalad.collectmydata.telecom.common.db.repository.BillRepository;
+import com.banksalad.collectmydata.telecom.common.db.entity.TelecomBillEntity;
+import com.banksalad.collectmydata.telecom.common.db.repository.TelecomBillHistoryRepository;
+import com.banksalad.collectmydata.telecom.common.db.repository.TelecomBillRepository;
+import com.banksalad.collectmydata.telecom.common.mapper.TelecomBillHistoryMapper;
+import com.banksalad.collectmydata.telecom.common.mapper.TelecomBillMapper;
 import com.banksalad.collectmydata.telecom.telecom.dto.ListTelecomBillsResponse;
 import com.banksalad.collectmydata.telecom.telecom.dto.TelecomBill;
 import com.banksalad.collectmydata.telecom.telecom.dto.TelecomBillRequestSupporter;
+
+import org.springframework.stereotype.Component;
+
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
@@ -25,10 +27,11 @@ import static com.banksalad.collectmydata.finance.common.constant.FinanceConstan
 public class TelecomBillResponseHelper implements
     AccountInfoResponseHelper<TelecomBillRequestSupporter, List<TelecomBill>> {
 
-  private final BillRepository billRepository;
-  private final BillHistoryRepository billHistoryRepository;
+  private final TelecomBillRepository telecomBillRepository;
+  private final TelecomBillHistoryRepository telecomBillHistoryRepository;
 
-  private final BillHistoryMapper billHistoryMapper = Mappers.getMapper(BillHistoryMapper.class);
+  private final TelecomBillMapper telecomBillMapper = Mappers.getMapper(TelecomBillMapper.class);
+  private final TelecomBillHistoryMapper telecomBillHistoryMapper = Mappers.getMapper(TelecomBillHistoryMapper.class);
 
 
   @Override
@@ -45,27 +48,24 @@ public class TelecomBillResponseHelper implements
     Integer chargeMonth = Integer.valueOf(summary.getChangeMonth());
 
     for (TelecomBill telecomBill : telecomBills) {
-      BillEntity billEntity = BillEntity.builder()
-          .syncedAt(executionContext.getSyncStartedAt())
-          .banksaladUserId(banksaladUserId)
-          .organizationId(organizationId)
-          .chargeMonth(chargeMonth)
-          .mgmtId(telecomBill.getMgmtId())
-          .chargeAmt(telecomBill.getChargeAmt())
-          .chargeDate(telecomBill.getChargeDate())
-          .build();
+      TelecomBillEntity telecomBillEntity = telecomBillMapper.dtoToEntity(telecomBill);
+      telecomBillEntity.setSyncedAt(executionContext.getSyncStartedAt());
+      telecomBillEntity.setBanksaladUserId(banksaladUserId);
+      telecomBillEntity.setOrganizationId(organizationId);
+      telecomBillEntity.setChargeMonth(chargeMonth);
 
-      BillEntity existingBillEntity = billRepository.findByBanksaladUserIdAndOrganizationIdAndChargeMonthAndMgmtId(
-          banksaladUserId, organizationId, chargeMonth, telecomBill.getMgmtId()
-      ).orElse(null);
+      TelecomBillEntity existingTelecomBillEntity = telecomBillRepository
+          .findByBanksaladUserIdAndOrganizationIdAndChargeMonthAndMgmtId(
+              banksaladUserId, organizationId, chargeMonth, telecomBill.getMgmtId()
+          ).orElse(null);
 
-      if (existingBillEntity != null) {
-        billEntity.setId(existingBillEntity.getId());
+      if (existingTelecomBillEntity != null) {
+        telecomBillEntity.setId(existingTelecomBillEntity.getId());
       }
 
-      if (!ObjectComparator.isSame(billEntity, existingBillEntity, ENTITY_EXCLUDE_FIELD)) {
-        billRepository.save(billEntity);
-        billHistoryRepository.save(billHistoryMapper.toHistoryEntity(billEntity));
+      if (!ObjectComparator.isSame(telecomBillEntity, existingTelecomBillEntity, ENTITY_EXCLUDE_FIELD)) {
+        telecomBillRepository.save(telecomBillEntity);
+        telecomBillHistoryRepository.save(telecomBillHistoryMapper.toHistoryEntity(telecomBillEntity));
       }
     }
   }

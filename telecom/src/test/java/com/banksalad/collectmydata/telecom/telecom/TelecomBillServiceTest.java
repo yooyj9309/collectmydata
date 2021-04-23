@@ -1,147 +1,172 @@
 package com.banksalad.collectmydata.telecom.telecom;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
-import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
-import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
 import com.banksalad.collectmydata.finance.common.db.entity.UserSyncStatusEntity;
 import com.banksalad.collectmydata.finance.common.db.repository.UserSyncStatusRepository;
-import com.banksalad.collectmydata.telecom.collect.Apis;
-import com.banksalad.collectmydata.telecom.collect.Executions;
-import com.banksalad.collectmydata.telecom.common.db.entity.BillEntity;
-import com.banksalad.collectmydata.telecom.common.db.entity.BillHistoryEntity;
-import com.banksalad.collectmydata.telecom.common.db.repository.BillHistoryRepository;
-import com.banksalad.collectmydata.telecom.common.db.repository.BillRepository;
+import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
+import com.banksalad.collectmydata.telecom.common.db.entity.TelecomBillEntity;
+import com.banksalad.collectmydata.telecom.common.db.entity.TelecomBillHistoryEntity;
+import com.banksalad.collectmydata.telecom.common.db.entity.TelecomSummaryEntity;
+import com.banksalad.collectmydata.telecom.common.db.repository.TelecomBillHistoryRepository;
+import com.banksalad.collectmydata.telecom.common.db.repository.TelecomBillRepository;
 import com.banksalad.collectmydata.telecom.telecom.dto.ListTelecomBillsRequest;
 import com.banksalad.collectmydata.telecom.telecom.dto.TelecomBill;
 import com.banksalad.collectmydata.telecom.telecom.dto.TelecomBillRequestSupporter;
+import com.banksalad.collectmydata.telecom.template.ServiceTest;
+import com.banksalad.collectmydata.telecom.template.provider.TelecomBillInvocationContextProvider;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import java.math.BigDecimal;
 import java.util.List;
 
-import static com.banksalad.collectmydata.telecom.common.util.FileUtil.readText;
-import static com.banksalad.collectmydata.telecom.common.util.TestHelper.BANKSALAD_USER_ID;
-import static com.banksalad.collectmydata.telecom.common.util.TestHelper.ENTITY_IGNORE_FIELD;
-import static com.banksalad.collectmydata.telecom.common.util.TestHelper.ORGANIZATION_CODE;
-import static com.banksalad.collectmydata.telecom.common.util.TestHelper.ORGANIZATION_ID;
-import static com.banksalad.collectmydata.telecom.common.util.TestHelper.getExecutionContext;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.IGNORING_ENTITY_FIELDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Slf4j
-@SpringBootTest
-@DisplayName("6.9.2 청구 정보 조회 테스트")
-public class TelecomBillServiceTest {
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Transactional
+@DisplayName("통신-002 청구 정보 조회")
+public class TelecomBillServiceTest extends
+    ServiceTest<Object, UserSyncStatusEntity, TelecomBillEntity, Object> {
 
+  private static final WireMockServer wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
   @Autowired
-  private AccountInfoService<TelecomBillRequestSupporter, ListTelecomBillsRequest, List<TelecomBill>> telecomBillService;
+  private AccountInfoService<TelecomBillRequestSupporter, ListTelecomBillsRequest, List<TelecomBill>> mainService;
   @Autowired
-  private AccountInfoRequestHelper<ListTelecomBillsRequest, TelecomBillRequestSupporter> telecomBillRequestHelper;
+  private AccountInfoRequestHelper<ListTelecomBillsRequest, TelecomBillRequestSupporter> requestHelper;
   @Autowired
-  private AccountInfoResponseHelper<TelecomBillRequestSupporter, List<TelecomBill>> telecomBillResponseHelper;
+  private AccountInfoResponseHelper<TelecomBillRequestSupporter, List<TelecomBill>> responseHelper;
   @Autowired
-  private UserSyncStatusRepository UserSyncStatusRepository;
+  private UserSyncStatusRepository parentRepository;
   @Autowired
-  private BillRepository billRepository;
+  private TelecomBillRepository mainRepository;
   @Autowired
-  private BillHistoryRepository billHistoryRepository;
-
-  private static WireMockServer wireMockServer;
-
-  @Autowired
-  private CollectExecutor collectExecutor;
+  private TelecomBillHistoryRepository historyRepository;
 
   @BeforeAll
-  static void setup() {
-    wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
+  static void setUp() {
+
     wireMockServer.start();
-    setupMockServer();
   }
 
   @AfterAll
-  static void tearDown() {
+  static void shutDown() {
+
     wireMockServer.shutdown();
   }
 
-  @Test
-  @Transactional
-  @DisplayName("6.9.2 조회 성공케이스")
-  public void telecomBill_success() {
-    ExecutionContext context = getExecutionContext(wireMockServer.port());
-    UserSyncStatusRepository.save(
-        UserSyncStatusEntity.builder()
-            .syncedAt(context.getSyncStartedAt().minusMonths(1).plusDays(1))
-            .banksaladUserId(context.getBanksaladUserId())
-            .organizationId(context.getOrganizationId())
-            .apiId(Apis.finance_telecom_bills.getId())
-            .build()
-    );
+  @AfterEach
+  void tearDown() {
 
-    telecomBillService.listAccountInfos(context, Executions.finance_telecom_bills, telecomBillRequestHelper,
-        telecomBillResponseHelper);
-
-    List<BillEntity> billEntities = billRepository.findAll();
-    List<BillHistoryEntity> billHistoryEntities = billHistoryRepository.findAll();
-
-    assertEquals(2, billEntities.size());
-    assertEquals(2, billHistoryEntities.size());
-
-    assertThat(billEntities.get(0)).usingRecursiveComparison()
-        .ignoringFields(ENTITY_IGNORE_FIELD)
-        .isEqualTo(
-            BillEntity.builder()
-                .banksaladUserId(BANKSALAD_USER_ID)
-                .organizationId(ORGANIZATION_ID)
-                .chargeMonth(Integer.valueOf(DateUtil
-                    .utcLocalDateTimeToKstYearMonthString(context.getSyncStartedAt().minusMonths(1).plusDays(1))))
-                .mgmtId("11")
-                .chargeAmt(new BigDecimal("123456789"))
-                .chargeDate("20210301")
-                .build()
-        );
-
-    assertThat(billHistoryEntities.get(0)).usingRecursiveComparison()
-        .ignoringFields(ENTITY_IGNORE_FIELD)
-        .isEqualTo(
-            BillEntity.builder()
-                .banksaladUserId(BANKSALAD_USER_ID)
-                .organizationId(ORGANIZATION_ID)
-                .chargeMonth(Integer.valueOf(DateUtil
-                    .utcLocalDateTimeToKstYearMonthString(context.getSyncStartedAt().minusMonths(1).plusDays(1))))
-                .mgmtId("11")
-                .chargeAmt(new BigDecimal("123456789"))
-                .chargeDate("20210301")
-                .build()
-        );
+    wireMockServer.resetAll();
   }
 
-  private static void setupMockServer() {
-    // 6.9.2 청구 정보 조회 테스트
-    wireMockServer.stubFor(get(urlMatching("/telecoms/bills.*"))
-        .withQueryParam("org_code", equalTo(ORGANIZATION_CODE))
-        .willReturn(
-            aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/TC02_001_single_page_00.json"))));
+  @TestTemplate
+  @ExtendWith(TelecomBillInvocationContextProvider.class)
+  public void unitTests(TestCase<Object, UserSyncStatusEntity, TelecomBillEntity, Object> testCase) {
+
+    prepare(testCase, wireMockServer);
+
+    runMainService(testCase);
+
+    validate(testCase);
+  }
+
+  @Override
+  protected void saveGParents(List<Object> objects) {
+
+  }
+
+  @Override
+  protected void saveParents(List<UserSyncStatusEntity> userSyncStatusEntities) {
+
+    /* updateBasicSearchTimestamp()에 의해서 testCase의 summaries가 오염되므로 복제본을 만들어야 한다. */
+    userSyncStatusEntities
+        .forEach(accountSummaryEntity -> parentRepository.save(accountSummaryEntity.toBuilder().build()));
+  }
+
+  @Override
+  protected void saveMains(List<TelecomBillEntity> depositAccountBasicEntities) {
+
+    depositAccountBasicEntities
+        .forEach(depositAccountBasicEntity -> mainRepository.save(depositAccountBasicEntity.toBuilder().build()));
+  }
+
+  @Override
+  protected void saveChildren(List<Object> objects) {
+
+  }
+
+  @Override
+  protected void runMainService(TestCase<Object, UserSyncStatusEntity, TelecomBillEntity, Object> testCase) {
+
+    mainService
+        .listAccountInfos(testCase.getExecutionContext(), testCase.getExecution(), requestHelper, responseHelper);
+  }
+
+  @Override
+  protected void validateGParents(List<Object> expectedGParents) {
+    
+  }
+
+  @Override
+  protected void validateParents(List<UserSyncStatusEntity> expectedParents) {
+
+    final List<UserSyncStatusEntity> actualParents = parentRepository.findAll();
+
+    assertAll("*** Parent 확인 ***",
+        () -> assertEquals(expectedParents.size(), actualParents.size()),
+        () -> {
+          for (int i = 0; i < expectedParents.size(); i++) {
+            assertThat(actualParents.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedParents.get(i));
+          }
+        }
+    );
+  }
+
+  @Override
+  protected void validateMains(List<TelecomBillEntity> expectedMains) {
+
+    final List<TelecomBillEntity> actualMains = mainRepository.findAll();
+
+    assertAll("*** Main 확인 ***",
+        () -> assertEquals(expectedMains.size(), actualMains.size()),
+        () -> {
+          for (int i = 0; i < expectedMains.size(); i++) {
+            assertThat(actualMains.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedMains.get(i));
+          }
+        }
+    );
+
+    final List<TelecomBillHistoryEntity> actualHistories = historyRepository.findAll();
+
+    if (actualHistories.size() > 0) {
+      assertAll("history 확인",
+          () -> assertThat(actualMains.get(actualMains.size() - 1)).usingRecursiveComparison()
+              .ignoringFields(IGNORING_ENTITY_FIELDS).isEqualTo(actualHistories.get(actualHistories.size() - 1))
+      );
+    }
+  }
+
+  @Override
+  protected void validateChildren(List<Object> expectedChildren) {
+
   }
 }

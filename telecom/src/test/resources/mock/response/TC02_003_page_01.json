@@ -1,0 +1,12 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "bill_cnt": 1,
+  "bill_list": [
+    {
+      "mgmt_id": "mgmt_id2",
+      "charge_amt": 12345,
+      "charge_date": "20210301"
+    }
+  ]
+}
