@@ -20,11 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 public class GrpcClientChannelConfig {
 
-  @Value("${connect-server.host}")
-  private String connectHost;
-
-  @Value("${connect-server.port}")
-  private int connectPort;
+  @Value("${uri.collectmydataconnect}")
+  private String connectUri = null;
 
   @Value("${uri.user}")
   private String userUri = null;
@@ -39,7 +36,8 @@ public class GrpcClientChannelConfig {
 
   @Bean
   public ConnectmydataBlockingStub connectmydataBlockingStub() {
-    ManagedChannel connectChannel = ManagedChannelBuilder.forAddress(connectHost, connectPort)
+    ManagedChannel connectChannel = ManagedChannelBuilder.forTarget(connectUri)
+        .defaultLoadBalancingPolicy(CLIENT_LOAD_BALANCING_POLICY_ROUND_ROBIN)
         .usePlaintext()
         .build();
     return ConnectmydataGrpc.newBlockingStub(connectChannel);

@@ -242,7 +242,7 @@ spec:
   ports:
     - name: grpc
       protocol: TCP
-      port: 8080
+      port: {{ $service_grpc_port }}
       targetPort: {{ $service_grpc_port }}
   selector:
     app: {{ $service_name }}

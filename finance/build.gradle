@@ -61,15 +61,18 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-cache:${springBootVersion}")
     implementation("org.springframework.boot:spring-boot-starter-validation:${springBootVersion}")
 
+    // grpc
+    implementation("io.grpc:grpc-context:${grpcVersion}")
+    implementation("io.grpc:grpc-api:${grpcVersion}")
+    implementation("io.grpc:grpc-netty:${grpcVersion}")
+    implementation("io.grpc:grpc-stub:${grpcVersion}")
+    implementation("io.grpc:grpc-protobuf:${grpcVersion}")
+
+    implementation("io.github.lognet:grpc-spring-boot-starter:${grpcSpringBootVersion}")
+    testImplementation("io.grpc:grpc-testing:1.30.0")
+
     // kafka
     implementation("org.springframework.kafka:spring-kafka:${springKafkaVersion}")
-
-    // armeria
-    implementation platform("com.linecorp.armeria:armeria-bom:${armeriaVersion}")
-    implementation platform('io.netty:netty-bom:4.1.54.Final')
-
-    implementation("com.linecorp.armeria:armeria-spring-boot2-webflux-starter:${armeriaVersion}")
-    implementation("com.linecorp.armeria:armeria-grpc:${armeriaVersion}")
 
     // ehcache
     implementation("org.ehcache:ehcache:3.6.2")

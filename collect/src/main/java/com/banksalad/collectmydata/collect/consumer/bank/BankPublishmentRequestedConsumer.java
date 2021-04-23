@@ -28,7 +28,7 @@ public class BankPublishmentRequestedConsumer {
 
   @KafkaListener(
       topics = MessageTopic.bankPublishmentRequested,
-      containerFactory = "kafkaListenerContainerFactory",
+      containerFactory = "bankPublishmentRequestedKafkaListenerContainerFactory",
       groupId = ConsumerGroupId.collectConsumerGroupId)
   public void consume(String source) {
 

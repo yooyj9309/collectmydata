@@ -226,7 +226,24 @@ spec:
     app: {{ $service_name }}
   type: ClusterIP
   sessionAffinity: None
-
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ $service_name }}-headless
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ $service_name }}
+spec:
+  ports:
+    - name: grpc
+      protocol: TCP
+      port: {{ $service_grpc_port }}
+      targetPort: {{ $service_grpc_port }}
+  selector:
+    app: {{ $service_name }}
+  clusterIP: None
+  sessionAffinity: None
 ---
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1

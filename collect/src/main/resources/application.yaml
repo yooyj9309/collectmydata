@@ -36,10 +36,6 @@ grpc:
   in-process-server-name: collectmydata-collect-server-process
   shutdownGrace: 30
 
-connect-server:
-  host: collectmydataconnect
-  port: 18081
-
 uri:
   collectmydataconnect: dns:///collectmydataconnect-headless:18081
   user: dns:///user-headless:18081

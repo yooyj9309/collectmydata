@@ -3,6 +3,7 @@ package com.banksalad.collectmydata.collect.common.config;
 import com.banksalad.collectmydata.common.message.MessageTopic;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
@@ -35,6 +36,12 @@ public class KafkaConsumerConfig {
     return factory;
   }
 
+  @Bean
+  public ConcurrentKafkaListenerContainerFactory<String, String> bankPublishmentRequestedKafkaListenerContainerFactory() {
+    return kafkaListenerContainerFactory(MessageTopic.bankPublishmentRequested);
+  }
+
+  @Bean
   public ConcurrentKafkaListenerContainerFactory<String, String> bankSyncCompletedKafkaListenerContainerFactory() {
     return kafkaListenerContainerFactory(MessageTopic.bankSyncCompleted);
   }

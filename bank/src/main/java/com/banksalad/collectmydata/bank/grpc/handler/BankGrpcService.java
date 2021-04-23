@@ -1,8 +1,8 @@
 package com.banksalad.collectmydata.bank.grpc.handler;
 
-import org.springframework.stereotype.Service;
-
 import com.banksalad.collectmydata.bank.grpc.client.ConnectClientService;
+import com.banksalad.collectmydata.bank.grpc.handler.interceptor.StatsUnaryServerInterceptor;
+import com.banksalad.collectmydata.bank.publishment.deposit.DepositAccountPublishService;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountBasicResponse;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountBasicsProtoResponse;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountDetailResponse;
@@ -24,10 +24,10 @@ import com.banksalad.collectmydata.bank.publishment.loan.dto.LoanAccountDetailsP
 import com.banksalad.collectmydata.bank.publishment.loan.dto.LoanAccountTransactionResponse;
 import com.banksalad.collectmydata.bank.publishment.loan.dto.LoanAccountTransactionsProtoResponse;
 import com.banksalad.collectmydata.bank.publishment.summary.AccountSummaryPublishService;
-import com.banksalad.collectmydata.bank.publishment.deposit.DepositAccountPublishService;
-import com.banksalad.collectmydata.bank.publishment.summary.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.bank.publishment.summary.dto.AccountSummariesProtoResponse;
+import com.banksalad.collectmydata.bank.publishment.summary.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.common.exception.GrpcException;
+
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankGrpc;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankAccountSummariesRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankAccountSummariesResponse;
@@ -52,13 +52,14 @@ import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.Lis
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.lognet.springboot.grpc.GRpcService;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 
 @Slf4j
-@Service
+@GRpcService(interceptors = {StatsUnaryServerInterceptor.class})
 @RequiredArgsConstructor
 public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImplBase {
 
