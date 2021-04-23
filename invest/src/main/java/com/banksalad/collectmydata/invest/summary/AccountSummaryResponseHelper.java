@@ -19,7 +19,7 @@ import java.util.Iterator;
 
 @Component
 @RequiredArgsConstructor
-public class InvestSummaryResponseHelper implements SummaryResponseHelper<AccountSummary> {
+public class AccountSummaryResponseHelper implements SummaryResponseHelper<AccountSummary> {
 
   private final AccountSummaryRepository accountSummaryRepository;
   private final OrganizationUserRepository organizationUserRepository;

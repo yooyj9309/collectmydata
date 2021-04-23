@@ -1,14 +1,14 @@
 {
   "rsp_code": "000",
   "rsp_msg": "rsp_msg",
-  "search_timestamp": 1000,
+  "search_timestamp": 200,
   "reg_date": "20200101",
   "account_cnt": 1,
   "account_list": [
     {
-      "account_num": "1234567890",
+      "account_num": "1111111111",
       "is_consent": true,
-      "account_name": "종합매매 증권계좌",
+      "account_name": "증권계좌2",
       "account_type": "101",
       "account_status": "201"
     }

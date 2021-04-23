@@ -218,3 +218,4 @@ public abstract class ServiceTest<GParent, Parent, Main, Child> {
     assertThat(actual).isCloseTo(expected, within(1, ChronoUnit.MICROS));
   }
 }
+

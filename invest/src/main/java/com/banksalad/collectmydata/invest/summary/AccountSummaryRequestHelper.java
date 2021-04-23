@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class InvestSummaryRequestHelper implements SummaryRequestHelper<ListAccountSummariesRequest> {
+public class AccountSummaryRequestHelper implements SummaryRequestHelper<ListAccountSummariesRequest> {
 
   @Override
   public ListAccountSummariesRequest make(ExecutionContext executionContext, long searchTimestamp, String nextPage) {
