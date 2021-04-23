@@ -2,7 +2,8 @@ package com.banksalad.collectmydata.efin.common.mapper;
 
 import com.banksalad.collectmydata.common.mapper.BigDecimalMapper;
 import com.banksalad.collectmydata.efin.account.dto.AccountBalance;
-import com.banksalad.collectmydata.efin.common.db.entity.BalanceEntity;
+import com.banksalad.collectmydata.efin.common.db.entity.AccountBalanceEntity;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -21,7 +22,7 @@ public interface BalanceMapper {
           @Mapping(target = "limitAmt", qualifiedByName = "BigDecimalScale3"),
       }
   )
-  AccountBalance entityToDto(BalanceEntity balanceEntity);
+  AccountBalance entityToDto(AccountBalanceEntity accountBalanceEntity);
 
   @Mappings(
       value = {
@@ -33,5 +34,5 @@ public interface BalanceMapper {
           @Mapping(target = "limitAmt", qualifiedByName = "BigDecimalScale3"),
       }
   )
-  BalanceEntity dtoToEntity(AccountBalance accountBalance);
+  AccountBalanceEntity dtoToEntity(AccountBalance accountBalance);
 }

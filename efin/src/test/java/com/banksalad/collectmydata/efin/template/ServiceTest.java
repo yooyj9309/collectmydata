@@ -23,6 +23,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_CODE;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_HOST;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.STATUS_OK;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -92,7 +93,7 @@ public abstract class ServiceTest<GParent, Parent, Main, Child> {
       final BareResponse response = testCase.getExpectedResponses().get(i);
       final Long searchTimestamp = request.getSearchTimestamp();
       final String next_page = request.getNextPage();
-      final int status = (response.getStatus() == null) ? 200 : response.getStatus();
+      final int status = (response.getStatus() == null) ? STATUS_OK : response.getStatus();
       final String fileName = api.getId() + "_" + response.getMockId() + ".json";
 
       if (searchTimestamp == null) {
@@ -148,7 +149,7 @@ public abstract class ServiceTest<GParent, Parent, Main, Child> {
 
     for (int i = 0; i < testCase.getExpectedResponses().size(); i++) {
       final BareResponse response = testCase.getExpectedResponses().get(i);
-      final int status = (response.getStatus() == null) ? 200 : response.getStatus();
+      final int status = (response.getStatus() == null) ? STATUS_OK : response.getStatus();
       final String fileName = api.getId() + "_" + response.getMockId() + ".json";
 
       wireMockServer.stubFor(post(urlMatching(urlRegex))

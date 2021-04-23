@@ -1,7 +1,8 @@
 package com.banksalad.collectmydata.efin.common.mapper;
 
-import com.banksalad.collectmydata.efin.common.db.entity.BalanceEntity;
-import com.banksalad.collectmydata.efin.common.db.entity.BalanceHistoryEntity;
+import com.banksalad.collectmydata.efin.common.db.entity.AccountBalanceEntity;
+import com.banksalad.collectmydata.efin.common.db.entity.AccountBalanceHistoryEntity;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -9,5 +10,5 @@ import org.mapstruct.Mapping;
 public interface BalanceHistoryMapper {
 
   @Mapping(target = "id", ignore = true)
-  BalanceHistoryEntity toHistoryEntity(BalanceEntity balanceEntity);
+  AccountBalanceHistoryEntity toHistoryEntity(AccountBalanceEntity accountBalanceEntity);
 }

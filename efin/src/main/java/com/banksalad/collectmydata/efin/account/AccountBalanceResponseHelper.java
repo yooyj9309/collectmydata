@@ -1,20 +1,21 @@
 package com.banksalad.collectmydata.efin.account;
 
-import org.springframework.stereotype.Component;
-
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.efin.account.dto.AccountBalance;
 import com.banksalad.collectmydata.efin.account.dto.ListAccountBalancesResponse;
-import com.banksalad.collectmydata.efin.common.db.entity.BalanceEntity;
-import com.banksalad.collectmydata.efin.common.db.repository.BalanceHistoryRepository;
-import com.banksalad.collectmydata.efin.common.db.repository.BalanceRepository;
+import com.banksalad.collectmydata.efin.common.db.entity.AccountBalanceEntity;
+import com.banksalad.collectmydata.efin.common.db.repository.AccountBalanceHistoryRepository;
+import com.banksalad.collectmydata.efin.common.db.repository.AccountBalanceRepository;
 import com.banksalad.collectmydata.efin.common.mapper.BalanceHistoryMapper;
 import com.banksalad.collectmydata.efin.common.mapper.BalanceMapper;
 import com.banksalad.collectmydata.efin.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.efin.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
+
+import org.springframework.stereotype.Component;
+
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
@@ -29,8 +30,8 @@ public class AccountBalanceResponseHelper implements AccountInfoResponseHelper<A
 
   private final AccountSummaryService accountSummaryService;
 
-  private final BalanceRepository balanceRepository;
-  private final BalanceHistoryRepository balanceHistoryRepository;
+  private final AccountBalanceRepository accountBalanceRepository;
+  private final AccountBalanceHistoryRepository accountBalanceHistoryRepository;
 
   private final BalanceMapper balanceMapper = Mappers.getMapper(BalanceMapper.class);
   private final BalanceHistoryMapper balanceHistoryMapper = Mappers.getMapper(BalanceHistoryMapper.class);
@@ -49,23 +50,24 @@ public class AccountBalanceResponseHelper implements AccountInfoResponseHelper<A
     LocalDateTime syncedAt = executionContext.getSyncStartedAt();
 
     accountBalances.forEach(accountBalance -> {
-      BalanceEntity balanceEntity = balanceMapper.dtoToEntity(accountBalance);
-      balanceEntity.setSyncedAt(syncedAt);
-      balanceEntity.setBanksaladUserId(banksaladUserId);
-      balanceEntity.setOrganizationId(organizationId);
-      balanceEntity.setSubKey(accountSummary.getSubKey());
+      AccountBalanceEntity accountBalanceEntity = balanceMapper.dtoToEntity(accountBalance);
+      accountBalanceEntity.setSyncedAt(syncedAt);
+      accountBalanceEntity.setBanksaladUserId(banksaladUserId);
+      accountBalanceEntity.setOrganizationId(organizationId);
+      accountBalanceEntity.setSubKey(accountSummary.getSubKey());
 
-      BalanceEntity existingBalanceEntity = balanceRepository.findByBanksaladUserIdAndOrganizationIdAndSubKeyAndFobName(
-          banksaladUserId, organizationId, accountSummary.getSubKey(), accountBalance.getFobName())
+      AccountBalanceEntity existingAccountBalanceEntity = accountBalanceRepository
+          .findByBanksaladUserIdAndOrganizationIdAndSubKeyAndFobName(
+              banksaladUserId, organizationId, accountSummary.getSubKey(), accountBalance.getFobName())
           .map(b -> {
-            balanceEntity.setId(b.getId());
+            accountBalanceEntity.setId(b.getId());
             return b;
           })
-          .orElseGet(() -> BalanceEntity.builder().build());
+          .orElseGet(() -> AccountBalanceEntity.builder().build());
 
-      if (!ObjectComparator.isSame(balanceEntity, existingBalanceEntity, ENTITY_EXCLUDE_FIELD)) {
-        balanceRepository.save(balanceEntity);
-        balanceHistoryRepository.save(balanceHistoryMapper.toHistoryEntity(balanceEntity));
+      if (!ObjectComparator.isSame(accountBalanceEntity, existingAccountBalanceEntity, ENTITY_EXCLUDE_FIELD)) {
+        accountBalanceRepository.save(accountBalanceEntity);
+        accountBalanceHistoryRepository.save(balanceHistoryMapper.toHistoryEntity(accountBalanceEntity));
       }
     });
   }
