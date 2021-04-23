@@ -1,49 +1,55 @@
 package com.banksalad.collectmydata.efin.summary;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.WireMockSpring;
-import org.springframework.http.HttpStatus;
-
-import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.efin.collect.Executions;
 import com.banksalad.collectmydata.efin.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.efin.common.db.entity.AccountSummaryPayEntity;
+import com.banksalad.collectmydata.efin.common.db.entity.OrganizationUserEntity;
 import com.banksalad.collectmydata.efin.common.db.repository.AccountSummaryPayRepository;
 import com.banksalad.collectmydata.efin.common.db.repository.AccountSummaryRepository;
-import com.banksalad.collectmydata.efin.common.util.TestHelper;
+import com.banksalad.collectmydata.efin.common.db.repository.OrganizationUserRepository;
 import com.banksalad.collectmydata.efin.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.efin.summary.dto.ListAccountSummariesRequest;
+import com.banksalad.collectmydata.efin.template.ServiceTest;
+import com.banksalad.collectmydata.efin.template.provider.AccountSummaryInvocationContextProvider;
 import com.banksalad.collectmydata.finance.api.summary.SummaryRequestHelper;
 import com.banksalad.collectmydata.finance.api.summary.SummaryResponseHelper;
 import com.banksalad.collectmydata.finance.api.summary.SummaryService;
+import com.banksalad.collectmydata.finance.common.db.entity.UserSyncStatusEntity;
+import com.banksalad.collectmydata.finance.common.db.repository.UserSyncStatusRepository;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
+import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
-import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.List;
 
-import static com.banksalad.collectmydata.efin.common.util.FileUtil.readText;
-import static com.banksalad.collectmydata.efin.common.util.TestHelper.BANKSALAD_USER_ID;
-import static com.banksalad.collectmydata.efin.common.util.TestHelper.ENTITY_IGNORE_FIELD;
-import static com.banksalad.collectmydata.efin.common.util.TestHelper.ORGANIZATION_ID;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.IGNORING_ENTITY_FIELDS;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.STATUS_OK;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
-public class AccountSummaryServiceTest {
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Transactional
+@DisplayName("전금-001 전자지급수단 목록 조회")
+public class AccountSummaryServiceTest extends
+    ServiceTest<UserSyncStatusEntity, OrganizationUserEntity, AccountSummaryEntity, AccountSummaryPayEntity> {
+
+  private static final WireMockServer wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
 
   @Autowired
-  private SummaryService<ListAccountSummariesRequest, AccountSummary> accountSummaryService;
+  private SummaryService<ListAccountSummariesRequest, AccountSummary> mainService;
 
   @Autowired
   private SummaryRequestHelper<ListAccountSummariesRequest> requestHelper;
@@ -52,75 +58,151 @@ public class AccountSummaryServiceTest {
   private SummaryResponseHelper<AccountSummary> responseHelper;
 
   @Autowired
-  private AccountSummaryRepository accountSummaryRepository;
+  private UserSyncStatusRepository gParentRepository;
 
   @Autowired
-  private AccountSummaryPayRepository accountSummaryPayRepository;
+  private OrganizationUserRepository parentRepository;
 
-  private static WireMockServer wireMockServer;
+  @Autowired
+  private AccountSummaryRepository mainRepository;
+
+  @Autowired
+  private AccountSummaryPayRepository childRepository;
 
   @BeforeAll
-  static void setup() {
-    wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
+  static void setUp() {
+
     wireMockServer.start();
-    setupMockServer();
   }
 
   @AfterAll
-  static void tearDown() {
-    wireMockServer.shutdown();
+  static void shutDown() {
+
+    wireMockServer.stop();
   }
 
-  @Test
-  @Transactional
-  @DisplayName("6.6.1 전자지급수단 목록 조회 테스트 : 성공 케이스")
-  public void getAccountSummariesTest_case1() throws ResponseNotOkException {
-    ExecutionContext context = TestHelper.getExecutionContext(wireMockServer.port());
+  @AfterEach
+  void tearDown() {
 
-    accountSummaryService
-        .listAccountSummaries(context, Executions.finance_efin_summaries, requestHelper, responseHelper);
-
-    List<AccountSummaryEntity> accountSummaryEntities = accountSummaryRepository.findAll();
-    assertEquals(1, accountSummaryEntities.size());
-    assertThat(accountSummaryEntities.get(0)).usingRecursiveComparison()
-        .ignoringFields(ENTITY_IGNORE_FIELD)
-        .isEqualTo(
-            AccountSummaryEntity.builder()
-                .banksaladUserId(BANKSALAD_USER_ID)
-                .organizationId(ORGANIZATION_ID)
-                .subKey("mykakaoid")
-                .accountId("11****")
-                .consent(true)
-                .accountStatus("01")
-                .payReg(true)
-                .build()
-        );
-
-    List<AccountSummaryPayEntity> accountSummaryPayEntities = accountSummaryPayRepository.findAll();
-    assertEquals(3, accountSummaryPayEntities.size());
-    assertThat(accountSummaryPayEntities.get(0)).usingRecursiveComparison()
-        .ignoringFields(ENTITY_IGNORE_FIELD)
-        .isEqualTo(
-            AccountSummaryPayEntity.builder()
-                .banksaladUserId(BANKSALAD_USER_ID)
-                .organizationId(ORGANIZATION_ID)
-                .subKey("mykakaoid")
-                .accountId("11****")
-                .payOrgCode("080")
-                .payId("423******1")
-                .primary(true)
-                .build()
-        );
+    wireMockServer.resetAll();
   }
 
-  private static void setupMockServer() {
-    wireMockServer.stubFor(get(urlMatching("/accounts.*"))
-        .withQueryParam("org_code", equalTo(TestHelper.ORGANIZATION_CODE))
-        .withQueryParam("search_timestamp", equalTo("0"))
-        .willReturn(
-            aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/EF01_001_single_page_00.json"))));
+  @TestTemplate
+  @ExtendWith(AccountSummaryInvocationContextProvider.class)
+  public void unitTests(
+      TestCase<UserSyncStatusEntity, OrganizationUserEntity, AccountSummaryEntity, AccountSummaryPayEntity> testCase)
+      throws ResponseNotOkException {
+
+    prepare(testCase, wireMockServer);
+
+    final Integer status = testCase.getExpectedResponses().get(testCase.getExpectedResponses().size() - 1).getStatus();
+
+    if (status != null && status != STATUS_OK) { // if (mainService instanceof SummaryService)
+      runAndTestException(testCase);
+    } else {
+      runMainService(testCase);
+    }
+    validate(testCase);
+  }
+
+  @Override
+  protected void saveGParents(List<UserSyncStatusEntity> userSyncStatusEntities) {
+
+    userSyncStatusEntities
+        .forEach(userSyncStatusEntity -> gParentRepository.save(userSyncStatusEntity.toBuilder().build()));
+  }
+
+  @Override
+  protected void saveParents(List<OrganizationUserEntity> organizationUserEntities) {
+
+    organizationUserEntities
+        .forEach(organizationUserEntity -> parentRepository.save(organizationUserEntity.toBuilder().build()));
+  }
+
+  @Override
+  protected void saveMains(List<AccountSummaryEntity> accountSummaryEntities) {
+
+    accountSummaryEntities
+        .forEach(accountSummaryEntity -> mainRepository.save(accountSummaryEntity.toBuilder().build()));
+  }
+
+  @Override
+  protected void saveChildren(List<AccountSummaryPayEntity> accountSummaryPayEntities) {
+
+    accountSummaryPayEntities
+        .forEach(accountSummaryPayEntity -> childRepository.save(accountSummaryPayEntity.toBuilder().build()));
+  }
+
+  @Override
+  protected void runMainService(
+      TestCase<UserSyncStatusEntity, OrganizationUserEntity, AccountSummaryEntity, AccountSummaryPayEntity> testCase)
+      throws ResponseNotOkException {
+
+    mainService
+        .listAccountSummaries(testCase.getExecutionContext(), testCase.getExecution(), requestHelper, responseHelper);
+  }
+
+  @Override
+  protected void validateGParents(List<UserSyncStatusEntity> expectedGParents) {
+
+    final List<UserSyncStatusEntity> actualGParents = gParentRepository.findAll();
+
+    assertAll("*** GParent 확인 ***",
+        () -> assertEquals(expectedGParents.size(), actualGParents.size()),
+        () -> {
+          for (int i = 0; i < expectedGParents.size(); i++) {
+            assertThat(actualGParents.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedGParents.get(i));
+          }
+        }
+    );
+  }
+
+  @Override
+  protected void validateParents(List<OrganizationUserEntity> expectedParents) {
+
+    final List<OrganizationUserEntity> actualParents = parentRepository.findAll();
+
+    assertAll("*** Parent 확인 ***",
+        () -> assertEquals(expectedParents.size(), actualParents.size()),
+        () -> {
+          for (int i = 0; i < expectedParents.size(); i++) {
+            assertThat(actualParents.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedParents.get(i));
+          }
+        }
+    );
+  }
+
+  @Override
+  protected void validateMains(List<AccountSummaryEntity> expectedMains) {
+
+    final List<AccountSummaryEntity> actualMains = mainRepository.findAll();
+
+    assertAll("*** Main 확인 ***",
+        () -> assertEquals(expectedMains.size(), actualMains.size()),
+        () -> {
+          for (int i = 0; i < expectedMains.size(); i++) {
+            assertThat(actualMains.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedMains.get(i));
+          }
+        }
+    );
+  }
+
+  @Override
+  protected void validateChildren(List<AccountSummaryPayEntity> expectedChildren) {
+
+    final List<AccountSummaryPayEntity> actualChildren = childRepository.findAll();
+
+    assertAll("*** Child 확인 ***",
+        () -> assertEquals(expectedChildren.size(), actualChildren.size()),
+        () -> {
+          for (int i = 0; i < expectedChildren.size(); i++) {
+            assertThat(actualChildren.get(i)).usingRecursiveComparison().ignoringFields(IGNORING_ENTITY_FIELDS)
+                .isEqualTo(expectedChildren.get(i));
+          }
+        }
+    );
   }
 }

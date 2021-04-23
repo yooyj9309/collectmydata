@@ -1,14 +1,14 @@
 {
   "rsp_code": "00000",
-  "rsp_msg": "success",
-  "search_timestamp": 1000,
+  "rsp_msg": "성공",
+  "search_timestamp": 200,
   "name": "이뱅샐",
   "reg_date": "20210101",
   "account_cnt": 1,
   "account_list": [
     {
-      "sub_key": "mykakaoid",
-      "account_id": "11****",
+      "sub_key": "sub_key2",
+      "account_id": "account_id2",
       "is_consent": true,
       "account_status": "01",
       "is_pay_reg": true,
@@ -16,17 +16,7 @@
       "pay_list": [
         {
           "pay_org_code": "080",
-          "pay_id": "423******1",
-          "is_primary": true
-        },
-        {
-          "pay_org_code": "080",
           "pay_id": "423******2",
-          "is_primary": true
-        },
-        {
-          "pay_org_code": "080",
-          "pay_id": "423******3",
           "is_primary": true
         }
       ]

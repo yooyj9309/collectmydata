@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
+@Deprecated
 public class TestHelper {
 
   public static final MydataSector SECTOR = MydataSector.FINANCE;

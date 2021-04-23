@@ -1,7 +1,5 @@
 package com.banksalad.collectmydata.efin.summary;
 
-import org.springframework.stereotype.Component;
-
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.efin.common.db.entity.AccountSummaryEntity;
@@ -17,6 +15,9 @@ import com.banksalad.collectmydata.efin.summary.dto.AccountSummaryPay;
 import com.banksalad.collectmydata.efin.summary.dto.ListAccountSummariesResponse;
 import com.banksalad.collectmydata.finance.api.summary.SummaryResponseHelper;
 import com.banksalad.collectmydata.finance.api.summary.dto.SummaryResponse;
+
+import org.springframework.stereotype.Component;
+
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
@@ -79,13 +80,14 @@ public class AccountSummaryResponseHelper implements SummaryResponseHelper<Accou
     accountSummaryEntity.setSyncedAt(syncedAt);
     accountSummaryRepository.save(accountSummaryEntity);
 
+    List<AccountSummaryPay> accountSummaryPays = accountSummary.getAccountSummaryPays();
     List<AccountSummaryPay> existingAccountSummaryPays = accountSummaryPayRepository
         .findByBanksaladUserIdAndOrganizationIdAndSubKeyAndAccountId(banksaladUserId, organizationId, subKey, accountId)
         .stream()
         .map(accountSummaryPayMapper::entityToDto)
         .collect(Collectors.toList());
 
-    if (ObjectComparator.isSameListIgnoreOrder(accountSummary.getAccountSummaryPays(), existingAccountSummaryPays)) {
+    if (ObjectComparator.isSameListIgnoreOrder(accountSummaryPays, existingAccountSummaryPays)) {
       return;
     }
 
