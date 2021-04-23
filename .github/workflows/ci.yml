@@ -192,6 +192,13 @@ jobs:
           push: true
           tags: rainist/collectmydatacard:${{ github.sha }}
 
+      - name: collect docker push
+        uses: docker/build-push-action@v2
+        with:
+          context: collect
+          push: true
+          tags: rainist/collectmydatacollect:${{ github.sha }}
+
       - name: connect docker push
         uses: docker/build-push-action@v2
         with:
