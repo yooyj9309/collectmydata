@@ -183,53 +183,53 @@ jobs:
         with:
           context: bank
           push: true
-          tags: rainist/collectmydata-bank:${{ github.sha }}
+          tags: rainist/collectmydatabank:${{ github.sha }}
 
       - name: card docker push
         uses: docker/build-push-action@v2
         with:
           context: card
           push: true
-          tags: rainist/collectmydata-card:${{ github.sha }}
+          tags: rainist/collectmydatacard:${{ github.sha }}
 
       - name: connect docker push
         uses: docker/build-push-action@v2
         with:
           context: connect
           push: true
-          tags: rainist/collectmydata-connect:${{ github.sha }}
+          tags: rainist/collectmydataconnect:${{ github.sha }}
 
       - name: efin docker push
         uses: docker/build-push-action@v2
         with:
           context: efin
           push: true
-          tags: rainist/collectmydata-efin:${{ github.sha }}
+          tags: rainist/collectmydataefin:${{ github.sha }}
 
       - name: insu docker push
         uses: docker/build-push-action@v2
         with:
           context: insu
           push: true
-          tags: rainist/collectmydata-insu:${{ github.sha }}
+          tags: rainist/collectmydatainsu:${{ github.sha }}
 
       - name: invest docker push
         uses: docker/build-push-action@v2
         with:
           context: invest
           push: true
-          tags: rainist/collectmydata-invest:${{ github.sha }}
+          tags: rainist/collectmydatainvest:${{ github.sha }}
 
       - name: oauth docker push
         uses: docker/build-push-action@v2
         with:
           context: oauth
           push: true
-          tags: rainist/collectmydata-oauth:${{ github.sha }}
+          tags: rainist/collectmydataoauth:${{ github.sha }}
 
       - name: schedule docker push
         uses: docker/build-push-action@v2
         with:
           context: schedule
           push: true
-          tags: rainist/collectmydata-schedule:${{ github.sha }}
+          tags: rainist/collectmydataschedule:${{ github.sha }}
