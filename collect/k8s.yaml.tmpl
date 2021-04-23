@@ -27,10 +27,18 @@
 {{ $mysql_cidr_b := "10.121.6.160/28" }}
 {{ $mysql_cidr_c := "10.121.6.176/28" }}
 
+{{ $msk_cidr_a := "10.120.250.0/25" }}
+{{ $msk_cidr_b := "10.120.250.128/25" }}
+{{ $msk_cidr_c := "10.120.251.0/25" }}
+
 {{ if eq $env "production" }}
   {{ $mysql_cidr_a = "10.131.6.144/28" }}
   {{ $mysql_cidr_b = "10.131.6.160/28" }}
   {{ $mysql_cidr_c = "10.131.6.176/28" }}
+
+  {{ $msk_cidr_a = "10.120.250.0/25" }}
+  {{ $msk_cidr_b = "10.120.250.128/25" }}
+  {{ $msk_cidr_c = "10.120.251.0/25" }}
 {{ end }}
 
 
@@ -266,6 +274,9 @@ spec:
     - podSelector:
         matchLabels:
           app: {{ $service_name }}
+    - podSelector:
+        matchLabels:
+          app: collectmydataconnect
     ports:
     - protocol: TCP
       port: 80
@@ -283,7 +294,16 @@ spec:
     ports:
     - protocol: TCP
       port: 3306
-
+  - to:
+    - ipBlock:
+        cidr: {{ $msk_cidr_a }}
+    - ipBlock:
+        cidr: {{ $msk_cidr_b }}
+    - ipBlock:
+        cidr: {{ $msk_cidr_c }}
+    ports:
+    - protocol: TCP
+      port: 9092
 ---
 kind: PodDisruptionBudget
 apiVersion: policy/v1beta1
