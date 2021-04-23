@@ -1,13 +1,13 @@
 {
-  "rsp_code": "000",
+  "rsp_code": "00000",
   "rsp_msg": "성공",
-  "search_timestamp": 100,
+  "search_timestamp": 200,
   "telecom_cnt": 1,
   "telecom_list": [
     {
-      "mgmt_id": "1234567890",
+      "mgmt_id": "mgmt_id2",
       "is_consent": true,
-      "telecom_num": "01012345678",
+      "telecom_num": "01012345679",
       "type": "01",
       "status": "01"
     }
