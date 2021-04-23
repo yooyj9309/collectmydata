@@ -71,4 +71,9 @@ public class DepositAccountTransactionEntity extends BaseEntity {
 
   @Column(columnDefinition = "smallint")
   private Integer paidInCnt;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
 }

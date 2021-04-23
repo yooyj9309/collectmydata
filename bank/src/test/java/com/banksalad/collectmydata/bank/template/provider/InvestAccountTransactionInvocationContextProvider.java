@@ -73,6 +73,7 @@ public class InvestAccountTransactionInvocationContextProvider implements TestTe
         .transFundNum(NumberUtil.bigDecimalOf(20000, 3))
         .transAmt(NumberUtil.bigDecimalOf(30000, 3))
         .balanceAmt(NumberUtil.bigDecimalOf(40000, 3))
+        .consentId("consent_id1")
         .build();
     main1.setTransactionYearMonth(Integer.valueOf(main1.getTransDtime().substring(0, 6)));
     main1.setUniqueTransNo(HashUtil.hashCat(main1.getTransDtime(), main1.getTransType(), main1.getTransAmt().toString(),
@@ -92,6 +93,7 @@ public class InvestAccountTransactionInvocationContextProvider implements TestTe
         .transFundNum(NumberUtil.bigDecimalOf(60000, 3))
         .transAmt(NumberUtil.bigDecimalOf(70000, 3))
         .balanceAmt(NumberUtil.bigDecimalOf(80000, 3))
+        .consentId("consent_id1")
         .build();
     main2.setTransactionYearMonth(Integer.valueOf(main2.getTransDtime().substring(0, 6)));
     main2.setUniqueTransNo(HashUtil.hashCat(main2.getTransDtime(), main2.getTransType(), main2.getTransAmt().toString(),
@@ -111,6 +113,7 @@ public class InvestAccountTransactionInvocationContextProvider implements TestTe
         .transFundNum(NumberUtil.bigDecimalOf(10000, 3))
         .transAmt(NumberUtil.bigDecimalOf(11000, 3))
         .balanceAmt(NumberUtil.bigDecimalOf(12000, 3))
+        .consentId("consent_id1")
         .build();
     main3.setTransactionYearMonth(Integer.valueOf(main3.getTransDtime().substring(0, 6)));
     main3.setUniqueTransNo(HashUtil.hashCat(main3.getTransDtime(), main3.getTransType(), main3.getTransAmt().toString(),

@@ -72,4 +72,8 @@ public class InvestAccountTransactionEntity extends BaseEntity {
   @Column(nullable = false, precision = 18, scale = 3)
   private BigDecimal balanceAmt;
 
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
 }

@@ -53,4 +53,9 @@ public class InvestAccountBasicHistoryEntity extends BaseEntity {
   private String issueDate;
 
   private String expDate;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
 }

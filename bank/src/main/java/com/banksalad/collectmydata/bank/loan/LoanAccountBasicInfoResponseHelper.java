@@ -48,6 +48,11 @@ public class LoanAccountBasicInfoResponseHelper implements AccountInfoResponseHe
     loanAccountBasicEntity.setAccountNum(accountSummary.getAccountNum());
     loanAccountBasicEntity.setSeqno(accountSummary.getSeqno());
 
+    // TODO : on-demand, scheduler
+    loanAccountBasicEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+    loanAccountBasicEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+    loanAccountBasicEntity.setConsentId(executionContext.getConsentId());
+
     LoanAccountBasicEntity existingLoanAccountBasicEntity = loanAccountBasicRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
             executionContext.getBanksaladUserId(),

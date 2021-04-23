@@ -60,4 +60,9 @@ public class DepositAccountBasicEntity extends BaseEntity {
   private BigDecimal commitAmt;
 
   private BigDecimal monthlyPaidInAmt;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
 }

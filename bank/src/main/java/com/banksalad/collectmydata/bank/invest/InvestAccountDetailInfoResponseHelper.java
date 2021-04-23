@@ -51,6 +51,11 @@ public class InvestAccountDetailInfoResponseHelper implements
     investAccountDetailEntity.setAccountNum(accountSummary.getAccountNum());
     investAccountDetailEntity.setSeqno(accountSummary.getSeqno());
 
+    // TODO : on-demand, scheduler
+    investAccountDetailEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+    investAccountDetailEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+    investAccountDetailEntity.setConsentId(executionContext.getConsentId());
+
     if (investAccountDetailEntity.getCurrencyCode() == null
         || investAccountDetailEntity.getCurrencyCode().length() == 0) {
       investAccountDetailEntity.setCurrencyCode(CURRENCY_KRW);

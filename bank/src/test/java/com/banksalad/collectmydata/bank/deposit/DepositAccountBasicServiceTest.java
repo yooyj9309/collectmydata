@@ -83,6 +83,7 @@ class DepositAccountBasicServiceTest {
   private static final String ORGANIZATION_CODE = "bank001";
   private static final String ORGANIZATION_HOST = "http://localhost";
   private static final String ACCESS_TOKEN = "xxx.yyy.zzz";
+  private static final String CONSENT_ID = "consentId";
 
   private static final String ACCOUNT_NUM = "1234567890";
   private static final String SEQNO1 = "1";
@@ -91,7 +92,7 @@ class DepositAccountBasicServiceTest {
   public static final String ACCOUNT_STATUS = "01";
 
   private static final String[] ENTITY_IGNORE_FIELD = {"id", "syncedAt", "createdAt", "createdBy", "updatedAt",
-      "updatedBy"};
+      "updatedBy", "consentId"};
 
 
   @BeforeAll
@@ -340,6 +341,7 @@ class DepositAccountBasicServiceTest {
 
   private static ExecutionContext getExecutionContext(int port) {
     return ExecutionContext.builder()
+        .consentId(CONSENT_ID)
         .syncRequestId(UUID.randomUUID().toString())
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
@@ -364,6 +366,7 @@ class DepositAccountBasicServiceTest {
         .accountType(ACCOUNT_TYPE)
         .accountStatus(ACCOUNT_STATUS)
         .basicSearchTimestamp(basicSearchTimestamp)
+        .consentId(CONSENT_ID)
         .build();
   }
 
@@ -381,6 +384,7 @@ class DepositAccountBasicServiceTest {
         .accountType(ACCOUNT_TYPE)
         .accountStatus(ACCOUNT_STATUS)
         .basicSearchTimestamp(basicSearchTimestamp)
+        .consentId(CONSENT_ID)
         .build();
   }
 
@@ -398,6 +402,7 @@ class DepositAccountBasicServiceTest {
         .expDate("20211231")
         .commitAmt(null)
         .monthlyPaidInAmt(null)
+        .consentId(CONSENT_ID)
         .build();
   }
 
@@ -415,6 +420,7 @@ class DepositAccountBasicServiceTest {
         .expDate("20211231")
         .commitAmt(null)
         .monthlyPaidInAmt(null)
+        .consentId(CONSENT_ID)
         .build();
   }
 

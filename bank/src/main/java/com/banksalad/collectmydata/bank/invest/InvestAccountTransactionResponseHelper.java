@@ -53,6 +53,11 @@ public class InvestAccountTransactionResponseHelper implements
       investAccountTransactionEntity.setSeqno(accountSummary.getSeqno());
       investAccountTransactionEntity.setUniqueTransNo(generateUniqueTransNo(investAccountTransaction));
 
+      // TODO : on-demand, scheduler
+      investAccountTransactionEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+      investAccountTransactionEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+      investAccountTransactionEntity.setConsentId(executionContext.getConsentId());
+
       if (investAccountTransactionEntity.getCurrencyCode() == null
           || investAccountTransactionEntity.getCurrencyCode().length() == 0) {
         investAccountTransactionEntity.setCurrencyCode(CURRENCY_KRW);

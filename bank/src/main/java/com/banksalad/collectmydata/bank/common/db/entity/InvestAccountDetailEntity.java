@@ -58,4 +58,8 @@ public class InvestAccountDetailEntity extends BaseEntity {
   @Column(precision = 18, scale = 3)
   private BigDecimal fundNum;
 
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
 }

@@ -66,6 +66,12 @@ public class BankSummaryResponseHelper implements SummaryResponseHelper<AccountS
     accountSummaryEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
     accountSummaryEntity.setOrganizationId(executionContext.getOrganizationId());
     accountSummaryEntity.setSyncedAt(executionContext.getSyncStartedAt());
+
+    // TODO : on-demand, scheduler
+    accountSummaryEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+    accountSummaryEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+    accountSummaryEntity.setConsentId(executionContext.getConsentId());
+
     accountSummaryRepository.save(accountSummaryEntity);
   }
 }

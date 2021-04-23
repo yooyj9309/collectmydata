@@ -49,6 +49,11 @@ public class InvestAccountBasicInfoResponseHelper implements
     investAccountBasicEntity.setAccountNum(accountSummary.getAccountNum());
     investAccountBasicEntity.setSeqno(accountSummary.getSeqno());
 
+    // TODO : on-demand, scheduler
+    investAccountBasicEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+    investAccountBasicEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+    investAccountBasicEntity.setConsentId(executionContext.getConsentId());
+
     InvestAccountBasicEntity existingInvestAccountBasicEntity = investAccountBasicRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
             executionContext.getBanksaladUserId(),

@@ -83,6 +83,7 @@ public class InvestAccountBasicInvocationContextProvider implements TestTemplate
         .paidInType("01")
         .issueDate("20200101")
         .expDate("20201231")
+        .consentId("consent_id1")
         .build();
 
     InvestAccountBasicEntity main2 = InvestAccountBasicEntity.builder()
@@ -95,6 +96,7 @@ public class InvestAccountBasicInvocationContextProvider implements TestTemplate
         .paidInType("01")
         .issueDate("20200102")
         .expDate("20201231")
+        .consentId("consent_id1")
         .build();
 
     Map<String, InvestAccountBasicEntity> mainMap = Map.of(

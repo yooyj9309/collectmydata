@@ -85,6 +85,7 @@ public class InvestAccountDetailInvocationContextProvider implements TestTemplat
         .evalAmt(NumberUtil.bigDecimalOf(20000, 3))
         .invPrincipal(NumberUtil.bigDecimalOf(30000, 3))
         .fundNum(NumberUtil.bigDecimalOf(40000, 3))
+        .consentId("consent_id1")
         .build();
 
     InvestAccountDetailEntity main2 = InvestAccountDetailEntity.builder()
@@ -98,6 +99,7 @@ public class InvestAccountDetailInvocationContextProvider implements TestTemplat
         .evalAmt(NumberUtil.bigDecimalOf(60000, 3))
         .invPrincipal(NumberUtil.bigDecimalOf(70000, 3))
         .fundNum(NumberUtil.bigDecimalOf(80000, 3))
+        .consentId("consent_id1")
         .build();
 
     Map<String, InvestAccountDetailEntity> mainMap = Map.of(

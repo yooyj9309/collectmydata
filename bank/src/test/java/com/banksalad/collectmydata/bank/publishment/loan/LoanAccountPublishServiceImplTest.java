@@ -159,6 +159,7 @@ class LoanAccountPublishServiceImplTest {
         .repayMethod("03")
         .repayOrgCode(null)
         .repayAccountNum("1234567")
+        .consentId("consent_id1")
         .build();
   }
 
@@ -172,6 +173,7 @@ class LoanAccountPublishServiceImplTest {
         .balanceAmt(BigDecimal.valueOf(1000.10))
         .loanPrincipal(BigDecimal.valueOf(3000.30))
         .nextRepayDate("20201231")
+        .consentId("consent_id1")
         .build();
   }
 
@@ -191,6 +193,7 @@ class LoanAccountPublishServiceImplTest {
         .balanceAmt(BigDecimal.valueOf(1000.10))
         .principalAmt(BigDecimal.valueOf(1000.10))
         .intAmt(BigDecimal.valueOf(1000.10))
+        .consentId("consent_id1")
         .build();
   }
 
@@ -207,6 +210,7 @@ class LoanAccountPublishServiceImplTest {
         .intEndDate("20201231")
         .intRate(BigDecimal.valueOf(1.100))
         .intType("01")
+        .consentId("consent_id1")
         .build();
   }
 

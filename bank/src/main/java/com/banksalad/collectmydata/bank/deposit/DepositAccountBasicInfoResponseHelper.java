@@ -52,6 +52,11 @@ public class DepositAccountBasicInfoResponseHelper implements
     depositAccountBasicEntity.setAccountNum(accountSummary.getAccountNum());
     depositAccountBasicEntity.setSeqno(accountSummary.getSeqno());
 
+    // TODO : on-demand, scheduler
+    depositAccountBasicEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+    depositAccountBasicEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+    depositAccountBasicEntity.setConsentId(executionContext.getConsentId());
+
     // load existing account entity
     DepositAccountBasicEntity existingDepositAccountBasicEntity = depositAccountBasicRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndCurrencyCode(

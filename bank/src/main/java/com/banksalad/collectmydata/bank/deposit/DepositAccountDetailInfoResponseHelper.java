@@ -58,6 +58,11 @@ public class DepositAccountDetailInfoResponseHelper implements
       depositAccountDetailEntity.setAccountNum(accountSummary.getAccountNum());
       depositAccountDetailEntity.setSeqno(accountSummary.getSeqno());
 
+      // TODO : on-demand, scheduler
+      depositAccountDetailEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+      depositAccountDetailEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+      depositAccountDetailEntity.setConsentId(executionContext.getConsentId());
+
       if (StringUtils.isEmpty(depositAccountDetailEntity.getCurrencyCode())) {
         depositAccountDetailEntity.setCurrencyCode(CURRENCY_KRW);
       }

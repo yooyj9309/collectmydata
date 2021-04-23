@@ -170,6 +170,7 @@ class DepositAccountPublishServiceImplTest {
         .expDate(null)
         .commitAmt(null)
         .monthlyPaidInAmt(null)
+        .consentId("consent_id1")
         .build();
   }
 
@@ -185,6 +186,7 @@ class DepositAccountPublishServiceImplTest {
         .withdrawableAmt(BigDecimal.valueOf(2000.20))
         .offeredRate(BigDecimal.valueOf(0.3))
         .lastPaidInCnt(1)
+        .consentId("consent_id1")
         .build();
   }
 
@@ -205,6 +207,7 @@ class DepositAccountPublishServiceImplTest {
         .transAmt(BigDecimal.valueOf(1000))
         .balanceAmt(BigDecimal.valueOf(3000))
         .paidInCnt(1)
+        .consentId("consent_id1")
         .build();
   }
 

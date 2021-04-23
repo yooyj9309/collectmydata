@@ -64,4 +64,9 @@ public class LoanAccountBasicHistoryEntity extends BaseEntity {
 
   @Column(name = "repay_account_num_encrypted")
   private String repayAccountNum;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
 }

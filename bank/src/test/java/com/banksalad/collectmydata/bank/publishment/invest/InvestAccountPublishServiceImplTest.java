@@ -165,6 +165,7 @@ class InvestAccountPublishServiceImplTest {
         .paidInType("02")
         .issueDate("20200101")
         .expDate(null)
+        .consentId("consent_id1")
         .build();
   }
 
@@ -180,6 +181,7 @@ class InvestAccountPublishServiceImplTest {
         .evalAmt(BigDecimal.valueOf(20000.20))
         .invPrincipal(BigDecimal.valueOf(5000.50))
         .fundNum(BigDecimal.valueOf(3.0))
+        .consentId("consent_id1")
         .build();
   }
 
@@ -200,6 +202,7 @@ class InvestAccountPublishServiceImplTest {
         .transFundNum(BigDecimal.valueOf(3.0))
         .transAmt(BigDecimal.valueOf(2000.20))
         .balanceAmt(BigDecimal.valueOf(10000.10))
+        .consentId("consent_id1")
         .build();
   }
 

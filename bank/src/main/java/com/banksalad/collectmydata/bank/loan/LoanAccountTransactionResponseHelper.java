@@ -67,6 +67,11 @@ public class LoanAccountTransactionResponseHelper implements
       loanAccountTransactionEntity.setSeqno(accountSummary.getSeqno());
       loanAccountTransactionEntity.setUniqueTransNo(uniqueTransNo);
 
+      // TODO : on-demand, scheduler
+      loanAccountTransactionEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+      loanAccountTransactionEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+      loanAccountTransactionEntity.setConsentId(executionContext.getConsentId());
+
       LoanAccountTransactionEntity existingLoanAccountTransactionEntity = loanAccountTransactionRepository
           .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndUniqueTransNoAndTransactionYearMonth(
               loanAccountTransactionEntity.getBanksaladUserId(),
@@ -116,6 +121,11 @@ public class LoanAccountTransactionResponseHelper implements
         interestEntity.setOrganizationId(executionContext.getOrganizationId());
         interestEntity.setAccountNum(accountSummary.getAccountNum());
         interestEntity.setUniqueTransNo(uniqueTransNo);
+
+        // TODO : on-demand, scheduler
+        interestEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+        interestEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+        interestEntity.setConsentId(executionContext.getConsentId());
 
         loanAccountTransactionInterestRepository.save(interestEntity);
       }

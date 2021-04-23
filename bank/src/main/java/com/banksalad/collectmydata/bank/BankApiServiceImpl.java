@@ -136,11 +136,14 @@ public class BankApiServiceImpl implements BankApiService {
         .getAccessToken(String.valueOf(banksaladUserId), organizationId);
 
     ExecutionContext executionContext = ExecutionContext.builder()
-        .banksaladUserId(banksaladUserId)
+        .consentId(accessToken.getConsentId())
+        .syncRequestId(syncRequestId)
         .executionRequestId(UUID.randomUUID().toString())
+        .banksaladUserId(banksaladUserId)
         .organizationId(organizationId)
-        .accessToken(accessToken.getAccessToken())
+        .organizationCode(organization.getOrganizationCode())
         .organizationHost(organization.getDomain())
+        .accessToken(accessToken.getAccessToken())
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
 
@@ -204,6 +207,8 @@ public class BankApiServiceImpl implements BankApiService {
                     loanAccountTransactionRequestHelper, loanAccountTransactionResponseHelper,
                     loanAccountTransactionPublishmentHelper))
     ).join();
+
+    // TODO : irp module
 
     /* produce sync completed */
     financeMessageService.produceSyncCompleted(

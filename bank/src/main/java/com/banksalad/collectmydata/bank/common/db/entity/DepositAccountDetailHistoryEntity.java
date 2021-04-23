@@ -57,4 +57,9 @@ public class DepositAccountDetailHistoryEntity extends BaseEntity {
 
   @Column(columnDefinition = "smallint")
   private Integer lastPaidInCnt;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
 }

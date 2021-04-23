@@ -76,6 +76,7 @@ public class LoanAccountTransactionInvocationContextProvider implements TestTemp
         .balanceAmt(NumberUtil.bigDecimalOf(21000, 3))
         .principalAmt(NumberUtil.bigDecimalOf(31000, 3))
         .intAmt(NumberUtil.bigDecimalOf(41000, 3))
+        .consentId("consent_id1")
         .build();
     main1.setTransactionYearMonth(Integer.valueOf(main1.getTransDtime().substring(0, 6)));
     main1.setUniqueTransNo(HashUtil.hashCat(main1.getTransDtime(), main1.getTransType(), main1.getTransAmt().toString(),
@@ -94,6 +95,7 @@ public class LoanAccountTransactionInvocationContextProvider implements TestTemp
         .balanceAmt(NumberUtil.bigDecimalOf(22000, 3))
         .principalAmt(NumberUtil.bigDecimalOf(32000, 3))
         .intAmt(NumberUtil.bigDecimalOf(42000, 3))
+        .consentId("consent_id1")
         .build();
     main2.setTransactionYearMonth(Integer.valueOf(main2.getTransDtime().substring(0, 6)));
     main2.setUniqueTransNo(HashUtil.hashCat(main2.getTransDtime(), main2.getTransType(), main2.getTransAmt().toString(),
@@ -112,6 +114,7 @@ public class LoanAccountTransactionInvocationContextProvider implements TestTemp
         .balanceAmt(NumberUtil.bigDecimalOf(23000, 3))
         .principalAmt(NumberUtil.bigDecimalOf(33000, 3))
         .intAmt(NumberUtil.bigDecimalOf(43000, 3))
+        .consentId("consent_id1")
         .build();
     main3.setTransactionYearMonth(Integer.valueOf(main3.getTransDtime().substring(0, 6)));
     main3.setUniqueTransNo(HashUtil.hashCat(main3.getTransDtime(), main3.getTransType(), main3.getTransAmt().toString(),

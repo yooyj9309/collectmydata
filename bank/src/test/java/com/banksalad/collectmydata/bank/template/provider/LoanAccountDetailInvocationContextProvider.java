@@ -83,6 +83,7 @@ public class LoanAccountDetailInvocationContextProvider implements TestTemplateI
         .balanceAmt(NumberUtil.bigDecimalOf(10000, 3))
         .loanPrincipal(NumberUtil.bigDecimalOf(20000, 3))
         .nextRepayDate("20210401")
+        .consentId("consent_id1")
         .build();
 
     LoanAccountDetailEntity main2 = LoanAccountDetailEntity.builder()
@@ -94,6 +95,7 @@ public class LoanAccountDetailInvocationContextProvider implements TestTemplateI
         .balanceAmt(NumberUtil.bigDecimalOf(30000, 3))
         .loanPrincipal(NumberUtil.bigDecimalOf(40000, 3))
         .nextRepayDate("20210401")
+        .consentId("consent_id1")
         .build();
 
     Map<String, LoanAccountDetailEntity> mainMap = Map.of(
