@@ -35,6 +35,8 @@ public class InvestSyncRequestedConsumer {
       LoggingMdcUtil.set(Sector.FINANCE.name(), Industry.INVEST.name(), message.getBanksaladUserId(),
           message.getOrganizationId(), message.getSyncRequestId());
 
+      log.info("[collectmydata-invest] consume SyncRequested syncRequestId: {} ", message.getSyncRequestId());
+
       investApiService.requestApi(message.getBanksaladUserId(), message.getOrganizationId(), message.getSyncRequestId(),
           message.getSyncRequestType());
 
