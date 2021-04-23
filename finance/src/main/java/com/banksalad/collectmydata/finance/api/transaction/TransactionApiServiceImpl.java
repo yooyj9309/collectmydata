@@ -8,6 +8,7 @@ import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
 import com.banksalad.collectmydata.finance.common.service.FinanceMessageService;
+import com.banksalad.collectmydata.finance.common.service.HeaderService;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -32,6 +32,7 @@ public class TransactionApiServiceImpl<Summary, TransactionRequest, Transaction>
   private final CollectExecutor collectExecutor;
   private final UserSyncStatusService userSyncStatusService;
   private final FinanceMessageService financeMessageService;
+  private final HeaderService headerService;
 
   public void listTransactions(
       ExecutionContext executionContext,
@@ -70,7 +71,7 @@ public class TransactionApiServiceImpl<Summary, TransactionRequest, Transaction>
             executionContextLocal,
             execution,
             ExecutionRequest.builder()
-                .headers(Map.of(AUTHORIZATION, executionContext.getAccessToken()))
+                .headers(headerService.makeHeader(executionContext))
                 .request(requestHelper
                     .make(executionContext, summary, fromDateTime.toLocalDate(), toDateTime.toLocalDate(), nextPage))
                 .build());

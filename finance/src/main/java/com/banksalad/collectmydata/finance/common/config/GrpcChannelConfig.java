@@ -22,7 +22,7 @@ public class GrpcChannelConfig {
   private static final String COLLECTMYDATA_CONNECT_TARGET = "dns:///connect:8080";
 
   private static final String LOCAL_CIPHER_TARGET = "localhost:9999";
-  private static final String LOCAL_COLLECTMYDATA_CONNECT_TARGET = "localhost:9998";
+  private static final String LOCAL_COLLECTMYDATA_CONNECT_TARGET = "localhost:19081";
 
   @Bean
   public ConnectmydataBlockingStub connectmydataBlockingStub() {

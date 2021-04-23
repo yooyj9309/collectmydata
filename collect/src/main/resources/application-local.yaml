@@ -10,5 +10,9 @@ spring:
         max-idle: 100
         min-idle: 100
 
+connect-server:
+  host: localhost
+  port: 18081
+
 kafka:
   bootstrap-servers: localhost:9092

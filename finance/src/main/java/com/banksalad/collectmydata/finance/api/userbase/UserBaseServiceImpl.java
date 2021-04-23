@@ -9,6 +9,7 @@ import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.finance.api.userbase.dto.UserBaseResponse;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.banksalad.collectmydata.finance.common.service.FinanceMessageService;
+import com.banksalad.collectmydata.finance.common.service.HeaderService;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 
 import org.springframework.http.HttpStatus;
@@ -16,8 +17,6 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -29,6 +28,7 @@ public class UserBaseServiceImpl<UserBaseRequest, UserBaseInfo> implements UserB
   private final CollectExecutor collectExecutor;
   private final UserSyncStatusService userSyncStatusService;
   private final FinanceMessageService financeMessageService;
+  private final HeaderService headerService;
 
   @Override
   public void getUserBaseInfo(
@@ -64,7 +64,7 @@ public class UserBaseServiceImpl<UserBaseRequest, UserBaseInfo> implements UserB
         executionContextLocal,
         execution,
         ExecutionRequest.builder()
-            .headers(Map.of(AUTHORIZATION, executionContext.getAccessToken()))
+            .headers(headerService.makeHeader(executionContext))
             .request(requestHelper.make(executionContext, searchTimeStamp))
             .build());
 

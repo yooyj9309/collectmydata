@@ -37,7 +37,7 @@ grpc:
   shutdownGrace: 30
 
 connect-server:
-  host: collectmydata-connect
+  host: collectmydataconnect
   port: 18081
 
 uri:

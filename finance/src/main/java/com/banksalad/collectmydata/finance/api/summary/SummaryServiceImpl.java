@@ -9,6 +9,7 @@ import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import com.banksalad.collectmydata.finance.api.summary.dto.SummaryResponse;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.banksalad.collectmydata.finance.common.service.FinanceMessageService;
+import com.banksalad.collectmydata.finance.common.service.HeaderService;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.StreamSupport;
@@ -34,7 +34,7 @@ public class SummaryServiceImpl<SummaryRequest, Summary> implements SummaryServi
   private final CollectExecutor collectExecutor;
   private final UserSyncStatusService userSyncStatusService;
   private final FinanceMessageService financeMessageService;
-
+  private final HeaderService headerService;
 
   @Override
   @Deprecated
@@ -77,7 +77,7 @@ public class SummaryServiceImpl<SummaryRequest, Summary> implements SummaryServi
           executionContextLocal,
           execution,
           ExecutionRequest.builder()
-              .headers(Map.of(AUTHORIZATION, executionContext.getAccessToken()))
+              .headers(headerService.makeHeader(executionContext))
               .request(requestHelper.make(executionContext, searchTimeStamp, nextPage))
               .build());
 

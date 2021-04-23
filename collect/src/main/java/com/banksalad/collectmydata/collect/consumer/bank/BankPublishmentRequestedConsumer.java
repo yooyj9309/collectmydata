@@ -38,7 +38,7 @@ public class BankPublishmentRequestedConsumer {
 
       LoggingMdcUtil.set(Sector.FINANCE.name(), Industry.BANK.name(), message.getBanksaladUserId(), message.getOrganizationId(),
           message.getSyncRequestId());
-      log.debug("[collect] consume PublishmentRequestedBankMessage syncRequestId: {} ", message.getSyncRequestId());
+      log.info("[collect] consume PublishmentRequestedBankMessage syncRequestId: {} ", message.getSyncRequestId());
 
       /* notify */
       financeStub.notifyCollectmydatabankSynced(message.toNotifyRequest(),
