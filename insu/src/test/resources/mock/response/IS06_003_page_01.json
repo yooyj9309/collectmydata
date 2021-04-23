@@ -1,0 +1,24 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "success",
+  "next_page": "2",
+  "trans_cnt": 2,
+  "trans_list": [
+    {
+      "trans_date": "20210101",
+      "trans_applied_month": 202101,
+      "trans_no": 1,
+      "paid_amt": 10000.000,
+      "currency_code": "KRW",
+      "pay_method": "01"
+    },
+    {
+      "trans_date": "20210102",
+      "trans_applied_month": 202101,
+      "trans_no": 2,
+      "paid_amt": 20000.000,
+      "currency_code": "KRW",
+      "pay_method": "02"
+    }
+  ]
+}

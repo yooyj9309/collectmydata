@@ -3,6 +3,7 @@ package com.banksalad.collectmydata.insu.insurance;
 import org.springframework.stereotype.Component;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
 import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceTransactionEntity;
@@ -17,6 +18,8 @@ import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
 @Component
 @RequiredArgsConstructor
@@ -60,8 +63,7 @@ public class InsuranceTransactionResponseHelper implements
           .payMethod(insuranceTransaction.getPayMethod())
           .build();
 
-      // db조회
-      // unique key banksalad_user_id,organization_id,insu_num,trans_no,transaction_year_month
+      // load existing insurance transaction
       InsuranceTransactionEntity existingTransactionEntity = insuranceTransactionRepository
           .findByBanksaladUserIdAndOrganizationIdAndInsuNumAndTransNoAndTransactionYearMonth(
               banksaladUserId,
@@ -74,11 +76,17 @@ public class InsuranceTransactionResponseHelper implements
       // merge
       insuranceTransactionMapper.merge(transactionEntity, transactionEntity);
 
-      // save
-      insuranceTransactionRepository.save(transactionEntity);
+      // copy PK for update
+      if (existingTransactionEntity != null) {
+        transactionEntity.setId(existingTransactionEntity.getId());
+      }
+
+      // upsert
+      if (!ObjectComparator.isSame(transactionEntity, existingTransactionEntity, ENTITY_EXCLUDE_FIELD)) {
+        insuranceTransactionRepository.save(transactionEntity);
+      }
     }
   }
-
 
   @Override
   public void saveTransactionSyncedAt(ExecutionContext executionContext, InsuranceSummary insuranceSummary,
