@@ -1,0 +1,12 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "trans_cnt": 1,
+  "trans_list": [
+    {
+      "trans_month": "202104",
+      "paid_amt": 30000,
+      "pay_method": "01"
+    }
+  ]
+}

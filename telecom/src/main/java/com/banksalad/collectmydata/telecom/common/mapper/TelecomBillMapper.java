@@ -2,9 +2,7 @@ package com.banksalad.collectmydata.telecom.common.mapper;
 
 import com.banksalad.collectmydata.common.mapper.BigDecimalMapper;
 import com.banksalad.collectmydata.telecom.common.db.entity.TelecomBillEntity;
-import com.banksalad.collectmydata.telecom.common.db.entity.TransactionEntity;
 import com.banksalad.collectmydata.telecom.telecom.dto.TelecomBill;
-import com.banksalad.collectmydata.telecom.telecom.dto.TelecomTransaction;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

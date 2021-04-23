@@ -3,9 +3,9 @@ package com.banksalad.collectmydata.telecom.telecom;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
 import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
-import com.banksalad.collectmydata.telecom.common.db.entity.TransactionEntity;
-import com.banksalad.collectmydata.telecom.common.db.repository.TransactionRepository;
-import com.banksalad.collectmydata.telecom.common.mapper.TransactionMapper;
+import com.banksalad.collectmydata.telecom.common.db.entity.TelecomTransactionEntity;
+import com.banksalad.collectmydata.telecom.common.db.repository.TelecomTransactionRepository;
+import com.banksalad.collectmydata.telecom.common.mapper.TelecomTransactionMapper;
 import com.banksalad.collectmydata.telecom.common.service.TelecomSummaryService;
 import com.banksalad.collectmydata.telecom.summary.dto.TelecomSummary;
 import com.banksalad.collectmydata.telecom.telecom.dto.ListTelecomTransactionsResponse;
@@ -24,9 +24,9 @@ import java.util.List;
 public class TelecomTransactionResponseHelper implements TransactionResponseHelper<TelecomSummary, TelecomTransaction> {
 
   private final TelecomSummaryService telecomSummaryService;
-  private final TransactionRepository transactionRepository;
+  private final TelecomTransactionRepository telecomTransactionRepository;
 
-  private final TransactionMapper transactionMapper = Mappers.getMapper(TransactionMapper.class);
+  private final TelecomTransactionMapper telecomTransactionMapper = Mappers.getMapper(TelecomTransactionMapper.class);
 
   @Override
   public List<TelecomTransaction> getTransactionsFromResponse(TransactionResponse transactionResponse) {
@@ -39,26 +39,26 @@ public class TelecomTransactionResponseHelper implements TransactionResponseHelp
     for (TelecomTransaction telecomTransaction : telecomTransactions) {
 
       /* mapping dto to entity */
-      TransactionEntity transactionEntity = transactionMapper.dtoToEntity(telecomTransaction);
+      TelecomTransactionEntity transactionEntity = telecomTransactionMapper.dtoToEntity(telecomTransaction);
       transactionEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
       transactionEntity.setOrganizationId(executionContext.getOrganizationId());
       transactionEntity.setSyncedAt(executionContext.getSyncStartedAt());
       transactionEntity.setMgmtId(telecomSummary.getMgmtId());
 
       /* Load existing entity. */
-      TransactionEntity existingTransactionEntity = transactionRepository
+      TelecomTransactionEntity existingTelecomTransactionEntity = telecomTransactionRepository
           .findByBanksaladUserIdAndOrganizationIdAndMgmtIdAndTransMonth(
               executionContext.getBanksaladUserId(), executionContext.getOrganizationId(), telecomSummary.getMgmtId(),
               Integer.valueOf(telecomTransaction.getTransMonth()))
           .orElse(null);
 
       /* Skip the existing transaction. */
-      if (existingTransactionEntity != null) {
+      if (existingTelecomTransactionEntity != null) {
         continue;
       }
 
       /* Insert the new transaction. */
-      transactionRepository.save(transactionEntity);
+      telecomTransactionRepository.save(transactionEntity);
     }
   }
 

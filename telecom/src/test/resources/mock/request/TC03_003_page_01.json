@@ -1,0 +1,6 @@
+{
+  "org_code": "organization_code1",
+  "mgmt_id": "mgmt_id1",
+  "from_month": "${json-unit.any-string}",
+  "to_month": "${json-unit.any-string}"
+}
