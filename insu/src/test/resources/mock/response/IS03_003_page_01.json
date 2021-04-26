@@ -1,0 +1,16 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "success",
+  "search_timestamp": 1000,
+  "contract_cnt": 1,
+  "contract_list": [
+    {
+      "contract_name": "name",
+      "contract_status": "02",
+      "contract_exp_date": "20211231",
+      "contract_face_amt": 10000.000,
+      "currency_code": "KRW",
+      "is_required": true
+    }
+  ]
+}
