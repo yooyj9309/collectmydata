@@ -7,9 +7,9 @@ import com.banksalad.collectmydata.common.crypto.HashUtil;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.efin.account.dto.AccountPrepaidTransaction;
 import com.banksalad.collectmydata.efin.account.dto.ListAccountPrepaidTransactionsResponse;
-import com.banksalad.collectmydata.efin.common.db.entity.PrepaidTransactionEntity;
-import com.banksalad.collectmydata.efin.common.db.repository.PrepaidTransactionRepository;
-import com.banksalad.collectmydata.efin.common.mapper.PrepaidTransactionMapper;
+import com.banksalad.collectmydata.efin.common.db.entity.AccountPrepaidTransactionEntity;
+import com.banksalad.collectmydata.efin.common.db.repository.AccountPrepaidTransactionRepository;
+import com.banksalad.collectmydata.efin.common.mapper.AccountPrepaidTransactionMapper;
 import com.banksalad.collectmydata.efin.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.efin.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
@@ -32,9 +32,10 @@ public class AccountPrepaidTransactionResponseHelper implements
     TransactionResponseHelper<AccountSummary, AccountPrepaidTransaction> {
 
   private final AccountSummaryService accountSummaryService;
-  private final PrepaidTransactionRepository prepaidTransactionRepository;
+  private final AccountPrepaidTransactionRepository accountPrepaidTransactionRepository;
 
-  private final PrepaidTransactionMapper prepaidTransactionMapper = Mappers.getMapper(PrepaidTransactionMapper.class);
+  private final AccountPrepaidTransactionMapper accountPrepaidTransactionMapper = Mappers.getMapper(
+      AccountPrepaidTransactionMapper.class);
 
   @Override
   public List<AccountPrepaidTransaction> getTransactionsFromResponse(TransactionResponse transactionResponse) {
@@ -46,29 +47,29 @@ public class AccountPrepaidTransactionResponseHelper implements
       List<AccountPrepaidTransaction> accountPrepaidTransactions) {
 
     accountPrepaidTransactions.forEach(accountPrepaidTransaction -> {
-      PrepaidTransactionEntity prepaidTransactionEntity = prepaidTransactionMapper
+      AccountPrepaidTransactionEntity accountPrepaidTransactionEntity = accountPrepaidTransactionMapper
           .dtoToEntity(accountPrepaidTransaction);
-      prepaidTransactionEntity
+      accountPrepaidTransactionEntity
           .setTransactionYearMonth(NumberUtils.toInt(StringUtils.left(accountPrepaidTransaction.getTransDtime(), 6)));
-      prepaidTransactionEntity.setSyncedAt(executionContext.getSyncStartedAt());
-      prepaidTransactionEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
-      prepaidTransactionEntity.setOrganizationId(executionContext.getOrganizationId());
-      prepaidTransactionEntity.setSubKey(accountSummary.getSubKey());
-      prepaidTransactionEntity.setUniqueTransNo(generateUniqueTransNo(accountPrepaidTransaction));
+      accountPrepaidTransactionEntity.setSyncedAt(executionContext.getSyncStartedAt());
+      accountPrepaidTransactionEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
+      accountPrepaidTransactionEntity.setOrganizationId(executionContext.getOrganizationId());
+      accountPrepaidTransactionEntity.setSubKey(accountSummary.getSubKey());
+      accountPrepaidTransactionEntity.setUniqueTransNo(generateUniqueTransNo(accountPrepaidTransactionEntity));
 
-      PrepaidTransactionEntity existingPrepaidTransactionEntity = prepaidTransactionRepository
+      AccountPrepaidTransactionEntity existingAccountPrepaidTransactionEntity = accountPrepaidTransactionRepository
           .findByBanksaladUserIdAndOrganizationIdAndTransactionYearMonthAndSubKeyAndFobNameAndUniqueTransNo(
-              prepaidTransactionEntity.getBanksaladUserId(), prepaidTransactionEntity.getOrganizationId(),
-              prepaidTransactionEntity.getTransactionYearMonth(),
-              prepaidTransactionEntity.getSubKey(), prepaidTransactionEntity.getFobName(),
-              prepaidTransactionEntity.getUniqueTransNo()
+              accountPrepaidTransactionEntity.getBanksaladUserId(), accountPrepaidTransactionEntity.getOrganizationId(),
+              accountPrepaidTransactionEntity.getTransactionYearMonth(),
+              accountPrepaidTransactionEntity.getSubKey(), accountPrepaidTransactionEntity.getFobName(),
+              accountPrepaidTransactionEntity.getUniqueTransNo()
           ).map(targetPrepaidTransaction -> {
-            prepaidTransactionEntity.setId(targetPrepaidTransaction.getId());
+            accountPrepaidTransactionEntity.setId(targetPrepaidTransaction.getId());
             return targetPrepaidTransaction;
-          }).orElseGet(() -> PrepaidTransactionEntity.builder().build());
+          }).orElseGet(() -> AccountPrepaidTransactionEntity.builder().build());
 
-      if (!ObjectComparator.isSame(prepaidTransactionEntity, existingPrepaidTransactionEntity, ENTITY_EXCLUDE_FIELD)) {
-        prepaidTransactionRepository.save(prepaidTransactionEntity);
+      if (!ObjectComparator.isSame(accountPrepaidTransactionEntity, existingAccountPrepaidTransactionEntity, ENTITY_EXCLUDE_FIELD)) {
+        accountPrepaidTransactionRepository.save(accountPrepaidTransactionEntity);
       }
     });
   }
@@ -91,11 +92,11 @@ public class AccountPrepaidTransactionResponseHelper implements
             responseCode);
   }
 
-  private String generateUniqueTransNo(AccountPrepaidTransaction accountPrepaidTransaction) {
-    String transDtime = accountPrepaidTransaction.getTransDtime();
-    String transType = accountPrepaidTransaction.getTransType();
-    String transAmtString = accountPrepaidTransaction.getTransAmt().toString();
-    String balanceAmtString = Optional.ofNullable(accountPrepaidTransaction.getBalanceAmt()).orElse(BigDecimal.ZERO)
+  private String generateUniqueTransNo(AccountPrepaidTransactionEntity accountPrepaidTransactionEntity) {
+    String transDtime = accountPrepaidTransactionEntity.getTransDtime();
+    String transType = accountPrepaidTransactionEntity.getTransType();
+    String transAmtString = accountPrepaidTransactionEntity.getTransAmt().toString();
+    String balanceAmtString = Optional.ofNullable(accountPrepaidTransactionEntity.getBalanceAmt()).orElse(BigDecimal.ZERO)
         .toString();
 
     return HashUtil.hashCat(transDtime, transType, transAmtString, balanceAmtString);
