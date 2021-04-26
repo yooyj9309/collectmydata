@@ -1,0 +1,12 @@
+{
+  "rsp_code": "000",
+  "rsp_msg": "rsp_msg",
+  "trans_cnt": 1,
+  "trans_list": [
+    {
+      "trans_dtime": "20210402102000",
+      "trans_type": "01",
+      "trans_amt": 10000
+    }
+  ]
+}

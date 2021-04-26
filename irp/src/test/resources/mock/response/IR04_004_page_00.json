@@ -1,18 +1,17 @@
 {
   "rsp_code": "000",
   "rsp_msg": "rsp_msg",
-  "next_page": "01",
   "trans_cnt": 2,
   "trans_list": [
     {
-      "trans_dtime": "20210102102000",
-      "trans_type": "03",
+      "trans_dtime": "20210402102000",
+      "trans_type": "01",
       "trans_amt": 10000
     },
     {
-      "trans_dtime": "20210102232000",
+      "trans_dtime": "20210402202000",
       "trans_type": "02",
-      "trans_amt": 10000
+      "trans_amt": 20000
     }
   ]
 }
