@@ -99,7 +99,7 @@ dependencies {
     annotationProcessor("org.mapstruct:mapstruct-processor:${mapstructVersion}")
 
     // javers
-    implementation("org.javers:javers-core:5.15.0")
+    implementation("org.javers:javers-core:6.0.1")
 
     // lombok
     annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"

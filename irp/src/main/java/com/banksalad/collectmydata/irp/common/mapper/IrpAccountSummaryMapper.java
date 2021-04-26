@@ -15,6 +15,8 @@ public interface IrpAccountSummaryMapper {
   @Mappings(
       value = {
           @Mapping(target = "isConsent", source = "consent"),
+          @Mapping(target = "basicSearchTimestamp", ignore = true),
+          @Mapping(target = "detailSearchTimestamp", ignore = true)
       }
   )
   void merge(IrpAccountSummary accountSummary, @MappingTarget IrpAccountSummaryEntity entity);

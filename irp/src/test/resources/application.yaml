@@ -17,6 +17,13 @@ logging:
     com.zaxxer.hikari: INFO
     org.hibernate.SQL: INFO
     org.hibernate.type.descriptor.sql.BasicBinder: INFO
+    jdbc:
+      sqlonly: INFO
+      sqltiming: OFF
+      audit: OFF
+      resultset: OFF
+      resultsettable: OFF
+      connection: OFF
 
 kafka:
   bootstrap-servers: localhost:9092

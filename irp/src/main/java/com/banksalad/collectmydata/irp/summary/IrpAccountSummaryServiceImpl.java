@@ -39,7 +39,7 @@ public class IrpAccountSummaryServiceImpl implements IrpAccountSummaryService {
   private final IrpAccountSummaryMapper irpAccountSummaryMapper = Mappers.getMapper(IrpAccountSummaryMapper.class);
 
   @Override
-  public void saveAccountSummaries(ExecutionContext executionContext)
+  public void listAccountSummaries(ExecutionContext executionContext)
       throws ResponseNotOkException {
     irpAccountSummaryServices
         .listAccountSummaries(executionContext, Executions.irp_get_accounts, irpAccountSummariesRequestHelper,

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface IrpAccountSummaryService {
 
-  void saveAccountSummaries(ExecutionContext executionContext) throws ResponseNotOkException;
+  void listAccountSummaries(ExecutionContext executionContext) throws ResponseNotOkException;
 
   List<IrpAccountSummary> listConsentedAccountSummaries(long banksaladUserId, String organizationId);
 

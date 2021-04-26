@@ -18,6 +18,8 @@ import com.banksalad.collectmydata.irp.summary.IrpAccountSummaryService;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
+
 @Component
 @RequiredArgsConstructor
 public class IrpAccountBasicInfoResponseHelper implements
@@ -65,7 +67,8 @@ public class IrpAccountBasicInfoResponseHelper implements
     }
 
     // upsert irp account basic and insert history if needed
-    if (!ObjectComparator.isSame(irpAccountBasicEntity, existingIrpAccountBasicEntity, "syncedAt")) {
+    if (!ObjectComparator
+        .isSame(irpAccountBasicEntity, existingIrpAccountBasicEntity, ENTITY_EXCLUDE_FIELD)) {
 
       irpAccountBasicRepository.save(irpAccountBasicEntity);
       irpAccountBasicHistoryRepository.save(

@@ -12,6 +12,7 @@ import org.javers.core.diff.changetype.ValueChange;
 import org.javers.core.diff.changetype.container.ListChange;
 import org.javers.core.diff.custom.BigDecimalComparatorWithFixedEquals;
 import org.javers.core.metamodel.clazz.ValueObjectDefinition;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -22,6 +23,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Disabled("compare lib test disabled")
 public class ListCompareCases {
 
   @Test

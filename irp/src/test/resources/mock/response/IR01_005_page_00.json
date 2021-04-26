@@ -1,0 +1,15 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "rsp_msg",
+  "search_timestamp": 100,
+  "irp_cnt": 1,
+  "irp_list": [
+    {
+      "prod_name": "상품명1",
+      "account_num": "1234123412341234",
+      "seqno": "1",
+      "is_consent": true,
+      "account_status": "01"
+    }
+  ]
+}
