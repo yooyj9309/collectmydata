@@ -14,6 +14,7 @@ import com.banksalad.collectmydata.telecom.telecom.dto.TelecomPaidTransaction;
 
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
@@ -39,6 +40,7 @@ public class TelecomPaidTransactionResponseHelper implements
     return response.getTransList();
   }
 
+  @Transactional
   @Override
   public void saveTransactions(ExecutionContext executionContext, TelecomSummary telecomSummary,
       List<TelecomPaidTransaction> telecomPaidTransactions) {
