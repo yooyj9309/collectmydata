@@ -20,11 +20,11 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "charge")
-public class ChargeEntity extends BaseEntity {
+public class AccountChargeEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

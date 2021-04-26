@@ -28,7 +28,7 @@ public class AccountChargeRequestHelper implements AccountInfoRequestHelper<GetA
     return GetAccountChargeRequest.builder()
         .orgCode(executionContext.getOrganizationCode())
         .subKey(accountSummary.getSubKey())
-        .searchTimestamp(accountSummary.getBalanceSearchTimestamp())
+        .searchTimestamp(accountSummary.getChargeSearchTimestamp())
         .build();
   }
 }

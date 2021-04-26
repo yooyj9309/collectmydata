@@ -6,11 +6,11 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.efin.account.dto.AccountCharge;
 import com.banksalad.collectmydata.efin.account.dto.GetAccountChargeResponse;
-import com.banksalad.collectmydata.efin.common.db.entity.ChargeEntity;
-import com.banksalad.collectmydata.efin.common.db.repository.ChargeHistoryRepository;
-import com.banksalad.collectmydata.efin.common.db.repository.ChargeRepository;
-import com.banksalad.collectmydata.efin.common.mapper.ChargeHistoryMapper;
-import com.banksalad.collectmydata.efin.common.mapper.ChargeMapper;
+import com.banksalad.collectmydata.efin.common.db.entity.AccountChargeEntity;
+import com.banksalad.collectmydata.efin.common.db.repository.AccountChargeHistoryRepository;
+import com.banksalad.collectmydata.efin.common.db.repository.AccountChargeRepository;
+import com.banksalad.collectmydata.efin.common.mapper.AccountChargeMapper;
+import com.banksalad.collectmydata.efin.common.mapper.AccountChargeHistoryMapper;
 import com.banksalad.collectmydata.efin.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.efin.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
@@ -28,11 +28,11 @@ public class AccountChargeResponseHelper implements AccountInfoResponseHelper<Ac
 
   private final AccountSummaryService accountSummaryService;
 
-  private final ChargeRepository chargeRepository;
-  private final ChargeHistoryRepository chargeHistoryRepository;
+  private final AccountChargeRepository accountChargeRepository;
+  private final AccountChargeHistoryRepository accountChargeHistoryRepository;
 
-  private final ChargeMapper chargeMapper = Mappers.getMapper(ChargeMapper.class);
-  private final ChargeHistoryMapper chargeHistoryMapper = Mappers.getMapper(ChargeHistoryMapper.class);
+  private final AccountChargeMapper accountChargeMapper = Mappers.getMapper(AccountChargeMapper.class);
+  private final AccountChargeHistoryMapper accountChargeHistoryMapper = Mappers.getMapper(AccountChargeHistoryMapper.class);
 
   @Override
   public AccountCharge getAccountFromResponse(AccountResponse accountResponse) {
@@ -47,23 +47,23 @@ public class AccountChargeResponseHelper implements AccountInfoResponseHelper<Ac
     String organizationId = executionContext.getOrganizationId();
     LocalDateTime syncedAt = executionContext.getSyncStartedAt();
 
-    ChargeEntity chargeEntity = chargeMapper.dtoToEntity(accountCharge);
-    chargeEntity.setSyncedAt(syncedAt);
-    chargeEntity.setBanksaladUserId(banksaladUserId);
-    chargeEntity.setOrganizationId(organizationId);
-    chargeEntity.setSubKey(accountSummary.getSubKey());
+    AccountChargeEntity accountChargeEntity = accountChargeMapper.dtoToEntity(accountCharge);
+    accountChargeEntity.setSyncedAt(syncedAt);
+    accountChargeEntity.setBanksaladUserId(banksaladUserId);
+    accountChargeEntity.setOrganizationId(organizationId);
+    accountChargeEntity.setSubKey(accountSummary.getSubKey());
 
-    ChargeEntity existingChargeEntity = chargeRepository
+    AccountChargeEntity existingAccountChargeEntity = accountChargeRepository
         .findByBanksaladUserIdAndOrganizationIdAndSubKey(banksaladUserId, organizationId, accountSummary.getSubKey())
         .map(c -> {
-          chargeEntity.setId(c.getId());
+          accountChargeEntity.setId(c.getId());
           return c;
         })
-        .orElseGet(() -> ChargeEntity.builder().build());
+        .orElseGet(() -> AccountChargeEntity.builder().build());
 
-    if (!ObjectComparator.isSame(chargeEntity, existingChargeEntity, ENTITY_EXCLUDE_FIELD)) {
-      chargeRepository.save(chargeEntity);
-      chargeHistoryRepository.save(chargeHistoryMapper.toHistoryEntity(chargeEntity));
+    if (!ObjectComparator.isSame(accountChargeEntity, existingAccountChargeEntity, ENTITY_EXCLUDE_FIELD)) {
+      accountChargeRepository.save(accountChargeEntity);
+      accountChargeHistoryRepository.save(accountChargeHistoryMapper.toHistoryEntity(accountChargeEntity));
     }
   }
 

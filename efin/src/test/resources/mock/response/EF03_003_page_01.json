@@ -1,0 +1,10 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "성공",
+  "search_timestamp": 2000,
+  "charge_org_code": "080",
+  "charge_account_num": "하나은행 000002",
+  "charge_option": "01",
+  "charge_day": "21",
+  "charge_amt": 10000
+}
