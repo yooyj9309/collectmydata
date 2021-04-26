@@ -36,6 +36,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static com.banksalad.collectmydata.irp.util.FileUtil.readText;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -61,15 +63,15 @@ class IrpAccountDetailServiceTest {
 
   public static WireMockServer wiremock = new WireMockServer(WireMockSpring.options().dynamicPort());
 
-  private UserSyncStatusRepository userSyncStatusRepository;
+  private final UserSyncStatusRepository userSyncStatusRepository;
 
-  private IrpAccountService irpAccountService;
+  private final IrpAccountService irpAccountService;
 
-  private IrpAccountSummaryRepository accountSummaryRepository;
+  private final IrpAccountSummaryRepository accountSummaryRepository;
 
-  private IrpAccountDetailRepository accountDetailRepository;
+  private final IrpAccountDetailRepository accountDetailRepository;
 
-  private IrpAccountDetailHistoryRepository accountDetailHistoryRepository;
+  private final IrpAccountDetailHistoryRepository accountDetailHistoryRepository;
 
   private final IrpAccountDetailHistoryMapper accountDetailHistoryMapper = Mappers
       .getMapper(IrpAccountDetailHistoryMapper.class);
@@ -93,6 +95,8 @@ class IrpAccountDetailServiceTest {
     previousSyncedAt = requestSyncedAt.minusDays(1);
 
     accountSummaryEntity1 = IrpAccountSummaryEntity.builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(previousSyncedAt)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
@@ -109,6 +113,8 @@ class IrpAccountDetailServiceTest {
     wiremock.start();
 
     expectedAccountDetailEntity = IrpAccountDetailEntity.builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(requestSyncedAt)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
@@ -126,7 +132,8 @@ class IrpAccountDetailServiceTest {
         .build();
 
     executionContext = ExecutionContext.builder()
-        .syncRequestId(UUID.randomUUID().toString())
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
         .accessToken("test")
@@ -385,40 +392,40 @@ class IrpAccountDetailServiceTest {
     assertEquals("40305", accountSummaryEntity.getDetailResponseCode());
   }
 
-  @Test
-  @Disabled("UP_TO_DATE에 대한 명세 확인 필요 및 추가 0건에 대해 처리 미고려")
-  @DisplayName("8. 기존 1건 + 추가 0건")
-  void listIrpAccountDetails_NoAddition() {
-
-    /* api mock server */
-    setupMockServer(HttpStatus.OK, "IR02_006_single_page_00.json");
-
-    saveUserSyncStatus();
-
-    /* save mock account summaries */
-    accountSummaryEntity1.setDetailSearchTimestamp(DETAIL_SEARCH_TIMESTAMP);  // previous selection
-    accountSummaryRepository.save(accountSummaryEntity1);
-
-    /* save mock account details and history */
-    saveAccountDetailsAndHistorySource();
-
-    irpAccountService.listIrpAccountDetails(executionContext);
-
-    assertEquals(1, accountSummaryRepository.count());
-    assertEquals(1, accountDetailRepository.count());
-    assertEquals(1, accountDetailHistoryRepository.count());
-
-    assertUserSyncStatusSyncedAt();
-    assertUserSyncStatusSearchTimestamp(300); // 변경이 없으므로 이전 값 그대로
-
-    assertAccountDetailEntitySyncedAt(accountDetailRepository.findAll(), accountDetailHistoryRepository.findAll());
-
-    List<IrpAccountSummaryEntity> accountSummaryEntities = accountSummaryRepository.findAll();
-    IrpAccountSummaryEntity accountSummaryEntity = accountSummaryEntities.get(0);
-
-    assertEquals(DETAIL_SEARCH_TIMESTAMP, accountSummaryEntity.getDetailSearchTimestamp());
-    assertNull(accountSummaryEntity.getDetailResponseCode());
-  }
+//  @Test
+//  @Disabled("UP_TO_DATE에 대한 명세 확인 필요 및 추가 0건에 대해 처리 미고려")
+//  @DisplayName("8. 기존 1건 + 추가 0건")
+//  void listIrpAccountDetails_NoAddition() {
+//
+//    /* api mock server */
+//    setupMockServer(HttpStatus.OK, "IR02_006_single_page_00.json");
+//
+//    saveUserSyncStatus();
+//
+//    /* save mock account summaries */
+//    accountSummaryEntity1.setDetailSearchTimestamp(DETAIL_SEARCH_TIMESTAMP);  // previous selection
+//    accountSummaryRepository.save(accountSummaryEntity1);
+//
+//    /* save mock account details and history */
+//    saveAccountDetailsAndHistorySource();
+//
+//    irpAccountService.listIrpAccountDetails(executionContext);
+//
+//    assertEquals(1, accountSummaryRepository.count());
+//    assertEquals(1, accountDetailRepository.count());
+//    assertEquals(1, accountDetailHistoryRepository.count());
+//
+//    assertUserSyncStatusSyncedAt();
+//    assertUserSyncStatusSearchTimestamp(300); // 변경이 없으므로 이전 값 그대로
+//
+//    assertAccountDetailEntitySyncedAt(accountDetailRepository.findAll(), accountDetailHistoryRepository.findAll());
+//
+//    List<IrpAccountSummaryEntity> accountSummaryEntities = accountSummaryRepository.findAll();
+//    IrpAccountSummaryEntity accountSummaryEntity = accountSummaryEntities.get(0);
+//
+//    assertEquals(DETAIL_SEARCH_TIMESTAMP, accountSummaryEntity.getDetailSearchTimestamp());
+//    assertNull(accountSummaryEntity.getDetailResponseCode());
+//  }
 
   private void setupMockServer(HttpStatus httpStatus, String... fileNames) {
 

@@ -43,6 +43,10 @@ public class IrpAccountSummaryEntity extends BaseEntity {
 
   private String seqno;
 
+  private String consentId;
+
+  private String syncRequestId;
+
   @Column(nullable = false, columnDefinition = "BIT", length = 1)
   private Boolean isConsent;
 

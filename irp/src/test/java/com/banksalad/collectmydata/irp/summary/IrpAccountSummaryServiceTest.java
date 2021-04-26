@@ -24,6 +24,7 @@ import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
 import org.javers.core.diff.ListCompareAlgorithm;
+import org.javers.core.diff.changetype.PropertyChange;
 import org.javers.core.diff.changetype.ValueChange;
 import org.javers.core.metamodel.clazz.ValueObjectDefinitionBuilder;
 import org.junit.jupiter.api.AfterAll;
@@ -35,9 +36,10 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static com.banksalad.collectmydata.irp.util.FileUtil.readText;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -62,13 +64,13 @@ class IrpAccountSummaryServiceTest {
 
   public static WireMockServer wiremock = new WireMockServer(WireMockSpring.options().dynamicPort());
 
-  private UserSyncStatusRepository userSyncStatusRepository;
+  private final UserSyncStatusRepository userSyncStatusRepository;
 
-  private IrpAccountSummaryService accountSummaryService;
+  private final IrpAccountSummaryService accountSummaryService;
 
-  private IrpAccountSummaryRepository accountSummaryRepository;
+  private final IrpAccountSummaryRepository accountSummaryRepository;
 
-  private ApiLogRepository apiLogRepository;
+  private final ApiLogRepository apiLogRepository;
 
   private List<IrpAccountSummaryEntity> expectedIrpAccountSummaries;
   private ExecutionContext executionContext;
@@ -85,6 +87,8 @@ class IrpAccountSummaryServiceTest {
 
     expectedIrpAccountSummaries = List.of(
         IrpAccountSummaryEntity.builder()
+            .consentId(CONSENT_ID)
+            .syncRequestId(SYNC_REQUEST_ID)
             .syncedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
             .banksaladUserId(BANKSALAD_USER_ID)
             .organizationId(ORGANIZATION_ID)
@@ -94,6 +98,8 @@ class IrpAccountSummaryServiceTest {
             .isConsent(true)
             .accountStatus("01").build(),
         IrpAccountSummaryEntity.builder()
+            .consentId(CONSENT_ID)
+            .syncRequestId(SYNC_REQUEST_ID)
             .syncedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
             .banksaladUserId(BANKSALAD_USER_ID)
             .organizationId(ORGANIZATION_ID)
@@ -107,7 +113,8 @@ class IrpAccountSummaryServiceTest {
     wiremock.start();
 
     executionContext = ExecutionContext.builder()
-        .syncRequestId(UUID.randomUUID().toString())
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
         .accessToken("test")
@@ -282,6 +289,8 @@ class IrpAccountSummaryServiceTest {
                 .build())
         .withListCompareAlgorithm(ListCompareAlgorithm.LEVENSHTEIN_DISTANCE).build();
     Diff diff = javers.compare(IrpAccountSummaryEntity.builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
@@ -293,7 +302,7 @@ class IrpAccountSummaryServiceTest {
 
     assertThat(diff.getChanges().size()).isNotEqualTo(0);
     assertThat(diff.getChanges().getChangesByType(ValueChange.class))
-        .extracting(valueChange -> valueChange.getPropertyName())
+        .extracting(PropertyChange::getPropertyName)
         .containsExactlyInAnyOrder("prodName", "accountStatus");
   }
 

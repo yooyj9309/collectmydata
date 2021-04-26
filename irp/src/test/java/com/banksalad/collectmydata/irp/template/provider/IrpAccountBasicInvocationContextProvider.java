@@ -21,12 +21,14 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_ST1;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_ST2;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_NO_ACCOUNT;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ZERO_USS_ST;
 
 public class IrpAccountBasicInvocationContextProvider implements TestTemplateInvocationContextProvider {
@@ -42,6 +44,8 @@ public class IrpAccountBasicInvocationContextProvider implements TestTemplateInv
   public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 
     IrpAccountSummaryEntity existingParent = IrpAccountSummaryEntity.builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(OLD_SYNCED_AT)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
@@ -56,6 +60,8 @@ public class IrpAccountBasicInvocationContextProvider implements TestTemplateInv
         .build();
 
     IrpAccountSummaryEntity newParent = IrpAccountSummaryEntity.builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(OLD_SYNCED_AT)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
@@ -79,6 +85,8 @@ public class IrpAccountBasicInvocationContextProvider implements TestTemplateInv
     );
 
     IrpAccountBasicEntity existingMain = IrpAccountBasicEntity.builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(OLD_SYNCED_AT)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
@@ -93,6 +101,8 @@ public class IrpAccountBasicInvocationContextProvider implements TestTemplateInv
         .build();
 
     IrpAccountBasicEntity newMain = IrpAccountBasicEntity.builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(OLD_SYNCED_AT)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)

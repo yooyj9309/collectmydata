@@ -18,6 +18,8 @@ import com.banksalad.collectmydata.irp.summary.IrpAccountSummaryService;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
+import java.util.Optional;
+
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
 @Component
@@ -53,6 +55,13 @@ public class IrpAccountBasicInfoResponseHelper implements
     irpAccountBasicEntity.setSyncedAt(executionContext.getSyncStartedAt());
     irpAccountBasicEntity.setAccountNum(irpAccountSummary.getAccountNum());
     irpAccountBasicEntity.setSeqno(irpAccountSummary.getSeqno());
+
+    // TODO : on-demand, scheduler
+    irpAccountBasicEntity.setCreatedBy(Optional.ofNullable(irpAccountBasicEntity.getCreatedBy())
+        .orElseGet(() -> String.valueOf(executionContext.getBanksaladUserId())));
+    irpAccountBasicEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+    irpAccountBasicEntity.setConsentId(executionContext.getConsentId());
+    irpAccountBasicEntity.setSyncRequestId(executionContext.getSyncRequestId());
 
     // load existing account entity
     IrpAccountBasicEntity existingIrpAccountBasicEntity = irpAccountBasicRepository

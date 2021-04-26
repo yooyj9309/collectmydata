@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
 import java.util.Iterator;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -46,6 +47,14 @@ public class IrpSummaryResponseHelper implements SummaryResponseHelper<IrpAccoun
     irpAccountSummaryEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
     irpAccountSummaryEntity.setOrganizationId(executionContext.getOrganizationId());
     irpAccountSummaryEntity.setSyncedAt(executionContext.getSyncStartedAt());
+
+    // TODO : on-demand, scheduler
+    irpAccountSummaryEntity.setCreatedBy(Optional.ofNullable(irpAccountSummaryEntity.getCreatedBy())
+        .orElseGet(() -> String.valueOf(executionContext.getBanksaladUserId())));
+    irpAccountSummaryEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+    irpAccountSummaryEntity.setConsentId(executionContext.getConsentId());
+    irpAccountSummaryEntity.setSyncRequestId(executionContext.getSyncRequestId());
+
     irpAccountSummaryRepository.save(irpAccountSummaryEntity);
   }
 }

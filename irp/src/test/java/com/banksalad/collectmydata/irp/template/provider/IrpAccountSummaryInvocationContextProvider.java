@@ -20,11 +20,13 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_USS_ST;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_USS_ST;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 
 public class IrpAccountSummaryInvocationContextProvider implements TestTemplateInvocationContextProvider {
 
@@ -55,6 +57,8 @@ public class IrpAccountSummaryInvocationContextProvider implements TestTemplateI
 
     IrpAccountSummaryEntity main1 = IrpAccountSummaryEntity.builder()
         .id(1L)
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(OLD_SYNCED_AT)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
@@ -67,6 +71,8 @@ public class IrpAccountSummaryInvocationContextProvider implements TestTemplateI
 
     IrpAccountSummaryEntity main2 = IrpAccountSummaryEntity.builder()
         .id(1L)
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(OLD_SYNCED_AT)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)

@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_ST1;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_ST2;
@@ -28,6 +29,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_CANCELLATION;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_NO_ACCOUNT;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ZERO_USS_ST;
 
 public class IrpAccountDetailInvocationContextProvider implements TestTemplateInvocationContextProvider {
@@ -43,6 +45,8 @@ public class IrpAccountDetailInvocationContextProvider implements TestTemplateIn
   public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 
     IrpAccountSummaryEntity parent = IrpAccountSummaryEntity.builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(OLD_SYNCED_AT)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
@@ -65,6 +69,8 @@ public class IrpAccountDetailInvocationContextProvider implements TestTemplateIn
     );
 
     IrpAccountDetailEntity main1 = IrpAccountDetailEntity.builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(OLD_SYNCED_AT)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
@@ -82,6 +88,8 @@ public class IrpAccountDetailInvocationContextProvider implements TestTemplateIn
         .build();
 
     IrpAccountDetailEntity main2 = IrpAccountDetailEntity.builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(OLD_SYNCED_AT)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)

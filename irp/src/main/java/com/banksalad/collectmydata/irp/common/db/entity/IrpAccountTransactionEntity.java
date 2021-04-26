@@ -51,6 +51,11 @@ public class IrpAccountTransactionEntity extends BaseEntity {
   private String uniqueTransNo;
 
   @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
+  
+  @Column(nullable = false)
   private String transDtime;
 
   @Column(nullable = false)

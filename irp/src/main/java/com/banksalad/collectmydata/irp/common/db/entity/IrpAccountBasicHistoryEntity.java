@@ -44,6 +44,11 @@ public class IrpAccountBasicHistoryEntity extends BaseEntity {
 
   private String seqno;
 
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
+  
   @Column(nullable = false, precision = 18, scale = 3)
   private BigDecimal accumAmt;
 

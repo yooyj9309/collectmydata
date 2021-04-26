@@ -35,6 +35,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static com.banksalad.collectmydata.irp.util.FileUtil.readText;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -91,6 +93,8 @@ class IrpAccountServiceTest {
     now = LocalDateTime.now(DateUtil.UTC_ZONE_ID);
 
     accountSummaryEntity1 = IrpAccountSummaryEntity.builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(now)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
@@ -104,6 +108,8 @@ class IrpAccountServiceTest {
         .seqno("a123")
         .build();
     accountSummaryEntity2 = IrpAccountSummaryEntity.builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(now)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
@@ -120,6 +126,8 @@ class IrpAccountServiceTest {
     wiremock.start();
 
     expectedAccountBasicEntity = IrpAccountBasicEntity.builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(now)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
@@ -134,7 +142,8 @@ class IrpAccountServiceTest {
         .build();
 
     executionContext = ExecutionContext.builder()
-        .syncRequestId(UUID.randomUUID().toString())
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
         .accessToken("test")

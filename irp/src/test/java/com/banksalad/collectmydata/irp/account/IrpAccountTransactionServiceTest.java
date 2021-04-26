@@ -38,6 +38,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static com.banksalad.collectmydata.irp.util.FileUtil.readText;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -62,17 +64,17 @@ class IrpAccountTransactionServiceTest {
 
   public static WireMockServer wiremock = new WireMockServer(WireMockSpring.options().dynamicPort());
 
-  private UserSyncStatusRepository userSyncStatusRepository;
+  private final UserSyncStatusRepository userSyncStatusRepository;
 
-  private IrpAccountSummaryRepository accountSummaryRepository;
+  private final IrpAccountSummaryRepository accountSummaryRepository;
 
-  private TransactionApiService<IrpAccountSummary, IrpAccountTransactionRequest, IrpAccountTransaction> accountTransactionApiService;
+  private final TransactionApiService<IrpAccountSummary, IrpAccountTransactionRequest, IrpAccountTransaction> accountTransactionApiService;
 
-  private TransactionRequestHelper<IrpAccountSummary, IrpAccountTransactionRequest> accountTransactionRequestHelper;
+  private final TransactionRequestHelper<IrpAccountSummary, IrpAccountTransactionRequest> accountTransactionRequestHelper;
 
-  private TransactionResponseHelper<IrpAccountSummary, IrpAccountTransaction> accountTransactionResponseHelper;
+  private final TransactionResponseHelper<IrpAccountSummary, IrpAccountTransaction> accountTransactionResponseHelper;
 
-  private IrpAccountTransactionRepository accountTransactionRepository;
+  private final IrpAccountTransactionRepository accountTransactionRepository;
 
   private IrpAccountSummaryEntity accountSummaryEntity;
   private IrpAccountTransactionEntity expectedAccountTransactionEntity;
@@ -93,6 +95,8 @@ class IrpAccountTransactionServiceTest {
     requestTransactionSyncedAt = LocalDateTime.of(2021, 4, 12, 0, 0, 0);
 
     accountSummaryEntity = IrpAccountSummaryEntity.builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
         .syncedAt(previousTransactionSyncedAt)
@@ -110,6 +114,8 @@ class IrpAccountTransactionServiceTest {
 
     expectedAccountTransactionEntity = IrpAccountTransactionEntity
         .builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(requestTransactionSyncedAt)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
@@ -122,7 +128,8 @@ class IrpAccountTransactionServiceTest {
     expectedAccountTransactionEntity.setUniqueTransNo(generateUniqueTransNo(expectedAccountTransactionEntity));
 
     executionContext = ExecutionContext.builder()
-        .syncRequestId(UUID.randomUUID().toString())
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
         .executionRequestId(UUID.randomUUID().toString())
@@ -255,6 +262,8 @@ class IrpAccountTransactionServiceTest {
     /* save mock account transactions */
     IrpAccountTransactionEntity expectedModifiedAccountTransactionEntity = IrpAccountTransactionEntity
         .builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(requestTransactionSyncedAt)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)

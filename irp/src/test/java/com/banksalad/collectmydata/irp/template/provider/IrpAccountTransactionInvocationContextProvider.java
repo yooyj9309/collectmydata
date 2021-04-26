@@ -22,12 +22,14 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_INVALID_ACCOUNT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_NO_ACCOUNT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_OVER_QUOTA;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ZERO_USS_ST;
 
 public class IrpAccountTransactionInvocationContextProvider implements TestTemplateInvocationContextProvider {
@@ -43,6 +45,8 @@ public class IrpAccountTransactionInvocationContextProvider implements TestTempl
   public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 
     IrpAccountSummaryEntity parent1 = IrpAccountSummaryEntity.builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(OLD_SYNCED_AT)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
@@ -71,6 +75,8 @@ public class IrpAccountTransactionInvocationContextProvider implements TestTempl
     );
 
     IrpAccountTransactionEntity main1 = IrpAccountTransactionEntity.builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(OLD_SYNCED_AT)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
@@ -85,6 +91,8 @@ public class IrpAccountTransactionInvocationContextProvider implements TestTempl
         HashUtil.hashCat(main1.getTransDtime(), main1.getTransType(), main1.getTransAmt().toString()));
 
     IrpAccountTransactionEntity main2 = IrpAccountTransactionEntity.builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(OLD_SYNCED_AT)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
@@ -98,6 +106,8 @@ public class IrpAccountTransactionInvocationContextProvider implements TestTempl
         HashUtil.hashCat(main2.getTransDtime(), main2.getTransType(), main2.getTransAmt().toString()));
 
     IrpAccountTransactionEntity main3 = IrpAccountTransactionEntity.builder()
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .syncedAt(OLD_SYNCED_AT)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)

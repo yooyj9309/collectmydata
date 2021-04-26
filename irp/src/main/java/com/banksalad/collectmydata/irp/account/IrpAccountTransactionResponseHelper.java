@@ -20,6 +20,7 @@ import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -53,6 +54,13 @@ public class IrpAccountTransactionResponseHelper implements
       irpAccountTransactionEntity.setAccountNum(irpAccountSummary.getAccountNum());
       irpAccountTransactionEntity.setSeqno(irpAccountSummary.getSeqno());
       irpAccountTransactionEntity.setUniqueTransNo(generateUniqueTransNo(irpAccountTransactionEntity));
+
+      // TODO : on-demand, scheduler
+      irpAccountTransactionEntity.setCreatedBy(Optional.ofNullable(irpAccountTransactionEntity.getCreatedBy())
+          .orElseGet(() -> String.valueOf(executionContext.getBanksaladUserId())));
+      irpAccountTransactionEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+      irpAccountTransactionEntity.setConsentId(executionContext.getConsentId());
+      irpAccountTransactionEntity.setSyncRequestId(executionContext.getSyncRequestId());
 
       IrpAccountTransactionEntity existingAccountTransactionEntity = irpAccountTransactionRepository
           .findByTransactionYearMonthAndBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndUniqueTransNo(

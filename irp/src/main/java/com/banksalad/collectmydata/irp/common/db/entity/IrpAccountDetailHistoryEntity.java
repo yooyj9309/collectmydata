@@ -48,6 +48,11 @@ public class IrpAccountDetailHistoryEntity extends BaseEntity {
   private Short irpDetailNo;
 
   @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
+  
+  @Column(nullable = false)
   private String irpName;
 
   @Column(nullable = false)
