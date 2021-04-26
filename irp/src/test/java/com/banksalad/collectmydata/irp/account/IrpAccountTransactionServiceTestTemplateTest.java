@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ActiveProfiles("test")
 @SpringBootTest
-@DisplayName("6.1.6 개인형 IRP계좌 거래내역 조회 테스트")
+@DisplayName("6.1.6 개인형 IRP 계좌 거래내역 조회")
 @Transactional
 @RequiredArgsConstructor
 public class IrpAccountTransactionServiceTestTemplateTest extends

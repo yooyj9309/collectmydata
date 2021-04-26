@@ -1,30 +1,28 @@
 package com.banksalad.collectmydata.irp.account;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
-import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
-import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
-import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
-import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountBasicEntity;
-import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountBasicHistoryEntity;
+import com.banksalad.collectmydata.irp.api.AccountInfoRequestPaginationHelper;
+import com.banksalad.collectmydata.irp.api.AccountInfoResponsePaginationHelper;
+import com.banksalad.collectmydata.irp.api.AccountInfoServicePagination;
+import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountDetailEntity;
+import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountDetailHistoryEntity;
 import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountSummaryEntity;
-import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountBasicHistoryRepository;
-import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountBasicRepository;
+import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountDetailHistoryRepository;
+import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountDetailRepository;
 import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountSummaryRepository;
-import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasic;
-import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasicRequest;
+import com.banksalad.collectmydata.irp.common.dto.IrpAccountDetail;
+import com.banksalad.collectmydata.irp.common.dto.IrpAccountDetailRequest;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummary;
 import com.banksalad.collectmydata.irp.template.ServiceTest;
-import com.banksalad.collectmydata.irp.template.provider.IrpAccountBasicInvocationContextProvider;
+import com.banksalad.collectmydata.irp.template.provider.IrpAccountDetailInvocationContextProvider;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.TestTemplate;
@@ -40,49 +38,39 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ActiveProfiles("test")
 @SpringBootTest
 @Transactional
-@DisplayName("6.1.4 개인형 IRP 계좌 기본정보 조회")
-class IrpAccountBasicServiceTestTemplateTest extends
-    ServiceTest<Object, IrpAccountSummaryEntity, IrpAccountBasicEntity, Object> {
+@RequiredArgsConstructor
+@DisplayName("6.1.5 개인형 IRP 계좌 추가정보 조회")
+class IrpAccountDetailServiceTestTemplateTest extends
+    ServiceTest<Object, IrpAccountSummaryEntity, IrpAccountDetailEntity, Object> {
+
+  private final AccountInfoServicePagination<IrpAccountSummary, IrpAccountDetailRequest, List<IrpAccountDetail>> mainService;
+
+  private final AccountInfoRequestPaginationHelper<IrpAccountDetailRequest, IrpAccountSummary> requestHelper;
+
+  private final AccountInfoResponsePaginationHelper<IrpAccountDetailRequest, IrpAccountSummary, List<IrpAccountDetail>> responseHelper;
+
+  private final IrpAccountSummaryRepository accountSummaryRepository;
+
+  private final IrpAccountDetailRepository accountDetailRepository;
+
+  private final IrpAccountDetailHistoryRepository irpAccountDetailHistoryRepository;
 
   private static final WireMockServer wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
-
-  @Autowired
-  private AccountInfoService<IrpAccountSummary, IrpAccountBasicRequest, IrpAccountBasic> service;
-
-  @Autowired
-  private AccountInfoRequestHelper<IrpAccountBasicRequest, IrpAccountSummary> requestHelper;
-
-  @Autowired
-  private AccountInfoResponseHelper<IrpAccountSummary, IrpAccountBasic> responseHelper;
-
-  @Autowired
-  private IrpAccountSummaryRepository accountSummaryRepository;
-
-  @Autowired
-  private IrpAccountBasicRepository accountBasicRepository;
-
-  @Autowired
-  private IrpAccountBasicHistoryRepository accountBasicHistoryRepository;
 
   @BeforeAll
   static void setup() {
     wireMockServer.start();
   }
 
-  @AfterEach
-  void tearDown() {
-    wireMockServer.resetAll();
-  }
 
   @AfterAll
-  static void tearDownAll() {
+  static void clean() {
     wireMockServer.shutdown();
   }
 
   @TestTemplate
-  @ExtendWith(IrpAccountBasicInvocationContextProvider.class)
-  void unitTests(TestCase<Object, IrpAccountSummaryEntity, IrpAccountBasicEntity, Object> testCase)
-      throws ResponseNotOkException {
+  @ExtendWith(IrpAccountDetailInvocationContextProvider.class)
+  void accountDetailServiceTest(TestCase<Object, IrpAccountSummaryEntity, IrpAccountDetailEntity, Object> testCase) {
 
     prepare(testCase, wireMockServer);
 
@@ -105,10 +93,10 @@ class IrpAccountBasicServiceTestTemplateTest extends
   }
 
   @Override
-  protected void saveMains(List<IrpAccountBasicEntity> accountBasicEntities) {
+  protected void saveMains(List<IrpAccountDetailEntity> accountDetailEntities) {
 
-    accountBasicEntities
-        .forEach(accountBasicEntity -> accountBasicRepository.save(accountBasicEntity.toBuilder().build()));
+    accountDetailEntities
+        .forEach(irpAccountDetailEntity -> accountDetailRepository.save(irpAccountDetailEntity.toBuilder().build()));
   }
 
   @Override
@@ -117,10 +105,9 @@ class IrpAccountBasicServiceTestTemplateTest extends
   }
 
   @Override
-  protected void runMainService(TestCase<Object, IrpAccountSummaryEntity, IrpAccountBasicEntity, Object> testCase)
-      throws ResponseNotOkException {
+  protected void runMainService(TestCase<Object, IrpAccountSummaryEntity, IrpAccountDetailEntity, Object> testCase) {
 
-    service
+    mainService
         .listAccountInfos(testCase.getExecutionContext(), testCase.getExecution(), requestHelper, responseHelper);
   }
 
@@ -131,9 +118,10 @@ class IrpAccountBasicServiceTestTemplateTest extends
 
   @Override
   protected void validateParents(List<IrpAccountSummaryEntity> expectedParents) {
+
     final List<IrpAccountSummaryEntity> actualParents = accountSummaryRepository.findAll();
 
-    assertAll("*** AccountSummaryEntity 확인 ***",
+    assertAll("*** IrpAccountSummaryEntity 확인 ***",
         () -> assertEquals(expectedParents.size(), actualParents.size()),
         () -> {
           for (int i = 0; i < expectedParents.size(); i++) {
@@ -145,10 +133,11 @@ class IrpAccountBasicServiceTestTemplateTest extends
   }
 
   @Override
-  protected void validateMains(List<IrpAccountBasicEntity> expectedMains) {
-    final List<IrpAccountBasicEntity> actualMains = accountBasicRepository.findAll();
+  protected void validateMains(List<IrpAccountDetailEntity> expectedMains) {
 
-    assertAll("*** AccountBasicEntity 확인 ***",
+    final List<IrpAccountDetailEntity> actualMains = accountDetailRepository.findAll();
+
+    assertAll("*** IrpAccountDetailEntity 확인 ***",
         () -> assertEquals(expectedMains.size(), actualMains.size()),
         () -> {
           for (int i = 0; i < expectedMains.size(); i++) {
@@ -158,10 +147,10 @@ class IrpAccountBasicServiceTestTemplateTest extends
         }
     );
 
-    final List<IrpAccountBasicHistoryEntity> actualHistories = accountBasicHistoryRepository.findAll();
+    final List<IrpAccountDetailHistoryEntity> actualHistories = irpAccountDetailHistoryRepository.findAll();
 
     if (actualHistories.size() > 0) {
-      assertAll("AccountBasicHistoryEntity 확인",
+      assertAll("IrpAccountDetailHistoryEntity 확인",
           () -> assertThat(actualMains.get(actualMains.size() - 1)).usingRecursiveComparison()
               .ignoringFields(IGNORING_ENTITY_FIELDS).isEqualTo(actualHistories.get(actualHistories.size() - 1))
       );

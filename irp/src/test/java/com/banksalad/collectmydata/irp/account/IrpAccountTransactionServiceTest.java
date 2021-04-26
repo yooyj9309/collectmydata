@@ -1,6 +1,5 @@
 package com.banksalad.collectmydata.irp.account;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
@@ -24,6 +23,7 @@ import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummary;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountTransaction;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountTransactionRequest;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import lombok.RequiredArgsConstructor;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -50,7 +50,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @ActiveProfiles("test")
 @SpringBootTest
 @Transactional
-@DisplayName("6.1.6 개인형 IRP계좌 거래내역 조회 테스트")
+@RequiredArgsConstructor
+@DisplayName("6.1.6 개인형 IRP 계좌 거래내역 조회")
 @Disabled("이전 비즈니스 로직 검증을 위한 테스트 케이스")
 class IrpAccountTransactionServiceTest {
 
@@ -61,22 +62,16 @@ class IrpAccountTransactionServiceTest {
 
   public static WireMockServer wiremock = new WireMockServer(WireMockSpring.options().dynamicPort());
 
-  @Autowired
   private UserSyncStatusRepository userSyncStatusRepository;
 
-  @Autowired
   private IrpAccountSummaryRepository accountSummaryRepository;
 
-  @Autowired
   private TransactionApiService<IrpAccountSummary, IrpAccountTransactionRequest, IrpAccountTransaction> accountTransactionApiService;
 
-  @Autowired
   private TransactionRequestHelper<IrpAccountSummary, IrpAccountTransactionRequest> accountTransactionRequestHelper;
 
-  @Autowired
   private TransactionResponseHelper<IrpAccountSummary, IrpAccountTransaction> accountTransactionResponseHelper;
 
-  @Autowired
   private IrpAccountTransactionRepository accountTransactionRepository;
 
   private IrpAccountSummaryEntity accountSummaryEntity;

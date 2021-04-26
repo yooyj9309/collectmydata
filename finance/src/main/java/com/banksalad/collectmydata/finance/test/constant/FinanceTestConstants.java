@@ -35,6 +35,7 @@ public class FinanceTestConstants {
   public static final String RSP_CODE_SYSTEM_FAILURE = "50001";
   public static final int STATUS_NOT_FOUND = 404;
   public static final String RSP_CODE_NO_ACCOUNT = "40402";
+  public static final String RSP_CODE_CANCELLATION = "40404";
   public static final int STATUS_TOO_MANY_REQUEST = 429;
   public static final String RSP_CODE_OVER_QUOTA = "42901";
   public static final int STATUS_FORBIDDEN = 403;

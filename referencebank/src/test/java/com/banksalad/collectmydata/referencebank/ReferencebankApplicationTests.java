@@ -13,6 +13,9 @@ import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService
 import com.banksalad.collectmydata.finance.api.transaction.TransactionRequestHelper;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
+import com.banksalad.collectmydata.irp.api.AccountInfoRequestPaginationHelper;
+import com.banksalad.collectmydata.irp.api.AccountInfoResponsePaginationHelper;
+import com.banksalad.collectmydata.irp.api.AccountInfoServicePagination;
 import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountSummaryRepository;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasic;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasicRequest;
@@ -47,13 +50,13 @@ class ReferencebankApplicationTests {
   private AccountInfoResponseHelper<IrpAccountSummary, IrpAccountBasic> irpAccountBasicInfoResponseHelper;
 
   @Autowired
-  private AccountInfoService<IrpAccountSummary, IrpAccountDetailRequest, List<IrpAccountDetail>> irpAccountDetailInfoService;
+  private AccountInfoServicePagination<IrpAccountSummary, IrpAccountDetailRequest, List<IrpAccountDetail>> irpAccountDetailInfoService;
 
   @Autowired
-  private AccountInfoRequestHelper<IrpAccountDetailRequest, IrpAccountSummary> irpAccountDetailInfoRequestHelper;
+  private AccountInfoRequestPaginationHelper<IrpAccountDetailRequest, IrpAccountSummary> irpAccountDetailInfoRequestHelper;
 
   @Autowired
-  private AccountInfoResponseHelper<IrpAccountSummary, List<IrpAccountDetail>> irpAccountDetailInfoResponseHelper;
+  private AccountInfoResponsePaginationHelper<IrpAccountDetailRequest, IrpAccountSummary, List<IrpAccountDetail>> irpAccountDetailInfoResponseHelper;
 
   @Autowired
   private SummaryService<ListIrpAccountSummariesRequest, IrpAccountSummary> irpAccountSummaryService;

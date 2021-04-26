@@ -23,7 +23,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Disabled("compare lib test disabled")
+@Disabled
 public class ListCompareCases {
 
   @Test

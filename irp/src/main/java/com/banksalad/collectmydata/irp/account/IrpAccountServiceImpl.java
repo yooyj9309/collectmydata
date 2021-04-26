@@ -1,18 +1,20 @@
 package com.banksalad.collectmydata.irp.account;
 
+import org.springframework.stereotype.Service;
+
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
+import com.banksalad.collectmydata.irp.api.AccountInfoRequestPaginationHelper;
+import com.banksalad.collectmydata.irp.api.AccountInfoResponsePaginationHelper;
+import com.banksalad.collectmydata.irp.api.AccountInfoServicePagination;
 import com.banksalad.collectmydata.irp.collect.Executions;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasic;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasicRequest;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountDetail;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountDetailRequest;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummary;
-
-import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,11 +31,11 @@ public class IrpAccountServiceImpl implements IrpAccountService {
 
   private final AccountInfoResponseHelper<IrpAccountSummary, IrpAccountBasic> irpAccountBasicInfoResponseHelper;
 
-  private final AccountInfoService<IrpAccountSummary, IrpAccountDetailRequest, List<IrpAccountDetail>> irpAccountDetailInfoService;
+  private final AccountInfoServicePagination<IrpAccountSummary, IrpAccountDetailRequest, List<IrpAccountDetail>> irpAccountDetailInfoService;
 
-  private final AccountInfoRequestHelper<IrpAccountDetailRequest, IrpAccountSummary> irpAccountDetailInfoRequestHelper;
+  private final AccountInfoRequestPaginationHelper<IrpAccountDetailRequest, IrpAccountSummary> irpAccountDetailInfoRequestHelper;
 
-  private final AccountInfoResponseHelper<IrpAccountSummary, List<IrpAccountDetail>> irpAccountDetailInfoResponseHelper;
+  private final AccountInfoResponsePaginationHelper<IrpAccountDetailRequest, IrpAccountSummary, List<IrpAccountDetail>> irpAccountDetailInfoResponseHelper;
 
   @Override
   public void getIrpAccountBasics(ExecutionContext executionContext) {
