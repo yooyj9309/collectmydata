@@ -6,9 +6,9 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.efin.account.dto.AccountTransaction;
 import com.banksalad.collectmydata.efin.account.dto.ListAccountTransactionsResponse;
-import com.banksalad.collectmydata.efin.common.db.entity.TransactionEntity;
-import com.banksalad.collectmydata.efin.common.db.repository.TransactionRepository;
-import com.banksalad.collectmydata.efin.common.mapper.TransactionMapper;
+import com.banksalad.collectmydata.efin.common.db.entity.AccountTransactionEntity;
+import com.banksalad.collectmydata.efin.common.db.repository.AccountTransactionRepository;
+import com.banksalad.collectmydata.efin.common.mapper.AccountTransactionMapper;
 import com.banksalad.collectmydata.efin.common.service.AccountSummaryService;
 import com.banksalad.collectmydata.efin.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
@@ -26,9 +26,9 @@ import static com.banksalad.collectmydata.finance.common.constant.FinanceConstan
 public class AccountTransactionResponseHelper implements TransactionResponseHelper<AccountSummary, AccountTransaction> {
 
   private final AccountSummaryService accountSummaryService;
-  private final TransactionRepository transactionRepository;
+  private final AccountTransactionRepository accountTransactionRepository;
 
-  private final TransactionMapper transactionMapper = Mappers.getMapper(TransactionMapper.class);
+  private final AccountTransactionMapper accountTransactionMapper = Mappers.getMapper(AccountTransactionMapper.class);
 
   @Override
   public List<AccountTransaction> getTransactionsFromResponse(TransactionResponse transactionResponse) {
@@ -39,24 +39,24 @@ public class AccountTransactionResponseHelper implements TransactionResponseHelp
   public void saveTransactions(ExecutionContext executionContext, AccountSummary accountSummary,
       List<AccountTransaction> accountTransactions) {
     accountTransactions.forEach(accountTransaction -> {
-      TransactionEntity transactionEntity = transactionMapper.dtoToEntity(accountTransaction);
-      transactionEntity.setSyncedAt(executionContext.getSyncStartedAt());
-      transactionEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
-      transactionEntity.setOrganizationId(executionContext.getOrganizationId());
-      transactionEntity.setSubKey(accountSummary.getSubKey());
+      AccountTransactionEntity accountTransactionEntity = accountTransactionMapper.dtoToEntity(accountTransaction);
+      accountTransactionEntity.setSyncedAt(executionContext.getSyncStartedAt());
+      accountTransactionEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
+      accountTransactionEntity.setOrganizationId(executionContext.getOrganizationId());
+      accountTransactionEntity.setSubKey(accountSummary.getSubKey());
 
-      TransactionEntity existingTransactionEntity = transactionRepository
+      AccountTransactionEntity existingAccountTransactionEntity = accountTransactionRepository
           .findByBanksaladUserIdAndOrganizationIdAndSubKeyAndFobNameAndTransNumAndTransDtime(
-              transactionEntity.getBanksaladUserId(), transactionEntity.getOrganizationId(),
-              transactionEntity.getSubKey(), transactionEntity.getFobName(),
-              transactionEntity.getTransNum(), transactionEntity.getTransDtime()
+              accountTransactionEntity.getBanksaladUserId(), accountTransactionEntity.getOrganizationId(),
+              accountTransactionEntity.getSubKey(), accountTransactionEntity.getFobName(),
+              accountTransactionEntity.getTransNum(), accountTransactionEntity.getTransDtime()
           ).map(targetTransaction -> {
-            transactionEntity.setId(targetTransaction.getId());
+            accountTransactionEntity.setId(targetTransaction.getId());
             return targetTransaction;
-          }).orElseGet(() -> TransactionEntity.builder().build());
+          }).orElseGet(() -> AccountTransactionEntity.builder().build());
 
-      if (!ObjectComparator.isSame(transactionEntity, existingTransactionEntity, ENTITY_EXCLUDE_FIELD)) {
-        transactionRepository.save(transactionEntity);
+      if (!ObjectComparator.isSame(accountTransactionEntity, existingAccountTransactionEntity, ENTITY_EXCLUDE_FIELD)) {
+        accountTransactionRepository.save(accountTransactionEntity);
       }
     });
   }

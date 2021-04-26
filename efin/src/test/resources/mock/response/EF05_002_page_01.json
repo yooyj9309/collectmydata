@@ -1,11 +1,12 @@
 {
   "rsp_code": "00000",
-  "rsp_msg": "success",
+  "rsp_msg": "성공",
+  "next_page": "002",
   "trans_cnt": 2,
   "trans_list": [
     {
       "trans_type": "5201",
-      "fob_name": "가상계좌",
+      "fob_name": "가상계좌1",
       "trans_num": "002",
       "trans_dtime": "20210302091000",
       "trans_amt": 5000,
@@ -18,13 +19,13 @@
     },
     {
       "trans_type": "5201",
-      "fob_name": "가상계좌",
-      "trans_num": "001",
-      "trans_dtime": "20210301091000",
+      "fob_name": "가상계좌2",
+      "trans_num": "002",
+      "trans_dtime": "20210302091000",
       "trans_amt": 5000,
       "trans_org_code": "080",
       "trans_id": "000*****",
-      "merchant_name": "세븐일레븐",
+      "merchant_name": "GS25",
       "trans_title": "",
       "trans_category": "L1",
       "pay_method": "02"
