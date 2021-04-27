@@ -1,13 +1,11 @@
 package com.banksalad.collectmydata.invest.collect;
 
+import org.springframework.http.HttpMethod;
+
 import com.banksalad.collectmydata.common.collect.api.Api;
 import com.banksalad.collectmydata.common.collect.api.Pagination;
 
 public class Apis {
-
-  private enum HttpMethod {
-    GET, POST
-  }
 
   // 6.4.1 계좌 목록 조회 API
   public static Api finance_invest_accounts =

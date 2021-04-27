@@ -31,7 +31,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 @RequiredArgsConstructor
 public class AccountTransactionInvocationContextProvider implements TestTemplateInvocationContextProvider {
 
-  private static final Execution exeuciton = Executions.finance_invest_account_transactions;
+  private static final Execution execution = Executions.finance_invest_account_transactions;
 
   @Override
   public boolean supportsTestTemplate(ExtensionContext context) {
@@ -132,7 +132,7 @@ public class AccountTransactionInvocationContextProvider implements TestTemplate
     );
 
     AccountTransactionTestCaseGenerator<Object, AccountSummaryEntity, AccountTransactionEntity, Object> generator =
-        new AccountTransactionTestCaseGenerator<>(exeuciton, null, parentMap, mainMap, null);
+        new AccountTransactionTestCaseGenerator<>(execution, null, parentMap, mainMap, null);
 
     return generator.generate().stream()
         .map(this::invocationContext);

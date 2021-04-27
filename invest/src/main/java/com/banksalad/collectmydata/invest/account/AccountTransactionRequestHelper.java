@@ -16,13 +16,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.DEFAULT_PAGING_LIMIT;
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.DEFAULT_SEARCH_YEAR;
 
 @Component
 @RequiredArgsConstructor
 public class AccountTransactionRequestHelper implements TransactionRequestHelper<AccountSummary, ListAccountTransactionsRequest> {
 
-  private static final int DEFAULT_LIMIT = 500;
   private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
   private final AccountSummaryService accountSummaryService;
@@ -53,7 +53,7 @@ public class AccountTransactionRequestHelper implements TransactionRequestHelper
         .fromDate(dateFormatter.format(fromDate))
         .toDate(dateFormatter.format(toDate))
         .nextPage(nextPage)
-        .limit(DEFAULT_LIMIT)
+        .limit(DEFAULT_PAGING_LIMIT)
         .build();
   }
 }
