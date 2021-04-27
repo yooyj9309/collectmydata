@@ -11,6 +11,4 @@ public interface AccountBasicRepository extends JpaRepository<AccountBasicEntity
 
   Optional<AccountBasicEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNum(Long banksaladUserId, String organizationId,
       String accountNum);
-
-  List<AccountBasicEntity> findByBanksaladUserIdAndOrganizationId(Long banksaladUserId, String organizationId);
 }

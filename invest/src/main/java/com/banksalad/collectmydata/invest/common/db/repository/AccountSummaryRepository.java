@@ -14,4 +14,14 @@ public interface AccountSummaryRepository extends JpaRepository<AccountSummaryEn
 
   List<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndConsentIsTrue(Long banksaladUserId,
       String organizationId);
+
+  List<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndBasicResponseCodeNotInAndConsentIsTrue(Long banksaladUserId,
+      String organizationId, List<String> basicResponseCodes);
+
+  Optional<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndTransactionResponseCodeNotInAndConsentIsTrue(
+      Long banksaladUserId, String organizationId, String accountNum, List<String> transactionResponseCode);
+
+
+  List<AccountSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndProductResponseCodeNotInAndConsentIsTrue(
+      Long banksaladUserId, String organizationId, List<String> productResponseCode);
 }
