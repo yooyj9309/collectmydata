@@ -1,7 +1,6 @@
 package com.banksalad.collectmydata.invest.account;
 
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
@@ -38,7 +37,6 @@ public class AccountBasicInfoResponseHelper implements AccountInfoResponseHelper
   }
 
   @Override
-  @Transactional
   public void saveAccountAndHistory(ExecutionContext executionContext, AccountSummary accountSummary,
       AccountBasic accountBasic) {
 

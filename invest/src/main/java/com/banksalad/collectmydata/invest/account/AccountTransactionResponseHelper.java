@@ -4,10 +4,8 @@ import org.springframework.stereotype.Component;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.crypto.HashUtil;
-import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
 import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
-import com.banksalad.collectmydata.finance.common.constant.FinanceConstant;
 import com.banksalad.collectmydata.invest.account.dto.AccountTransaction;
 import com.banksalad.collectmydata.invest.account.dto.ListAccountTransactionsResponse;
 import com.banksalad.collectmydata.invest.common.db.entity.AccountTransactionEntity;
@@ -49,21 +47,12 @@ public class AccountTransactionResponseHelper implements TransactionResponseHelp
       accountTransactionEntity.setAccountNum(accountSummary.getAccountNum());
       accountTransactionEntity.setUniqueTransNo(generateUniqueTransNo(accountTransaction));
 
-      AccountTransactionEntity existingAccountTransactionEntity = accountTransactionRepository
+      accountTransactionRepository
           .findByTransactionYearMonthAndBanksaladUserIdAndOrganizationIdAndAccountNumAndUniqueTransNo(
               accountTransactionEntity.getTransactionYearMonth(), accountTransactionEntity.getBanksaladUserId(),
               accountTransactionEntity.getOrganizationId(), accountTransactionEntity.getAccountNum(),
               accountTransactionEntity.getUniqueTransNo())
-          .orElse(null);
-
-      if (existingAccountTransactionEntity != null) {
-        accountTransactionEntity.setId(existingAccountTransactionEntity.getId());
-      }
-
-      if (!ObjectComparator
-          .isSame(accountTransactionEntity, existingAccountTransactionEntity, FinanceConstant.ENTITY_EXCLUDE_FIELD)) {
-        accountTransactionRepository.save(accountTransactionEntity);
-      }
+          .orElseGet(() -> accountTransactionRepository.save(accountTransactionEntity));
     }
   }
 
