@@ -1,9 +1,5 @@
 package com.banksalad.collectmydata.bank.publishment.invest;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-
 import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountTransactionEntity;
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
@@ -13,10 +9,15 @@ import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountTransa
 import com.banksalad.collectmydata.bank.common.mapper.InvestAccountBasicMapper;
 import com.banksalad.collectmydata.bank.common.mapper.InvestAccountDetailMapper;
 import com.banksalad.collectmydata.bank.common.mapper.InvestAccountTransactionMapper;
-import com.banksalad.collectmydata.bank.grpc.client.ConnectClientService;
 import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountBasicResponse;
 import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountDetailResponse;
 import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountTransactionResponse;
+import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankInvestAccountBasicsRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankInvestAccountDetailsRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankInvestAccountTransactionsRequest;
@@ -40,7 +41,7 @@ public class InvestAccountPublishServiceImpl implements InvestAccountPublishServ
   private final InvestAccountBasicRepository investAccountBasicRepository;
   private final InvestAccountDetailRepository investAccountDetailRepository;
   private final InvestAccountTransactionRepository investAccountTransactionRepository;
-  private final ConnectClientService connectClientService;
+  private final CollectmydataConnectClientService collectmydataConnectClientService;
 
   private final InvestAccountBasicMapper investAccountBasicMapper = Mappers.getMapper(InvestAccountBasicMapper.class);
   private final InvestAccountDetailMapper investAccountDetailMapper = Mappers
@@ -53,8 +54,8 @@ public class InvestAccountPublishServiceImpl implements InvestAccountPublishServ
     // TODO : type casting & load entity 중복코드 공통화
     /* type casting */
     long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-    String organizationId = connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
-        .getOrganizationId();
+    String organizationId = collectmydataConnectClientService
+        .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
 
     /* load summary entities (is_consent = true & response_code != 40305, 40404) */
     List<AccountSummaryEntity> accountSummaryEntities = accountSummaryRepository
@@ -78,7 +79,8 @@ public class InvestAccountPublishServiceImpl implements InvestAccountPublishServ
       ListBankInvestAccountDetailsRequest request) {
     /* type casting */
     long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-    String organizationId = connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
+    String organizationId = collectmydataConnectClientService
+        .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
         .getOrganizationId();
 
     /* load summary entities (is_consent = true & response_code != 40305, 40404) */
@@ -103,8 +105,8 @@ public class InvestAccountPublishServiceImpl implements InvestAccountPublishServ
       ListBankInvestAccountTransactionsRequest request) {
     /* type casting */
     long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-    String organizationId = connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
-        .getOrganizationId();
+    String organizationId = collectmydataConnectClientService
+        .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
     LocalDateTime createdAt = LocalDateTime.ofEpochSecond(request.getCreatedAfterMs(), 0, ZoneOffset.UTC);
     int limit = Long.valueOf(request.getLimit()).intValue();
 

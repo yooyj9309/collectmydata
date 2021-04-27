@@ -36,5 +36,7 @@ grpc:
   in-process-server-name: collectmydata-connect-server-process
   shutdownGrace: 30
 
-banksalad:
-  cipher.uri: dns:///cipher-headless:18081
+uri:
+  collectmydataconnect: dns:///collectmydataconnect-headless:18081
+  user: dns:///user-headless:18081
+  cipher: dns:///cipher-headless:18081

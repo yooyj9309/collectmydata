@@ -1,10 +1,5 @@
 package com.banksalad.collectmydata.bank.publishment.loan;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.LoanAccountBasicEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.LoanAccountDetailEntity;
@@ -15,15 +10,18 @@ import com.banksalad.collectmydata.bank.common.db.repository.LoanAccountBasicRep
 import com.banksalad.collectmydata.bank.common.db.repository.LoanAccountDetailRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.LoanAccountTransactionInterestRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.LoanAccountTransactionRepository;
-import com.banksalad.collectmydata.bank.grpc.client.ConnectClientService;
 import com.banksalad.collectmydata.bank.publishment.loan.dto.LoanAccountBasicResponse;
 import com.banksalad.collectmydata.bank.publishment.loan.dto.LoanAccountDetailResponse;
 import com.banksalad.collectmydata.bank.publishment.loan.dto.LoanAccountTransactionResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankLoanAccountBasicsRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankLoanAccountDetailsRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankLoanAccountTransactionsRequest;
 import com.google.protobuf.StringValue;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -37,8 +35,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @DisplayName("대출상품계좌 publish service 테스트")

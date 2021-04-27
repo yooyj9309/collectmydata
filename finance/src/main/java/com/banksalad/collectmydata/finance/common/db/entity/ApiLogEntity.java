@@ -28,6 +28,8 @@ public class ApiLogEntity extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  private String consentId;
+
   private String syncRequestId;
 
   private String executionRequestId;
@@ -88,4 +90,10 @@ public class ApiLogEntity extends BaseEntity {
   private LocalDateTime responseDtime;
 
   private Long elapsedTime;
+
+  @Column(nullable = false)
+  private String createdBy;
+
+  @Column(nullable = false)
+  private String updatedBy;
 }

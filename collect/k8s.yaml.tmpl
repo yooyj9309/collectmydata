@@ -270,13 +270,13 @@ spec:
   - to:
     - podSelector:
         matchLabels:
+          app: collectmydataconnect
+    - podSelector:
+        matchLabels:
           app: cipher
     - podSelector:
         matchLabels:
-          app: {{ $service_name }}
-    - podSelector:
-        matchLabels:
-          app: collectmydataconnect
+          app: finance
     ports:
     - protocol: TCP
       port: 80

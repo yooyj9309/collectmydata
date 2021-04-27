@@ -49,12 +49,9 @@ public class FinanceMessageServiceImpl implements FinanceMessageService {
 
   @Override
   public void produceSyncCompleted(String messageTopic, SyncCompletedMessage syncCompletedMessage) {
-    final String message;
-
     try {
-      message = objectMapper.writeValueAsString(syncCompletedMessage);
-      kafkaTemplate
-          .send(messageTopic, String.valueOf(syncCompletedMessage.getBanksaladUserId()), message)
+      kafkaTemplate.send(messageTopic, String.valueOf(syncCompletedMessage.getBanksaladUserId()),
+          objectMapper.writeValueAsString(syncCompletedMessage))
           .addCallback(new ListenableFutureCallback<>() {
             @Override
             public void onSuccess(SendResult<String, String> result) {

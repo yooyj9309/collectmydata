@@ -26,10 +26,12 @@ public class ApiLogServiceImpl implements ApiLogService {
   private final ApiLogRepository apiLogRepository;
 
   @Override
-  public void logRequest(String syncRequestId, String executionRequestId, long banksaladUserId, String organizationId,
+  public void logRequest(String consentId, String syncRequestId, String executionRequestId, long banksaladUserId,
+      String organizationId,
       ApiLog apiLog) {
     apiLogRepository.save(
         ApiLogEntity.builder()
+            .consentId(consentId)
             .syncRequestId(syncRequestId)
             .executionRequestId(executionRequestId)
             .apiRequestId(apiLog.getId())
@@ -44,18 +46,22 @@ public class ApiLogServiceImpl implements ApiLogService {
             .transformedRequestHeader(apiLog.getRequest().getTransformedHeader())
             .transformedRequestBody(apiLog.getRequest().getTransformedBody())
             .requestDtime(LocalDateTime.now())
+            .createdBy(String.valueOf(banksaladUserId))
+            .updatedBy(String.valueOf(banksaladUserId))
             .build()
     );
   }
 
   @Override
-  public void logResponse(String syncRequestId, String executionRequestId, long banksaladUserId, String organizationId,
+  public void logResponse(String consentId, String syncRequestId, String executionRequestId, long banksaladUserId,
+      String organizationId,
       ApiLog apiLog) {
 
     Result result = parseResultCodeAndMessage(apiLog.getResponse().getTransformedBody());
 
     ApiLogEntity apiLogEntity = apiLogRepository
-        .findBySyncRequestIdAndExecutionRequestIdAndApiRequestIdAndCreatedAtBetween(
+        .findByConsentIdAndSyncRequestIdAndExecutionRequestIdAndApiRequestIdAndCreatedAtBetween(
+            consentId,
             syncRequestId,
             executionRequestId,
             apiLog.getId(),
@@ -83,6 +89,7 @@ public class ApiLogServiceImpl implements ApiLogService {
     apiLogEntity.setTransformedResponseHeader(apiLog.getResponse().getTransformedHeader());
     apiLogEntity.setTransformedResponseBody(apiLog.getResponse().getTransformedBody());
     apiLogEntity.setResponseDtime(LocalDateTime.now());
+    apiLogEntity.setUpdatedBy(String.valueOf(banksaladUserId));
 
     if (apiLogEntity.getRequestDtime() != null) {
       long elapsedTime = DateUtil.utcLocalDateTimeToEpochMilliSecond(apiLogEntity.getResponseDtime()) - DateUtil

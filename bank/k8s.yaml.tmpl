@@ -33,10 +33,18 @@
 {{ $mysql_cidr_b := "10.121.9.64/28" }}
 {{ $mysql_cidr_c := "10.121.9.80/28" }}
 
+{{ $msk_cidr_a := "10.120.250.0/25" }}
+{{ $msk_cidr_b := "10.120.250.128/25" }}
+{{ $msk_cidr_c := "10.120.251.0/25" }}
+
 {{ if eq $env "production" }}
-  {{ $mysql_cidr_a = "10.131.6.144/28" }}
-  {{ $mysql_cidr_b = "10.131.6.160/28" }}
-  {{ $mysql_cidr_c = "10.131.6.176/28" }}
+  {{ $mysql_cidr_a = "fixme" }}
+  {{ $mysql_cidr_b = "fixme" }}
+  {{ $mysql_cidr_c = "fixme" }}
+
+  {{ $msk_cidr_a = "fixme" }}
+  {{ $msk_cidr_b = "fixme" }}
+  {{ $msk_cidr_c = "fixme" }}
 {{ end }}
 
 
@@ -271,10 +279,13 @@ spec:
   - to:
     - podSelector:
         matchLabels:
+          app: collectmydataconnect
+    - podSelector:
+        matchLabels:
           app: cipher
     - podSelector:
         matchLabels:
-          app: collectmydata-connect
+          app: finance
     ports:
     - protocol: TCP
       port: 80
@@ -292,7 +303,22 @@ spec:
     ports:
     - protocol: TCP
       port: 3306
-
+  - to:
+    - ipBlock:
+        cidr: {{ $msk_cidr_a }}
+    - ipBlock:
+        cidr: {{ $msk_cidr_b }}
+    - ipBlock:
+        cidr: {{ $msk_cidr_c }}
+    ports:
+    - protocol: TCP
+      port: 9092
+  - to:
+    - ipBlock:
+        cidr: 0.0.0.0/0 # mydata information provider
+    ports:
+    - protocol: TCP
+      port: 9443
 ---
 kind: PodDisruptionBudget
 apiVersion: policy/v1beta1

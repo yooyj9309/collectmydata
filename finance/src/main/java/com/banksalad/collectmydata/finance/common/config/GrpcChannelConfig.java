@@ -19,7 +19,7 @@ public class GrpcChannelConfig {
 
   private static final String CLIENT_LOAD_BALANCING_POLICY_ROUND_ROBIN = "round_robin";
   private static final String CIPHER_TARGET = "dns:///cipher-headless:18081";
-  private static final String COLLECTMYDATA_CONNECT_TARGET = "dns:///connect:8080";
+  private static final String COLLECTMYDATA_CONNECT_TARGET = "dns:///collectmydataconnect-headless:18081";
 
   private static final String LOCAL_CIPHER_TARGET = "localhost:9999";
   private static final String LOCAL_COLLECTMYDATA_CONNECT_TARGET = "localhost:19081";

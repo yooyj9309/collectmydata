@@ -21,7 +21,7 @@ public class ApiLoggerImpl implements ApiLogger {
   public void onRequest(ExecutionContext context, ApiLog apiLog) {
     log.debug("onRequest: apiLog: {}", apiLog.getRequest().getBody());
 
-    apiLogService.logRequest(context.getSyncRequestId(), context.getExecutionRequestId(),
+    apiLogService.logRequest(context.getConsentId(), context.getSyncRequestId(), context.getExecutionRequestId(),
         context.getBanksaladUserId(), context.getOrganizationId(), apiLog);
   }
 
@@ -29,7 +29,7 @@ public class ApiLoggerImpl implements ApiLogger {
   public void onResponse(ExecutionContext context, ApiLog apiLog) {
     log.debug("onResponse: apiLog: {}", apiLog.getResponse().getBody());
 
-    apiLogService.logResponse(context.getSyncRequestId(), context.getExecutionRequestId(),
+    apiLogService.logResponse(context.getConsentId(), context.getSyncRequestId(), context.getExecutionRequestId(),
         context.getBanksaladUserId(), context.getOrganizationId(), apiLog);
   }
 }

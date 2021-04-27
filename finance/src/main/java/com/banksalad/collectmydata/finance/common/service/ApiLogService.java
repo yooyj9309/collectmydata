@@ -4,9 +4,9 @@ import com.banksalad.collectmydata.common.collect.executor.ApiLog;
 
 public interface ApiLogService {
 
-  void logRequest(String syncRequestId, String executionRequestId, long banksaladUserId, String organizationId,
+  void logRequest(String consentId, String syncRequestId, String executionRequestId, long banksaladUserId, String organizationId,
       ApiLog apiLog);
 
-  void logResponse(String syncRequestId, String executionRequestId, long banksaladUserId, String organizationId,
+  void logResponse(String consentId, String syncRequestId, String executionRequestId, long banksaladUserId, String organizationId,
       ApiLog apiLog);
 }

@@ -1,6 +1,5 @@
 package com.banksalad.collectmydata.bank.grpc.handler;
 
-import com.banksalad.collectmydata.bank.grpc.client.ConnectClientService;
 import com.banksalad.collectmydata.bank.grpc.handler.interceptor.StatsUnaryServerInterceptor;
 import com.banksalad.collectmydata.bank.publishment.deposit.DepositAccountPublishService;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountBasicResponse;
@@ -27,6 +26,7 @@ import com.banksalad.collectmydata.bank.publishment.summary.AccountSummaryPublis
 import com.banksalad.collectmydata.bank.publishment.summary.dto.AccountSummariesProtoResponse;
 import com.banksalad.collectmydata.bank.publishment.summary.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.common.exception.GrpcException;
+import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
 
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankGrpc;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankAccountSummariesRequest;
@@ -67,7 +67,7 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
   private final DepositAccountPublishService depositAccountPublishService;
   private final InvestAccountPublishService investAccountPublishService;
   private final LoanAccountPublishService loanAccountPublishService;
-  private final ConnectClientService connectClientService;
+  private final CollectmydataConnectClientService collectmydataConnectClientService;
 
   @Override
   public void listBankAccountSummaries(ListBankAccountSummariesRequest request,
@@ -249,7 +249,8 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       List<LoanAccountBasicResponse> loanAccountBasicResponses = loanAccountPublishService
           .getLoanAccountBasicResponses(
               Long.valueOf(request.getBanksaladUserId()),
-              connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId());
+              collectmydataConnectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
+                  .getOrganizationId());
       LoanAccountBasicsProtoResponse loanAccountBasicsProtoResponse = LoanAccountBasicsProtoResponse.builder()
           .loanAccountBasicResponses(loanAccountBasicResponses)
           .build();
@@ -275,7 +276,8 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       List<LoanAccountDetailResponse> loanAccountDetailResponses = loanAccountPublishService
           .getLoanAccountDetailResponses(
               Long.valueOf(request.getBanksaladUserId()),
-              connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId());
+              collectmydataConnectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
+                  .getOrganizationId());
       LoanAccountDetailsProtoResponse loanAccountDetailsProtoResponse = LoanAccountDetailsProtoResponse.builder()
           .loanAccountDetailResponses(loanAccountDetailResponses)
           .build();
@@ -301,7 +303,8 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       List<LoanAccountTransactionResponse> loanAccountTransactionsProtoResponses = loanAccountPublishService
           .getLoanAccountTransactionResponse(
               Long.valueOf(request.getBanksaladUserId()),
-              connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId(),
+              collectmydataConnectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
+                  .getOrganizationId(),
               request.getAccountNum(),
               request.getSeqno().getValue(),
               LocalDateTime.ofEpochSecond(request.getCreatedAfterMs(), 0, ZoneOffset.UTC),

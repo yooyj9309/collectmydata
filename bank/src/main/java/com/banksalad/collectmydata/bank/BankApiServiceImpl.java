@@ -10,7 +10,6 @@ import com.banksalad.collectmydata.bank.deposit.dto.DepositAccountTransaction;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountBasicRequest;
 import com.banksalad.collectmydata.bank.deposit.dto.GetDepositAccountDetailRequest;
 import com.banksalad.collectmydata.bank.deposit.dto.ListDepositAccountTransactionsRequest;
-import com.banksalad.collectmydata.bank.grpc.client.ConnectClientService;
 import com.banksalad.collectmydata.bank.invest.InvestAccountBasicPublishmentHelper;
 import com.banksalad.collectmydata.bank.invest.InvestAccountDetailPublishmentHelper;
 import com.banksalad.collectmydata.bank.invest.InvestAccountTransactionPublishmentHelper;
@@ -46,13 +45,14 @@ import com.banksalad.collectmydata.finance.api.summary.SummaryService;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionRequestHelper;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
+import com.banksalad.collectmydata.finance.common.dto.OauthToken;
+import com.banksalad.collectmydata.finance.common.dto.Organization;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
+import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
 import com.banksalad.collectmydata.finance.common.service.FinanceMessageService;
 
 import org.springframework.stereotype.Service;
 
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenResponse;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -67,7 +67,8 @@ import java.util.concurrent.CompletableFuture;
 public class BankApiServiceImpl implements BankApiService {
 
   private final FinanceMessageService financeMessageService;
-  private final ConnectClientService connectClientService;
+  //  private final ConnectClientService connectClientService;
+  private final CollectmydataConnectClientService collectmydataConnectClientService;
 
   // SUMMARY
   private final SummaryService<ListAccountSummariesRequest, AccountSummary> accountSummaryService;
@@ -131,19 +132,19 @@ public class BankApiServiceImpl implements BankApiService {
   public void requestApi(long banksaladUserId, String organizationId, String syncRequestId,
       SyncRequestType syncRequestType) throws ResponseNotOkException {
 
-    GetOrganizationResponse organization = connectClientService.getOrganizationByOrganizationId(organizationId);
-    GetAccessTokenResponse accessToken = connectClientService
-        .getAccessToken(String.valueOf(banksaladUserId), organizationId);
+    Organization organization = collectmydataConnectClientService.getOrganization(organizationId);
+    OauthToken oauthToken = collectmydataConnectClientService
+        .getAccessToken(banksaladUserId, organizationId);
 
     ExecutionContext executionContext = ExecutionContext.builder()
-        .consentId(accessToken.getConsentId())
+        .consentId(oauthToken.getConsentId())
         .syncRequestId(syncRequestId)
         .executionRequestId(UUID.randomUUID().toString())
         .banksaladUserId(banksaladUserId)
         .organizationId(organizationId)
         .organizationCode(organization.getOrganizationCode())
-        .organizationHost(organization.getDomain())
-        .accessToken(accessToken.getAccessToken())
+        .organizationHost(organization.getHostUrl())
+        .accessToken(oauthToken.getAccessToken())
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
         .build();
 

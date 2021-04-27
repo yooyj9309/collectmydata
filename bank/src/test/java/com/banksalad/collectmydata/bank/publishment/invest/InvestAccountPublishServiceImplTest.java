@@ -1,10 +1,5 @@
 package com.banksalad.collectmydata.bank.publishment.invest;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountBasicEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountDetailEntity;
@@ -13,14 +8,20 @@ import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepos
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountBasicRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountDetailRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountTransactionRepository;
-import com.banksalad.collectmydata.bank.grpc.client.ConnectClientService;
 import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountBasicResponse;
 import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountDetailResponse;
 import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountTransactionResponse;
+import com.banksalad.collectmydata.finance.common.dto.Organization;
+import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankInvestAccountBasicsRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankInvestAccountDetailsRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankInvestAccountTransactionsRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
 import com.google.protobuf.StringValue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,8 +36,9 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @DisplayName("투자상품계좌 publish service 테스트")
@@ -59,7 +61,7 @@ class InvestAccountPublishServiceImplTest {
   private InvestAccountTransactionRepository investAccountTransactionRepository;
 
   @MockBean
-  private ConnectClientService connectClientService;
+  private CollectmydataConnectClientService collectmydataConnectClientService;
 
   private final String[] ENTITY_IGNORE_FIELD = {"id", "banksaladUserId", "organizationId", "syncedAt", "createdBy",
       "updatedBy", "basicResponseCode", "detailResponseCode", "transactionResponseCode", "transactionYearMonth",
@@ -71,13 +73,13 @@ class InvestAccountPublishServiceImplTest {
     // given
     accountSummaryRepository.save(getAccountSummaryEntity());
     investAccountBasicRepository.save(getInvestAccountBasicEntity());
-    when(connectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
-        GetOrganizationResponse.newBuilder()
-            .setSector("sector")
-            .setIndustry("industry")
-            .setOrganizationId(ORGANIZATION_ID)
-            .setOrganizationCode(ORGANIZATION_CODE)
-            .setDomain(ORGANIZATION_HOST)
+    when(collectmydataConnectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
+        Organization.builder()
+            .sector("sector")
+            .industry("industry")
+            .organizationId(ORGANIZATION_ID)
+            .organizationCode(ORGANIZATION_CODE)
+            .hostUrl(ORGANIZATION_HOST)
             .build());
 
     // when
@@ -95,13 +97,13 @@ class InvestAccountPublishServiceImplTest {
     // given
     accountSummaryRepository.save(getAccountSummaryEntity());
     investAccountDetailRepository.save(getInvestAccountDetailEntity());
-    when(connectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
-        GetOrganizationResponse.newBuilder()
-            .setSector("sector")
-            .setIndustry("industry")
-            .setOrganizationId(ORGANIZATION_ID)
-            .setOrganizationCode(ORGANIZATION_CODE)
-            .setDomain(ORGANIZATION_HOST)
+    when(collectmydataConnectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
+        Organization.builder()
+            .sector("sector")
+            .industry("industry")
+            .organizationId(ORGANIZATION_ID)
+            .organizationCode(ORGANIZATION_CODE)
+            .hostUrl(ORGANIZATION_HOST)
             .build());
 
     // when
@@ -118,13 +120,13 @@ class InvestAccountPublishServiceImplTest {
     // given
     accountSummaryRepository.save(getAccountSummaryEntity());
     investAccountTransactionRepository.save(getInvestAccountTransactionEntity());
-    when(connectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
-        GetOrganizationResponse.newBuilder()
-            .setSector("sector")
-            .setIndustry("industry")
-            .setOrganizationId(ORGANIZATION_ID)
-            .setOrganizationCode(ORGANIZATION_CODE)
-            .setDomain(ORGANIZATION_HOST)
+    when(collectmydataConnectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
+        Organization.builder()
+            .sector("sector")
+            .industry("industry")
+            .organizationId(ORGANIZATION_ID)
+            .organizationCode(ORGANIZATION_CODE)
+            .hostUrl(ORGANIZATION_HOST)
             .build());
 
     // when

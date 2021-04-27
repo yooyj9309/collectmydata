@@ -1,10 +1,5 @@
 package com.banksalad.collectmydata.bank.publishment.deposit;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.DepositAccountBasicEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.DepositAccountDetailEntity;
@@ -13,14 +8,20 @@ import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepos
 import com.banksalad.collectmydata.bank.common.db.repository.DepositAccountBasicRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.DepositAccountDetailRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.DepositAccountTransactionRepository;
-import com.banksalad.collectmydata.bank.grpc.client.ConnectClientService;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountBasicResponse;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountDetailResponse;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountTransactionResponse;
+import com.banksalad.collectmydata.finance.common.dto.Organization;
+import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankDepositAccountBasicsRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankDepositAccountDetailsRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankDepositAccountTransactionsRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
 import com.google.protobuf.StringValue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -60,7 +61,7 @@ class DepositAccountPublishServiceImplTest {
   private DepositAccountTransactionRepository depositAccountTransactionRepository;
 
   @MockBean
-  private ConnectClientService connectClientService;
+  private CollectmydataConnectClientService collectmydataConnectClientService;
 
   private final String[] ENTITY_IGNORE_FIELD = {"id", "banksaladUserId", "organizationId", "syncedAt", "createdBy",
       "updatedBy", "basicResponseCode", "detailResponseCode", "transactionResponseCode", "transactionYearMonth",
@@ -72,13 +73,13 @@ class DepositAccountPublishServiceImplTest {
     // given
     accountSummaryRepository.save(getAccountSummaryEntity());
     depositAccountBasicRepository.save(getDepositAccountBasicEntity());
-    when(connectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
-        GetOrganizationResponse.newBuilder()
-            .setSector("sector")
-            .setIndustry("industry")
-            .setOrganizationId(ORGANIZATION_ID)
-            .setOrganizationCode(ORGANIZATION_CODE)
-            .setDomain(ORGANIZATION_HOST)
+    when(collectmydataConnectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
+        Organization.builder()
+            .sector("sector")
+            .industry("industry")
+            .organizationId(ORGANIZATION_ID)
+            .organizationCode(ORGANIZATION_CODE)
+            .hostUrl(ORGANIZATION_HOST)
             .build());
 
     // when
@@ -96,13 +97,13 @@ class DepositAccountPublishServiceImplTest {
     // given
     accountSummaryRepository.save(getAccountSummaryEntity());
     depositAccountDetailRepository.save(getDepositAccountDetailEntity());
-    when(connectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
-        GetOrganizationResponse.newBuilder()
-            .setSector("sector")
-            .setIndustry("industry")
-            .setOrganizationId(ORGANIZATION_ID)
-            .setOrganizationCode(ORGANIZATION_CODE)
-            .setDomain(ORGANIZATION_HOST)
+    when(collectmydataConnectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
+        Organization.builder()
+            .sector("sector")
+            .industry("industry")
+            .organizationId(ORGANIZATION_ID)
+            .organizationCode(ORGANIZATION_CODE)
+            .hostUrl(ORGANIZATION_HOST)
             .build());
 
     // when
@@ -120,13 +121,13 @@ class DepositAccountPublishServiceImplTest {
     // given
     accountSummaryRepository.save(getAccountSummaryEntity());
     depositAccountTransactionRepository.save(getDepositAccountTransactionEntity());
-    when(connectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
-        GetOrganizationResponse.newBuilder()
-            .setSector("sector")
-            .setIndustry("industry")
-            .setOrganizationId(ORGANIZATION_ID)
-            .setOrganizationCode(ORGANIZATION_CODE)
-            .setDomain(ORGANIZATION_HOST)
+    when(collectmydataConnectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
+        Organization.builder()
+            .sector("sector")
+            .industry("industry")
+            .organizationId(ORGANIZATION_ID)
+            .organizationCode(ORGANIZATION_CODE)
+            .hostUrl(ORGANIZATION_HOST)
             .build());
 
     // when
