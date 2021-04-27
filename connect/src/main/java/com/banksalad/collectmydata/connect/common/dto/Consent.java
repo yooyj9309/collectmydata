@@ -19,10 +19,15 @@ import lombok.Setter;
 public class Consent {
 
   private String consentId;
+
   @JsonProperty("is_scheduled")
   private boolean scheduled;
+
   private String cycle;
+
   private String endDate;
+
   private String purpose;
+
   private int period;
 }

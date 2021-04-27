@@ -100,51 +100,26 @@ public class OauthTokenServiceImpl implements OauthTokenService {
             OauthTokenEntity.builder()
                 .banksaladUserId(banksaladUserId)
                 .organizationId(organizationId)
-                .authorizationCode(request.getAuthorizationCode())
                 .build());
 
     /* upsert oauthTokenEntity */
     oauthTokenEntity = oauthTokenMapper.dtoToEntity(getOauthTokenResponse, oauthTokenEntity);
-    // TODO : syncedAt, issuedAt, refreshedAt, consentId
-//    oauthTokenEntity.setSyncedAt();
-//    oauthTokenEntity.setConsentId();
-//    oauthTokenEntity.setIssuedAt();
-//    oauthTokenEntity.setRefreshedAt();
+    oauthTokenEntity.setSyncedAt(LocalDateTime.now());
     oauthTokenEntity.setConsentId(consentId);
     oauthTokenEntity.setAuthorizationCode(request.getAuthorizationCode());
-    oauthTokenEntity.setAccessTokenExpiresAt(LocalDateTime.now().plusSeconds(getOauthTokenResponse.getExpiresIn()));
+    oauthTokenEntity.setAccessTokenExpiresAt(LocalDateTime.now().plusSeconds(getOauthTokenResponse.getExpiresIn())); // fixme : epoch time
     oauthTokenEntity.setRefreshTokenExpiresAt(
-        LocalDateTime.now().plusSeconds(getOauthTokenResponse.getRefreshTokenExpiresIn()));
+        LocalDateTime.now().plusSeconds(getOauthTokenResponse.getRefreshTokenExpiresIn())); // fixme : epoch time
+    oauthTokenEntity.setIssuedAt(LocalDateTime.now());
+    oauthTokenEntity.setRefreshedAt(LocalDateTime.now());
+    oauthTokenEntity.setCreatedBy(String.valueOf(banksaladUserId));
+    oauthTokenEntity.setUpdatedBy(String.valueOf(banksaladUserId));
 
     oauthTokenRepository.save(oauthTokenEntity);
     oauthTokenHistoryRepository.save(oauthTokenHistoryMapper.toHistoryEntity(oauthTokenEntity));
 
-    // request 호출.
-    GetConsentResponse consentResponse = requestContent(organization, getOauthTokenResponse.getAccessToken());
-    // DB 적재
-    Consent consent = consentResponse.getConsent();
-    consent.setConsentId(consentId); // entity to dto에서도 consentId 는 있어야하니까..
-
-    ConsentEntity consentEntity = consentMapper.dtoToEntity(consentResponse.getConsent());
-    consentEntity.setSyncedAt(LocalDateTime.now());
-    consentEntity.setBanksaladUserId(banksaladUserId);
-    consentEntity.setOrganizationId(organizationId);
-
-    ConsentEntity existingConsentEntity = consentRepository
-        .findByBanksaladUserIdAndOrganizationId(banksaladUserId, organizationId)
-        .orElse(null);
-
-    if (existingConsentEntity != null) {
-      consentEntity.setId(existingConsentEntity.getId());
-    }
-
-    consentRepository.save(consentEntity);
-    consentHistoryRepository.save(consentHistoryMapper.toHistoryEntity(consentEntity));
-
-    // scheduled가 true일시, client 호출 collectScheduleClientService
-    if (consent.isScheduled()) {
-      collectScheduleClientService.registerScheduledSync(banksaladUserId, organization, consent);
-    }
+    /* request consent api logic */
+    syncConsent(banksaladUserId, organization, oauthTokenEntity.getAccessToken(), consentId);
 
     return OauthToken.builder()
         .accessToken(oauthTokenEntity.getAccessToken())
@@ -203,14 +178,11 @@ public class OauthTokenServiceImpl implements OauthTokenService {
 
     /* upsert oauthTokenEntity */
     oauthTokenEntity = oauthTokenMapper.dtoToEntity(getOauthTokenResponse, oauthTokenEntity);
-    // TODO : syncedAt, issuedAt, refreshedAt, consentId
-//    oauthTokenEntity.setSyncedAt();
-//    oauthTokenEntity.setConsentId();
-//    oauthTokenEntity.setIssuedAt();
-//    oauthTokenEntity.setRefreshedAt();
-    oauthTokenEntity.setAccessTokenExpiresAt(LocalDateTime.now().plusSeconds(getOauthTokenResponse.getExpiresIn()));
+    oauthTokenEntity.setSyncedAt(LocalDateTime.now());
+    oauthTokenEntity.setAccessTokenExpiresAt(LocalDateTime.now().plusSeconds(getOauthTokenResponse.getExpiresIn())); // fixme : epoch time
     oauthTokenEntity.setRefreshTokenExpiresAt(
-        LocalDateTime.now().plusSeconds(getOauthTokenResponse.getRefreshTokenExpiresIn()));
+        LocalDateTime.now().plusSeconds(getOauthTokenResponse.getRefreshTokenExpiresIn())); // fixme : epoch time
+    oauthTokenEntity.setRefreshedAt(LocalDateTime.now());
 
     oauthTokenRepository.save(oauthTokenEntity);
     oauthTokenHistoryRepository.save(oauthTokenHistoryMapper.toHistoryEntity(oauthTokenEntity));
@@ -258,6 +230,7 @@ public class OauthTokenServiceImpl implements OauthTokenService {
         .findAllByBanksaladUserId(banksaladUserId);
 
     for (OauthTokenEntity oauthTokenEntity : oauthTokenEntities) {
+      // TODO : remove duplicate
       oauthTokenRepository.delete(oauthTokenEntity);
       oauthTokenHistoryRepository.save(oauthTokenHistoryMapper.toHistoryEntity(oauthTokenEntity));
       ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
@@ -278,6 +251,52 @@ public class OauthTokenServiceImpl implements OauthTokenService {
     }
   }
 
+  private void syncConsent(long banksaladUserId, Organization organization, String accessToken, String consentId) {
+    /* request api */
+    GetConsentResponse consentResponse = requestContent(organization, accessToken);
+
+    /* mapping dto to entity */
+    Consent consent = consentResponse.getConsent();
+    consent.setConsentId(consentId);
+
+    ConsentEntity consentEntity = consentMapper.dtoToEntity(consent);
+    consentEntity.setSyncedAt(LocalDateTime.now());
+    consentEntity.setBanksaladUserId(banksaladUserId);
+    consentEntity.setOrganizationId(organization.getOrganizationId());
+
+    /* upsert entity */
+    ConsentEntity existingConsentEntity = consentRepository
+        .findByBanksaladUserIdAndOrganizationId(banksaladUserId, organization.getOrganizationId())
+        .orElse(null);
+
+    if (existingConsentEntity != null) {
+      consentEntity.setId(existingConsentEntity.getId());
+    }
+    consentRepository.save(consentEntity);
+    consentHistoryRepository.save(consentHistoryMapper.toHistoryEntity(consentEntity));
+
+    /* call scheduler register */
+    if (consent.isScheduled()) {
+      collectScheduleClientService.registerScheduledSync(banksaladUserId, organization, consent);
+    }
+  }
+
+  private GetConsentResponse requestContent(Organization organization, String accessToken) {
+    ExecutionContext executionContext = getExecutionContext(organization);
+    Map<String, String> headers = Map.of(AUTHORIZATION, generateRequestToken(accessToken)); // TODO : finance - headerService
+
+    GetConsentRequest request = GetConsentRequest.builder()
+        .orgCode(organization.getOrganizationCode())
+        .build();
+    ExecutionRequest<GetConsentRequest> executionRequest = ExecutionUtil.assembleExecutionRequest(headers, request);
+
+    ExecutionResponse<GetConsentResponse> executionResponse = collectExecutor
+        .execute(executionContext, Executions.common_consent, executionRequest);
+
+    validateResponse(executionResponse, executionContext);
+    return executionResponse.getResponse();
+  }
+
   private GetOauthTokenResponse requestIssueToken(Organization organization, String authorizationCode) {
     ExecutionContext executionContext = getExecutionContext(organization);
     BanksaladClientSecretEntity banksaladClientSecretEntity = getBanksaladClientSecretEntity(organization);
@@ -295,22 +314,6 @@ public class OauthTokenServiceImpl implements OauthTokenService {
         .execute(executionContext, Executions.oauth_issue_token, executionRequest);
 
     validateResponse(executionResponse, executionContext);
-    return executionResponse.getResponse();
-  }
-
-  private GetConsentResponse requestContent(Organization organization, String accessToken) {
-    ExecutionContext executionContext = getExecutionContext(organization);
-    GetConsentRequest request = GetConsentRequest.builder()
-        .orgCode(organization.getOrganizationCode())
-        .build();
-
-    // header
-    Map<String, String> headers = Map.of(AUTHORIZATION, generateRequestToken(accessToken));
-
-    ExecutionRequest<GetConsentRequest> executionRequest = ExecutionUtil.assembleExecutionRequest(headers, request);
-    ExecutionResponse<GetConsentResponse> executionResponse = collectExecutor
-        .execute(executionContext, Executions.common_consent, executionRequest);
-
     return executionResponse.getResponse();
   }
 
@@ -396,5 +399,4 @@ public class OauthTokenServiceImpl implements OauthTokenService {
   private String generateRequestToken(String token) {
     return new StringBuilder().append("Bearer ").append(token).toString();
   }
-
 }

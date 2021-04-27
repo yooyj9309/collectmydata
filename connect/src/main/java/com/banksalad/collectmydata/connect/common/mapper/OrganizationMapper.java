@@ -25,8 +25,7 @@ public abstract class OrganizationMapper {
       @MappingTarget OrganizationEntity entity);
 
   @AfterMapping
-  public void defaultSetting(
-      @MappingTarget OrganizationEntity entity) {
+  public void defaultSetting(@MappingTarget OrganizationEntity entity) {
     if (entity.getId() == null) {
       entity.setSector(MydataSector.UNKNOWN.name());
       entity.setIndustry(Industry.UNKNOWN.name());
