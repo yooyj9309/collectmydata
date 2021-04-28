@@ -1,5 +1,12 @@
-wiremock:
-  server:
-    files: classpath:/files
-    stubs: classpath:/mappings
-
+spring:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+  datasource:
+    url: jdbc:h2:mem:collectmydata-mock;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:

@@ -3,5 +3,17 @@ spring:
     active: local
   application:
     name: mock
-  main:
-    web-application-type: none
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    default-property-inclusion: non_null
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+server:
+  error:
+    whitelabel:
+      enabled: false
+logging:
+  config: classpath:logback/logback-${spring.profiles.active}.xml
