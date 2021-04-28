@@ -7,4 +7,5 @@ public interface CollectMessageService {
 
   void produceBankSyncRequested(SyncRequestedMessage syncRequestedMessage);
 
+  void produceCardSyncRequested(SyncRequestedMessage syncRequestedMessage);
 }

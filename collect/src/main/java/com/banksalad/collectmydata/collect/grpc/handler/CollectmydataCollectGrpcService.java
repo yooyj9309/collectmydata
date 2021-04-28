@@ -63,7 +63,7 @@ public class CollectmydataCollectGrpcService extends CollectmydataGrpc.Collectmy
       String syncRequestId =
           StringUtils.hasLength(request.getSyncRequestId()) ? request.getSyncRequestId() : UUID.randomUUID().toString();
 
-      LoggingMdcUtil.set(Sector.FINANCE.name(), Industry.BANK.name(), banksaladUserId, organizationId, organizationId);
+      LoggingMdcUtil.set(Sector.FINANCE.name(), Industry.BANK.name(), banksaladUserId, organizationId, syncRequestId);
 
       collectMessageService.produceBankSyncRequested(SyncRequestedMessage.builder()
           .banksaladUserId(banksaladUserId)
@@ -87,7 +87,32 @@ public class CollectmydataCollectGrpcService extends CollectmydataGrpc.Collectmy
   @Override
   public void syncCollectmydatacard(SyncCollectmydatacardRequest request,
       StreamObserver<SyncCollectmydatacardResponse> responseObserver) {
-    super.syncCollectmydatacard(request, responseObserver);
+
+    try {
+      GetOrganizationResponse getOrganizationResponse = connectClientService
+          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid());
+
+      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+      String organizationId = getOrganizationResponse.getOrganizationId();
+      String syncRequestId =
+          StringUtils.hasLength(request.getSyncRequestId()) ? request.getSyncRequestId() : UUID.randomUUID().toString();
+
+      LoggingMdcUtil.set(Sector.FINANCE.name(), Industry.CARD.name(), banksaladUserId, organizationId, syncRequestId);
+
+      collectMessageService.produceCardSyncRequested(SyncRequestedMessage.builder()
+          .banksaladUserId(banksaladUserId)
+          .organizationId(organizationId)
+          .syncRequestId(syncRequestId)
+          .syncRequestType(SyncRequestType.ONDEMAND)
+          .build());
+
+    } catch (Exception e) {
+      log.error("syncCollectmydatacard error : {}", e.getMessage(), e);
+      responseObserver.onError(e);
+
+    } finally {
+      LoggingMdcUtil.clear();
+    }
   }
 
   @Override

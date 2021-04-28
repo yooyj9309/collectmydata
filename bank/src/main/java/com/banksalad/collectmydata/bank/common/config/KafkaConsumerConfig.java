@@ -41,9 +41,4 @@ public class KafkaConsumerConfig {
   public ConcurrentKafkaListenerContainerFactory<String, String> bankSyncRequestedKafkaListenerContainerFactory() {
     return kafkaListenerContainerFactory(MessageTopic.bankSyncRequested);
   }
-
-  @Bean
-  public ConcurrentKafkaListenerContainerFactory<String, String> bankPublishmentRequestedKafkaListenerContainerFactory() {
-    return kafkaListenerContainerFactory(MessageTopic.bankPublishmentRequested);
-  }
 }

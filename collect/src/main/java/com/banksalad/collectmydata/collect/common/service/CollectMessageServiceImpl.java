@@ -31,16 +31,43 @@ public class CollectMessageServiceImpl implements CollectMessageService {
 
     try {
       message = objectMapper.writeValueAsString(syncRequestedMessage);
-      kafkaTemplate.send(MessageTopic.bankSyncRequested, String.valueOf(syncRequestedMessage.getBanksaladUserId()), message)
+      kafkaTemplate
+          .send(MessageTopic.bankSyncRequested, String.valueOf(syncRequestedMessage.getBanksaladUserId()), message)
           .addCallback(new ListenableFutureCallback<>() {
             @Override
             public void onSuccess(SendResult<String, String> result) {
-              log.debug("Produce syncCompletedMessage. syncRequestId: {} ", syncRequestedMessage.getSyncRequestId());
+              log.debug("Produce syncRequestedMessage. syncRequestId: {} ", syncRequestedMessage.getSyncRequestId());
             }
 
             @Override
             public void onFailure(Throwable t) {
-              log.error("Fail to produce syncCompletedMessage. syncRequestId: {}, exception: {}",
+              log.error("Fail to produce syncRequestedMessage. syncRequestId: {}, exception: {}",
+                  syncRequestedMessage.getSyncRequestId(), t.getMessage(), t);
+            }
+          });
+
+    } catch (JsonProcessingException e) {
+      throw new CollectRuntimeException("Fail to serialize message", e);
+    }
+  }
+
+  @Override
+  public void produceCardSyncRequested(SyncRequestedMessage syncRequestedMessage) {
+    final String message;
+
+    try {
+      message = objectMapper.writeValueAsString(syncRequestedMessage);
+      kafkaTemplate
+          .send(MessageTopic.cardSyncRequested, String.valueOf(syncRequestedMessage.getBanksaladUserId()), message)
+          .addCallback(new ListenableFutureCallback<>() {
+            @Override
+            public void onSuccess(SendResult<String, String> result) {
+              log.debug("Produce syncRequestedMessage. syncRequestId: {} ", syncRequestedMessage.getSyncRequestId());
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+              log.error("Fail to produce syncRequestedMessage. syncRequestId: {}, exception: {}",
                   syncRequestedMessage.getSyncRequestId(), t.getMessage(), t);
             }
           });

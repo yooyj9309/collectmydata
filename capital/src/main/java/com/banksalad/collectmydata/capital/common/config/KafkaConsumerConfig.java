@@ -25,11 +25,6 @@ public class KafkaConsumerConfig {
     return kafkaListenerContainerFactory(ConsumerGroupId.collectmydataFinanceCapital);
   }
 
-  @Bean
-  public ConcurrentKafkaListenerContainerFactory<String, String> capitalPublishmentRequestedKafkaListenerContainerFactory() {
-    return kafkaListenerContainerFactory(ConsumerGroupId.collectmydataFinanceCapital);
-  }
-
   private ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory(String groupId) {
     ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
     factory.setConsumerFactory(consumerFactory(groupId));

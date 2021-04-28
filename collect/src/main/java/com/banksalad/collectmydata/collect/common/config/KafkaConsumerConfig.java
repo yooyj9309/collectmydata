@@ -36,13 +36,25 @@ public class KafkaConsumerConfig {
     return factory;
   }
 
+  /* PublishmentRequested Listener Factory */
   @Bean
   public ConcurrentKafkaListenerContainerFactory<String, String> bankPublishmentRequestedKafkaListenerContainerFactory() {
     return kafkaListenerContainerFactory(MessageTopic.bankPublishmentRequested);
   }
 
   @Bean
+  public ConcurrentKafkaListenerContainerFactory<String, String> cardPublishmentRequestedKafkaListenerContainerFactory() {
+    return kafkaListenerContainerFactory(MessageTopic.cardPublishmentRequested);
+  }
+
+  /* SyncCompleted Listener Factory*/
+  @Bean
   public ConcurrentKafkaListenerContainerFactory<String, String> bankSyncCompletedKafkaListenerContainerFactory() {
     return kafkaListenerContainerFactory(MessageTopic.bankSyncCompleted);
+  }
+
+  @Bean
+  public ConcurrentKafkaListenerContainerFactory<String, String> cardSyncCompletedKafkaListenerContainerFactory() {
+    return kafkaListenerContainerFactory(MessageTopic.cardSyncCompleted);
   }
 }
