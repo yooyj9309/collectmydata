@@ -23,6 +23,7 @@ public class ExecutionContext {
   private String organizationHost;
   private final String accessToken;
   private final LocalDateTime syncStartedAt;
+  private String requestedBy;
 
   @Deprecated
   public void generateAndsUpdateExecutionRequestId() {
@@ -40,6 +41,7 @@ public class ExecutionContext {
         .organizationHost(organizationHost)
         .accessToken(accessToken)
         .syncStartedAt(syncStartedAt)
+        .requestedBy(requestedBy)
         .build();
   }
 

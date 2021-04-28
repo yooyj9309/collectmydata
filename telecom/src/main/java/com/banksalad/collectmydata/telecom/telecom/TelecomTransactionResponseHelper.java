@@ -44,6 +44,10 @@ public class TelecomTransactionResponseHelper implements TransactionResponseHelp
       transactionEntity.setOrganizationId(executionContext.getOrganizationId());
       transactionEntity.setSyncedAt(executionContext.getSyncStartedAt());
       transactionEntity.setMgmtId(telecomSummary.getMgmtId());
+      transactionEntity.setConsentId(executionContext.getConsentId());
+      transactionEntity.setSyncRequestId(executionContext.getSyncRequestId());
+      transactionEntity.setCreatedBy(executionContext.getRequestedBy());
+      transactionEntity.setUpdatedBy(executionContext.getRequestedBy());
 
       /* Load existing entity. */
       TelecomTransactionEntity existingTelecomTransactionEntity = telecomTransactionRepository

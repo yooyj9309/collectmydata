@@ -56,4 +56,9 @@ public class TelecomPaidTransactionEntity extends BaseEntity {
 
   @Column(nullable = false)
   private String transTitle;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
 }

@@ -55,6 +55,11 @@ public class TelecomSummaryResponseHelper implements SummaryResponseHelper<Telec
     telecomSummaryEntity.setBanksaladUserId(banksaladUserId);
     telecomSummaryEntity.setOrganizationId(organizationId);
     telecomSummaryEntity.setSyncedAt(syncedAt);
+    telecomSummaryEntity.setConsentId(executionContext.getConsentId());
+    telecomSummaryEntity.setSyncRequestId(executionContext.getSyncRequestId());
+    telecomSummaryEntity.setCreatedBy(executionContext.getRequestedBy());
+    telecomSummaryEntity.setUpdatedBy(executionContext.getRequestedBy());
+
     telecomSummaryRepository.save(telecomSummaryEntity);
   }
 }

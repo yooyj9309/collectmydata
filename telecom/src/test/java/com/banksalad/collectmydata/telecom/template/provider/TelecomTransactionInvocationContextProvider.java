@@ -22,10 +22,12 @@ import java.util.stream.Stream;
 
 import static com.banksalad.collectmydata.common.util.NumberUtil.bigDecimalOf;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_OVER_QUOTA;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static com.banksalad.collectmydata.telecom.common.constant.TelecomTestConstants.MGMT_ID1;
 
 public class TelecomTransactionInvocationContextProvider implements TestTemplateInvocationContextProvider {
@@ -50,6 +52,8 @@ public class TelecomTransactionInvocationContextProvider implements TestTemplate
         .type("02")
         .status("01")
         .transactionSyncedAt(null)
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     Map<String, TelecomSummaryEntity> parentMap = Map.of(
         "freshParent1", parent1,
@@ -70,6 +74,8 @@ public class TelecomTransactionInvocationContextProvider implements TestTemplate
         .transMonth(202104)
         .paidAmt(bigDecimalOf(30000,3))
         .payMethod("01")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     TelecomTransactionEntity main2 = TelecomTransactionEntity.builder()
         .syncedAt(OLD_SYNCED_AT)
@@ -79,6 +85,8 @@ public class TelecomTransactionInvocationContextProvider implements TestTemplate
         .transMonth(202105)
         .paidAmt(bigDecimalOf(30000,3))
         .payMethod("01")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     Map<String, TelecomTransactionEntity> mainMap = Map.of(
         "main1", main1,

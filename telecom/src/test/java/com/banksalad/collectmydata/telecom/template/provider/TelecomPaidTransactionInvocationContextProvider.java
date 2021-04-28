@@ -24,10 +24,12 @@ import java.util.stream.Stream;
 
 import static com.banksalad.collectmydata.common.util.NumberUtil.bigDecimalOf;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_OVER_QUOTA;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static com.banksalad.collectmydata.telecom.common.constant.TelecomTestConstants.MGMT_ID1;
 
 public class TelecomPaidTransactionInvocationContextProvider implements TestTemplateInvocationContextProvider {
@@ -51,6 +53,8 @@ public class TelecomPaidTransactionInvocationContextProvider implements TestTemp
         .telecomNum("07012345678")
         .type("02")
         .status("01")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     Map<String, TelecomSummaryEntity> parentMap = Map.of(
         "freshParent1", parent1,
@@ -72,6 +76,8 @@ public class TelecomPaidTransactionInvocationContextProvider implements TestTemp
         .transAmt(bigDecimalOf(1500,3))
         .merchantName("편의점A")
         .transTitle("풍선껌A")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     main1.setTransactionYearMonth(Integer.parseInt(main1.getTransDate().substring(0, 6)));
     TelecomPaidTransactionEntity main2 = TelecomPaidTransactionEntity.builder()
@@ -83,6 +89,8 @@ public class TelecomPaidTransactionInvocationContextProvider implements TestTemp
         .transAmt(bigDecimalOf(1500,3))
         .merchantName("편의점A")
         .transTitle("풍선껌A")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     main2.setTransactionYearMonth(Integer.parseInt(main2.getTransDate().substring(0, 6)));
     TelecomPaidTransactionEntity main3 = TelecomPaidTransactionEntity.builder()
@@ -94,6 +102,8 @@ public class TelecomPaidTransactionInvocationContextProvider implements TestTemp
         .transAmt(bigDecimalOf(1500,3))
         .merchantName("편의점A")
         .transTitle("풍선껌A")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     main3.setTransactionYearMonth(Integer.parseInt(main3.getTransDate().substring(0, 6)));
     Map<String, TelecomPaidTransactionEntity> mainMap = Map.of(

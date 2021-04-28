@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.telecom;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.summary.SummaryService;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
 import com.banksalad.collectmydata.finance.common.dto.OauthToken;
@@ -26,8 +27,12 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
+
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.REQUESTED_BY_SCHEDULE;
 
 @Slf4j
 @Service
@@ -57,8 +62,8 @@ public class TelecomApiServiceImpl implements TelecomApiService {
     final Organization organization = collectmydataConnectClientService.getOrganization(organizationId);
 
     // Make an execution context
-    ExecutionContext executionContext = generateExecutionContext(banksaladUserId, organizationId, oauthToken,
-        organization);
+    ExecutionContext executionContext = generateExecutionContext(syncRequestId, banksaladUserId, organizationId,
+        oauthToken, organization, String.valueOf(banksaladUserId));
 
     // 6.9.1: 통신 계약 목록 조회
     summaryService
@@ -93,8 +98,8 @@ public class TelecomApiServiceImpl implements TelecomApiService {
     final Organization organization = collectmydataConnectClientService.getOrganization(organizationId);
 
     // Make an execution context
-    ExecutionContext executionContext = generateExecutionContext(banksaladUserId, organizationId, oauthToken,
-        organization);
+    ExecutionContext executionContext = generateExecutionContext(syncRequestId, banksaladUserId, organizationId,
+        oauthToken, organization, REQUESTED_BY_SCHEDULE);
 
     summaryService
         .listAccountSummaries(executionContext, Executions.finance_telecom_summaries, telecomSummaryRequestHelper,
@@ -116,14 +121,19 @@ public class TelecomApiServiceImpl implements TelecomApiService {
     ).join();
   }
 
-  private ExecutionContext generateExecutionContext(long banksaladUserId, String organizationId, OauthToken oauthToken,
-      Organization organization) {
+  private ExecutionContext generateExecutionContext(String syncRequestId, long banksaladUserId, String organizationId,
+      OauthToken oauthToken, Organization organization, String requestedBy) {
     return ExecutionContext.builder()
+        .consentId(oauthToken.getConsentId())
+        .syncRequestId(syncRequestId)
+        .executionRequestId(UUID.randomUUID().toString())
         .banksaladUserId(banksaladUserId)
         .organizationId(organizationId)
         .organizationCode(organization.getOrganizationCode())
         .organizationHost(organization.getHostUrl())
         .accessToken(oauthToken.getAccessToken())
+        .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+        .requestedBy(requestedBy)
         .build();
   }
 }

@@ -60,4 +60,8 @@ public class TelecomSummaryEntity extends BaseEntity {
   private String transactionResponseCode;
 
   private String paidTransactionResponseCode;
+
+  private String consentId;
+
+  private String syncRequestId;
 }

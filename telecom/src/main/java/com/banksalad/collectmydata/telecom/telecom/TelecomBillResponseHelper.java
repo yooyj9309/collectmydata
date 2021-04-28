@@ -53,6 +53,10 @@ public class TelecomBillResponseHelper implements
       telecomBillEntity.setBanksaladUserId(banksaladUserId);
       telecomBillEntity.setOrganizationId(organizationId);
       telecomBillEntity.setChargeMonth(chargeMonth);
+      telecomBillEntity.setConsentId(executionContext.getConsentId());
+      telecomBillEntity.setSyncRequestId(executionContext.getSyncRequestId());
+      telecomBillEntity.setCreatedBy(executionContext.getRequestedBy());
+      telecomBillEntity.setUpdatedBy(executionContext.getRequestedBy());
 
       TelecomBillEntity existingTelecomBillEntity = telecomBillRepository
           .findByBanksaladUserIdAndOrganizationIdAndChargeMonthAndMgmtId(

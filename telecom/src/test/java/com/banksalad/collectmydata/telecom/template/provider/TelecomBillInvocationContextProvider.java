@@ -23,9 +23,11 @@ import java.util.stream.Stream;
 
 import static com.banksalad.collectmydata.common.util.NumberUtil.bigDecimalOf;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static com.banksalad.collectmydata.telecom.common.constant.TelecomTestConstants.LAST_CHARGE_MONTH;
 import static com.banksalad.collectmydata.telecom.common.constant.TelecomTestConstants.LAST_LAST_CHARGE_MONTH;
 import static com.banksalad.collectmydata.telecom.common.constant.TelecomTestConstants.LAST_LAST_MONTH_SYNCED_AT;
@@ -64,6 +66,8 @@ public class TelecomBillInvocationContextProvider implements TestTemplateInvocat
         .mgmtId(MGMT_ID1)
         .chargeAmt(bigDecimalOf(12345, 3))
         .chargeDate("20210301")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     TelecomBillEntity newMain = TelecomBillEntity.builder()
         .syncedAt(NEW_SYNCED_AT)
@@ -73,6 +77,8 @@ public class TelecomBillInvocationContextProvider implements TestTemplateInvocat
         .mgmtId(MGMT_ID2)
         .chargeAmt(bigDecimalOf(12345, 3))
         .chargeDate("20210301")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     Map<String, TelecomBillEntity> mainMap = Map.of(
         "existingMain", existingMain,

@@ -62,7 +62,6 @@ public class TelecomPaidTransactionResponseHelper implements
     // Save new transactions.
     // 기존 결제내역과 조회 필요없이 API로부터 받은 모든 내역을 저장한다.
     List<TelecomPaidTransactionEntity> paidTransactionEntities = new ArrayList<>();
-//    int paidTransactionNo = 1;
     for (TelecomPaidTransaction telecomPaidTransaction : telecomPaidTransactions) {
       transactionYearMonth = generateTransactionYearMonth(telecomPaidTransaction.getTransDate());
       TelecomPaidTransactionEntity telecomPaidTransactionEntity = telecomPaidTransactionMapper.dtoToEntity(telecomPaidTransaction);
@@ -71,11 +70,12 @@ public class TelecomPaidTransactionResponseHelper implements
       telecomPaidTransactionEntity.setBanksaladUserId(banksaladUserId);
       telecomPaidTransactionEntity.setOrganizationId(organizationId);
       telecomPaidTransactionEntity.setMgmtId(mgmtId);
-//      paidTransactionEntity.setPaidTransactionNo(paidTransactionNo);
-      telecomPaidTransactionEntity.setCreatedBy(String.valueOf(banksaladUserId));
+      telecomPaidTransactionEntity.setConsentId(executionContext.getConsentId());
+      telecomPaidTransactionEntity.setSyncRequestId(executionContext.getSyncRequestId());
+      telecomPaidTransactionEntity.setCreatedBy(executionContext.getRequestedBy());
+      telecomPaidTransactionEntity.setUpdatedBy(executionContext.getRequestedBy());
 
       paidTransactionEntities.add(telecomPaidTransactionEntity);
-//      paidTransactionNo++;
     }
     telecomPaidTransactionRepository.saveAll(paidTransactionEntities);
   }

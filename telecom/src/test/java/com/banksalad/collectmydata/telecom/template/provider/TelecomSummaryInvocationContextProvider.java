@@ -21,11 +21,13 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_USS_ST;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_USS_ST;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static com.banksalad.collectmydata.telecom.common.constant.TelecomTestConstants.MGMT_ID1;
 import static com.banksalad.collectmydata.telecom.common.constant.TelecomTestConstants.MGMT_ID2;
 
@@ -64,6 +66,8 @@ public class TelecomSummaryInvocationContextProvider implements TestTemplateInvo
         .telecomNum("01012345678")
         .type("01")
         .status("01")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     TelecomSummaryEntity main2 = TelecomSummaryEntity.builder()
         .syncedAt(OLD_SYNCED_AT)
@@ -74,6 +78,8 @@ public class TelecomSummaryInvocationContextProvider implements TestTemplateInvo
         .telecomNum("01012345679")
         .type("01")
         .status("01")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     Map<String, TelecomSummaryEntity> mainMap = Map.of(
         "main1", main1,

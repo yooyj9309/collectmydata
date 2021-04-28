@@ -50,4 +50,9 @@ public class TelecomBillEntity extends BaseEntity {
 
   @Column(nullable = false)
   private String chargeDate;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
 }
