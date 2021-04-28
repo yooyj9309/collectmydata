@@ -25,3 +25,10 @@ management:
   health:
     livenessState.enabled: true
     readinessState.enabled: true
+
+grpc:
+  port: 18081
+  enable-reflection: true
+  enabled: true
+  in-process-server-name: collectmydata-invest-server-process
+  shutdownGrace: 30
