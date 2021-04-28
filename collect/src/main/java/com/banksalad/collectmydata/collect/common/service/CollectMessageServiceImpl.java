@@ -76,4 +76,29 @@ public class CollectMessageServiceImpl implements CollectMessageService {
       throw new CollectRuntimeException("Fail to serialize message", e);
     }
   }
+
+  @Override
+  public void produceInvestSyncRequested(SyncRequestedMessage syncRequestedMessage) {
+    final String message;
+
+    try {
+      message = objectMapper.writeValueAsString(syncRequestedMessage);
+      kafkaTemplate.send(MessageTopic.investSyncRequested, String.valueOf(syncRequestedMessage.getBanksaladUserId()), message)
+          .addCallback(new ListenableFutureCallback<>() {
+            @Override
+            public void onSuccess(SendResult<String, String> result) {
+              log.debug("Produce syncRequestedMessage. syncRequestId: {} ", syncRequestedMessage.getSyncRequestId());
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+              log.error("Fail to produce syncRequestedMessage. syncRequestId: {}, exception: {}",
+                  syncRequestedMessage.getSyncRequestId(), t.getMessage(), t);
+            }
+          });
+
+    } catch (JsonProcessingException e) {
+      throw new CollectRuntimeException("Fail to serialize message", e);
+    }
+  }
 }

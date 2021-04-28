@@ -120,6 +120,34 @@ public class CollectmydataCollectGrpcService extends CollectmydataGrpc.Collectmy
   @Override
   public void syncCollectmydatainvest(SyncCollectmydatainvestRequest request,
       StreamObserver<SyncCollectmydatainvestResponse> responseObserver) {
-    super.syncCollectmydatainvest(request, responseObserver);
+
+    try {
+      GetOrganizationResponse getOrganizationResponse = connectClientService
+          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid());
+
+      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+      String organizationId = getOrganizationResponse.getOrganizationId();
+      String syncRequestId =
+          StringUtils.hasLength(request.getSyncRequestId()) ? request.getSyncRequestId() : UUID.randomUUID().toString();
+
+      LoggingMdcUtil.set(Sector.FINANCE.name(), Industry.INVEST.name(), banksaladUserId, organizationId, syncRequestId);
+
+      collectMessageService.produceInvestSyncRequested(SyncRequestedMessage.builder()
+          .banksaladUserId(banksaladUserId)
+          .organizationId(organizationId)
+          .syncRequestId(syncRequestId)
+          .syncRequestType(SyncRequestType.ONDEMAND)
+          .build());
+
+      responseObserver.onNext(SyncCollectmydatainvestResponse.newBuilder().build());
+      responseObserver.onCompleted();
+
+    } catch (Exception e) {
+      log.error("syncCollectmydatainvest error: {}", e.getMessage(), e);
+      responseObserver.onError(e);
+
+    } finally {
+      LoggingMdcUtil.clear();
+    }
   }
 }
