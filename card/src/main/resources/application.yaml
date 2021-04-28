@@ -35,7 +35,7 @@ grpc:
   port: 18081
   enable-reflection: true
   enabled: true
-  in-process-server-name: collectmydata-card-server-process
+  in-process-server-name: collectmydatacard-server-process
   shutdownGrace: 30
 
 uri:

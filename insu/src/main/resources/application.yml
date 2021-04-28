@@ -2,13 +2,16 @@ spring:
   profiles:
     active: local
   application:
-    name: collectmydata-insu
+    name: collectmydatainsu
 
 logging:
   config: classpath:logback/logback-${spring.profiles.active}.xml
   level:
     com.zaxxer.hikari.HikariConfig: WARN
     com.zaxxer.hikari: TRACE
+
+server:
+  port: 18082
 
 management:
   metrics:
@@ -25,3 +28,10 @@ management:
   health:
     livenessState.enabled: true
     readinessState.enabled: true
+
+grpc:
+  port: 18081
+  enable-reflection: true
+  enabled: true
+  in-process-server-name: collectmydatainsu-server-process
+  shutdownGrace: 30

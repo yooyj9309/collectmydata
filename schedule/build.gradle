@@ -44,13 +44,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
     implementation("org.springframework.boot:spring-boot-starter-webflux:${springBootVersion}")
 
-    // armeria
-    implementation platform("com.linecorp.armeria:armeria-bom:${armeriaVersion}")
-    implementation platform('io.netty:netty-bom:4.1.54.Final')
-
-    implementation("com.linecorp.armeria:armeria-spring-boot2-webflux-starter:${armeriaVersion}")
-    implementation("com.linecorp.armeria:armeria-grpc:${armeriaVersion}")
-
     // grpc
     implementation("io.grpc:grpc-context:${grpcVersion}")
     implementation("io.grpc:grpc-api:${grpcVersion}")

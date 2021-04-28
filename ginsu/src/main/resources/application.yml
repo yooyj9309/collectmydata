@@ -2,7 +2,7 @@ spring:
   profiles:
     active: local
   application:
-    name: collectmydata-ginsu
+    name: collectmydataginsu
 
 logging:
   config: classpath:logback/logback-${spring.profiles.active}.xml
@@ -10,18 +10,28 @@ logging:
     com.zaxxer.hikari.HikariConfig: WARN
     com.zaxxer.hikari: TRACE
 
-#management:
-#  metrics:
-#    export:
-#      statsd:
-#        enabled: true
-#        flavor: telegraf
-#        polling-frequency: 5s
-#        max-packet-length: 5000
-#        host: localhost
-#        port: 8126
-#        publish-unchanged-meters: true
-#  endpoint.health.probes.enabled: true
-#  health:
-#    livenessState.enabled: true
-#    readinessState.enabled: true
+server:
+  port: 18082
+
+management:
+  metrics:
+    export:
+      statsd:
+        enabled: true
+        flavor: telegraf
+        polling-frequency: 5s
+        max-packet-length: 5000
+        host: localhost
+        port: 8126
+        publish-unchanged-meters: true
+  endpoint.health.probes.enabled: true
+  health:
+    livenessState.enabled: true
+    readinessState.enabled: true
+
+grpc:
+  port: 18081
+  enable-reflection: true
+  enabled: true
+  in-process-server-name: collectmydataginsu-server-process
+  shutdownGrace: 30

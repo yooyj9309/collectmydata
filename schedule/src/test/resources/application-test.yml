@@ -10,3 +10,6 @@ spring:
       write_dates_as_timestamps: false
   jpa:
     show-sql: true
+
+grpc:
+  port: 0

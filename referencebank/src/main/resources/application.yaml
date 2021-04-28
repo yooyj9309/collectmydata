@@ -2,9 +2,12 @@ spring:
   profiles:
     active: local
   application:
-    name: collectmydata-referencebank
+    name: collectmydatareferencebank
   main:
     web-application-type: reactive
+
+server:
+  port: 18082
 
 logging:
   config: classpath:logback/logback-${spring.profiles.active}.xml
@@ -27,3 +30,10 @@ management:
   health:
     livenessState.enabled: true
     readinessState.enabled: true
+
+grpc:
+  port: 18081
+  enable-reflection: true
+  enabled: true
+  in-process-server-name: collectmydatareferencebank-server-process
+  shutdownGrace: 30

@@ -2,7 +2,7 @@ spring:
   profiles:
     active: local
   application:
-    name: collectmydata-invest
+    name: collectmydatainvest
 
 server:
   port: 18082
@@ -33,5 +33,5 @@ grpc:
   port: 18081
   enable-reflection: true
   enabled: true
-  in-process-server-name: collectmydata-invest-server-process
+  in-process-server-name: collectmydatainvest-server-process
   shutdownGrace: 30

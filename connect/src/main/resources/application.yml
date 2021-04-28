@@ -2,7 +2,7 @@ spring:
   profiles:
     active: local
   application:
-    name: collectmydata-connect
+    name: collectmydataconnect
 
 server:
   port: 18082
@@ -30,7 +30,7 @@ grpc:
   port: 18081
   enable-reflection: true
   enabled: true
-  in-process-server-name: collectmydata-connect-server-process
+  in-process-server-name: collectmydataconnect-server-process
   shutdownGrace: 30
 
 banksalad:

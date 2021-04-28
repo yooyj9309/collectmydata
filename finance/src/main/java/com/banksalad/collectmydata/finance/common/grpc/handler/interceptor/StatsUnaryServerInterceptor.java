@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.bank.grpc.handler.interceptor;
+package com.banksalad.collectmydata.finance.common.grpc.handler.interceptor;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;

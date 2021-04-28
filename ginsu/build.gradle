@@ -54,13 +54,6 @@ dependencies {
     // kafka
     implementation("org.springframework.kafka:spring-kafka:${springKafkaVersion}")
 
-    // armeria
-    implementation platform("com.linecorp.armeria:armeria-bom:${armeriaVersion}")
-    implementation platform('io.netty:netty-bom:4.1.54.Final')
-
-    implementation("com.linecorp.armeria:armeria-spring-boot2-webflux-starter:${armeriaVersion}")
-    implementation("com.linecorp.armeria:armeria-grpc:${armeriaVersion}")
-
     //h2 db
     implementation("com.h2database:h2")
 

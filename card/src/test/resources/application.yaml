@@ -17,3 +17,6 @@ kafka:
 banksalad:
   cipher.uri: localhost:9999
   collectmydata-connect.uri: localhost:9998
+
+grpc:
+  port: 0

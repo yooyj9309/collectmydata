@@ -26,3 +26,6 @@ uri:
 
 kafka:
   bootstrap-servers: localhost:9092
+
+grpc:
+  port: 0

@@ -1,6 +1,5 @@
 package com.banksalad.collectmydata.bank.grpc.handler;
 
-import com.banksalad.collectmydata.bank.grpc.handler.interceptor.StatsUnaryServerInterceptor;
 import com.banksalad.collectmydata.bank.publishment.deposit.DepositAccountPublishService;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountBasicResponse;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountBasicsProtoResponse;
@@ -27,6 +26,7 @@ import com.banksalad.collectmydata.bank.publishment.summary.dto.AccountSummaries
 import com.banksalad.collectmydata.bank.publishment.summary.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.common.exception.GrpcException;
 import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
+import com.banksalad.collectmydata.finance.common.grpc.handler.interceptor.StatsUnaryServerInterceptor;
 
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankGrpc;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankAccountSummariesRequest;
