@@ -1,8 +1,5 @@
 package com.banksalad.collectmydata.mock.common.db.entity;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
 import com.banksalad.collectmydata.finance.common.db.entity.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,12 +23,15 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "irp_account_basic")
-public class IrpAccountBasicEntity extends BaseEntity {
+@Table(name = "bank_irp_account_transaction")
+public class BankIrpAccountTransactionEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Column(nullable = false)
+  private Integer transactionYearMonth;
 
   @Column(nullable = false)
   private LocalDateTime syncedAt;
@@ -48,36 +48,19 @@ public class IrpAccountBasicEntity extends BaseEntity {
   private String seqno;
 
   @Column(nullable = false)
+  private String uniqueTransNo;
+
+  @Column(nullable = false)
   private String consentId;
 
   private String syncRequestId;
 
-  @Column(nullable = false, precision = 18, scale = 3)
-  private BigDecimal accumAmt;
-
-  @Column(nullable = false, precision = 18, scale = 3)
-  private BigDecimal evalAmt;
-
-  @Column(nullable = false, precision = 18, scale = 3)
-  private BigDecimal employerAmt;
-
-  @Column(nullable = false, precision = 18, scale = 3)
-  private BigDecimal employeeAmt;
+  @Column(nullable = false)
+  private String transDtime;
 
   @Column(nullable = false)
-  private String issueDate;
+  private String transType;
 
   @Column(nullable = false)
-  private String firstDepositDate;
-
-  @CreatedDate
-  @Column(updatable = false)
-  private LocalDateTime createdAt;
-
-  private String createdBy;
-
-  @LastModifiedDate
-  private LocalDateTime updatedAt;
-
-  private String updatedBy;
+  private BigDecimal transAmt;
 }

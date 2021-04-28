@@ -14,7 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,8 +22,8 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "irp_account_detail")
-public class IrpAccountDetailEntity extends BaseEntity {
+@Table(name = "bank_irp_account_summary")
+public class BankIrpAccountSummaryEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,33 +43,28 @@ public class IrpAccountDetailEntity extends BaseEntity {
 
   private String seqno;
 
-  @Column(nullable = false)
-  private Short irpDetailNo;
-
-  @Column(nullable = false)
   private String consentId;
 
   private String syncRequestId;
 
-  @Column(nullable = false)
-  private String irpName;
+  @Column(nullable = false, columnDefinition = "BIT", length = 1)
+  private Boolean isConsent;
 
   @Column(nullable = false)
-  private String irpType;
-
-  @Column(nullable = false, precision = 18, scale = 3)
-  private BigDecimal evalAmt;
-
-  @Column(nullable = false, precision = 18, scale = 3)
-  private BigDecimal invPrincipal;
-
-  private Integer fundNum;
+  private String prodName;
 
   @Column(nullable = false)
-  private String openDate;
+  private String accountStatus;
 
-  private String expDate;
+  private Long basicSearchTimestamp;
 
-  @Column(precision = 5, scale = 3)
-  private BigDecimal intRate;
+  private Long detailSearchTimestamp;
+
+  private LocalDateTime transactionSyncedAt;
+
+  private String basicResponseCode;
+
+  private String detailResponseCode;
+
+  private String transactionResponseCode;
 }

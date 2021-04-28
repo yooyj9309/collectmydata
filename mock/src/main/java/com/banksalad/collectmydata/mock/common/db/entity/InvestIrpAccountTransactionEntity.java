@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,12 +23,15 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "irp_account_summary")
-public class IrpAccountSummaryEntity extends BaseEntity {
+@Table(name = "invest_irp_account_transaction")
+public class InvestIrpAccountTransactionEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Column(nullable = false)
+  private Integer transactionYearMonth;
 
   @Column(nullable = false)
   private LocalDateTime syncedAt;
@@ -43,28 +47,20 @@ public class IrpAccountSummaryEntity extends BaseEntity {
 
   private String seqno;
 
+  @Column(nullable = false)
+  private String uniqueTransNo;
+
+  @Column(nullable = false)
   private String consentId;
 
   private String syncRequestId;
 
-  @Column(nullable = false, columnDefinition = "BIT", length = 1)
-  private Boolean isConsent;
+  @Column(nullable = false)
+  private String transDtime;
 
   @Column(nullable = false)
-  private String prodName;
+  private String transType;
 
   @Column(nullable = false)
-  private String accountStatus;
-
-  private Long basicSearchTimestamp;
-
-  private Long detailSearchTimestamp;
-
-  private LocalDateTime transactionSyncedAt;
-
-  private String basicResponseCode;
-
-  private String detailResponseCode;
-
-  private String transactionResponseCode;
+  private BigDecimal transAmt;
 }

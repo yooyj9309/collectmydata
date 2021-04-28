@@ -1,6 +1,8 @@
 package com.banksalad.collectmydata.mock.irp.controller;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,18 +28,24 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/irps")
+@RequestMapping("/{industry:(?:bank|invest)}/irps")
 @RequiredArgsConstructor
 public class IrpApiController {
 
-  private final IrpService irpService;
+  @Qualifier("bankIrpService")
+  private final IrpService bankIrpService;
+
+  @Qualifier("investIrpService")
+  private final IrpService investIrpService;
 
   @GetMapping("")
-  public GetIrpsResponse getIrps(@BanksaladUserId Long banksaladUserId,
+  public GetIrpsResponse getIrps(
+      @PathVariable("industry") String industry,
+      @BanksaladUserId Long banksaladUserId,
       @SearchTimestamp LocalDateTime searchTimestamp,
       @OrgCode String orgCode) {
 
-    List<IrpAccountSummary> irpAccountSummaryList = irpService.getIrpAccountSummaryList(
+    List<IrpAccountSummary> irpAccountSummaryList = getIrpServiceByIndustry(industry).getIrpAccountSummaryList(
         IrpAccountSummarySearch.builder()
             .banksaladUserId(banksaladUserId)
             .organizationId(orgCode)
@@ -51,19 +59,30 @@ public class IrpApiController {
   }
 
   @PostMapping("/basic")
-  public PostIrpsBasicResponse getIrpsBasic(@BanksaladUserId Long banksaladUserId,
+  public PostIrpsBasicResponse getIrpsBasic(
+      @PathVariable("industry") String industry,
+      @BanksaladUserId Long banksaladUserId,
       @OrgCode String orgCode,
       @Valid @RequestBody PostIrpsBasicRequest postIrpsBasicRequest) {
 
-    IrpAccountBasic irpAccountBasic = irpService.getIrpAccountBasic(IrpAccountBasicSearch.builder()
-        .banksaladUserId(banksaladUserId)
-        .organizationId(orgCode)
-        .accountNum(postIrpsBasicRequest.getAccountNum())
-        .seqno(postIrpsBasicRequest.getSeqno())
-        .build());
+    IrpAccountBasic irpAccountBasic = getIrpServiceByIndustry(industry)
+        .getIrpAccountBasic(IrpAccountBasicSearch.builder()
+            .banksaladUserId(banksaladUserId)
+            .organizationId(orgCode)
+            .accountNum(postIrpsBasicRequest.getAccountNum())
+            .seqno(postIrpsBasicRequest.getSeqno())
+            .build());
 
     return PostIrpsBasicResponse.builder()
         .irpAccountBasic(irpAccountBasic)
         .build();
+  }
+
+  private IrpService getIrpServiceByIndustry(String industry) {
+    if ("bank".equals(industry)) {
+      return bankIrpService;
+    } else {
+      return investIrpService;
+    }
   }
 }

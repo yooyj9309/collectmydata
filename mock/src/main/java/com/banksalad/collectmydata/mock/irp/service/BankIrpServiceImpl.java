@@ -2,8 +2,8 @@ package com.banksalad.collectmydata.mock.irp.service;
 
 import org.springframework.stereotype.Service;
 
-import com.banksalad.collectmydata.mock.common.db.repository.IrpAccountBasicRepository;
-import com.banksalad.collectmydata.mock.common.db.repository.IrpAccountSummaryRepository;
+import com.banksalad.collectmydata.mock.common.db.repository.BankIrpAccountBasicRepository;
+import com.banksalad.collectmydata.mock.common.db.repository.BankIrpAccountSummaryRepository;
 import com.banksalad.collectmydata.mock.common.exception.CollectmydataMockRuntimeException;
 import com.banksalad.collectmydata.mock.common.exception.code.CollectmydataMockExceptionCode;
 import com.banksalad.collectmydata.mock.irp.dto.IrpAccountBasic;
@@ -18,19 +18,19 @@ import org.mapstruct.factory.Mappers;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Service("bankIrpService")
 @RequiredArgsConstructor
-public class IrpServiceImpl implements IrpService {
+public class BankIrpServiceImpl implements IrpService {
 
-  private final IrpAccountSummaryRepository irpAccountSummaryRepository;
-  private final IrpAccountBasicRepository irpAccountBasicRepository;
+  private final BankIrpAccountSummaryRepository bankIrpAccountSummaryRepository;
+  private final BankIrpAccountBasicRepository bankIrpAccountBasicRepository;
 
   private final IrpAccountSummaryMapper irpAccountSummaryMapper = Mappers.getMapper(IrpAccountSummaryMapper.class);
   private final IrpAccountBasicMapper irpAccountBasicMapper = Mappers.getMapper(IrpAccountBasicMapper.class);
 
   @Override
   public List<IrpAccountSummary> getIrpAccountSummaryList(IrpAccountSummarySearch irpAccountSummarySearch) {
-    return irpAccountSummaryRepository
+    return bankIrpAccountSummaryRepository
         .findByBanksaladUserIdAndOrganizationIdAndUpdatedAtGreaterThan(
             irpAccountSummarySearch.getBanksaladUserId(),
             irpAccountSummarySearch.getOrganizationId(),
@@ -42,7 +42,7 @@ public class IrpServiceImpl implements IrpService {
 
   @Override
   public IrpAccountBasic getIrpAccountBasic(IrpAccountBasicSearch irpAccountBasicSearch) {
-    return irpAccountBasicRepository
+    return bankIrpAccountBasicRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(irpAccountBasicSearch.getBanksaladUserId(),
             irpAccountBasicSearch.getOrganizationId(),
             irpAccountBasicSearch.getAccountNum(),
