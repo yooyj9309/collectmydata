@@ -3,17 +3,15 @@ package com.banksalad.collectmydata.bank.publishment.deposit;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountBasicResponse;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountDetailResponse;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountTransactionResponse;
-import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankDepositAccountBasicsRequest;
-import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankDepositAccountDetailsRequest;
-import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankDepositAccountTransactionsRequest;
-
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DepositAccountPublishService {
 
-  List<DepositAccountBasicResponse> getDepositAccountBasicResponses(ListBankDepositAccountBasicsRequest request);
+  List<DepositAccountBasicResponse> getDepositAccountBasicResponses(long banksaladUserId, String organizationId);
 
-  List<DepositAccountDetailResponse> getDepositAccountDetailResponses(ListBankDepositAccountDetailsRequest request);
+  List<DepositAccountDetailResponse> getDepositAccountDetailResponses(long banksaladUserId, String organizationId);
 
-  List<DepositAccountTransactionResponse> getDepositAccountTransactionResponses(ListBankDepositAccountTransactionsRequest request);
+  List<DepositAccountTransactionResponse> getDepositAccountTransactionResponses(long banksaladUserId,
+      String organizationId, String accountNum, String seqno, LocalDateTime createdAt, int limit);
 }

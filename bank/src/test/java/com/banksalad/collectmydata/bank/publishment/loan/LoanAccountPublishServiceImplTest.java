@@ -18,8 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankLoanAccountBasicsRequest;
-import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankLoanAccountDetailsRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankLoanAccountTransactionsRequest;
 import com.google.protobuf.StringValue;
 import org.junit.jupiter.api.DisplayName;
@@ -208,20 +206,6 @@ class LoanAccountPublishServiceImplTest {
         .intRate(BigDecimal.valueOf(1.100))
         .intType("01")
         .consentId("consent_id1")
-        .build();
-  }
-
-  private ListBankLoanAccountBasicsRequest getListBankLoanAccountBasicsRequest() {
-    return ListBankLoanAccountBasicsRequest.newBuilder()
-        .setBanksaladUserId("1")
-        .setOrganizationObjectid("objectid")
-        .build();
-  }
-
-  private ListBankLoanAccountDetailsRequest getListBankLoanAccountDetailsRequest() {
-    return ListBankLoanAccountDetailsRequest.newBuilder()
-        .setBanksaladUserId("1")
-        .setOrganizationObjectid("objectid")
         .build();
   }
 

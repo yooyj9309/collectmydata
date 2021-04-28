@@ -74,8 +74,12 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       StreamObserver<ListBankAccountSummariesResponse> responseObserver) {
     try {
       // TODO : validate parameter value
+      long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+
       List<AccountSummaryResponse> accountSummaryResponses = accountSummaryPublishService
-          .getAccountSummaryResponses(request);
+          .getAccountSummaryResponses(banksaladUserId, organizationId);
       AccountSummariesProtoResponse accountSummariesProtoResponse = AccountSummariesProtoResponse.builder()
           .accountSummaryResponses(accountSummaryResponses)
           .build();
@@ -98,8 +102,12 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       StreamObserver<ListBankDepositAccountBasicsResponse> responseObserver) {
     try {
       // TODO : validate parameter value
+      long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+
       List<DepositAccountBasicResponse> depositAccountBasicResponses = depositAccountPublishService
-          .getDepositAccountBasicResponses(request);
+          .getDepositAccountBasicResponses(banksaladUserId, organizationId);
       DepositAccountBasicsProtoResponse depositAccountBasicsProtoResponse = DepositAccountBasicsProtoResponse.builder()
           .depositAccountBasicResponses(depositAccountBasicResponses)
           .build();
@@ -122,8 +130,12 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       StreamObserver<ListBankDepositAccountDetailsResponse> responseObserver) {
     try {
       // TODO : validate parameter value
+      long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+
       List<DepositAccountDetailResponse> depositAccountDetailResponses = depositAccountPublishService
-          .getDepositAccountDetailResponses(request);
+          .getDepositAccountDetailResponses(banksaladUserId, organizationId);
       DepositAccountDetailsProtoResponse depositAccountDetailsProtoResponse = DepositAccountDetailsProtoResponse
           .builder()
           .depositAccountDetailResponses(depositAccountDetailResponses)
@@ -147,8 +159,14 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       StreamObserver<ListBankDepositAccountTransactionsResponse> responseObserver) {
     try {
       // TODO : validate parameter value
+      long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+      LocalDateTime createdAt = LocalDateTime.ofEpochSecond(request.getCreatedAfterMs(), 0, ZoneOffset.UTC);
+
       List<DepositAccountTransactionResponse> depositAccountTransactionResponses = depositAccountPublishService
-          .getDepositAccountTransactionResponses(request);
+          .getDepositAccountTransactionResponses(banksaladUserId, organizationId, request.getAccountNum(),
+              request.getSeqno().getValue(), createdAt, Long.valueOf(request.getLimit()).intValue());
       DepositAccountTransactionsProtoResponse depositAccountTransactionsProtoResponse = DepositAccountTransactionsProtoResponse
           .builder()
           .depositAccountTransactionResponses(depositAccountTransactionResponses)
@@ -173,8 +191,12 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       StreamObserver<ListBankInvestAccountBasicsResponse> responseObserver) {
     try {
       // TODO : validate parameter value
+      long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+
       List<InvestAccountBasicResponse> investAccountBasicResponses = investAccountPublishService
-          .getInvestAccountBasicResponses(request);
+          .getInvestAccountBasicResponses(banksaladUserId, organizationId);
       InvestAccountBasicsProtoResponse investAccountBasicsProtoResponse = InvestAccountBasicsProtoResponse.builder()
           .investAccountBasicResponses(investAccountBasicResponses)
           .build();
@@ -197,8 +219,12 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       StreamObserver<ListBankInvestAccountDetailsResponse> responseObserver) {
     try {
       // TODO : validate parameter value
+      long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+
       List<InvestAccountDetailResponse> investAccountDetailResponses = investAccountPublishService
-          .getInvestAccountDetailResponses(request);
+          .getInvestAccountDetailResponses(banksaladUserId, organizationId);
       InvestAccountDetailsProtoResponse investAccountDetailsProtoResponse = InvestAccountDetailsProtoResponse.builder()
           .investAccountDetailResponses(investAccountDetailResponses)
           .build();
@@ -221,8 +247,14 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       StreamObserver<ListBankInvestAccountTransactionsResponse> responseObserver) {
     try {
       // TODO : validate parameter value
+      long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+      LocalDateTime createdAt = LocalDateTime.ofEpochSecond(request.getCreatedAfterMs(), 0, ZoneOffset.UTC);
+
       List<InvestAccountTransactionResponse> investAccountTransactionResponses = investAccountPublishService
-          .getInvestAccountTransactionResponses(request);
+          .getInvestAccountTransactionResponses(banksaladUserId, organizationId, request.getAccountNum(),
+              request.getSeqno().getValue(), createdAt, Long.valueOf(request.getLimit()).intValue());
       InvestAccountTransactionsProtoResponse investAccountTransactionsProtoResponse = InvestAccountTransactionsProtoResponse
           .builder()
           .investAccountTransactionResponses(investAccountTransactionResponses)
@@ -246,11 +278,12 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       StreamObserver<ListBankLoanAccountBasicsResponse> responseObserver) {
     try {
       // TODO : validate parameter value  & type converter
+      long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+
       List<LoanAccountBasicResponse> loanAccountBasicResponses = loanAccountPublishService
-          .getLoanAccountBasicResponses(
-              Long.valueOf(request.getBanksaladUserId()),
-              collectmydataConnectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
-                  .getOrganizationId());
+          .getLoanAccountBasicResponses(banksaladUserId, organizationId);
       LoanAccountBasicsProtoResponse loanAccountBasicsProtoResponse = LoanAccountBasicsProtoResponse.builder()
           .loanAccountBasicResponses(loanAccountBasicResponses)
           .build();
@@ -273,11 +306,12 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       StreamObserver<ListBankLoanAccountDetailsResponse> responseObserver) {
     try {
       // TODO : validate parameter value & type converter
+      long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+
       List<LoanAccountDetailResponse> loanAccountDetailResponses = loanAccountPublishService
-          .getLoanAccountDetailResponses(
-              Long.valueOf(request.getBanksaladUserId()),
-              collectmydataConnectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
-                  .getOrganizationId());
+          .getLoanAccountDetailResponses(banksaladUserId, organizationId);
       LoanAccountDetailsProtoResponse loanAccountDetailsProtoResponse = LoanAccountDetailsProtoResponse.builder()
           .loanAccountDetailResponses(loanAccountDetailResponses)
           .build();
@@ -300,15 +334,14 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       StreamObserver<ListBankLoanAccountTransactionsResponse> responseObserver) {
     try {
       // TODO : validate parameter value & type converter
+      long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+      LocalDateTime createdAt = LocalDateTime.ofEpochSecond(request.getCreatedAfterMs(), 0, ZoneOffset.UTC);
+
       List<LoanAccountTransactionResponse> loanAccountTransactionsProtoResponses = loanAccountPublishService
-          .getLoanAccountTransactionResponse(
-              Long.valueOf(request.getBanksaladUserId()),
-              collectmydataConnectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
-                  .getOrganizationId(),
-              request.getAccountNum(),
-              request.getSeqno().getValue(),
-              LocalDateTime.ofEpochSecond(request.getCreatedAfterMs(), 0, ZoneOffset.UTC),
-              Long.valueOf(request.getLimit()).intValue());
+          .getLoanAccountTransactionResponse(banksaladUserId, organizationId, request.getAccountNum(),
+              request.getSeqno().getValue(), createdAt, Long.valueOf(request.getLimit()).intValue());
       LoanAccountTransactionsProtoResponse loanAccountTransactionsProtoResponse = LoanAccountTransactionsProtoResponse
           .builder()
           .loanAccountTransactionResponses(loanAccountTransactionsProtoResponses)

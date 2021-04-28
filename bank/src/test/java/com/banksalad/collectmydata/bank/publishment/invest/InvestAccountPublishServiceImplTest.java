@@ -1,5 +1,9 @@
 package com.banksalad.collectmydata.bank.publishment.invest;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountBasicEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountDetailEntity;
@@ -11,34 +15,23 @@ import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountTransa
 import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountBasicResponse;
 import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountDetailResponse;
 import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountTransactionResponse;
-import com.banksalad.collectmydata.finance.common.dto.Organization;
-import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankInvestAccountBasicsRequest;
-import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankInvestAccountDetailsRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankInvestAccountTransactionsRequest;
 import com.google.protobuf.StringValue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
-import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_CODE;
-import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_HOST;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @DisplayName("투자상품계좌 publish service 테스트")
@@ -60,9 +53,6 @@ class InvestAccountPublishServiceImplTest {
   @Autowired
   private InvestAccountTransactionRepository investAccountTransactionRepository;
 
-  @MockBean
-  private CollectmydataConnectClientService collectmydataConnectClientService;
-
   private final String[] ENTITY_IGNORE_FIELD = {"id", "banksaladUserId", "organizationId", "syncedAt", "createdBy",
       "updatedBy", "basicResponseCode", "detailResponseCode", "transactionResponseCode", "transactionYearMonth",
       "uniqueTransNo"};
@@ -73,18 +63,10 @@ class InvestAccountPublishServiceImplTest {
     // given
     accountSummaryRepository.save(getAccountSummaryEntity());
     investAccountBasicRepository.save(getInvestAccountBasicEntity());
-    when(collectmydataConnectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
-        Organization.builder()
-            .sector("sector")
-            .industry("industry")
-            .organizationId(ORGANIZATION_ID)
-            .organizationCode(ORGANIZATION_CODE)
-            .hostUrl(ORGANIZATION_HOST)
-            .build());
 
     // when
     List<InvestAccountBasicResponse> investAccountBasicResponses = investAccountPublishService
-        .getInvestAccountBasicResponses(getListBankInvestAccountBasicsRequest());
+        .getInvestAccountBasicResponses(BANKSALAD_USER_ID, ORGANIZATION_ID);
 
     // then
     assertThat(investAccountBasicResponses).usingRecursiveComparison().ignoringFields(ENTITY_IGNORE_FIELD)
@@ -97,18 +79,10 @@ class InvestAccountPublishServiceImplTest {
     // given
     accountSummaryRepository.save(getAccountSummaryEntity());
     investAccountDetailRepository.save(getInvestAccountDetailEntity());
-    when(collectmydataConnectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
-        Organization.builder()
-            .sector("sector")
-            .industry("industry")
-            .organizationId(ORGANIZATION_ID)
-            .organizationCode(ORGANIZATION_CODE)
-            .hostUrl(ORGANIZATION_HOST)
-            .build());
 
     // when
     List<InvestAccountDetailResponse> investAccountDetailResponses = investAccountPublishService
-        .getInvestAccountDetailResponses(getListBankInvestAccountDetailsRequest());
+        .getInvestAccountDetailResponses(BANKSALAD_USER_ID, ORGANIZATION_ID);
 
     assertThat(investAccountDetailResponses).usingRecursiveComparison().ignoringFields(ENTITY_IGNORE_FIELD)
         .isEqualTo(investAccountDetailRepository.findAll());
@@ -120,18 +94,14 @@ class InvestAccountPublishServiceImplTest {
     // given
     accountSummaryRepository.save(getAccountSummaryEntity());
     investAccountTransactionRepository.save(getInvestAccountTransactionEntity());
-    when(collectmydataConnectClientService.getOrganizationByOrganizationObjectid(any())).thenReturn(
-        Organization.builder()
-            .sector("sector")
-            .industry("industry")
-            .organizationId(ORGANIZATION_ID)
-            .organizationCode(ORGANIZATION_CODE)
-            .hostUrl(ORGANIZATION_HOST)
-            .build());
+
+    ListBankInvestAccountTransactionsRequest request = getListBankInvestAccountTransactionsRequest();
+    LocalDateTime createdAt = LocalDateTime.ofEpochSecond(request.getCreatedAfterMs(), 0, ZoneOffset.UTC);
 
     // when
     List<InvestAccountTransactionResponse> investAccountTransactionResponses = investAccountPublishService
-        .getInvestAccountTransactionResponses(getListBankInvestAccountTransactionsRequest());
+        .getInvestAccountTransactionResponses(BANKSALAD_USER_ID, ORGANIZATION_ID, request.getAccountNum(),
+            request.getSeqno().getValue(), createdAt, Long.valueOf(request.getLimit()).intValue());
 
     // then
     assertThat(investAccountTransactionResponses).usingRecursiveComparison().ignoringFields(ENTITY_IGNORE_FIELD)
@@ -205,20 +175,6 @@ class InvestAccountPublishServiceImplTest {
         .transAmt(BigDecimal.valueOf(2000.20))
         .balanceAmt(BigDecimal.valueOf(10000.10))
         .consentId("consent_id1")
-        .build();
-  }
-
-  private ListBankInvestAccountBasicsRequest getListBankInvestAccountBasicsRequest() {
-    return ListBankInvestAccountBasicsRequest.newBuilder()
-        .setBanksaladUserId("1")
-        .setOrganizationObjectid("objectid")
-        .build();
-  }
-
-  private ListBankInvestAccountDetailsRequest getListBankInvestAccountDetailsRequest() {
-    return ListBankInvestAccountDetailsRequest.newBuilder()
-        .setBanksaladUserId("1")
-        .setOrganizationObjectid("objectid")
         .build();
   }
 

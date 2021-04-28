@@ -1,5 +1,9 @@
 package com.banksalad.collectmydata.bank.publishment.invest;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+
 import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountTransactionEntity;
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
@@ -12,20 +16,10 @@ import com.banksalad.collectmydata.bank.common.mapper.InvestAccountTransactionMa
 import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountBasicResponse;
 import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountDetailResponse;
 import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountTransactionResponse;
-import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-
-import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankInvestAccountBasicsRequest;
-import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankInvestAccountDetailsRequest;
-import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankInvestAccountTransactionsRequest;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +35,6 @@ public class InvestAccountPublishServiceImpl implements InvestAccountPublishServ
   private final InvestAccountBasicRepository investAccountBasicRepository;
   private final InvestAccountDetailRepository investAccountDetailRepository;
   private final InvestAccountTransactionRepository investAccountTransactionRepository;
-  private final CollectmydataConnectClientService collectmydataConnectClientService;
 
   private final InvestAccountBasicMapper investAccountBasicMapper = Mappers.getMapper(InvestAccountBasicMapper.class);
   private final InvestAccountDetailMapper investAccountDetailMapper = Mappers
@@ -50,13 +43,7 @@ public class InvestAccountPublishServiceImpl implements InvestAccountPublishServ
       .getMapper(InvestAccountTransactionMapper.class);
 
   @Override
-  public List<InvestAccountBasicResponse> getInvestAccountBasicResponses(ListBankInvestAccountBasicsRequest request) {
-    // TODO : type casting & load entity 중복코드 공통화
-    /* type casting */
-    long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-    String organizationId = collectmydataConnectClientService
-        .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
-
+  public List<InvestAccountBasicResponse> getInvestAccountBasicResponses(long banksaladUserId, String organizationId) {
     /* load summary entities (is_consent = true & response_code != 40305, 40404) */
     List<AccountSummaryEntity> accountSummaryEntities = accountSummaryRepository
         .findByBanksaladUserIdAndOrganizationIdAndBasicResponseCodeNotInAndConsentIsTrue(
@@ -75,14 +62,8 @@ public class InvestAccountPublishServiceImpl implements InvestAccountPublishServ
   }
 
   @Override
-  public List<InvestAccountDetailResponse> getInvestAccountDetailResponses(
-      ListBankInvestAccountDetailsRequest request) {
-    /* type casting */
-    long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-    String organizationId = collectmydataConnectClientService
-        .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
-        .getOrganizationId();
-
+  public List<InvestAccountDetailResponse> getInvestAccountDetailResponses(long banksaladUserId,
+      String organizationId) {
     /* load summary entities (is_consent = true & response_code != 40305, 40404) */
     List<AccountSummaryEntity> accountSummaryEntities = accountSummaryRepository
         .findByBanksaladUserIdAndOrganizationIdAndBasicResponseCodeNotInAndConsentIsTrue(
@@ -101,20 +82,12 @@ public class InvestAccountPublishServiceImpl implements InvestAccountPublishServ
   }
 
   @Override
-  public List<InvestAccountTransactionResponse> getInvestAccountTransactionResponses(
-      ListBankInvestAccountTransactionsRequest request) {
-    /* type casting */
-    long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-    String organizationId = collectmydataConnectClientService
-        .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
-    LocalDateTime createdAt = LocalDateTime.ofEpochSecond(request.getCreatedAfterMs(), 0, ZoneOffset.UTC);
-    int limit = Long.valueOf(request.getLimit()).intValue();
-
+  public List<InvestAccountTransactionResponse> getInvestAccountTransactionResponses(long banksaladUserId,
+      String organizationId, String accountNum, String seqno, LocalDateTime createdAt, int limit) {
     /* load summary entities (is_consent = true & response_code != 40305, 40404) */
     AccountSummaryEntity accountSummaryEntity = accountSummaryRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndTransactionResponseCodeNotInAndConsentIsTrue(
-            banksaladUserId, organizationId, request.getAccountNum(), request.getSeqno().getValue(),
-            INVALID_RESPONSE_CODE)
+            banksaladUserId, organizationId, accountNum, seqno, INVALID_RESPONSE_CODE)
         .orElse(null);
 
     if (accountSummaryEntity == null) {
@@ -122,12 +95,10 @@ public class InvestAccountPublishServiceImpl implements InvestAccountPublishServ
     }
 
     /* load transaction entities and mapping to dto */
-    Page<InvestAccountTransactionEntity> investAccountTransactionEntities = investAccountTransactionRepository
+    return investAccountTransactionRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndCreatedAtAfter(
-            banksaladUserId, organizationId, request.getAccountNum(), request.getSeqno().getValue(), createdAt,
-            PageRequest.of(0, limit));
-
-    return investAccountTransactionEntities.stream()
+            banksaladUserId, organizationId, accountNum, seqno, createdAt, PageRequest.of(0, limit))
+        .stream()
         .map(investAccountTransactionEntity ->
             investAccountTransactionMapper.entityToResponseDto(investAccountTransactionEntity))
         .collect(Collectors.toList());
