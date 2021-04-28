@@ -209,6 +209,7 @@ public abstract class ServiceTest<GParent, Parent, Main, Child> {
         .organizationHost("http://" + ORGANIZATION_HOST + ":" + port)
         .accessToken(ACCESS_TOKEN)
         .syncStartedAt(NEW_SYNCED_AT)
+        .requestedBy(String.valueOf(BANKSALAD_USER_ID))
         .build();
   }
 

@@ -23,10 +23,12 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_OVER_QUOTA;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 
 @RequiredArgsConstructor
 public class AccountTransactionInvocationContextProvider implements TestTemplateInvocationContextProvider {
@@ -50,6 +52,8 @@ public class AccountTransactionInvocationContextProvider implements TestTemplate
         .accountName("증권계좌1")
         .accountType("101")
         .accountStatus("201")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     Map<String, AccountSummaryEntity> parentMap = Map.of(
         "freshParent1", parent1,
@@ -80,6 +84,8 @@ public class AccountTransactionInvocationContextProvider implements TestTemplate
         .settleAmt(new BigDecimal("30000.000"))
         .balanceAmt(new BigDecimal("40000.000"))
         .currencyCode(FinanceConstant.CURRENCY_KRW)
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     main1.setTransactionYearMonth(Integer.valueOf(main1.getTransDtime().substring(0, 6)));
 
@@ -100,6 +106,8 @@ public class AccountTransactionInvocationContextProvider implements TestTemplate
         .settleAmt(new BigDecimal("30000.000"))
         .balanceAmt(new BigDecimal("40000.000"))
         .currencyCode(FinanceConstant.CURRENCY_KRW)
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     main2.setTransactionYearMonth(Integer.valueOf(main1.getTransDtime().substring(0, 6)));
 
@@ -120,6 +128,8 @@ public class AccountTransactionInvocationContextProvider implements TestTemplate
         .settleAmt(new BigDecimal("30000.000"))
         .balanceAmt(new BigDecimal("40000.000"))
         .currencyCode(FinanceConstant.CURRENCY_KRW)
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     main3.setTransactionYearMonth(Integer.valueOf(main1.getTransDtime().substring(0, 6)));
 

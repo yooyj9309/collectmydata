@@ -64,4 +64,8 @@ public class AccountSummaryEntity extends BaseEntity {
   private Long productSearchTimestamp;
 
   private String productResponseCode;
+
+  private String consentId;
+
+  private String syncRequestId;
 }

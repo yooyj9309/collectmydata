@@ -17,8 +17,10 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -62,6 +64,8 @@ class AccountProductPublishServiceImplTest {
             .accountType("101")
             .accountStatus("201")
             .productResponseCode("00000")
+            .consentId(CONSENT_ID)
+            .syncRequestId(SYNC_REQUEST_ID)
             .build(),
         AccountSummaryEntity.builder()
             .syncedAt(OLD_SYNCED_AT)
@@ -73,6 +77,8 @@ class AccountProductPublishServiceImplTest {
             .accountType("101")
             .accountStatus("201")
             .productResponseCode("00000")
+            .consentId(CONSENT_ID)
+            .syncRequestId(SYNC_REQUEST_ID)
             .build(),
         AccountSummaryEntity.builder()
             .syncedAt(OLD_SYNCED_AT)
@@ -84,6 +90,8 @@ class AccountProductPublishServiceImplTest {
             .accountType("101")
             .accountStatus("201")
             .productResponseCode("40305")
+            .consentId(CONSENT_ID)
+            .syncRequestId(SYNC_REQUEST_ID)
             .build()
     );
   }
@@ -110,6 +118,8 @@ class AccountProductPublishServiceImplTest {
             .lastPaidInDate("20210201")
             .rcvAmt(new BigDecimal("50000.000"))
             .currencyCode(FinanceConstant.CURRENCY_KRW)
+            .consentId(CONSENT_ID)
+            .syncRequestId(SYNC_REQUEST_ID)
             .build(),
         AccountProductEntity.builder()
             .syncedAt(OLD_SYNCED_AT)
@@ -131,6 +141,8 @@ class AccountProductPublishServiceImplTest {
             .lastPaidInDate("20210201")
             .rcvAmt(new BigDecimal("555.555"))
             .currencyCode("USD")
+            .consentId(CONSENT_ID)
+            .syncRequestId(SYNC_REQUEST_ID)
             .build()
     );
   }

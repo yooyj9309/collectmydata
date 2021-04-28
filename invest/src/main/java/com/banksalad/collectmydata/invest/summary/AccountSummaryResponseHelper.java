@@ -58,6 +58,10 @@ public class AccountSummaryResponseHelper implements SummaryResponseHelper<Accou
     accountSummaryEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
     accountSummaryEntity.setOrganizationId(executionContext.getOrganizationId());
     accountSummaryEntity.setSyncedAt(executionContext.getSyncStartedAt());
+    accountSummaryEntity.setConsentId(executionContext.getConsentId());
+    accountSummaryEntity.setSyncRequestId(executionContext.getSyncRequestId());
+    accountSummaryEntity.setCreatedBy(executionContext.getRequestedBy());
+    accountSummaryEntity.setUpdatedBy(executionContext.getRequestedBy());
 
     accountSummaryRepository.save(accountSummaryEntity);
   }

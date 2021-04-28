@@ -45,6 +45,10 @@ public class AccountBasicInfoResponseHelper implements AccountInfoResponseHelper
     accountBasicEntity.setOrganizationId(executionContext.getOrganizationId());
     accountBasicEntity.setSyncedAt(executionContext.getSyncStartedAt());
     accountBasicEntity.setAccountNum(accountSummary.getAccountNum());
+    accountBasicEntity.setConsentId(executionContext.getConsentId());
+    accountBasicEntity.setSyncRequestId(executionContext.getSyncRequestId());
+    accountBasicEntity.setCreatedBy(executionContext.getRequestedBy());
+    accountBasicEntity.setUpdatedBy(executionContext.getRequestedBy());
 
     AccountBasicEntity existingAccountBasicEntity = accountBasicRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNum(executionContext.getBanksaladUserId(),

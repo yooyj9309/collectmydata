@@ -36,7 +36,7 @@ public class InvestSyncRequestedConsumer {
 
       log.info("[collectmydata-invest] consume SyncRequested syncRequestId: {} ", message.getSyncRequestId());
 
-      investApiService.requestApi(message.getBanksaladUserId(), message.getOrganizationId(), message.getSyncRequestId(),
+      investApiService.onDemandRequestApi(message.getBanksaladUserId(), message.getOrganizationId(), message.getSyncRequestId(),
           message.getSyncRequestType());
 
     } catch (ResponseNotOkException e) {

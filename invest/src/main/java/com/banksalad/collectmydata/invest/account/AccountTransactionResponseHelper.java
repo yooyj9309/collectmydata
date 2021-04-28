@@ -46,6 +46,10 @@ public class AccountTransactionResponseHelper implements TransactionResponseHelp
       accountTransactionEntity.setOrganizationId(executionContext.getOrganizationId());
       accountTransactionEntity.setAccountNum(accountSummary.getAccountNum());
       accountTransactionEntity.setUniqueTransNo(generateUniqueTransNo(accountTransaction));
+      accountTransactionEntity.setConsentId(executionContext.getConsentId());
+      accountTransactionEntity.setSyncRequestId(executionContext.getSyncRequestId());
+      accountTransactionEntity.setCreatedBy(executionContext.getRequestedBy());
+      accountTransactionEntity.setUpdatedBy(executionContext.getRequestedBy());
 
       accountTransactionRepository
           .findByTransactionYearMonthAndBanksaladUserIdAndOrganizationIdAndAccountNumAndUniqueTransNo(

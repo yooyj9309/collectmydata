@@ -22,12 +22,14 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_ST1;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_ST1;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_NO_ACCOUNT;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 
 public class AccountProductInvocationContextProvider implements TestTemplateInvocationContextProvider {
 
@@ -49,6 +51,8 @@ public class AccountProductInvocationContextProvider implements TestTemplateInvo
         .accountName("증권계좌1")
         .accountType("101")
         .accountStatus("201")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
 
     Map<String, AccountSummaryEntity> parentMap = Map.of(
@@ -79,6 +83,8 @@ public class AccountProductInvocationContextProvider implements TestTemplateInvo
         .lastPaidInDate("20210201")
         .rcvAmt(new BigDecimal("50000.000"))
         .currencyCode(FinanceConstant.CURRENCY_KRW)
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
 
     AccountProductEntity main2 = AccountProductEntity.builder()
@@ -101,6 +107,8 @@ public class AccountProductInvocationContextProvider implements TestTemplateInvo
         .lastPaidInDate("20210201")
         .rcvAmt(new BigDecimal("555.555"))
         .currencyCode("USD")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
 
     Map<String, AccountProductEntity> mainMap = Map.of(

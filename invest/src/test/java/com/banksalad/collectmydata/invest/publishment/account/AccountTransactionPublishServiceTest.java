@@ -18,8 +18,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -65,6 +67,8 @@ class AccountTransactionPublishServiceTest {
             .accountType("101")
             .accountStatus("201")
             .transactionResponseCode("00000")
+            .consentId(CONSENT_ID)
+            .syncRequestId(SYNC_REQUEST_ID)
             .build();
   }
 
@@ -88,6 +92,8 @@ class AccountTransactionPublishServiceTest {
             .settleAmt(new BigDecimal("30000.000"))
             .balanceAmt(new BigDecimal("40000.000"))
             .currencyCode(FinanceConstant.CURRENCY_KRW)
+            .consentId(CONSENT_ID)
+            .syncRequestId(SYNC_REQUEST_ID)
             .build(),
         AccountTransactionEntity.builder()
             .transactionYearMonth(202101)
@@ -107,6 +113,8 @@ class AccountTransactionPublishServiceTest {
             .settleAmt(new BigDecimal("30000.000"))
             .balanceAmt(new BigDecimal("40000.000"))
             .currencyCode(FinanceConstant.CURRENCY_KRW)
+            .consentId(CONSENT_ID)
+            .syncRequestId(SYNC_REQUEST_ID)
             .build()
     );
   }

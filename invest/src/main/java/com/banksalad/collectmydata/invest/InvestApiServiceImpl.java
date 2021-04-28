@@ -39,6 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -70,21 +71,23 @@ public class InvestApiServiceImpl implements InvestApiService {
   private final AccountProductInfoPublishmentHelper accountProductInfoPublishmentHelper;
 
   @Override
-  public void requestApi(long banksaladUserId, String organizationId, String syncRequestId,
+  public void onDemandRequestApi(long banksaladUserId, String organizationId, String syncRequestId,
       SyncRequestType syncRequestType) throws ResponseNotOkException {
 
     OauthToken oauthToken = connectClientService.getAccessToken(banksaladUserId, organizationId);
     Organization organization = connectClientService.getOrganization(organizationId);
 
     ExecutionContext executionContext = ExecutionContext.builder()
-        .banksaladUserId(banksaladUserId)
         .consentId(oauthToken.getConsentId())
         .syncRequestId(syncRequestId)
+        .executionRequestId(UUID.randomUUID().toString())
+        .banksaladUserId(banksaladUserId)
         .organizationId(organization.getOrganizationId())
         .organizationCode(organization.getOrganizationCode())
         .organizationHost(organization.getHostUrl())
         .accessToken(oauthToken.getAccessToken())
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+        .requestedBy(String.valueOf(banksaladUserId))
         .build();
 
     accountSummaryService
@@ -114,5 +117,7 @@ public class InvestApiServiceImpl implements InvestApiService {
             .syncRequestType(syncRequestType)
             .build());
   }
+
+  // TODO jaeseong: 스케쥴 request api 구현
 }
 

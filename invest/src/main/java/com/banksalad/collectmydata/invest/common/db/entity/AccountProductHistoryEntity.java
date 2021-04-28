@@ -80,4 +80,9 @@ public class AccountProductHistoryEntity extends BaseEntity {
 
   @Column(nullable = false)
   private String currencyCode;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
 }

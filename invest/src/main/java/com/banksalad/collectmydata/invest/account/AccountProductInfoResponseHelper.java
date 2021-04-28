@@ -63,6 +63,10 @@ public class AccountProductInfoResponseHelper implements
         accountProductEntity.setSyncedAt(executionContext.getSyncStartedAt());
         accountProductEntity.setAccountNum(accountSummary.getAccountNum());
         accountProductEntity.setProdNo(prodNo++);
+        accountProductEntity.setConsentId(executionContext.getConsentId());
+        accountProductEntity.setSyncRequestId(executionContext.getSyncRequestId());
+        accountProductEntity.setCreatedBy(executionContext.getRequestedBy());
+        accountProductEntity.setUpdatedBy(executionContext.getRequestedBy());
 
         accountProductRepository.save(accountProductEntity);
         accountProductHistoryRepository.save(accountProductHistoryMapper.toHistoryEntity(accountProductEntity));

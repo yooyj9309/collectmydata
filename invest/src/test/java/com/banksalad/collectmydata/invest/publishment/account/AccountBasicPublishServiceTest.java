@@ -17,8 +17,10 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -63,6 +65,8 @@ class AccountBasicPublishServiceTest {
             .accountType("101")
             .accountStatus("201")
             .basicResponseCode("00000")
+            .consentId(CONSENT_ID)
+            .syncRequestId(SYNC_REQUEST_ID)
             .build(),
         AccountSummaryEntity.builder()
             .syncedAt(OLD_SYNCED_AT)
@@ -74,6 +78,8 @@ class AccountBasicPublishServiceTest {
             .accountType("101")
             .accountStatus("201")
             .basicResponseCode("00000")
+            .consentId(CONSENT_ID)
+            .syncRequestId(SYNC_REQUEST_ID)
             .build(),
         AccountSummaryEntity.builder()
             .syncedAt(OLD_SYNCED_AT)
@@ -85,6 +91,8 @@ class AccountBasicPublishServiceTest {
             .accountType("101")
             .accountStatus("201")
             .basicResponseCode("40305")
+            .consentId(CONSENT_ID)
+            .syncRequestId(SYNC_REQUEST_ID)
             .build()
     );
   }
@@ -101,6 +109,8 @@ class AccountBasicPublishServiceTest {
         .creditLoanAmt(new BigDecimal("20000.000"))
         .mortgageAmt(new BigDecimal("30000.000"))
         .currencyCode(FinanceConstant.CURRENCY_KRW)
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
   }
 }
