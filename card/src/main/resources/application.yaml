@@ -2,7 +2,11 @@ spring:
   profiles:
     active: local
   application:
-    name: collectmydata-card
+    name: collectmydatacard
+
+# health check 위한 http port
+server:
+  port: 18082
 
 logging:
   config: classpath:logback/logback-${spring.profiles.active}.xml
@@ -26,3 +30,15 @@ management:
     livenessState.enabled: true
     readinessState.enabled: true
 
+# gRPC 설정
+grpc:
+  port: 18081
+  enable-reflection: true
+  enabled: true
+  in-process-server-name: collectmydata-card-server-process
+  shutdownGrace: 30
+
+uri:
+  collectmydataconnect: dns:///collectmydataconnect-headless:18081
+  user: dns:///user-headless:18081
+  cipher: dns:///cipher-headless:18081

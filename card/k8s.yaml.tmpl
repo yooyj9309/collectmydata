@@ -1,4 +1,4 @@
-{{ $service_name := "collectmydatabank" }}
+{{ $service_name := "collectmydatacard" }}
 
 {{ $service_grpc_port := "18081" }}
 {{ $service_http_port := "18082" }}
@@ -20,27 +20,27 @@
 {{ $namespace := $env }}
 
 # development
-{{ $stg_collectmydata_bank_db_password := getenv "STG_COLLECTMYDATA_BANK_DB_PASSWORD" }}
+{{ $stg_collectmydata_card_db_password := getenv "STG_COLLECTMYDATA_CARD_DB_PASSWORD" }}
 
 # production
-{{ $stg_collectmydata_bank_db_password := getenv "STG_COLLECTMYDATA_BANK_DB_PASSWORD" }} # PRODUCTION 설정으로 변경
+{{ $stg_collectmydata_card_db_password := getenv "STG_COLLECTMYDATA_CARD_DB_PASSWORD" }} # PRODUCTION 설정으로 변경
 
 {{ if ne $env $sub_env_id }}
   {{ $namespace = join (slice $env $sub_env_id) "-" }}
 {{ end }}
 
-{{ $mysql_cidr_a := "10.121.9.48/28" }}
-{{ $mysql_cidr_b := "10.121.9.64/28" }}
-{{ $mysql_cidr_c := "10.121.9.80/28" }}
+{{ $mysql_cidr_a := "10.121.9.96/28" }}
+{{ $mysql_cidr_b := "10.121.9.112/28" }}
+{{ $mysql_cidr_c := "10.121.9.128/28" }}
 
 {{ $msk_cidr_a := "10.120.250.0/25" }}
 {{ $msk_cidr_b := "10.120.250.128/25" }}
 {{ $msk_cidr_c := "10.120.251.0/25" }}
 
 {{ if eq $env "production" }}
-  {{ $mysql_cidr_a = "10.131.9.48/28" }}
-  {{ $mysql_cidr_b = "10.131.9.64/28" }}
-  {{ $mysql_cidr_c = "10.131.9.80/28" }}
+  {{ $mysql_cidr_a = "10.131.9.96/28" }}
+  {{ $mysql_cidr_b = "10.131.9.112/28" }}
+  {{ $mysql_cidr_c = "10.131.9.128/28" }}
 
   {{ $msk_cidr_a = "10.130.250.0/25" }}
   {{ $msk_cidr_b = "10.130.250.128/25" }}
@@ -145,7 +145,6 @@ spec:
               protocol: TCP
             - containerPort: {{ $service_http_port }}
               protocol: TCP
-
           env:
             - name: ENV
               value: {{ $env }}
@@ -153,8 +152,8 @@ spec:
               value: {{ $sub_env_id }}
             - name: NAMESPACE
               value: {{ $namespace }}
-            - name: STG_COLLECTMYDATA_BANK_DB_PASSWORD
-              value: {{ $stg_collectmydata_bank_db_password }}
+            - name: STG_COLLECTMYDATA_CARD_DB_PASSWORD
+              value: {{ $stg_collectmydata_card_db_password }}
           resources:
             limits:
               memory: 8Gi
