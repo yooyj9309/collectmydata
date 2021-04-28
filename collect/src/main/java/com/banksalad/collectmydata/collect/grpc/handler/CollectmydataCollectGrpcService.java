@@ -65,6 +65,8 @@ public class CollectmydataCollectGrpcService extends CollectmydataGrpc.Collectmy
 
       LoggingMdcUtil.set(Sector.FINANCE.name(), Industry.BANK.name(), banksaladUserId, organizationId, syncRequestId);
 
+      log.info("CollectmydataCollectGrpcService.syncCollectmydatabank");
+
       collectMessageService.produceBankSyncRequested(SyncRequestedMessage.builder()
           .banksaladUserId(banksaladUserId)
           .organizationId(organizationId)

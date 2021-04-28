@@ -1,6 +1,8 @@
 package com.banksalad.collectmydata.connect.grpc.handler;
 
+import com.banksalad.collectmydata.common.enums.Sector;
 import com.banksalad.collectmydata.common.exception.GrpcException;
+import com.banksalad.collectmydata.common.logging.LoggingMdcUtil;
 import com.banksalad.collectmydata.connect.common.service.ValidatorService;
 import com.banksalad.collectmydata.connect.grpc.handler.interceptor.StatsUnaryServerInterceptor;
 import com.banksalad.collectmydata.connect.grpc.validator.GetAccessTokenRequestValidator;
@@ -83,10 +85,17 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
   @Override
   public void getAccessToken(GetAccessTokenRequest request, StreamObserver<GetAccessTokenResponse> responseObserver) {
     try {
+      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+      String organizationId = request.getOrganizationId();
+
+      LoggingMdcUtil.set(Sector.FINANCE.name(), null, banksaladUserId, organizationId, null);
+
+      log.info("Collectmydata-connect ConnectGrpcService.getAccessToken()");
+
       GetAccessTokenRequestValidator validator = GetAccessTokenRequestValidator.of(request);
       validatorService.validate(validator);
 
-      OauthToken oauthToken = oauthTokenService.getAccessToken(request);
+      OauthToken oauthToken = oauthTokenService.getAccessToken(banksaladUserId, request.getOrganizationId());
       OauthTokenProtoResponse oauthTokenProtoResponse = OauthTokenProtoResponse.builder()
           .oauthToken(oauthToken)
           .build();
@@ -98,6 +107,8 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
     } catch (Exception e) {
       log.error("getAccessToken error message,{}", e.getMessage(), e);
       responseObserver.onError(new GrpcException().handle());
+    } finally {
+      LoggingMdcUtil.clear();
     }
   }
 
@@ -107,7 +118,9 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
       RefreshTokenRequestValidator validator = RefreshTokenRequestValidator.of(request);
       validatorService.validate(validator);
 
-      OauthToken oauthToken = oauthTokenService.refreshToken(request);
+      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+
+      OauthToken oauthToken = oauthTokenService.refreshToken(banksaladUserId, request.getOrganizationId());
       OauthTokenProtoResponse oauthTokenProtoResponse = OauthTokenProtoResponse.builder()
           .oauthToken(oauthToken)
           .build();

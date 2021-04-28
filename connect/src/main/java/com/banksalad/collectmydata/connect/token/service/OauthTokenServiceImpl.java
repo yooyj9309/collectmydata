@@ -1,10 +1,5 @@
 package com.banksalad.collectmydata.connect.token.service;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
@@ -41,12 +36,18 @@ import com.banksalad.collectmydata.connect.token.dto.GetOauthTokenResponse;
 import com.banksalad.collectmydata.connect.token.dto.GetRefreshTokenRequest;
 import com.banksalad.collectmydata.connect.token.dto.GetRevokeTokenRequest;
 import com.banksalad.collectmydata.connect.token.dto.OauthToken;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenRequest;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.IssueTokenRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RefreshTokenRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeAllTokensRequest;
 import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeTokenRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
@@ -55,6 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OauthTokenServiceImpl implements OauthTokenService {
@@ -131,20 +133,22 @@ public class OauthTokenServiceImpl implements OauthTokenService {
 
   @Override
   @Transactional(readOnly = true)
-  public OauthToken getAccessToken(GetAccessTokenRequest request) {
+  public OauthToken getAccessToken(long banksaladUserId, String organizationId) {
+
+    log.info("collectmydata-connct getAccessToken banksaladUserId: {}, organizationId: {}", banksaladUserId, organizationId);
+
     /* load connectOrganizationEntity */
-    Long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
     OauthTokenEntity oauthTokenEntity = oauthTokenRepository
-        .findByBanksaladUserIdAndOrganizationId(banksaladUserId, request.getOrganizationId())
+        .findByBanksaladUserIdAndOrganizationId(banksaladUserId, organizationId)
         .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_TOKEN));
 
     /* check if access token expired */
     if (isTokenExpired(oauthTokenEntity.getAccessTokenExpiresAt())) {
       RefreshTokenRequest refreshTokenRequest = RefreshTokenRequest.newBuilder()
-          .setBanksaladUserId(request.getBanksaladUserId())
-          .setOrganizationId(request.getOrganizationId())
+          .setBanksaladUserId(String.valueOf(banksaladUserId))
+          .setOrganizationId(organizationId)
           .build();
-      return refreshToken(refreshTokenRequest);
+      return refreshToken(banksaladUserId, organizationId);
     }
 
     return OauthToken.builder()
@@ -155,11 +159,10 @@ public class OauthTokenServiceImpl implements OauthTokenService {
   }
 
   @Override
-  public OauthToken refreshToken(RefreshTokenRequest request) {
+  public OauthToken refreshToken(long banksaladUserId, String organizationId) {
     /* load oauthTokenEntity */
-    Long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
     OauthTokenEntity oauthTokenEntity = oauthTokenRepository
-        .findByBanksaladUserIdAndOrganizationId(banksaladUserId, request.getOrganizationId())
+        .findByBanksaladUserIdAndOrganizationId(banksaladUserId, organizationId)
         .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_TOKEN));
 
     /* check refresh token expiration */
@@ -169,7 +172,7 @@ public class OauthTokenServiceImpl implements OauthTokenService {
 
     /* load connectOrganizationEntity */
     ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
-        .findByOrganizationId(request.getOrganizationId())
+        .findByOrganizationId(organizationId)
         .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_ORGANIZATION));
 
     /* request api */
