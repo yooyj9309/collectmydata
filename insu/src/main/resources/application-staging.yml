@@ -1,15 +1,36 @@
 spring:
   profiles:
     active: staging
-  kafka:
-    bootstrap-servers: b-2.collectmydata.of5yls.c3.kafka.ap-northeast-2.amazonaws.com:9092,b-3.collectmydata.of5yls.c3.kafka.ap-northeast-2.amazonaws.com:9092,b-1.collectmydata.of5yls.c3.kafka.ap-northeast-2.amazonaws.com:9092
-    listener:
-      concurrency: 3
-      ack-mode: manual
-    consumer:
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      group-id: collect-mydata-insurance
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.MySQLDialect
+        default_batch_fetch_size: 100
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:mysql://collectmydata-insurance-cluster.cluster-ciy3wcu0axct.ap-northeast-2.rds.amazonaws.com:3306/collectmydatainsurance?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: collectmydatainsurance_was
+    password: ${STG_COLLECTMYDATA_INSU_DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 20
+      connection-timeout: 5000
+      validation-timeout: 4000
+      max-lifetime: 60000
+      minimum-idle: 10
+      idle-timeout: 54000
+    type: com.zaxxer.hikari.HikariDataSource
+
+logging:
+  level:
+    com.zaxxer.hikari.HikariConfig: INFO
+    com.zaxxer.hikari: INFO
+    org.hibernate.SQL: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: INFO
 
 kafka:
   bootstrap-servers: b-2.collectmydata.of5yls.c3.kafka.ap-northeast-2.amazonaws.com:9092,b-3.collectmydata.of5yls.c3.kafka.ap-northeast-2.amazonaws.com:9092,b-1.collectmydata.of5yls.c3.kafka.ap-northeast-2.amazonaws.com:9092
