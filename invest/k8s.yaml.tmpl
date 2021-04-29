@@ -29,9 +29,9 @@
   {{ $namespace = join (slice $env $sub_env_id) "-" }}
 {{ end }}
 
-{{ $mysql_cidr_a := "10.121.9.144/28" }}
-{{ $mysql_cidr_b := "10.121.9.160/28" }}
-{{ $mysql_cidr_c := "10.121.9.176/28" }}
+{{ $mysql_cidr_a := "10.121.13.32/28" }}
+{{ $mysql_cidr_b := "10.121.13.48/28" }}
+{{ $mysql_cidr_c := "10.121.13.64/28" }}
 
 {{ $msk_cidr_a := "10.120.250.0/25" }}
 {{ $msk_cidr_b := "10.120.250.128/25" }}

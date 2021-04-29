@@ -25,14 +25,14 @@
   {{ $namespace = join (slice $env $sub_env_id) "-" }}
 {{ end }}
 
-{{ $mysql_cidr_a := "10.121.9.0/28" }}
-{{ $mysql_cidr_b := "10.121.9.16/28" }}
-{{ $mysql_cidr_c := "10.121.9.32/28" }}
+{{ $mysql_cidr_a := "10.121.12.144/28" }}
+{{ $mysql_cidr_b := "10.121.12.160/28" }}
+{{ $mysql_cidr_c := "10.121.12.176/28" }}
 
 {{ if eq $env "production" }}
-  {{ $mysql_cidr_a = "10.131.6.144/28" }}
-  {{ $mysql_cidr_b = "10.131.6.160/28" }}
-  {{ $mysql_cidr_c = "10.131.6.176/28" }}
+  {{ $mysql_cidr_a := "10.121.12.144/28" }}
+  {{ $mysql_cidr_b := "10.121.12.160/28" }}
+  {{ $mysql_cidr_c := "10.121.12.176/28" }}
 {{ end }}
 
 
