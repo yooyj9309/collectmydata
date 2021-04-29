@@ -8,14 +8,15 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
+import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoPublishmentHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
+import com.banksalad.collectmydata.finance.common.service.FinanceMessageService;
+import com.banksalad.collectmydata.finance.common.service.HeaderService;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -24,22 +25,32 @@ import java.util.Optional;
 public class AccountInfoServicePaginationImpl<Summary, AccountRequest, Account> implements
     AccountInfoServicePagination<Summary, AccountRequest, Account> {
 
-  private static final String AUTHORIZATION = "Authorization";
-
   private final CollectExecutor collectExecutor;
   private final UserSyncStatusService userSyncStatusService;
+  private final FinanceMessageService financeMessageService;
+  private final HeaderService headerService;
 
   @Override
-  public List<Account> listAccountInfos(
+  public void listAccountInfos(
+      ExecutionContext executionContext,
+      Execution execution,
+      AccountInfoRequestPaginationHelper<AccountRequest, Summary> irpAccountDetailInfoRequestHelper,
+      AccountInfoResponsePaginationHelper<AccountRequest, Summary, Account> irpAccountDetailInfoResponseHelper) {
+    listAccountInfos(executionContext, execution, irpAccountDetailInfoRequestHelper, irpAccountDetailInfoResponseHelper,
+        null);
+  }
+
+  @Override
+  public void listAccountInfos(
       ExecutionContext executionContext,
       Execution execution,
       AccountInfoRequestPaginationHelper<AccountRequest, Summary> requestHelper,
-      AccountInfoResponsePaginationHelper<AccountRequest, Summary, Account> responseHelper) {
+      AccountInfoResponsePaginationHelper<AccountRequest, Summary, Account> responseHelper,
+      AccountInfoPublishmentHelper publishmentHelper) {
 
     List<Summary> summaries = requestHelper.listSummaries(executionContext);
 
     ExecutionResponse<AccountResponse> executionResponse;
-    List<Account> accounts = new ArrayList<>();
 
     for (Summary summary : summaries) {
       /* copy ExecutionContext for new executionRequestId */
@@ -55,7 +66,7 @@ public class AccountInfoServicePaginationImpl<Summary, AccountRequest, Account> 
             executionContextLocal,
             execution,
             ExecutionRequest.builder()
-                .headers(Map.of(AUTHORIZATION, executionContext.getAccessToken()))
+                .headers(headerService.makeHeader(executionContext))
                 .request(accountRequest)
                 .build());
 
@@ -99,9 +110,15 @@ public class AccountInfoServicePaginationImpl<Summary, AccountRequest, Account> 
           responseHelper.saveSearchTimestamp(executionContext, summary, accountResponse.getSearchTimestamp());
         }
 
-        accounts.add(account);
         nextPage = executionResponse.getNextPage();
       } while (executionResponse.getNextPage() != null && executionResponse.getNextPage().length() > 0);
+    }
+
+    /* publish */
+    // TODO(question): to do or not
+    if (publishmentHelper != null) {
+      financeMessageService.producePublishmentRequested(publishmentHelper.getMessageTopic(),
+          publishmentHelper.makePublishmentRequestedMessage(executionContext));
     }
 
     /* update user_sync_status */
@@ -112,7 +129,5 @@ public class AccountInfoServicePaginationImpl<Summary, AccountRequest, Account> 
         executionContext.getSyncStartedAt(),
         0
     );
-
-    return accounts;
   }
 }

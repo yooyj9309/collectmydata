@@ -1,0 +1,18 @@
+{
+  "rsp_code": "000",
+  "rsp_msg": "rsp_msg",
+  "search_timestamp": 1000,
+  "irp_cnt": 1,
+  "irp_list": [
+    {
+      "irp_name": "irp개별운용상품3",
+      "irp_type": "02",
+      "eval_amt": 99999.999,
+      "inv_principal": 1111.111,
+      "fund_num": 5,
+      "open_date": "20000101",
+      "exp_date": "20011230",
+      "int_rate": 20.47
+    }
+  ]
+}

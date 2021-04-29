@@ -53,7 +53,7 @@ dependencies {
 
     // kafka
     implementation("org.springframework.kafka:spring-kafka:${springKafkaVersion}")
-    
+
     // grpc
     implementation("io.grpc:grpc-context:${grpcVersion}")
     implementation("io.grpc:grpc-api:${grpcVersion}")
@@ -110,6 +110,7 @@ dependencies {
     testImplementation("com.h2database:h2")
     testImplementation("org.mockito:mockito-inline:3.1.0")
     testImplementation("com.google.protobuf:protobuf-java-util:3.11.0")
+    testImplementation("org.springframework.kafka:spring-kafka-test:${springKafkaVersion}")
 
     testImplementation("org.projectlombok:lombok:${lombokVersion}")
     testAnnotationProcessor("org.projectlombok:lombok:${lombokVersion}")

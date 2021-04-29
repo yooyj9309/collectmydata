@@ -4,7 +4,7 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 
 public interface IrpAccountService {
 
-  void getIrpAccountBasics(ExecutionContext executionContext);
+  void listIrpAccountBasics(ExecutionContext executionContext);
 
   void listIrpAccountDetails(ExecutionContext executionContext);
 }

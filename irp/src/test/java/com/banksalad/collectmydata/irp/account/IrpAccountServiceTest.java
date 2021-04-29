@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_CODE;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static com.banksalad.collectmydata.irp.util.FileUtil.readText;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -148,7 +149,7 @@ class IrpAccountServiceTest {
         .organizationId(ORGANIZATION_ID)
         .accessToken("test")
         .organizationHost(ORGANIZATION_HOST + ":" + wiremock.port())
-        .organizationCode("020")
+        .organizationCode(ORGANIZATION_CODE)
         .executionRequestId(UUID.randomUUID().toString())
         .syncStartedAt(now)
         .build();
@@ -171,7 +172,7 @@ class IrpAccountServiceTest {
     /* save mock account summaries */
     accountSummaryRepository.save(accountSummaryEntity1);
 
-    irpAccountService.getIrpAccountBasics(executionContext);
+    irpAccountService.listIrpAccountBasics(executionContext);
     assertEquals(0, accountBasicRepository.count());
 
     assertUserSyncStatusSyncedAt();
@@ -204,7 +205,7 @@ class IrpAccountServiceTest {
     /* save mock account summaries */
     accountSummaryRepository.saveAll(mockAccountSummaryEntities);
 
-    irpAccountService.getIrpAccountBasics(executionContext);
+    irpAccountService.listIrpAccountBasics(executionContext);
 
     assertEquals(2, accountSummaryRepository.count());
     assertEquals(2, accountBasicRepository.count());
@@ -246,7 +247,7 @@ class IrpAccountServiceTest {
     /* save mock account basics and history */
     saveAccountBasicsAndHistorySource();
 
-    irpAccountService.getIrpAccountBasics(executionContext);
+    irpAccountService.listIrpAccountBasics(executionContext);
 
     assertEquals(2, accountSummaryRepository.count());
     assertEquals(2, accountBasicRepository.count());
@@ -299,7 +300,7 @@ class IrpAccountServiceTest {
     /* save mock account basics and history */
     saveAccountBasicsAndHistorySource();
 
-    irpAccountService.getIrpAccountBasics(executionContext);
+    irpAccountService.listIrpAccountBasics(executionContext);
 
     assertEquals(1, accountSummaryRepository.count());
     assertEquals(1, accountBasicRepository.count());
@@ -333,7 +334,7 @@ class IrpAccountServiceTest {
     /* save mock account basics and history */
     saveAccountBasicsAndHistorySource();
 
-    irpAccountService.getIrpAccountBasics(executionContext);
+    irpAccountService.listIrpAccountBasics(executionContext);
 
     assertEquals(1, accountSummaryRepository.count());
     assertEquals(1, accountBasicRepository.count());

@@ -6,8 +6,9 @@ import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasic;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(uses = BigDecimalMapper.class)
+@Mapper(uses = BigDecimalMapper.class, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface IrpAccountBasicMapper {
 
   @Mappings(value = {

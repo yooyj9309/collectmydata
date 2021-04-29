@@ -30,7 +30,7 @@ public class IrpAccountBasicInfoRequestHelper implements
   public IrpAccountBasicRequest make(ExecutionContext executionContext, IrpAccountSummary irpAccountSummary) {
 
     return IrpAccountBasicRequest.builder()
-        .orgCode("020")  // TODO:
+        .orgCode(executionContext.getOrganizationCode())
         .searchTimestamp(irpAccountSummary.getBasicSearchTimestamp())
         .accountNum(irpAccountSummary.getAccountNum())
         .seqno(irpAccountSummary.getSeqno())

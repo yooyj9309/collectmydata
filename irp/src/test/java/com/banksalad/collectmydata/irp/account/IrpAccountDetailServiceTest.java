@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_CODE;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static com.banksalad.collectmydata.irp.util.FileUtil.readText;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -138,7 +139,7 @@ class IrpAccountDetailServiceTest {
         .organizationId(ORGANIZATION_ID)
         .accessToken("test")
         .organizationHost(ORGANIZATION_HOST + ":" + wiremock.port())
-        .organizationCode("020")
+        .organizationCode(ORGANIZATION_CODE)
         .executionRequestId(UUID.randomUUID().toString())
         .syncStartedAt(requestSyncedAt)
         .build();

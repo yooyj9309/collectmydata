@@ -33,18 +33,28 @@ public class BankSummaryResponseHelper implements SummaryResponseHelper<AccountS
 
   @Override
   public void saveOrganizationUser(ExecutionContext executionContext, SummaryResponse response) {
+
     ListAccountSummariesResponse listAccountSummariesResponse = (ListAccountSummariesResponse) response;
 
     OrganizationUserEntity organizationUserEntity = organizationUserRepository
         .findByBanksaladUserIdAndOrganizationId(executionContext.getBanksaladUserId(),
             executionContext.getOrganizationId())
-        .orElseGet(() ->
-            OrganizationUserEntity.builder()
-                .syncedAt(executionContext.getSyncStartedAt())
-                .banksaladUserId(executionContext.getBanksaladUserId())
-                .organizationId(executionContext.getOrganizationId())
-                .regDate(listAccountSummariesResponse.getRegDate())
-                .build());
+        .orElseGet(() -> {
+
+          OrganizationUserEntity createdUserEntity = OrganizationUserEntity.builder()
+              .syncedAt(executionContext.getSyncStartedAt())
+              .banksaladUserId(executionContext.getBanksaladUserId())
+              .organizationId(executionContext.getOrganizationId())
+              .consentId(executionContext.getConsentId())
+              .syncRequestId(executionContext.getSyncRequestId())
+              .regDate(listAccountSummariesResponse.getRegDate())
+              .build();
+
+          createdUserEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+          createdUserEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+
+          return createdUserEntity;
+        });
 
     organizationUserRepository.save(organizationUserEntity);
   }
@@ -71,6 +81,7 @@ public class BankSummaryResponseHelper implements SummaryResponseHelper<AccountS
     accountSummaryEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
     accountSummaryEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
     accountSummaryEntity.setConsentId(executionContext.getConsentId());
+    accountSummaryEntity.setSyncRequestId(executionContext.getSyncRequestId());
 
     accountSummaryRepository.save(accountSummaryEntity);
   }

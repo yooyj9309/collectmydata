@@ -1,5 +1,8 @@
 package com.banksalad.collectmydata.bank;
 
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Component;
+
 import com.banksalad.collectmydata.common.enums.Industry;
 import com.banksalad.collectmydata.common.enums.Sector;
 import com.banksalad.collectmydata.common.logging.LoggingMdcUtil;
@@ -7,11 +10,6 @@ import com.banksalad.collectmydata.common.message.ConsumerGroupId;
 import com.banksalad.collectmydata.common.message.MessageTopic;
 import com.banksalad.collectmydata.common.message.SyncRequestedMessage;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
-
-import org.springframework.context.annotation.Profile;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-@Profile("!test")
 @RequiredArgsConstructor
 public class BankSyncRequestedConsumer {
 

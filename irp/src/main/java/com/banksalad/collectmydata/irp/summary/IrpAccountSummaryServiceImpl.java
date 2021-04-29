@@ -43,7 +43,7 @@ public class IrpAccountSummaryServiceImpl implements IrpAccountSummaryService {
       throws ResponseNotOkException {
     irpAccountSummaryServices
         .listAccountSummaries(executionContext, Executions.irp_get_accounts, irpAccountSummariesRequestHelper,
-            irpAccountSummaryResponseHelper);
+            irpAccountSummaryResponseHelper, null);
   }
 
   @Override

@@ -1,5 +1,7 @@
 package com.banksalad.collectmydata.bank;
 
+import org.springframework.stereotype.Service;
+
 import com.banksalad.collectmydata.bank.common.collect.Executions;
 import com.banksalad.collectmydata.bank.deposit.DepositAccountBasicPublishmentHelper;
 import com.banksalad.collectmydata.bank.deposit.DepositAccountDetailPublishmentHelper;
@@ -50,9 +52,9 @@ import com.banksalad.collectmydata.finance.common.dto.Organization;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
 import com.banksalad.collectmydata.finance.common.service.FinanceMessageService;
-
-import org.springframework.stereotype.Service;
-
+import com.banksalad.collectmydata.irp.account.IrpAccountService;
+import com.banksalad.collectmydata.irp.account.IrpAccountTransactionService;
+import com.banksalad.collectmydata.irp.summary.IrpAccountSummaryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -67,7 +69,6 @@ import java.util.concurrent.CompletableFuture;
 public class BankApiServiceImpl implements BankApiService {
 
   private final FinanceMessageService financeMessageService;
-  //  private final ConnectClientService connectClientService;
   private final CollectmydataConnectClientService collectmydataConnectClientService;
 
   // SUMMARY
@@ -92,7 +93,6 @@ public class BankApiServiceImpl implements BankApiService {
   private final TransactionRequestHelper<AccountSummary, ListDepositAccountTransactionsRequest> depositAccountTransactionRequestHelper;
   private final TransactionResponseHelper<AccountSummary, DepositAccountTransaction> depositAccountTransactionResponseHelper;
   private final DepositAccountTransactionPublishmentHelper depositAccountTransactionPublishmentHelper;
-
 
   // INVEST
   private final AccountInfoService<AccountSummary, GetInvestAccountBasicRequest, InvestAccountBasic> investAccountBasicApiService;
@@ -128,6 +128,11 @@ public class BankApiServiceImpl implements BankApiService {
   private final TransactionResponseHelper<AccountSummary, LoanAccountTransaction> loanAccountTransactionResponseHelper;
   private final LoanAccountTransactionPublishmentHelper loanAccountTransactionPublishmentHelper;
 
+  // IRP
+  private final IrpAccountSummaryService irpAccountSummaryService;
+  private final IrpAccountService irpAccountService;
+  private final IrpAccountTransactionService irpAccountTransactionService;
+
   @Override
   public void requestApi(long banksaladUserId, String organizationId, String syncRequestId,
       SyncRequestType syncRequestType) throws ResponseNotOkException {
@@ -150,6 +155,9 @@ public class BankApiServiceImpl implements BankApiService {
 
     accountSummaryService.listAccountSummaries(executionContext, Executions.finance_bank_summaries,
         summaryRequestHelper, summaryResponseHelper, bankAccountSummaryPublishmentHelper);
+
+    // IRP Account Summary
+    irpAccountSummaryService.listAccountSummaries(executionContext);
 
     CompletableFuture.allOf(
         // Deposit
@@ -206,10 +214,13 @@ public class BankApiServiceImpl implements BankApiService {
             loanTransactionApiService
                 .listTransactions(executionContext, Executions.finance_bank_loan_account_transaction,
                     loanAccountTransactionRequestHelper, loanAccountTransactionResponseHelper,
-                    loanAccountTransactionPublishmentHelper))
-    ).join();
+                    loanAccountTransactionPublishmentHelper)),
 
-    // TODO : irp module
+        // IRP Account Basic, Detail, Transaction
+        CompletableFuture.runAsync(() -> irpAccountService.listIrpAccountBasics(executionContext)),
+        CompletableFuture.runAsync(() -> irpAccountService.listIrpAccountDetails(executionContext)),
+        CompletableFuture.runAsync(() -> irpAccountTransactionService.listTransactions(executionContext))
+    ).join();
 
     /* produce sync completed */
     financeMessageService.produceSyncCompleted(
