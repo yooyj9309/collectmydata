@@ -32,11 +32,13 @@ public class UserSyncStatusServiceImpl implements UserSyncStatusService {
                 .banksaladUserId(banksaladUserId)
                 .organizationId(organizationId)
                 .apiId(apiId)
+                .createdBy(String.valueOf(banksaladUserId))
                 .build()
         );
 
     userSyncStatusEntity.setSyncedAt(syncedAt);
     userSyncStatusEntity.setSearchTimestamp(searchTimestamp);
+    userSyncStatusEntity.setUpdatedBy(String.valueOf(banksaladUserId));   // TODO : 정기적 전송일 경우 변경 적용
 
     userSyncStatusRepository.save(userSyncStatusEntity);
   }

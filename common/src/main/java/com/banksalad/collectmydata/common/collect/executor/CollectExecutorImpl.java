@@ -1,7 +1,5 @@
 package com.banksalad.collectmydata.common.collect.executor;
 
-import org.springframework.web.util.UriComponentsBuilder;
-
 import com.banksalad.collectmydata.common.collect.api.Api;
 import com.banksalad.collectmydata.common.collect.api.Api.Transform;
 import com.banksalad.collectmydata.common.collect.api.ApiResponseEntity;
@@ -15,6 +13,9 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionResponse;
 import com.banksalad.collectmydata.common.collect.executor.ApiLog.Request;
 import com.banksalad.collectmydata.common.collect.executor.ApiLog.Response;
 import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
+
+import org.springframework.web.util.UriComponentsBuilder;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -119,11 +120,12 @@ public class CollectExecutorImpl implements CollectExecutor {
         apiResponseEntity.getHeaders());
 
     String standardResponseBody = transformResponseBody(apiRequestId, execution, apiResponseEntity.getBody());
-    String responseNextPage = getResponseNextPage(execution.getApi(), standardResponseBody);
 
     /* logging response */
     logResponse(context, apiRequestId, execution.getApi(), apiResponseEntity, standardResponseHeader,
         standardResponseBody);
+
+    String responseNextPage = getResponseNextPage(execution.getApi(), standardResponseBody);
 
     try {
       Class<R> clazz = execution.getAs();

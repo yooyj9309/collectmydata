@@ -43,4 +43,10 @@ public class UserSyncStatusEntity extends BaseEntity {
 
   @Column(nullable = false)
   private String apiId;
+
+  @Column(nullable = false)
+  private String createdBy;
+
+  @Column(nullable = false)
+  private String updatedBy;
 }
