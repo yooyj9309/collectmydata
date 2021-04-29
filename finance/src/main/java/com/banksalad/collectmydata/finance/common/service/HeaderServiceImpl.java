@@ -15,6 +15,9 @@ public class HeaderServiceImpl implements HeaderService {
   public static final String AUTHORIZATION = "Authorization";
   public static final String X_FSI_SVC_DATA_KEY = "X-FSI-SVC-DATA-KEY";
 
+  private final String TESTBED_DATA_HEADER = "N";
+  private final String BANKSALAD_DATA_HEADER = "Y";
+
   @Value("${spring.profiles.active}")
   private String activeProfile;
 
@@ -37,7 +40,7 @@ public class HeaderServiceImpl implements HeaderService {
     return Map.of(
         CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE,
         AUTHORIZATION, "Bearer " + executionContext.getAccessToken(),
-        X_FSI_SVC_DATA_KEY, "Y"
+        X_FSI_SVC_DATA_KEY, TESTBED_DATA_HEADER
     );
   }
 }
