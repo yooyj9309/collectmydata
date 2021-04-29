@@ -11,7 +11,6 @@ import com.banksalad.collectmydata.bank.invest.dto.ListInvestAccountTransactions
 import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.crypto.HashUtil;
-import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
 import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.CURRENCY_KRW;
-import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
 @Component
 @RequiredArgsConstructor
@@ -42,6 +40,7 @@ public class InvestAccountTransactionResponseHelper implements
   @Override
   public void saveTransactions(ExecutionContext executionContext, AccountSummary accountSummary,
       List<InvestAccountTransaction> investAccountTransactions) {
+
     for (InvestAccountTransaction investAccountTransaction : investAccountTransactions) {
       InvestAccountTransactionEntity investAccountTransactionEntity = investAccountTransactionMapper
           .dtoToEntity(investAccountTransaction);
@@ -73,12 +72,7 @@ public class InvestAccountTransactionResponseHelper implements
               investAccountTransactionEntity.getTransactionYearMonth()
           ).orElse(null);
 
-      if (existingInvestAccountTransactionEntity != null) {
-        investAccountTransactionEntity.setId(existingInvestAccountTransactionEntity.getId());
-      }
-
-      if (!ObjectComparator
-          .isSame(investAccountTransactionEntity, existingInvestAccountTransactionEntity, ENTITY_EXCLUDE_FIELD)) {
+      if (existingInvestAccountTransactionEntity == null) {
         investAccountTransactionRepository.save(investAccountTransactionEntity);
       }
     }
@@ -120,5 +114,4 @@ public class InvestAccountTransactionResponseHelper implements
 
     return HashUtil.hashCat(transDtime, transType, transAmtString, balanceAmtString);
   }
-
 }

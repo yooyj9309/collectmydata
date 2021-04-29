@@ -97,18 +97,6 @@ public class InvestAccountTransactionTestCaseGenerator<GParent, Parent, Main, Ch
             .expectedParentEntities(List.of(parentMap.get("updatedExistingParent1")))
             .expectedMainEntities(List.of(mainMap.get("main1")))
             .build()
-        ,
-        TestCase.<GParent, Parent, Main, Child>builder()
-            .displayName("007. 기존 1건 + 변경 1건")
-            .parentEntities(List.of(parentMap.get("existingParent1")))
-            .mainEntities(List.of(mainMap.get("main1")))
-            .execution(execution)
-            .expectedResponses(List.of(
-                BareResponse.builder().mockId("007_page_01").build()
-            ))
-            .expectedParentEntities(List.of(parentMap.get("updatedExistingParent1")))
-            .expectedMainEntities(List.of(mainMap.get("updatedMain1")))
-            .build()
     );
   }
 }

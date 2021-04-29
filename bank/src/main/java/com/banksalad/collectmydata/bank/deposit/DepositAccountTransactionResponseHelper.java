@@ -11,7 +11,6 @@ import com.banksalad.collectmydata.bank.deposit.dto.ListDepositAccountTransactio
 import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.crypto.HashUtil;
-import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
 import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +18,6 @@ import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
 @Component
 @RequiredArgsConstructor
@@ -60,8 +57,7 @@ public class DepositAccountTransactionResponseHelper implements
       depositAccountTransactionEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
       depositAccountTransactionEntity.setConsentId(executionContext.getConsentId());
 
-      // load existing deposit account transaction
-      DepositAccountTransactionEntity existingDepositAccountTransactionEntity = depositAccountTransactionRepository
+      depositAccountTransactionRepository
           .findByTransactionYearMonthAndBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndCurrencyCodeAndUniqueTransNo(
               depositAccountTransactionEntity.getTransactionYearMonth(),
               depositAccountTransactionEntity.getBanksaladUserId(),
@@ -70,18 +66,7 @@ public class DepositAccountTransactionResponseHelper implements
               depositAccountTransactionEntity.getSeqno(),
               depositAccountTransactionEntity.getCurrencyCode(),
               depositAccountTransactionEntity.getUniqueTransNo())
-          .orElse(null);
-
-      // copy PK for update
-      if (existingDepositAccountTransactionEntity != null) {
-        depositAccountTransactionEntity.setId(existingDepositAccountTransactionEntity.getId());
-      }
-
-      // upsert deposit account transaction
-      if (!ObjectComparator
-          .isSame(depositAccountTransactionEntity, existingDepositAccountTransactionEntity, ENTITY_EXCLUDE_FIELD)) {
-        depositAccountTransactionRepository.save(depositAccountTransactionEntity);
-      }
+          .orElseGet(() -> depositAccountTransactionRepository.save(depositAccountTransactionEntity));
     }
   }
 
