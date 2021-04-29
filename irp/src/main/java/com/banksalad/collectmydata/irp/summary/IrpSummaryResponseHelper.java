@@ -50,8 +50,8 @@ public class IrpSummaryResponseHelper implements SummaryResponseHelper<IrpAccoun
 
     // TODO : on-demand, scheduler
     irpAccountSummaryEntity.setCreatedBy(Optional.ofNullable(irpAccountSummaryEntity.getCreatedBy())
-        .orElseGet(() -> String.valueOf(executionContext.getBanksaladUserId())));
-    irpAccountSummaryEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+        .orElseGet(executionContext::getRequestedBy));
+    irpAccountSummaryEntity.setUpdatedBy(executionContext.getRequestedBy());
     irpAccountSummaryEntity.setConsentId(executionContext.getConsentId());
     irpAccountSummaryEntity.setSyncRequestId(executionContext.getSyncRequestId());
 

@@ -102,6 +102,7 @@ public class IrpAccountSummaryCreatedUpdatedByTest {
         .organizationHost(ORGANIZATION_HOST + ":" + wiremock.port())
         .organizationCode("020")
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+        .requestedBy(String.valueOf(BANKSALAD_USER_ID))
         .build();
 
     irpAccountSummaryService.listAccountSummaries(executionContext);

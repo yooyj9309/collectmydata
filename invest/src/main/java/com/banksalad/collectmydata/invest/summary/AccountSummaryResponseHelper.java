@@ -36,13 +36,23 @@ public class AccountSummaryResponseHelper implements SummaryResponseHelper<Accou
     ListAccountSummariesResponse listAccountSummariesResponse = (ListAccountSummariesResponse) response;
 
     OrganizationUserEntity organizationUserEntity = organizationUserRepository
-        .findByBanksaladUserIdAndOrganizationId(executionContext.getBanksaladUserId(), executionContext.getOrganizationId())
-        .orElse(OrganizationUserEntity.builder()
-            .syncedAt(executionContext.getSyncStartedAt())
-            .banksaladUserId(executionContext.getBanksaladUserId())
-            .organizationId(executionContext.getOrganizationId())
-            .regDate(listAccountSummariesResponse.getRegDate())
-            .build());
+        .findByBanksaladUserIdAndOrganizationId(executionContext.getBanksaladUserId(),
+            executionContext.getOrganizationId())
+        .orElseGet(() -> {
+          OrganizationUserEntity createdUserEntity = OrganizationUserEntity.builder()
+              .syncedAt(executionContext.getSyncStartedAt())
+              .banksaladUserId(executionContext.getBanksaladUserId())
+              .organizationId(executionContext.getOrganizationId())
+              .consentId(executionContext.getConsentId())
+              .syncRequestId(executionContext.getSyncRequestId())
+              .regDate(listAccountSummariesResponse.getRegDate())
+              .build();
+
+          createdUserEntity.setCreatedBy(executionContext.getRequestedBy());
+          createdUserEntity.setUpdatedBy(executionContext.getRequestedBy());
+
+          return createdUserEntity;
+        });
 
     organizationUserRepository.save(organizationUserEntity);
   }

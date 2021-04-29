@@ -1,0 +1,40 @@
+{
+  "rsp_code": "000",
+  "rsp_msg": "성공",
+  "search_timestamp": 1000,
+  "prod_cnt": 2,
+  "prod_list": [
+    {
+      "prod_type": "401",
+      "prod_type_detail":"국내주식",
+      "prod_code": "005930",
+      "prod_name":"삼성전자",
+      "purchase_amt": 10000.000,
+      "holding_num": 100,
+      "avail_for_sale_num": 100,
+      "eval_amt": 20000.000,
+      "issue_date": "20210101",
+      "paid_in_amt": 30000.000,
+      "withdrawal_amt": 40000.000,
+      "last_paid_in_date": "20210201",
+      "rcv_amt": 50000.000,
+      "currency_code": "KRW"
+    },
+    {
+      "prod_type": "402",
+      "prod_type_detail":"해외주식",
+      "prod_code": "AAPL",
+      "prod_name":"애플",
+      "purchase_amt": 111.111,
+      "holding_num": 100,
+      "avail_for_sale_num": 100,
+      "eval_amt": 222.222,
+      "issue_date": "20210101",
+      "paid_in_amt": 333.333,
+      "withdrawal_amt": 444.444,
+      "last_paid_in_date": "20210201",
+      "rcv_amt": 555.555,
+      "currency_code": "USD"
+    }
+  ]
+}

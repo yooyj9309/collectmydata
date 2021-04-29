@@ -58,8 +58,8 @@ public class IrpAccountBasicInfoResponseHelper implements
 
     // TODO : on-demand, scheduler
     irpAccountBasicEntity.setCreatedBy(Optional.ofNullable(irpAccountBasicEntity.getCreatedBy())
-        .orElseGet(() -> String.valueOf(executionContext.getBanksaladUserId())));
-    irpAccountBasicEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+        .orElseGet(executionContext::getRequestedBy));
+    irpAccountBasicEntity.setUpdatedBy(executionContext.getRequestedBy());
     irpAccountBasicEntity.setConsentId(executionContext.getConsentId());
     irpAccountBasicEntity.setSyncRequestId(executionContext.getSyncRequestId());
 

@@ -88,8 +88,8 @@ public class IrpAccountDetailInfoResponseHelper implements
 
       // TODO : on-demand, scheduler
       irpAccountDetailEntity.setCreatedBy(Optional.ofNullable(irpAccountDetailEntity.getCreatedBy())
-          .orElseGet(() -> String.valueOf(executionContext.getBanksaladUserId())));
-      irpAccountDetailEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+          .orElseGet(executionContext::getRequestedBy));
+      irpAccountDetailEntity.setUpdatedBy(executionContext.getRequestedBy());
       irpAccountDetailEntity.setConsentId(executionContext.getConsentId());
       irpAccountDetailEntity.setSyncRequestId(executionContext.getSyncRequestId());
 

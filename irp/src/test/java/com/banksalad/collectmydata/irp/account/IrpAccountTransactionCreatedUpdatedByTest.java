@@ -102,6 +102,7 @@ class IrpAccountTransactionCreatedUpdatedByTest {
         .organizationHost(ORGANIZATION_HOST + ":" + wiremock.port())
         .accessToken("test")
         .syncStartedAt(LocalDateTime.of(2021, 07, 31, 0, 0, 0))
+        .requestedBy(String.valueOf(BANKSALAD_USER_ID))
         .build();
   }
 

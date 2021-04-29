@@ -34,6 +34,9 @@ import com.banksalad.collectmydata.invest.account.dto.ListAccountTransactionsReq
 import com.banksalad.collectmydata.invest.collect.Executions;
 import com.banksalad.collectmydata.invest.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.invest.summary.dto.ListAccountSummariesRequest;
+import com.banksalad.collectmydata.irp.account.IrpAccountService;
+import com.banksalad.collectmydata.irp.account.IrpAccountTransactionService;
+import com.banksalad.collectmydata.irp.summary.IrpAccountSummaryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -70,6 +73,11 @@ public class InvestApiServiceImpl implements InvestApiService {
   private final AccountInfoResponseHelper<AccountSummary, List<AccountProduct>> accountProductInfoResponseHelper;
   private final AccountProductInfoPublishmentHelper accountProductInfoPublishmentHelper;
 
+  // IRP
+  private final IrpAccountSummaryService irpAccountSummaryService;
+  private final IrpAccountService irpAccountService;
+  private final IrpAccountTransactionService irpAccountTransactionService;
+
   @Override
   public void onDemandRequestApi(long banksaladUserId, String organizationId, String syncRequestId,
       SyncRequestType syncRequestType) throws ResponseNotOkException {
@@ -94,6 +102,9 @@ public class InvestApiServiceImpl implements InvestApiService {
         .listAccountSummaries(executionContext, Executions.finance_invest_accounts, accountSummaryRequestHelper,
             accountSummaryResponseHelper, summaryPublishmentHelper);
 
+    // IRP Account Summary
+    irpAccountSummaryService.listAccountSummaries(executionContext);
+
     CompletableFuture.allOf(
         CompletableFuture.runAsync(() -> accountBasicInfoService
             .listAccountInfos(executionContext, Executions.finance_invest_account_basic, accountBasicInfoRequestHelper,
@@ -105,7 +116,13 @@ public class InvestApiServiceImpl implements InvestApiService {
 
         CompletableFuture.runAsync(() -> accountProductInfoService
             .listAccountInfos(executionContext, Executions.finance_invest_account_products,
-                accountProductInfoRequestHelper, accountProductInfoResponseHelper, accountProductInfoPublishmentHelper))
+                accountProductInfoRequestHelper, accountProductInfoResponseHelper,
+                accountProductInfoPublishmentHelper)),
+
+        // IRP Account Basic, Detail, Transaction
+        CompletableFuture.runAsync(() -> irpAccountService.listIrpAccountBasics(executionContext)),
+        CompletableFuture.runAsync(() -> irpAccountService.listIrpAccountDetails(executionContext)),
+        CompletableFuture.runAsync(() -> irpAccountTransactionService.listTransactions(executionContext))
     ).join();
 
     financeMessageService.produceSyncCompleted(

@@ -95,6 +95,7 @@ class IrpAccountCreatedUpdatedByTest {
         .organizationHost(ORGANIZATION_HOST + ":" + wiremock.port())
         .executionRequestId(UUID.randomUUID().toString())
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+        .requestedBy(String.valueOf(BANKSALAD_USER_ID))
         .build();
 
     irpAccountService.listIrpAccountBasics(executionContext);
@@ -130,6 +131,7 @@ class IrpAccountCreatedUpdatedByTest {
         .organizationHost(ORGANIZATION_HOST + ":" + wiremock.port())
         .executionRequestId(UUID.randomUUID().toString())
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+        .requestedBy(String.valueOf(BANKSALAD_USER_ID))
         .build();
 
     irpAccountService.listIrpAccountDetails(executionContext);

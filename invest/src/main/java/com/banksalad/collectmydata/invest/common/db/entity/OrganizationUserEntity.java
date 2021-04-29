@@ -40,4 +40,9 @@ public class OrganizationUserEntity extends BaseEntity {
 
   @Column(nullable = false)
   private String regDate;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
 }
