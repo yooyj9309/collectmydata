@@ -16,12 +16,16 @@ import com.banksalad.collectmydata.mock.irp.controller.model.PostIrpsBasicReques
 import com.banksalad.collectmydata.mock.irp.controller.model.PostIrpsBasicResponse;
 import com.banksalad.collectmydata.mock.irp.controller.model.PostIrpsDetailRequest;
 import com.banksalad.collectmydata.mock.irp.controller.model.PostIrpsDetailResponse;
+import com.banksalad.collectmydata.mock.irp.controller.model.PostIrpsTransactionsRequest;
+import com.banksalad.collectmydata.mock.irp.controller.model.PostIrpsTransactionsResponse;
 import com.banksalad.collectmydata.mock.irp.dto.IrpAccountBasic;
 import com.banksalad.collectmydata.mock.irp.dto.IrpAccountBasicSearch;
 import com.banksalad.collectmydata.mock.irp.dto.IrpAccountDetail;
 import com.banksalad.collectmydata.mock.irp.dto.IrpAccountDetailSearch;
 import com.banksalad.collectmydata.mock.irp.dto.IrpAccountSummary;
 import com.banksalad.collectmydata.mock.irp.dto.IrpAccountSummarySearch;
+import com.banksalad.collectmydata.mock.irp.dto.IrpAccountTransaction;
+import com.banksalad.collectmydata.mock.irp.dto.IrpAccountTransactionSearch;
 import com.banksalad.collectmydata.mock.irp.service.IrpService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -120,6 +124,50 @@ public class IrpApiController {
         .irpCnt(irpCnt)
         .nextPage(nextPage)
         .irpList(irpAccountDetailList)
+        .build();
+  }
+
+  @PostMapping("/transactions")
+  public PostIrpsTransactionsResponse getIrpsTransactions(
+      @PathVariable("industry") String industry,
+      @BanksaladUserId Long banksaladUserId,
+      @OrgCode String orgCode,
+      @SearchTimestamp LocalDateTime searchTimestamp,
+      @Valid @RequestBody PostIrpsTransactionsRequest postIrpsTransactionsRequest) {
+
+    int transCnt = getIrpServiceByIndustry(industry)
+        .getIrpAccountTransactionCount(IrpAccountTransactionSearch.builder()
+            .banksaladUserId(banksaladUserId)
+            .organizationId(orgCode)
+            .accountNum(postIrpsTransactionsRequest.getAccountNum())
+            .seqno(postIrpsTransactionsRequest.getSeqno())
+            .updatedAt(searchTimestamp)
+            .fromCreatedAt(postIrpsTransactionsRequest.getFromDate().atStartOfDay())
+            .toCreatedAt(postIrpsTransactionsRequest.getToDate().atTime(23, 59, 59))
+            .build());
+
+    int pageNumber = NumberUtils.toInt(postIrpsTransactionsRequest.getNextPage());
+    int pageSize = postIrpsTransactionsRequest.getLimit();
+    List<IrpAccountTransaction> irpAccountTransactionList = getIrpServiceByIndustry(industry)
+        .getIrpAccountTransactionList(IrpAccountTransactionSearch.builder()
+            .banksaladUserId(banksaladUserId)
+            .organizationId(orgCode)
+            .accountNum(postIrpsTransactionsRequest.getAccountNum())
+            .seqno(postIrpsTransactionsRequest.getSeqno())
+            .updatedAt(searchTimestamp)
+            .fromCreatedAt(postIrpsTransactionsRequest.getFromDate().atStartOfDay())
+            .toCreatedAt(postIrpsTransactionsRequest.getToDate().atTime(23, 59, 59))
+            .pageNumber(pageNumber)
+            .pageSize(pageSize)
+            .build());
+
+    boolean hasNextPage = ((pageNumber * pageSize) + irpAccountTransactionList.size()) < transCnt;
+    String nextPage = hasNextPage ? String.valueOf(pageNumber + 1) : null;
+
+    return PostIrpsTransactionsResponse.builder()
+        .transCnt(transCnt)
+        .nextPage(nextPage)
+        .transList(irpAccountTransactionList)
         .build();
   }
 
