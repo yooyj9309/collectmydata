@@ -29,8 +29,8 @@ public class SearchTimestampArgumentResolver implements HandlerMethodArgumentRes
   public Object resolveArgument(MethodParameter methodParameter, ModelAndViewContainer mavContainer,
       NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws MissingServletRequestParameterException {
 
-    long searchTimestamp = ApiContextHolder.getRequest().getSearchTimestamp();
-    if (searchTimestamp < 0) {
+    Long searchTimestamp = ApiContextHolder.getRequest().getSearchTimestamp();
+    if (searchTimestamp == null || searchTimestamp < 0) {
       throw new MissingServletRequestParameterException("search_timestamp", "long");
     }
 

@@ -1,16 +1,23 @@
 package com.banksalad.collectmydata.mock.irp.service;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.mock.common.db.repository.BankIrpAccountBasicRepository;
+import com.banksalad.collectmydata.mock.common.db.repository.BankIrpAccountDetailRepository;
 import com.banksalad.collectmydata.mock.common.db.repository.BankIrpAccountSummaryRepository;
 import com.banksalad.collectmydata.mock.common.exception.CollectmydataMockRuntimeException;
 import com.banksalad.collectmydata.mock.common.exception.code.CollectmydataMockExceptionCode;
 import com.banksalad.collectmydata.mock.irp.dto.IrpAccountBasic;
 import com.banksalad.collectmydata.mock.irp.dto.IrpAccountBasicSearch;
+import com.banksalad.collectmydata.mock.irp.dto.IrpAccountDetail;
+import com.banksalad.collectmydata.mock.irp.dto.IrpAccountDetailSearch;
 import com.banksalad.collectmydata.mock.irp.dto.IrpAccountSummary;
 import com.banksalad.collectmydata.mock.irp.dto.IrpAccountSummarySearch;
 import com.banksalad.collectmydata.mock.irp.service.mapper.IrpAccountBasicMapper;
+import com.banksalad.collectmydata.mock.irp.service.mapper.IrpAccountDetailMapper;
 import com.banksalad.collectmydata.mock.irp.service.mapper.IrpAccountSummaryMapper;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
@@ -24,9 +31,11 @@ public class BankIrpServiceImpl implements IrpService {
 
   private final BankIrpAccountSummaryRepository bankIrpAccountSummaryRepository;
   private final BankIrpAccountBasicRepository bankIrpAccountBasicRepository;
+  private final BankIrpAccountDetailRepository bankIrpAccountDetailRepository;
 
   private final IrpAccountSummaryMapper irpAccountSummaryMapper = Mappers.getMapper(IrpAccountSummaryMapper.class);
   private final IrpAccountBasicMapper irpAccountBasicMapper = Mappers.getMapper(IrpAccountBasicMapper.class);
+  private final IrpAccountDetailMapper irpAccountDetailMapper = Mappers.getMapper(IrpAccountDetailMapper.class);
 
   @Override
   public List<IrpAccountSummary> getIrpAccountSummaryList(IrpAccountSummarySearch irpAccountSummarySearch) {
@@ -49,5 +58,34 @@ public class BankIrpServiceImpl implements IrpService {
             irpAccountBasicSearch.getSeqno())
         .map(irpAccountBasicMapper::entityToDto)
         .orElseThrow(() -> new CollectmydataMockRuntimeException(CollectmydataMockExceptionCode.NOT_FOUND_ASSETS));
+  }
+
+  @Override
+  public int getIrpAccountDetailCount(IrpAccountDetailSearch irpAccountDetailSearch) {
+    return bankIrpAccountDetailRepository
+        .countByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndUpdatedAtGreaterThan(
+            irpAccountDetailSearch.getBanksaladUserId(),
+            irpAccountDetailSearch.getOrganizationId(),
+            irpAccountDetailSearch.getAccountNum(),
+            irpAccountDetailSearch.getSeqno(),
+            irpAccountDetailSearch.getUpdatedAt()
+        );
+  }
+
+  @Override
+  public List<IrpAccountDetail> getIrpAccountDetailList(IrpAccountDetailSearch irpAccountDetailSearch) {
+    Pageable pageable = PageRequest.of(irpAccountDetailSearch.getPageNumber(),
+        irpAccountDetailSearch.getPageSize(), Sort.by("irpName").ascending());
+    return bankIrpAccountDetailRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndUpdatedAtGreaterThan(
+            irpAccountDetailSearch.getBanksaladUserId(),
+            irpAccountDetailSearch.getOrganizationId(),
+            irpAccountDetailSearch.getAccountNum(),
+            irpAccountDetailSearch.getSeqno(),
+            irpAccountDetailSearch.getUpdatedAt(),
+            pageable
+        ).stream()
+        .map(irpAccountDetailMapper::entityToDto)
+        .collect(Collectors.toList());
   }
 }
