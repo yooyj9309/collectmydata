@@ -46,6 +46,8 @@ public class AccountSummaryResponseHelper implements SummaryResponseHelper<Accou
               .consentId(executionContext.getConsentId())
               .syncRequestId(executionContext.getSyncRequestId())
               .regDate(listAccountSummariesResponse.getRegDate())
+              .consentId(executionContext.getConsentId())
+              .organizationId(executionContext.getOrganizationId())
               .build();
 
           createdUserEntity.setCreatedBy(executionContext.getRequestedBy());
