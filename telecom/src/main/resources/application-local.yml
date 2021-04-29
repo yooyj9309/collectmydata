@@ -23,6 +23,16 @@ spring:
       max-lifetime: 60000
     type: com.zaxxer.hikari.HikariDataSource
 
+grpc:
+  port: 18981
+  enable-reflection: true
+  enabled: true
+  in-process-server-name: collectmydatatelecoms-server-process
+  shutdownGrace: 30
+
+server:
+  port: 18982
+
 logging:
   config: classpath:logback/logback-${spring.profiles.active}.xml
   level:

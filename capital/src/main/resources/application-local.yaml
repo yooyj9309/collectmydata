@@ -23,6 +23,16 @@ spring:
       max-lifetime: 60000
     type: com.zaxxer.hikari.HikariDataSource
 
+grpc:
+  port: 18781
+  enable-reflection: true
+  enabled: true
+  in-process-server-name: collectmydatacapital-server-process
+  shutdownGrace: 30
+
+server:
+  port: 18782
+
 kafka:
   bootstrap-servers: localhost:9092
 

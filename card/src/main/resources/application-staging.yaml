@@ -25,6 +25,17 @@ spring:
       idle-timeout: 54000
     type: com.zaxxer.hikari.HikariDataSource
 
+# gRPC 설정
+grpc:
+  port: 18081
+  enable-reflection: true
+  enabled: true
+  in-process-server-name: collectmydatacard-server-process
+  shutdownGrace: 30
+
+# health check 위한 http port
+server:
+  port: 18082
 
 logging:
   level:
@@ -35,5 +46,3 @@ logging:
 
 kafka:
   bootstrap-servers: b-2.collectmydata.of5yls.c3.kafka.ap-northeast-2.amazonaws.com:9092,b-3.collectmydata.of5yls.c3.kafka.ap-northeast-2.amazonaws.com:9092,b-1.collectmydata.of5yls.c3.kafka.ap-northeast-2.amazonaws.com:9092
-
-

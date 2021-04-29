@@ -4,9 +4,6 @@ spring:
   application:
     name: collectmydatabank
 
-server:
-  port: 18082
-
 logging:
   config: classpath:logback/logback-${spring.profiles.active}.xml
   level:
@@ -28,13 +25,6 @@ management:
   health:
     livenessState.enabled: true
     readinessState.enabled: true
-
-grpc:
-  port: 18081
-  enable-reflection: true
-  enabled: true
-  in-process-server-name: collectmydatabank-server-process
-  shutdownGrace: 30
 
 uri:
   collectmydataconnect: dns:///collectmydataconnect-headless:18081

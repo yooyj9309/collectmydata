@@ -2,5 +2,15 @@ spring:
   profiles:
     active: staging
 
+grpc:
+  port: 18081
+  enable-reflection: true
+  enabled: true
+  in-process-server-name: collectmydataginsu-server-process
+  shutdownGrace: 30
+
+server:
+  port: 18082
+
 kafka:
   bootstrap-servers: b-2.collectmydata.of5yls.c3.kafka.ap-northeast-2.amazonaws.com:9092,b-3.collectmydata.of5yls.c3.kafka.ap-northeast-2.amazonaws.com:9092,b-1.collectmydata.of5yls.c3.kafka.ap-northeast-2.amazonaws.com:9092

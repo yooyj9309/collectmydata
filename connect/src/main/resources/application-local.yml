@@ -23,6 +23,16 @@ spring:
       max-lifetime: 60000
     type: com.zaxxer.hikari.HikariDataSource
 
+grpc:
+  port: 18181
+  enable-reflection: true
+  enabled: true
+  in-process-server-name: collectmydataconnect-server-process
+  shutdownGrace: 30
+
+server:
+  port: 18182
+
 organization:
   finance-portal-domain: http://fixme.com
 

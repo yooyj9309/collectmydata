@@ -23,6 +23,16 @@ spring:
       max-lifetime: 60000
     type: com.zaxxer.hikari.HikariDataSource
 
+grpc:
+  port: 18581
+  enable-reflection: true
+  enabled: true
+  in-process-server-name: collectmydatainsu-server-process
+  shutdownGrace: 30
+
+server:
+  port: 18582
+
 banksalad:
   cipher.uri: localhost:9999
   collectmydata-connect.uri: localhost:9998

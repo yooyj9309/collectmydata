@@ -2,4 +2,14 @@ spring:
   profiles:
     active: production
   application:
-    name: collectmydata-capital
+    name: collectmydatacapital
+
+grpc:
+  port: 18081
+  enable-reflection: true
+  enabled: true
+  in-process-server-name: collectmydatacapital-server-process
+  shutdownGrace: 30
+
+server:
+  port: 18082

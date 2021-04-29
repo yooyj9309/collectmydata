@@ -25,6 +25,16 @@ spring:
       idle-timeout: 54000
     type: com.zaxxer.hikari.HikariDataSource
 
+grpc:
+  port: 18081
+  enable-reflection: true
+  enabled: true
+  in-process-server-name: collectmydatainvest-server-process
+  shutdownGrace: 30
+
+server:
+  port: 18082
+
 logging:
   level:
     com.zaxxer.hikari.HikariConfig: INFO

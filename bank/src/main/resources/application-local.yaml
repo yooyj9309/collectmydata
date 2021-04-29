@@ -25,3 +25,15 @@ spring:
 
 kafka:
   bootstrap-servers: localhost:9092
+
+# grpc
+grpc:
+  port: 18281
+  enable-reflection: true
+  enabled: true
+  in-process-server-name: collectmydatabank-server-process
+  shutdownGrace: 30
+
+# http for health check
+server:
+  port: 18282

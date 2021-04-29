@@ -23,5 +23,17 @@ spring:
       max-lifetime: 60000
     type: com.zaxxer.hikari.HikariDataSource
 
+# gRPC 설정
+grpc:
+  port: 18381
+  enable-reflection: true
+  enabled: true
+  in-process-server-name: collectmydatacard-server-process
+  shutdownGrace: 30
+
+# health check 위한 http port
+server:
+  port: 18382
+
 kafka:
   bootstrap-servers: localhost:9092
