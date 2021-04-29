@@ -14,7 +14,7 @@ spring:
   datasource:
     url: jdbc:mysql://collectmydatabank-cluster.cluster-ciy3wcu0axct.ap-northeast-2.rds.amazonaws.com:3306/collectmydatabank?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true
     driver-class-name: org.mariadb.jdbc.Driver
-    username: collectmydata_bank_was
+    username: collectmydatabank_was
     password: ${STG_COLLECTMYDATA_BANK_DB_PASSWORD}
     hikari:
       maximum-pool-size: 20
