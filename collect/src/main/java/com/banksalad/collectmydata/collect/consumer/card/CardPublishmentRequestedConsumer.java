@@ -34,7 +34,7 @@ public class CardPublishmentRequestedConsumer {
       PublishmentRequestedCardMessage message = objectMapper
           .readValue(source, PublishmentRequestedCardMessage.class);
 
-      LoggingMdcUtil.set(Sector.FINANCE.name(), Industry.BANK.name(), message.getBanksaladUserId(),
+      LoggingMdcUtil.set(Sector.FINANCE.name(), Industry.CARD.name(), message.getBanksaladUserId(),
           message.getOrganizationId(), message.getSyncRequestId() );
 
       log.info("[collect] consume PublishmentRequestedCardMessage syncRequestId: {} ", message.getSyncRequestId());

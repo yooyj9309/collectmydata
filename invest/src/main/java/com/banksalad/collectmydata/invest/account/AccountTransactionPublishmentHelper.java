@@ -23,7 +23,7 @@ public class AccountTransactionPublishmentHelper implements TransactionPublishme
   public PublishmentRequestedMessage makePublishmentRequestedMessage(ExecutionContext executionContext,
       AccountSummary accountSummary, boolean hasNextPage) {
     return PublishmentRequestedInvestMessage.builder()
-        .financeIndustry(FinanceIndustry.BANK)
+        .financeIndustry(FinanceIndustry.INVEST)
         .financeSyncItem(FinanceSyncItem.COLLECTMYDATA_INVEST_SYNC_ITEM_ACCOUNT_TRANSACTION)
         .banksaladUserId(executionContext.getBanksaladUserId())
         .organizationId(executionContext.getOrganizationId())

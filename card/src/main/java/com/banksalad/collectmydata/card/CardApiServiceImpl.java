@@ -26,6 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -57,6 +59,7 @@ public class CardApiServiceImpl implements CardApiService {
         .organizationHost(organization.getHostUrl())
         .accessToken(oauthToken.getAccessToken())
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+        .requestedBy(String.valueOf(banksaladUserId))
         .build();
 
     accountSummaryService.listAccountSummaries(executionContext, Executions.finance_card_summaries,

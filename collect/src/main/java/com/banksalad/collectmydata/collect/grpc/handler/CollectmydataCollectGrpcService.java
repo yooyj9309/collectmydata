@@ -108,6 +108,9 @@ public class CollectmydataCollectGrpcService extends CollectmydataGrpc.Collectmy
           .syncRequestType(SyncRequestType.ONDEMAND)
           .build());
 
+      responseObserver.onNext(SyncCollectmydatacardResponse.newBuilder().build());
+      responseObserver.onCompleted();
+
     } catch (Exception e) {
       log.error("syncCollectmydatacard error : {}", e.getMessage(), e);
       responseObserver.onError(e);

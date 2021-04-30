@@ -50,6 +50,9 @@ public class CardSummaryResponseHelper implements SummaryResponseHelper<CardSumm
     cardSummaryEntity.setBanksaladUserId(banksaladUserId);
     cardSummaryEntity.setOrganizationId(organizationId);
     cardSummaryEntity.setSyncedAt(syncedAt);
+    cardSummaryEntity.setCreatedBy(executionContext.getRequestedBy());
+    // TODO (hyunjun) : updatedBy 지정 필요
+    cardSummaryEntity.setUpdatedBy(executionContext.getRequestedBy());
     cardSummaryRepository.save(cardSummaryEntity);
   }
 }

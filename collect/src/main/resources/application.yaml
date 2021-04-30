@@ -26,8 +26,10 @@ management:
     livenessState.enabled: true
     readinessState.enabled: true
 
+# user, cipher, finance는 현 상황에서는 연동하지 않는 서비스라 7777처럼 임의 포트로 지정.
+# 위 서비스 uri을 지정하지 않으면 grpcConfig에서 channel을 만들 때 에러 발생.
 uri:
-  collectmydataconnect: dns:///collectmydataconnect-headless:18081
-  user: dns:///user-headless:18081
-  cipher: dns:///cipher-headless:18081
-  finance: dns:///finance-headless:18081
+  collectmydataconnect: localhost:18181
+  user: localhost:7777
+  cipher: localhost:8888
+  finance: localhost:9998

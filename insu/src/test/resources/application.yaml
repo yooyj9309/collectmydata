@@ -27,3 +27,7 @@ kafka:
 
 grpc:
   port: 0
+
+uri:
+  collectmydataconnect: dns:///collectmydataconnect-headless:18081
+  cipher: dns:///cipher-headless:18081

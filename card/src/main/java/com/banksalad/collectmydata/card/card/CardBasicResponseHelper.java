@@ -52,6 +52,8 @@ public class CardBasicResponseHelper implements AccountInfoResponseHelper<CardSu
     cardEntity.setBanksaladUserId(banksaladUserId);
     cardEntity.setOrganizationId(organizationId);
     cardEntity.setCardId(cardSummary.getCardId());
+    cardEntity.setCreatedBy(executionContext.getRequestedBy());
+    cardEntity.setUpdatedBy(executionContext.getRequestedBy());
 
     CardEntity existingCardEntity = cardRepository
         .findByBanksaladUserIdAndOrganizationIdAndCardId(banksaladUserId, organizationId, cardSummary.getCardId())
