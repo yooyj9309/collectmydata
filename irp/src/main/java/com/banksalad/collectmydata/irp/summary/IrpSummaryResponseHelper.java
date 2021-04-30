@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
 import java.util.Iterator;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -40,7 +39,13 @@ public class IrpSummaryResponseHelper implements SummaryResponseHelper<IrpAccoun
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
             executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
             irpAccountSummary.getAccountNum(),
-            irpAccountSummary.getSeqno()).orElseGet(() -> IrpAccountSummaryEntity.builder().build());
+            irpAccountSummary.getSeqno()).orElseGet(() -> {
+
+          IrpAccountSummaryEntity newIrpAccountSummaryEntity = IrpAccountSummaryEntity.builder().build();
+          newIrpAccountSummaryEntity.setCreatedBy(executionContext.getRequestedBy());
+
+          return newIrpAccountSummaryEntity;
+        });
 
     irpAccountSummaryMapper.merge(irpAccountSummary, irpAccountSummaryEntity);
 
@@ -48,9 +53,6 @@ public class IrpSummaryResponseHelper implements SummaryResponseHelper<IrpAccoun
     irpAccountSummaryEntity.setOrganizationId(executionContext.getOrganizationId());
     irpAccountSummaryEntity.setSyncedAt(executionContext.getSyncStartedAt());
 
-    // TODO : on-demand, scheduler
-    irpAccountSummaryEntity.setCreatedBy(Optional.ofNullable(irpAccountSummaryEntity.getCreatedBy())
-        .orElseGet(executionContext::getRequestedBy));
     irpAccountSummaryEntity.setUpdatedBy(executionContext.getRequestedBy());
     irpAccountSummaryEntity.setConsentId(executionContext.getConsentId());
     irpAccountSummaryEntity.setSyncRequestId(executionContext.getSyncRequestId());

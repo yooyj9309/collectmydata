@@ -4,10 +4,8 @@ import org.springframework.stereotype.Component;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.crypto.HashUtil;
-import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
 import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
-import com.banksalad.collectmydata.finance.common.constant.FinanceConstant;
 import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountTransactionEntity;
 import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountTransactionRepository;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountSummary;
@@ -20,7 +18,6 @@ import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -45,39 +42,35 @@ public class IrpAccountTransactionResponseHelper implements
 
     for (IrpAccountTransaction irpAccountTransaction : irpAccountTransactions) {
 
-      IrpAccountTransactionEntity irpAccountTransactionEntity = irpAccountTransactionMapper
-          .dtoToEntity(irpAccountTransaction);
-      irpAccountTransactionEntity.setTransactionYearMonth(generateTransactionYearMonth(irpAccountTransaction));
-      irpAccountTransactionEntity.setSyncedAt(executionContext.getSyncStartedAt());
-      irpAccountTransactionEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
-      irpAccountTransactionEntity.setOrganizationId(executionContext.getOrganizationId());
-      irpAccountTransactionEntity.setAccountNum(irpAccountSummary.getAccountNum());
-      irpAccountTransactionEntity.setSeqno(irpAccountSummary.getSeqno());
-      irpAccountTransactionEntity.setUniqueTransNo(generateUniqueTransNo(irpAccountTransactionEntity));
-      irpAccountTransactionEntity.setConsentId(executionContext.getConsentId());
-      irpAccountTransactionEntity.setSyncRequestId(executionContext.getSyncRequestId());
+      String uniqueTransNo = generateUniqueTransNo(irpAccountTransaction);
+      int transactionYearMonth = generateTransactionYearMonth(irpAccountTransaction);
 
-      IrpAccountTransactionEntity existingAccountTransactionEntity = irpAccountTransactionRepository
+      irpAccountTransactionRepository
           .findByTransactionYearMonthAndBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndUniqueTransNo(
-              irpAccountTransactionEntity.getTransactionYearMonth(), irpAccountTransactionEntity.getBanksaladUserId(),
-              irpAccountTransactionEntity.getOrganizationId(), irpAccountTransactionEntity.getAccountNum(),
-              irpAccountTransactionEntity.getSeqno(), irpAccountTransactionEntity.getUniqueTransNo())
-          .orElse(null);
+              transactionYearMonth, executionContext.getBanksaladUserId(),
+              executionContext.getOrganizationId(), irpAccountSummary.getAccountNum(),
+              irpAccountSummary.getSeqno(), uniqueTransNo)
+          .ifPresentOrElse(irpAccountTransactionEntity -> {
+              },
+              () -> {
+                IrpAccountTransactionEntity irpAccountTransactionEntity = irpAccountTransactionMapper
+                    .dtoToEntity(irpAccountTransaction);
+                irpAccountTransactionEntity
+                    .setTransactionYearMonth(transactionYearMonth);
+                irpAccountTransactionEntity.setSyncedAt(executionContext.getSyncStartedAt());
+                irpAccountTransactionEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
+                irpAccountTransactionEntity.setOrganizationId(executionContext.getOrganizationId());
+                irpAccountTransactionEntity.setAccountNum(irpAccountSummary.getAccountNum());
+                irpAccountTransactionEntity.setSeqno(irpAccountSummary.getSeqno());
+                irpAccountTransactionEntity.setUniqueTransNo(uniqueTransNo);
 
-      if (existingAccountTransactionEntity != null) {
-        irpAccountTransactionEntity.setId(existingAccountTransactionEntity.getId());
-      }
+                irpAccountTransactionEntity.setCreatedBy(executionContext.getRequestedBy());
+                irpAccountTransactionEntity.setUpdatedBy(executionContext.getRequestedBy());
+                irpAccountTransactionEntity.setConsentId(executionContext.getConsentId());
+                irpAccountTransactionEntity.setSyncRequestId(executionContext.getSyncRequestId());
 
-      irpAccountTransactionEntity.setCreatedBy(
-          Optional.ofNullable(existingAccountTransactionEntity)
-              .map(IrpAccountTransactionEntity::getCreatedBy)
-              .orElseGet(executionContext::getRequestedBy));
-      irpAccountTransactionEntity.setUpdatedBy(String.valueOf(executionContext.getRequestedBy()));
-
-      if (!ObjectComparator.isSame(irpAccountTransactionEntity, existingAccountTransactionEntity,
-          FinanceConstant.ENTITY_EXCLUDE_FIELD)) {
-        irpAccountTransactionRepository.save(irpAccountTransactionEntity);
-      }
+                irpAccountTransactionRepository.save(irpAccountTransactionEntity);
+              });
     }
   }
 
@@ -97,12 +90,12 @@ public class IrpAccountTransactionResponseHelper implements
         executionContext.getOrganizationId(), irpAccountSummary, responseCode);
   }
 
-  private String generateUniqueTransNo(IrpAccountTransactionEntity irpAccountTransactionEntity) {
+  private String generateUniqueTransNo(IrpAccountTransaction irpAccountTransaction) {
 
 //  TODO: 거래내역 아래 필드만으로 구분 불가(?)
-    String transDtime = irpAccountTransactionEntity.getTransDtime();  // 거래일시
-    String transType = irpAccountTransactionEntity.getTransType();    // 거래유형(01:입금, 02:지급)
-    String transAmt = irpAccountTransactionEntity.getTransAmt().toString(); // 거래금액
+    String transDtime = irpAccountTransaction.getTransDtime();  // 거래일시
+    String transType = irpAccountTransaction.getTransType();    // 거래유형(01:입금, 02:지급)
+    String transAmt = irpAccountTransaction.getTransAmt().toString(); // 거래금액
 
     return HashUtil.hashCat(transDtime, transType, transAmt);
   }

@@ -57,6 +57,7 @@ public class IrpAccountBasicInfoResponseHelper implements
     irpAccountBasicEntity.setSeqno(irpAccountSummary.getSeqno());
     irpAccountBasicEntity.setConsentId(executionContext.getConsentId());
     irpAccountBasicEntity.setSyncRequestId(executionContext.getSyncRequestId());
+    irpAccountBasicEntity.setUpdatedBy(executionContext.getRequestedBy());
 
     // load existing account entity
     IrpAccountBasicEntity existingIrpAccountBasicEntity = irpAccountBasicRepository
@@ -67,7 +68,11 @@ public class IrpAccountBasicInfoResponseHelper implements
 
     // copy PK for update
     if (existingIrpAccountBasicEntity != null) {
+
       irpAccountBasicEntity.setId(existingIrpAccountBasicEntity.getId());
+      irpAccountBasicEntity.setCreatedBy(existingIrpAccountBasicEntity.getCreatedBy());
+    } else {
+      irpAccountBasicEntity.setCreatedBy(executionContext.getRequestedBy());
     }
 
     irpAccountBasicEntity
