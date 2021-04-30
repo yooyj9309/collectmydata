@@ -62,7 +62,7 @@ public class InvestAccountTransactionResponseHelper implements
         investAccountTransactionEntity.setCurrencyCode(CURRENCY_KRW);
       }
 
-      InvestAccountTransactionEntity existingInvestAccountTransactionEntity = investAccountTransactionRepository
+      investAccountTransactionRepository
           .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndUniqueTransNoAndTransactionYearMonth(
               investAccountTransactionEntity.getBanksaladUserId(),
               investAccountTransactionEntity.getOrganizationId(),
@@ -70,11 +70,7 @@ public class InvestAccountTransactionResponseHelper implements
               investAccountTransactionEntity.getSeqno(),
               investAccountTransactionEntity.getUniqueTransNo(),
               investAccountTransactionEntity.getTransactionYearMonth()
-          ).orElse(null);
-
-      if (existingInvestAccountTransactionEntity == null) {
-        investAccountTransactionRepository.save(investAccountTransactionEntity);
-      }
+          ).orElseGet(() -> investAccountTransactionRepository.save(investAccountTransactionEntity));
     }
   }
 
