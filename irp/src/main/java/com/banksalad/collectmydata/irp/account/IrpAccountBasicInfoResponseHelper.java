@@ -55,11 +55,6 @@ public class IrpAccountBasicInfoResponseHelper implements
     irpAccountBasicEntity.setSyncedAt(executionContext.getSyncStartedAt());
     irpAccountBasicEntity.setAccountNum(irpAccountSummary.getAccountNum());
     irpAccountBasicEntity.setSeqno(irpAccountSummary.getSeqno());
-
-    // TODO : on-demand, scheduler
-    irpAccountBasicEntity.setCreatedBy(Optional.ofNullable(irpAccountBasicEntity.getCreatedBy())
-        .orElseGet(executionContext::getRequestedBy));
-    irpAccountBasicEntity.setUpdatedBy(executionContext.getRequestedBy());
     irpAccountBasicEntity.setConsentId(executionContext.getConsentId());
     irpAccountBasicEntity.setSyncRequestId(executionContext.getSyncRequestId());
 
@@ -74,6 +69,12 @@ public class IrpAccountBasicInfoResponseHelper implements
     if (existingIrpAccountBasicEntity != null) {
       irpAccountBasicEntity.setId(existingIrpAccountBasicEntity.getId());
     }
+
+    irpAccountBasicEntity
+        .setCreatedBy(Optional.ofNullable(existingIrpAccountBasicEntity)
+            .map(IrpAccountBasicEntity::getCreatedBy)
+            .orElseGet(executionContext::getRequestedBy));
+    irpAccountBasicEntity.setUpdatedBy(executionContext.getRequestedBy());
 
     // upsert irp account basic and insert history if needed
     if (!ObjectComparator

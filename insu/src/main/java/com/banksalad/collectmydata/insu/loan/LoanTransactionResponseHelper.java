@@ -21,6 +21,7 @@ import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
@@ -69,6 +70,10 @@ public class LoanTransactionResponseHelper implements TransactionResponseHelper<
       if (loanTransactionEntityFromTable.getId() != null) {
         loanTransactionEntity.setId(loanTransactionEntityFromTable.getId());
       }
+
+      loanTransactionEntity.setCreatedBy(Optional.ofNullable(loanTransactionEntityFromTable.getCreatedBy())
+          .orElseGet(executionContext::getRequestedBy));
+      loanTransactionEntity.setUpdatedBy(executionContext.getRequestedBy());
 
       if (!ObjectComparator.isSame(loanTransactionEntity, loanTransactionEntityFromTable, ENTITY_EXCLUDE_FIELD)) {
         loanTransactionRepository.save(loanTransactionEntity);

@@ -151,6 +151,7 @@ public class BankApiServiceImpl implements BankApiService {
         .organizationHost(organization.getHostUrl())
         .accessToken(oauthToken.getAccessToken())
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+        .requestedBy(String.valueOf(banksaladUserId))
         .build();
 
     accountSummaryService.listAccountSummaries(executionContext, Executions.finance_bank_summaries,

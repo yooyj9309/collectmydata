@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.bank;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
+@Profile("!test")
 @RequiredArgsConstructor
 public class BankSyncRequestedConsumer {
 

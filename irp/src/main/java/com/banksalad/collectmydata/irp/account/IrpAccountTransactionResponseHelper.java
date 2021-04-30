@@ -54,11 +54,6 @@ public class IrpAccountTransactionResponseHelper implements
       irpAccountTransactionEntity.setAccountNum(irpAccountSummary.getAccountNum());
       irpAccountTransactionEntity.setSeqno(irpAccountSummary.getSeqno());
       irpAccountTransactionEntity.setUniqueTransNo(generateUniqueTransNo(irpAccountTransactionEntity));
-
-      // TODO : on-demand, scheduler
-      irpAccountTransactionEntity.setCreatedBy(Optional.ofNullable(irpAccountTransactionEntity.getCreatedBy())
-          .orElseGet(executionContext::getRequestedBy));
-      irpAccountTransactionEntity.setUpdatedBy(String.valueOf(executionContext.getRequestedBy()));
       irpAccountTransactionEntity.setConsentId(executionContext.getConsentId());
       irpAccountTransactionEntity.setSyncRequestId(executionContext.getSyncRequestId());
 
@@ -72,6 +67,12 @@ public class IrpAccountTransactionResponseHelper implements
       if (existingAccountTransactionEntity != null) {
         irpAccountTransactionEntity.setId(existingAccountTransactionEntity.getId());
       }
+
+      irpAccountTransactionEntity.setCreatedBy(
+          Optional.ofNullable(existingAccountTransactionEntity)
+              .map(IrpAccountTransactionEntity::getCreatedBy)
+              .orElseGet(executionContext::getRequestedBy));
+      irpAccountTransactionEntity.setUpdatedBy(String.valueOf(executionContext.getRequestedBy()));
 
       if (!ObjectComparator.isSame(irpAccountTransactionEntity, existingAccountTransactionEntity,
           FinanceConstant.ENTITY_EXCLUDE_FIELD)) {

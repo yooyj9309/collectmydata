@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -86,9 +85,7 @@ public class IrpAccountDetailInfoResponseHelper implements
       irpAccountDetailEntity.setSeqno(irpAccountSummary.getSeqno());
       irpAccountDetailEntity.setIrpDetailNo(++irpDetailNo);
 
-      // TODO : on-demand, scheduler
-      irpAccountDetailEntity.setCreatedBy(Optional.ofNullable(irpAccountDetailEntity.getCreatedBy())
-          .orElseGet(executionContext::getRequestedBy));
+      irpAccountDetailEntity.setCreatedBy(executionContext.getRequestedBy());
       irpAccountDetailEntity.setUpdatedBy(executionContext.getRequestedBy());
       irpAccountDetailEntity.setConsentId(executionContext.getConsentId());
       irpAccountDetailEntity.setSyncRequestId(executionContext.getSyncRequestId());

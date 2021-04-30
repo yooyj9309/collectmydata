@@ -6,6 +6,7 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
+import com.banksalad.collectmydata.finance.common.db.entity.BaseEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.LoanDetailEntity;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanDetailHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanDetailRepository;
@@ -16,6 +17,8 @@ import com.banksalad.collectmydata.insu.loan.dto.LoanDetail;
 import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
+
+import java.util.Optional;
 
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
@@ -58,6 +61,11 @@ public class LoanDetailResponseHelper implements AccountInfoResponseHelper<LoanS
     if (existingLoanDetailEntity != null) {
       loanDetailEntity.setId(existingLoanDetailEntity.getId());
     }
+
+    loanDetailEntity.setCreatedBy(Optional.ofNullable(existingLoanDetailEntity)
+        .map(BaseEntity::getCreatedBy)
+        .orElseGet(executionContext::getRequestedBy));
+    loanDetailEntity.setUpdatedBy(executionContext.getRequestedBy());
 
     if (!ObjectComparator.isSame(loanDetailEntity, existingLoanDetailEntity, ENTITY_EXCLUDE_FIELD)) {
       loanDetailRepository.save(loanDetailEntity);

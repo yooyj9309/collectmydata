@@ -1,5 +1,7 @@
 package com.banksalad.collectmydata.insu;
 
+import org.springframework.stereotype.Service;
+
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
@@ -38,9 +40,9 @@ import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import com.banksalad.collectmydata.insu.summary.dto.ListInsuranceSummariesRequest;
 import com.banksalad.collectmydata.insu.summary.dto.ListLoanSummariesRequest;
 import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
-
-import org.springframework.stereotype.Service;
-
+import com.banksalad.collectmydata.irp.account.IrpAccountService;
+import com.banksalad.collectmydata.irp.account.IrpAccountTransactionService;
+import com.banksalad.collectmydata.irp.summary.IrpAccountSummaryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -104,9 +106,15 @@ public class InsuApiServiceImpl implements InsuApiService {
   // ETC
   private final CollectmydataConnectClientService collectmydataConnectClientService;
 
+  // IRP
+  private final IrpAccountSummaryService irpAccountSummaryService;
+  private final IrpAccountService irpAccountService;
+  private final IrpAccountTransactionService irpAccountTransactionService;
+
   @Override
   public void onDemandRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
       throws ResponseNotOkException {
+
     Organization organization = collectmydataConnectClientService.getOrganization(organizationId);
     String accessToken = "fixme"; //TODO 토큰 조회 로직 추가하여 적용
 
@@ -119,6 +127,9 @@ public class InsuApiServiceImpl implements InsuApiService {
 
     loanSummaryService.listAccountSummaries(
         executionContext, Executions.insurance_get_loan_summaries, loanSummaryRequestHelper, loanSummaryResponseHelper);
+
+    // IRP Account Summary
+    irpAccountSummaryService.listAccountSummaries(executionContext);
 
     CompletableFuture.allOf(
         CompletableFuture
@@ -178,19 +189,104 @@ public class InsuApiServiceImpl implements InsuApiService {
                 () -> loanTransactionService
                     .listTransactions(executionContext, Executions.insurance_get_loan_transactions,
                         loanTransactionRequestHelper,
-                        loanTransactionResponseHelper))
+                        loanTransactionResponseHelper)),
+
+        // IRP Account Basic, Detail, Transaction
+        CompletableFuture.runAsync(() -> irpAccountService.listIrpAccountBasics(executionContext)),
+        CompletableFuture.runAsync(() -> irpAccountService.listIrpAccountDetails(executionContext)),
+        CompletableFuture.runAsync(() -> irpAccountTransactionService.listTransactions(executionContext))
     ).join();
   }
 
   @Override
   public void scheduledBasicRequestApi(long banksaladUserId, String organizationId, String syncRequestId)
       throws ResponseNotOkException {
-    onDemandRequestApi(banksaladUserId, organizationId, syncRequestId);
+
+    Organization organization = collectmydataConnectClientService.getOrganization(organizationId);
+    String accessToken = "fixme"; //TODO 토큰 조회 로직 추가하여 적용
+
+    ExecutionContext executionContext = generateExecutionContext(banksaladUserId, organizationId, syncRequestId,
+        accessToken, organization);
+
+    insuranceSummaryService.listAccountSummaries(
+        executionContext, Executions.insurance_get_summaries, insuranceSummaryRequestHelper,
+        insuranceSummaryResponseHelper);
+
+    loanSummaryService.listAccountSummaries(
+        executionContext, Executions.insurance_get_loan_summaries, loanSummaryRequestHelper, loanSummaryResponseHelper);
+
+    // IRP Account Summary
+    irpAccountSummaryService.listAccountSummaries(executionContext);
+
+    CompletableFuture.allOf(
+        CompletableFuture
+            .runAsync(
+                () -> insuranceBasicService
+                    .listAccountInfos(executionContext, Executions.insurance_get_basic, insuranceBasicRequestHelper,
+                        insuranceBasicResponseHelper)),
+
+        CompletableFuture
+            .runAsync(
+                () -> insuranceContractService
+                    .listAccountInfos(executionContext, Executions.insurance_get_contract,
+                        insuranceContractRequestHelper,
+                        insuranceContractResponseHelper)),
+
+        CompletableFuture
+            .runAsync(
+                () -> insurancePaymentService
+                    .listAccountInfos(executionContext, Executions.insurance_get_payment, insurancePaymentRequestHelper,
+                        insurancePaymentResponseHelper)),
+
+        CompletableFuture
+            .runAsync(
+                () -> insuranceTransactionService
+                    .listTransactions(executionContext, Executions.insurance_get_transactions,
+                        insuranceTransactionRequestHelper,
+                        insuranceTransactionResponseHelper)),
+// TODO :
+//        CompletableFuture
+//            .supplyAsync(
+//                () -> carInsuranceService
+//                    .listAccountInfos(executionContext, Executions.insurance_get_car, carInsuranceRequestHelper,
+//                        carInsuranceResponseHelper))
+//            .thenAccept(atomicReference.get()::setCarInsurances),
+
+        CompletableFuture
+            .runAsync(
+                () -> carInsuranceTransactionService
+                    .listTransactions(executionContext, Executions.insurance_get_car_transactions,
+                        carInsuranceTransactionRequestHelper,
+                        carInsuranceTransactionResponseHelper)),
+
+        CompletableFuture
+            .runAsync(
+                () -> loanBasicService
+                    .listAccountInfos(executionContext, Executions.insurance_get_loan_basic, loanBasicRequestHelper,
+                        loanBasicResponseHelper)),
+
+        CompletableFuture
+            .runAsync(
+                () -> loanDetailService
+                    .listAccountInfos(executionContext, Executions.insurance_get_loan_detail, loanDetailRequestHelper,
+                        loanDetailResponseHelper)),
+
+        CompletableFuture
+            .runAsync(
+                () -> loanTransactionService
+                    .listTransactions(executionContext, Executions.insurance_get_loan_transactions,
+                        loanTransactionRequestHelper,
+                        loanTransactionResponseHelper)),
+
+        // IRP Account Summary, Basic(정기적 전송주기 : 기본)
+        CompletableFuture.runAsync(() -> irpAccountService.listIrpAccountBasics(executionContext))
+    ).join();
   }
 
   @Override
   public void scheduledAdditionalRequestApi(long banksaladUserId, String organizationId,
       String syncRequestId) throws ResponseNotOkException {
+
     Organization organization = collectmydataConnectClientService.getOrganization(organizationId);
     String accessToken = "fixme"; //TODO 토큰 조회 로직 추가하여 적용
 
@@ -230,7 +326,11 @@ public class InsuApiServiceImpl implements InsuApiService {
                 () -> loanTransactionService
                     .listTransactions(executionContext, Executions.insurance_get_loan_transactions,
                         loanTransactionRequestHelper,
-                        loanTransactionResponseHelper))
+                        loanTransactionResponseHelper)),
+
+        // IRP Account Detail, Transaction(정기적 전송주기 : 추가)
+        CompletableFuture.runAsync(() -> irpAccountService.listIrpAccountDetails(executionContext)),
+        CompletableFuture.runAsync(() -> irpAccountTransactionService.listTransactions(executionContext))
     ).join();
   }
 
@@ -244,6 +344,7 @@ public class InsuApiServiceImpl implements InsuApiService {
         .organizationHost(organization.getHostUrl())
         .accessToken(accessToken)
         .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+        .syncRequestId(syncRequestId)
         .build();
   }
 }
