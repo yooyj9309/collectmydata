@@ -3,6 +3,7 @@ package com.banksalad.collectmydata.bank.loan;
 import org.springframework.stereotype.Component;
 
 import com.banksalad.collectmydata.bank.common.db.entity.LoanAccountDetailEntity;
+import com.banksalad.collectmydata.bank.common.db.entity.LoanAccountDetailHistoryEntity;
 import com.banksalad.collectmydata.bank.common.db.repository.LoanAccountDetailHistoryRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.LoanAccountDetailRepository;
 import com.banksalad.collectmydata.bank.common.mapper.LoanAccountDetailHistoryMapper;
@@ -48,11 +49,10 @@ public class LoanAccountDetailInfoResponseHelper implements
     loanAccountDetailEntity.setSyncedAt(executionContext.getSyncStartedAt());
     loanAccountDetailEntity.setAccountNum(accountSummary.getAccountNum());
     loanAccountDetailEntity.setSeqno(accountSummary.getSeqno());
-
-    // TODO : on-demand, scheduler
+    loanAccountDetailEntity.setConsentId(executionContext.getConsentId());
+    loanAccountDetailEntity.setSyncRequestId(executionContext.getSyncRequestId());
     loanAccountDetailEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
     loanAccountDetailEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
-    loanAccountDetailEntity.setConsentId(executionContext.getConsentId());
 
     LoanAccountDetailEntity existingLoanAccountDetailEntity = loanAccountDetailRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
@@ -67,9 +67,15 @@ public class LoanAccountDetailInfoResponseHelper implements
     }
 
     if (!ObjectComparator.isSame(loanAccountDetailEntity, existingLoanAccountDetailEntity, ENTITY_EXCLUDE_FIELD)) {
+      LoanAccountDetailHistoryEntity loanAccountDetailHistoryEntity = loanAccountDetailHistoryMapper
+          .toLoanAccountDetailHistoryEntity(loanAccountDetailEntity);
+      loanAccountDetailHistoryEntity.setCreatedAt(loanAccountDetailEntity.getCreatedAt());
+      loanAccountDetailHistoryEntity.setCreatedBy(loanAccountDetailEntity.getCreatedBy());
+      loanAccountDetailHistoryEntity.setUpdatedAt(loanAccountDetailEntity.getUpdatedAt());
+      loanAccountDetailHistoryEntity.setUpdatedBy(loanAccountDetailEntity.getUpdatedBy());
+
       loanAccountDetailRepository.save(loanAccountDetailEntity);
-      loanAccountDetailHistoryRepository
-          .save(loanAccountDetailHistoryMapper.toLoanAccountDetailHistoryEntity(loanAccountDetailEntity));
+      loanAccountDetailHistoryRepository.save(loanAccountDetailHistoryEntity);
     }
   }
 

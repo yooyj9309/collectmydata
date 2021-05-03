@@ -86,6 +86,7 @@ public class InvestAccountDetailInvocationContextProvider implements TestTemplat
         .invPrincipal(NumberUtil.bigDecimalOf(30000, 3))
         .fundNum(NumberUtil.bigDecimalOf(40000, 3))
         .consentId("consent_id1")
+        .syncRequestId("sync_request_id1")
         .build();
 
     InvestAccountDetailEntity main2 = InvestAccountDetailEntity.builder()
@@ -100,6 +101,7 @@ public class InvestAccountDetailInvocationContextProvider implements TestTemplat
         .invPrincipal(NumberUtil.bigDecimalOf(70000, 3))
         .fundNum(NumberUtil.bigDecimalOf(80000, 3))
         .consentId("consent_id1")
+        .syncRequestId("sync_request_id1")
         .build();
 
     Map<String, InvestAccountDetailEntity> mainMap = Map.of(

@@ -89,6 +89,7 @@ public class LoanAccountBasicInvocationContextProvider implements TestTemplateIn
         .repayOrgCode("B01")
         .repayAccountNum("11022212345")
         .consentId("consent_id1")
+        .syncRequestId("sync_request_id1")
         .build();
 
     LoanAccountBasicEntity main2 = LoanAccountBasicEntity.builder()
@@ -106,6 +107,7 @@ public class LoanAccountBasicInvocationContextProvider implements TestTemplateIn
         .repayOrgCode("B01")
         .repayAccountNum("11022212345")
         .consentId("consent_id1")
+        .syncRequestId("sync_request_id1")
         .build();
 
     Map<String, LoanAccountBasicEntity> mainMap = Map.of(

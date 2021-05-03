@@ -64,11 +64,10 @@ public class LoanAccountTransactionResponseHelper implements
       loanAccountTransactionEntity.setAccountNum(accountSummary.getAccountNum());
       loanAccountTransactionEntity.setSeqno(accountSummary.getSeqno());
       loanAccountTransactionEntity.setUniqueTransNo(uniqueTransNo);
-
-      // TODO : on-demand, scheduler
+      loanAccountTransactionEntity.setConsentId(executionContext.getConsentId());
+      loanAccountTransactionEntity.setSyncRequestId(executionContext.getSyncRequestId());
       loanAccountTransactionEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
       loanAccountTransactionEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
-      loanAccountTransactionEntity.setConsentId(executionContext.getConsentId());
 
       LoanAccountTransactionEntity existingLoanAccountTransactionEntity = loanAccountTransactionRepository
           .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndUniqueTransNoAndTransactionYearMonth(
@@ -77,8 +76,8 @@ public class LoanAccountTransactionResponseHelper implements
               loanAccountTransactionEntity.getAccountNum(),
               loanAccountTransactionEntity.getSeqno(),
               loanAccountTransactionEntity.getUniqueTransNo(),
-              loanAccountTransactionEntity.getTransactionYearMonth()
-          ).orElse(null);
+              loanAccountTransactionEntity.getTransactionYearMonth())
+          .orElse(null);
 
       if (existingLoanAccountTransactionEntity != null) {
         continue;
@@ -100,11 +99,10 @@ public class LoanAccountTransactionResponseHelper implements
         interestEntity.setOrganizationId(executionContext.getOrganizationId());
         interestEntity.setAccountNum(accountSummary.getAccountNum());
         interestEntity.setUniqueTransNo(uniqueTransNo);
-
-        // TODO : on-demand, scheduler
+        interestEntity.setConsentId(executionContext.getConsentId());
+        interestEntity.setSyncRequestId(executionContext.getSyncRequestId());
         interestEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
         interestEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
-        interestEntity.setConsentId(executionContext.getConsentId());
 
         loanAccountTransactionInterestRepository.save(interestEntity);
       }

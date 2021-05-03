@@ -3,6 +3,7 @@ package com.banksalad.collectmydata.bank.invest;
 import org.springframework.stereotype.Component;
 
 import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountDetailEntity;
+import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountDetailHistoryEntity;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountDetailHistoryRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountDetailRepository;
 import com.banksalad.collectmydata.bank.common.mapper.InvestAccountDetailHistoryMapper;
@@ -50,14 +51,12 @@ public class InvestAccountDetailInfoResponseHelper implements
     investAccountDetailEntity.setSyncedAt(executionContext.getSyncStartedAt());
     investAccountDetailEntity.setAccountNum(accountSummary.getAccountNum());
     investAccountDetailEntity.setSeqno(accountSummary.getSeqno());
-
-    // TODO : on-demand, scheduler
+    investAccountDetailEntity.setConsentId(executionContext.getConsentId());
+    investAccountDetailEntity.setSyncRequestId(executionContext.getSyncRequestId());
     investAccountDetailEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
     investAccountDetailEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
-    investAccountDetailEntity.setConsentId(executionContext.getConsentId());
 
-    if (investAccountDetailEntity.getCurrencyCode() == null
-        || investAccountDetailEntity.getCurrencyCode().length() == 0) {
+    if (investAccountDetailEntity.getCurrencyCode() == null || investAccountDetailEntity.getCurrencyCode().length() == 0) {
       investAccountDetailEntity.setCurrencyCode(CURRENCY_KRW);
     }
 
@@ -67,17 +66,23 @@ public class InvestAccountDetailInfoResponseHelper implements
             executionContext.getOrganizationId(),
             accountSummary.getAccountNum(),
             accountSummary.getSeqno(),
-            investAccountDetail.getCurrencyCode()
-        ).orElse(null);
+            investAccountDetail.getCurrencyCode())
+        .orElse(null);
 
     if (existingInvestAccountDetailEntity != null) {
       investAccountDetailEntity.setId(existingInvestAccountDetailEntity.getId());
     }
 
     if (!ObjectComparator.isSame(investAccountDetailEntity, existingInvestAccountDetailEntity, ENTITY_EXCLUDE_FIELD)) {
+      InvestAccountDetailHistoryEntity investAccountDetailHistoryEntity = investAccountDetailHistoryMapper
+          .toInvestAccountDetailHistoryEntity(investAccountDetailEntity);
+      investAccountDetailHistoryEntity.setCreatedAt(investAccountDetailEntity.getCreatedAt());
+      investAccountDetailHistoryEntity.setCreatedBy(investAccountDetailEntity.getCreatedBy());
+      investAccountDetailHistoryEntity.setUpdatedAt(investAccountDetailEntity.getUpdatedAt());
+      investAccountDetailHistoryEntity.setUpdatedBy(investAccountDetailEntity.getUpdatedBy());
+
       investAccountDetailRepository.save(investAccountDetailEntity);
-      investAccountDetailHistoryRepository
-          .save(investAccountDetailHistoryMapper.toInvestAccountDetailHistoryEntity(investAccountDetailEntity));
+      investAccountDetailHistoryRepository.save(investAccountDetailHistoryEntity);
     }
   }
 

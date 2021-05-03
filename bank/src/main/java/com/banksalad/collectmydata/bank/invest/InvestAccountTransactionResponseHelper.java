@@ -51,11 +51,10 @@ public class InvestAccountTransactionResponseHelper implements
       investAccountTransactionEntity.setAccountNum(accountSummary.getAccountNum());
       investAccountTransactionEntity.setSeqno(accountSummary.getSeqno());
       investAccountTransactionEntity.setUniqueTransNo(generateUniqueTransNo(investAccountTransaction));
-
-      // TODO : on-demand, scheduler
+      investAccountTransactionEntity.setConsentId(executionContext.getConsentId());
+      investAccountTransactionEntity.setSyncRequestId(executionContext.getSyncRequestId());
       investAccountTransactionEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
       investAccountTransactionEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
-      investAccountTransactionEntity.setConsentId(executionContext.getConsentId());
 
       if (investAccountTransactionEntity.getCurrencyCode() == null
           || investAccountTransactionEntity.getCurrencyCode().length() == 0) {
@@ -69,8 +68,8 @@ public class InvestAccountTransactionResponseHelper implements
               investAccountTransactionEntity.getAccountNum(),
               investAccountTransactionEntity.getSeqno(),
               investAccountTransactionEntity.getUniqueTransNo(),
-              investAccountTransactionEntity.getTransactionYearMonth()
-          ).orElseGet(() -> investAccountTransactionRepository.save(investAccountTransactionEntity));
+              investAccountTransactionEntity.getTransactionYearMonth())
+          .orElseGet(() -> investAccountTransactionRepository.save(investAccountTransactionEntity));
     }
   }
 

@@ -33,14 +33,12 @@ public class BankSummaryResponseHelper implements SummaryResponseHelper<AccountS
 
   @Override
   public void saveOrganizationUser(ExecutionContext executionContext, SummaryResponse response) {
-
     ListAccountSummariesResponse listAccountSummariesResponse = (ListAccountSummariesResponse) response;
 
     OrganizationUserEntity organizationUserEntity = organizationUserRepository
         .findByBanksaladUserIdAndOrganizationId(executionContext.getBanksaladUserId(),
             executionContext.getOrganizationId())
         .orElseGet(() -> {
-
           OrganizationUserEntity createdUserEntity = OrganizationUserEntity.builder()
               .syncedAt(executionContext.getSyncStartedAt())
               .banksaladUserId(executionContext.getBanksaladUserId())
@@ -49,9 +47,8 @@ public class BankSummaryResponseHelper implements SummaryResponseHelper<AccountS
               .syncRequestId(executionContext.getSyncRequestId())
               .regDate(listAccountSummariesResponse.getRegDate())
               .build();
-
-          createdUserEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
-          createdUserEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+          createdUserEntity.setCreatedBy(String.valueOf(executionContext.getRequestedBy()));
+          createdUserEntity.setUpdatedBy(String.valueOf(executionContext.getRequestedBy()));
 
           return createdUserEntity;
         });
@@ -76,10 +73,8 @@ public class BankSummaryResponseHelper implements SummaryResponseHelper<AccountS
     accountSummaryEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
     accountSummaryEntity.setOrganizationId(executionContext.getOrganizationId());
     accountSummaryEntity.setSyncedAt(executionContext.getSyncStartedAt());
-
-    // TODO : on-demand, scheduler
-    accountSummaryEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
-    accountSummaryEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+    accountSummaryEntity.setCreatedBy(String.valueOf(executionContext.getRequestedBy()));
+    accountSummaryEntity.setUpdatedBy(String.valueOf(executionContext.getRequestedBy()));
     accountSummaryEntity.setConsentId(executionContext.getConsentId());
     accountSummaryEntity.setSyncRequestId(executionContext.getSyncRequestId());
 

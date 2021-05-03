@@ -3,6 +3,7 @@ package com.banksalad.collectmydata.bank.deposit;
 import org.springframework.stereotype.Component;
 
 import com.banksalad.collectmydata.bank.common.db.entity.DepositAccountBasicEntity;
+import com.banksalad.collectmydata.bank.common.db.entity.DepositAccountBasicHistoryEntity;
 import com.banksalad.collectmydata.bank.common.db.repository.DepositAccountBasicHistoryRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.DepositAccountBasicRepository;
 import com.banksalad.collectmydata.bank.common.mapper.DepositAccountBasicHistoryMapper;
@@ -51,11 +52,10 @@ public class DepositAccountBasicInfoResponseHelper implements
     depositAccountBasicEntity.setSyncedAt(executionContext.getSyncStartedAt());
     depositAccountBasicEntity.setAccountNum(accountSummary.getAccountNum());
     depositAccountBasicEntity.setSeqno(accountSummary.getSeqno());
-
-    // TODO : on-demand, scheduler
-    depositAccountBasicEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
-    depositAccountBasicEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
     depositAccountBasicEntity.setConsentId(executionContext.getConsentId());
+    depositAccountBasicEntity.setSyncRequestId(executionContext.getSyncRequestId());
+    depositAccountBasicEntity.setCreatedBy(String.valueOf(executionContext.getRequestedBy()));
+    depositAccountBasicEntity.setUpdatedBy(String.valueOf(executionContext.getRequestedBy()));
 
     // load existing account entity
     DepositAccountBasicEntity existingDepositAccountBasicEntity = depositAccountBasicRepository
@@ -74,9 +74,15 @@ public class DepositAccountBasicInfoResponseHelper implements
 
     // upsert deposit account basic and insert history if needed
     if (!ObjectComparator.isSame(depositAccountBasicEntity, existingDepositAccountBasicEntity, ENTITY_EXCLUDE_FIELD)) {
+      DepositAccountBasicHistoryEntity depositAccountBasicHistoryEntity = depositAccountBasicHistoryMapper
+          .toHistoryEntity(depositAccountBasicEntity);
+      depositAccountBasicHistoryEntity.setCreatedAt(depositAccountBasicEntity.getCreatedAt());
+      depositAccountBasicHistoryEntity.setCreatedBy(depositAccountBasicEntity.getCreatedBy());
+      depositAccountBasicHistoryEntity.setUpdatedAt(depositAccountBasicEntity.getUpdatedAt());
+      depositAccountBasicHistoryEntity.setUpdatedBy(depositAccountBasicEntity.getUpdatedBy());
+
       depositAccountBasicRepository.save(depositAccountBasicEntity);
-      depositAccountBasicHistoryRepository
-          .save(depositAccountBasicHistoryMapper.toHistoryEntity(depositAccountBasicEntity));
+      depositAccountBasicHistoryRepository.save(depositAccountBasicHistoryEntity);
     }
   }
 

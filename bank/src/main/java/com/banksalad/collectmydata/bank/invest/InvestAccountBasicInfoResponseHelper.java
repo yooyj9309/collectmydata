@@ -3,6 +3,7 @@ package com.banksalad.collectmydata.bank.invest;
 import org.springframework.stereotype.Component;
 
 import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountBasicEntity;
+import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountBasicHistoryEntity;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountBasicHistoryRepository;
 import com.banksalad.collectmydata.bank.common.db.repository.InvestAccountBasicRepository;
 import com.banksalad.collectmydata.bank.common.mapper.InvestAccountBasicHistoryMapper;
@@ -48,11 +49,10 @@ public class InvestAccountBasicInfoResponseHelper implements
     investAccountBasicEntity.setSyncedAt(executionContext.getSyncStartedAt());
     investAccountBasicEntity.setAccountNum(accountSummary.getAccountNum());
     investAccountBasicEntity.setSeqno(accountSummary.getSeqno());
-
-    // TODO : on-demand, scheduler
+    investAccountBasicEntity.setConsentId(executionContext.getConsentId());
+    investAccountBasicEntity.setSyncRequestId(executionContext.getSyncRequestId());
     investAccountBasicEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
     investAccountBasicEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
-    investAccountBasicEntity.setConsentId(executionContext.getConsentId());
 
     InvestAccountBasicEntity existingInvestAccountBasicEntity = investAccountBasicRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
@@ -67,9 +67,15 @@ public class InvestAccountBasicInfoResponseHelper implements
     }
 
     if (!ObjectComparator.isSame(investAccountBasicEntity, existingInvestAccountBasicEntity, ENTITY_EXCLUDE_FIELD)) {
+      InvestAccountBasicHistoryEntity investAccountBasicHistoryEntity = investAccountBasicHistoryMapper
+          .toInvestAccountBasicHistoryEntity(investAccountBasicEntity);
+      investAccountBasicHistoryEntity.setCreatedAt(investAccountBasicEntity.getCreatedAt());
+      investAccountBasicHistoryEntity.setCreatedBy(investAccountBasicEntity.getCreatedBy());
+      investAccountBasicHistoryEntity.setUpdatedAt(investAccountBasicEntity.getUpdatedAt());
+      investAccountBasicHistoryEntity.setUpdatedBy(investAccountBasicEntity.getUpdatedBy());
+
       investAccountBasicRepository.save(investAccountBasicEntity);
-      investAccountBasicHistoryRepository
-          .save(investAccountBasicHistoryMapper.toInvestAccountBasicHistoryEntity(investAccountBasicEntity));
+      investAccountBasicHistoryRepository.save(investAccountBasicHistoryEntity);
     }
   }
 

@@ -51,11 +51,10 @@ public class DepositAccountTransactionResponseHelper implements
       depositAccountTransactionEntity.setAccountNum(accountSummary.getAccountNum());
       depositAccountTransactionEntity.setSeqno(accountSummary.getSeqno());
       depositAccountTransactionEntity.setUniqueTransNo(generateUniqueTransNo(depositAccountTransaction));
-
-      // TODO : on-demand, scheduler
-      depositAccountTransactionEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
-      depositAccountTransactionEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
       depositAccountTransactionEntity.setConsentId(executionContext.getConsentId());
+      depositAccountTransactionEntity.setSyncRequestId(executionContext.getSyncRequestId());
+      depositAccountTransactionEntity.setCreatedBy(String.valueOf(executionContext.getRequestedBy()));
+      depositAccountTransactionEntity.setUpdatedBy(String.valueOf(executionContext.getRequestedBy()));
 
       depositAccountTransactionRepository
           .findByTransactionYearMonthAndBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndCurrencyCodeAndUniqueTransNo(
