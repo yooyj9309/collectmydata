@@ -3,6 +3,7 @@ package com.banksalad.collectmydata.finance.common.service;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
@@ -11,8 +12,8 @@ import java.util.Map;
 @Service
 public class HeaderServiceImpl implements HeaderService {
 
-  public static final String CONTENT_TYPE = "contentType";
-  public static final String AUTHORIZATION = "Authorization";
+  public static final String CONTENT_TYPE = HttpHeaders.CONTENT_TYPE;
+  public static final String AUTHORIZATION = HttpHeaders.AUTHORIZATION;
   public static final String X_FSI_SVC_DATA_KEY = "X-FSI-SVC-DATA-KEY";
 
   private final String TESTBED_DATA_HEADER = "N";
