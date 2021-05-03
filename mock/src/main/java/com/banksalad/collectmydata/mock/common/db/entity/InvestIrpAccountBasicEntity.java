@@ -69,15 +69,4 @@ public class InvestIrpAccountBasicEntity extends BaseEntity {
 
   @Column(nullable = false)
   private String firstDepositDate;
-
-  @CreatedDate
-  @Column(updatable = false)
-  private LocalDateTime createdAt;
-
-  private String createdBy;
-
-  @LastModifiedDate
-  private LocalDateTime updatedAt;
-
-  private String updatedBy;
 }

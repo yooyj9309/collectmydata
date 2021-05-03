@@ -26,8 +26,8 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "bank_irp_account_basic")
-public class BankIrpAccountBasicEntity extends BaseEntity {
+@Table(name = "invest_account_basic")
+public class InvestAccountBasicEntity extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,28 +45,25 @@ public class BankIrpAccountBasicEntity extends BaseEntity {
   @Column(nullable = false, name = "account_num_encrypted")
   private String accountNum;
 
-  private String seqno;
+  @Column(nullable = false)
+  private String issueDate;
+
+  @Column(nullable = false, columnDefinition = "BIT", length = 1)
+  private Boolean isTaxBenefits;
+
+  @Column(nullable = false, precision = 18, scale = 3)
+  private BigDecimal withholdings_amt;
+
+  @Column(nullable = false, precision = 18, scale = 3)
+  private BigDecimal credit_loan_amt;
+
+  @Column(nullable = false, precision = 18, scale = 3)
+  private BigDecimal mortgage_amt;
+
+  private String currency_code;
 
   @Column(nullable = false)
   private String consentId;
 
   private String syncRequestId;
-
-  @Column(nullable = false, precision = 18, scale = 3)
-  private BigDecimal accumAmt;
-
-  @Column(nullable = false, precision = 18, scale = 3)
-  private BigDecimal evalAmt;
-
-  @Column(nullable = false, precision = 18, scale = 3)
-  private BigDecimal employerAmt;
-
-  @Column(nullable = false, precision = 18, scale = 3)
-  private BigDecimal employeeAmt;
-
-  @Column(nullable = false)
-  private String issueDate;
-
-  @Column(nullable = false)
-  private String firstDepositDate;
 }
