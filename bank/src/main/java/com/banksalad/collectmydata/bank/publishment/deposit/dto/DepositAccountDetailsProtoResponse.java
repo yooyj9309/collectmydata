@@ -3,7 +3,7 @@ package com.banksalad.collectmydata.bank.publishment.deposit.dto;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.BankDepositAccountDetail;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankDepositAccountDetailsResponse;
-import com.google.protobuf.Int64Value;
+import com.google.protobuf.Int32Value;
 import com.google.protobuf.StringValue;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -31,7 +31,7 @@ public class DepositAccountDetailsProtoResponse {
             .setBalanceAmt3F(depositAccountDetailResponse.getBalanceAmt().longValue())
             .setWithdrawableAmt3F(depositAccountDetailResponse.getWithdrawableAmt().longValue())
             .setOfferedRate5F(depositAccountDetailResponse.getOfferedRate().longValue())
-            .setLastPaidInCnt(Int64Value.newBuilder().setValue(depositAccountDetailResponse.getLastPaidInCnt()).build())
+            .setLastPaidInCnt(Int32Value.newBuilder().setValue(depositAccountDetailResponse.getLastPaidInCnt()).build())
             .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(depositAccountDetailResponse.getCreatedAt()))
             .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(depositAccountDetailResponse.getUpdatedAt()))
             .build())

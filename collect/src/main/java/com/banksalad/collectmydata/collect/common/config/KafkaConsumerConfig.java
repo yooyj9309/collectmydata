@@ -47,6 +47,11 @@ public class KafkaConsumerConfig {
     return kafkaListenerContainerFactory(MessageTopic.cardPublishmentRequested);
   }
 
+  @Bean
+  public ConcurrentKafkaListenerContainerFactory<String, String> investPublishmentRequestedKafkaListenerContainerFactory() {
+    return kafkaListenerContainerFactory(MessageTopic.investPublishmentRequested);
+  }
+
   /* SyncCompleted Listener Factory*/
   @Bean
   public ConcurrentKafkaListenerContainerFactory<String, String> bankSyncCompletedKafkaListenerContainerFactory() {
@@ -56,5 +61,10 @@ public class KafkaConsumerConfig {
   @Bean
   public ConcurrentKafkaListenerContainerFactory<String, String> cardSyncCompletedKafkaListenerContainerFactory() {
     return kafkaListenerContainerFactory(MessageTopic.cardSyncCompleted);
+  }
+
+  @Bean
+  public ConcurrentKafkaListenerContainerFactory<String, String> investSyncCompletedKafkaListenerContainerFactory() {
+    return kafkaListenerContainerFactory(MessageTopic.investSyncCompleted);
   }
 }

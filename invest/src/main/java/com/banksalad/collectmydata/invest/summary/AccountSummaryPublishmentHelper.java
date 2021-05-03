@@ -22,7 +22,7 @@ public class AccountSummaryPublishmentHelper implements SummaryPublishmentHelper
   public PublishmentRequestedMessage makePublishmentRequestedMessage(ExecutionContext executionContext) {
     return PublishmentRequestedInvestMessage.builder()
         .financeIndustry(FinanceIndustry.INVEST)
-        .financeSyncItem(FinanceSyncItem.COLLECTMYDATA_INVEST_SYNC_ITEM_ACCOUNT_SUMMARY)
+        .financeSyncItem(FinanceSyncItem.COLLECTMYDATAINVEST_SYNC_ITEM_ACCOUNT_SUMMARY)
         .banksaladUserId(executionContext.getBanksaladUserId())
         .organizationId(executionContext.getOrganizationId())
         .syncRequestId(executionContext.getSyncRequestId())

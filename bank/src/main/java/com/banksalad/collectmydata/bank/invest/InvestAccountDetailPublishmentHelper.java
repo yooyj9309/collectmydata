@@ -14,7 +14,7 @@ import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoPublishmen
 public class InvestAccountDetailPublishmentHelper implements AccountInfoPublishmentHelper {
 
   private static final FinanceIndustry financeIndustry = FinanceIndustry.BANK;
-  private static final FinanceSyncItem financeSyncItem = FinanceSyncItem.COLLECTMYDATA_BANK_SYNC_ITEM_INVEST_ACCOUNT_DETAIL;
+  private static final FinanceSyncItem financeSyncItem = FinanceSyncItem.COLLECTMYDATABANK_SYNC_ITEM_INVEST_ACCOUNT_DETAIL;
 
   @Override
   public String getMessageTopic() {

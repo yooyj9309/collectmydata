@@ -22,7 +22,7 @@ public class AccountBasicInfoPublishmentHelper implements AccountInfoPublishment
   public PublishmentRequestedMessage makePublishmentRequestedMessage(ExecutionContext executionContext) {
     return PublishmentRequestedInvestMessage.builder()
         .financeIndustry(FinanceIndustry.INVEST)
-        .financeSyncItem(FinanceSyncItem.COLLECTMYDATA_INVEST_SYNC_ITEM_ACCOUNT_BASIC)
+        .financeSyncItem(FinanceSyncItem.COLLECTMYDATAINVEST_SYNC_ITEM_ACCOUNT_BASIC)
         .banksaladUserId(executionContext.getBanksaladUserId())
         .organizationId(executionContext.getOrganizationId())
         .syncRequestId(executionContext.getSyncRequestId())

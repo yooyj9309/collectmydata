@@ -14,7 +14,7 @@ import com.banksalad.collectmydata.finance.api.summary.SummaryPublishmentHelper;
 public class BankAccountSummaryPublishmentHelper implements SummaryPublishmentHelper {
 
   private static final FinanceIndustry financeIndustry = FinanceIndustry.BANK;
-  private static final FinanceSyncItem financeSyncItem = FinanceSyncItem.COLLECTMYDATA_BANK_SYNC_ITEM_ACCOUNT_SUMMARY;
+  private static final FinanceSyncItem financeSyncItem = FinanceSyncItem.COLLECTMYDATABANK_SYNC_ITEM_ACCOUNT_SUMMARY;
 
   @Override
   public String getMessageTopic() {

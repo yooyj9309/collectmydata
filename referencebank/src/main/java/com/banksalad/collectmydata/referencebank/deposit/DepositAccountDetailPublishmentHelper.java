@@ -10,7 +10,7 @@ import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoPublishmen
 
 public class DepositAccountDetailPublishmentHelper implements AccountInfoPublishmentHelper {
 
-  private static final FinanceSyncItem financeSyncItem = FinanceSyncItem.COLLECTMYDATA_BANK_SYNC_ITEM_DEPOSIT_ACCOUNT_DETAIL;
+  private static final FinanceSyncItem financeSyncItem = FinanceSyncItem.COLLECTMYDATABANK_SYNC_ITEM_DEPOSIT_ACCOUNT_DETAIL;
 
   @Override
   public String getMessageTopic() {

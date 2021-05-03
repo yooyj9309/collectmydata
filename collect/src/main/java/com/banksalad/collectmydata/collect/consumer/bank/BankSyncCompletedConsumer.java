@@ -41,7 +41,7 @@ public class BankSyncCompletedConsumer {
       log.debug("[collect] consume SyncCompletedMessage syncRequestId: {} ", message.getSyncRequestId());
 
       /* notify */
-      financeStub.notifyCollectmydatabankSynced(message.toNotifyRequest(),
+      financeStub.notifyCollectmydatabankSynced(message.toNotifyBankRequest(),
           new StreamObserver<NotifyCollectmydatabankSyncedResponse>() {
             @Override
             public void onNext(NotifyCollectmydatabankSyncedResponse value) {

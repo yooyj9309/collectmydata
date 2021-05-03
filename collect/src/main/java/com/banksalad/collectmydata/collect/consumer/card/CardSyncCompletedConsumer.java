@@ -12,6 +12,8 @@ import com.banksalad.collectmydata.common.message.SyncCompletedMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.banksalad.idl.apis.v1.finance.FinanceGrpc.FinanceStub;
+import com.github.banksalad.idl.apis.v1.finance.FinanceProto.NotifyCollectmydatacardSyncedResponse;
+import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,7 +42,24 @@ public class CardSyncCompletedConsumer {
       log.debug("[collect] consume SyncCompletedMessage syncRequestId: {} ", message.getSyncRequestId());
 
       /* notify */
-      // TODO (hyunjun) : financeGrpc에 notifyCollectmydatacardSynced 정의 필요
+      financeStub.notifyCollectmydatacardSynced(message.toNotifyCardRequest(),
+          new StreamObserver<NotifyCollectmydatacardSyncedResponse>() {
+            @Override
+            public void onNext(NotifyCollectmydatacardSyncedResponse value) {
+
+            }
+
+            @Override
+            public void onError(Throwable t) {
+              log.error("[collect] error while notifying to finance syncRequestId: {}, t: {} ",
+                  message.getSyncRequestId(), t.getMessage());
+            }
+
+            @Override
+            public void onCompleted() {
+              log.debug("[collect] notified to finance syncRequestId: {} ", message.getSyncRequestId());
+            }
+          });
 
     } catch (JsonProcessingException e) {
       log.error("Fail to deserialize SyncCompletedMessage: {}", e.getMessage());

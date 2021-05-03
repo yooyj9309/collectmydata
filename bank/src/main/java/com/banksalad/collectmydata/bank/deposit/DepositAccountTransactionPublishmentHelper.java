@@ -15,7 +15,7 @@ import com.banksalad.collectmydata.finance.api.transaction.TransactionPublishmen
 public class DepositAccountTransactionPublishmentHelper implements TransactionPublishmentHelper<AccountSummary> {
 
   private static final FinanceIndustry financeIndustry = FinanceIndustry.BANK;
-  private static final FinanceSyncItem financeSyncItem = FinanceSyncItem.COLLECTMYDATA_BANK_SYNC_ITEM_DEPOSIT_ACCOUNT_TRANSACTION;
+  private static final FinanceSyncItem financeSyncItem = FinanceSyncItem.COLLECTMYDATABANK_SYNC_ITEM_DEPOSIT_ACCOUNT_TRANSACTION;
 
   @Override
   public String getMessageTopic() {
