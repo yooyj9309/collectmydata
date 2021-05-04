@@ -15,6 +15,7 @@ import com.banksalad.collectmydata.insu.insurance.dto.Insured;
 import com.banksalad.collectmydata.insu.insurance.dto.ListInsuranceContractsResponse;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
@@ -42,6 +43,7 @@ public class InsuranceContractResponseHelper implements
   }
 
   @Override
+  @Transactional
   public void saveAccountAndHistory(ExecutionContext executionContext, Insured insured,
       List<InsuranceContract> insuranceContracts) {
 
