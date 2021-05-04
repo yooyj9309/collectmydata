@@ -1,6 +1,9 @@
 {{ $service_name := "collectmydataoauth" }}
 
-{{ $service_port := "8080" }}
+{{ $service_port := "8081" }}
+
+{{ $sidecar_tag := "096cc53117695d10fa1d86030fd974777d776ac4" }}
+{{ $sidecar_port := "8080" }}
 
 {{ $nginx_tag := "1.17.4" }}
 {{ $telegraf_tag := "1.11.5" }}
@@ -33,6 +36,50 @@
   {{ $redis_cidr_b = "10.130.252.0/25" }}
   {{ $redis_cidr_c = "10.130.252.128/25" }}
 {{ end }}
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ $service_name }}-sidecar-telegraf
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ $service_name }}
+data:
+  telegraf.conf: |
+    [global_tags]
+
+    [agent]
+      interval = "10s"
+      round_interval = true
+      metric_batch_size = 1000
+      metric_buffer_limit = 10000
+      collection_jitter = "0s"
+      flush_interval = "10s"
+      flush_jitter = "0s"
+      precision = ""
+      hostname = ""
+      omit_hostname = false
+
+    [[outputs.influxdb]]
+      urls = ["http://influxdb-service.{{ $namespace }}.banksalad.in:8086"]
+      database = "observability-telegraf"
+
+    [[inputs.statsd]]
+      protocol = "udp"
+      max_tcp_connections = 250
+      tcp_keep_alive = false
+      service_address = ":8125"
+      delete_gauges = true
+      delete_counters = true
+      delete_sets = true
+      delete_timings = true
+      percentiles = [99, 95, 90, 50]
+      metric_separator = "."
+      parse_data_dog_tags = false
+      datadog_extensions = false
+      allowed_pending_messages = 10000
+      percentile_limit = 1000
 
 ---
 kind: ConfigMap
@@ -141,7 +188,67 @@ spec:
           configMap:
             name: {{ $service_name }}-telegraf
             defaultMode: 420
+        - name: telegraf-conf
+          configMap:
+            name: {{ $service_name }}-sidecar-telegraf
+            defaultMode: 420
       containers:
+        - name: telegraf-for-sidecar
+          image: telegraf:{{ $telegraf_tag }}
+          ports:
+            - containerPort: 8125
+              protocol: UDP
+          resources:
+            limits:
+              cpu: 1
+              memory: 500Mi
+            requests:
+              cpu: 500m
+              memory: 300Mi
+          volumeMounts:
+            - name: telegraf-conf
+              mountPath: "/etc/telegraf"
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - sh
+                  - "-c"
+                  - sleep {{ $telegraf_graceful_shutdown_timeout_sec }}
+        - name: sidecar-for-internal
+          image: rainist/sidecar:{{ $sidecar_tag }}
+          ports:
+            - containerPort: {{ $sidecar_port }}
+              protocol: TCP
+          env:
+            - name: SIDECAR_HTTP_PORT
+              value: "{{ $sidecar_port }}"
+            - name: SERVICE_HTTP_HOSTNAME
+              value: localhost
+            - name: SERVICE_HTTP_PORT
+              value: "{{ $service_port }}"
+            - name: SERVICE_NAME
+              value: {{ $service_name }}
+            - name: SIDECAR_GRACEFUL_SHUTDOWN_TIMEOUT_MS
+              value: "{{ $graceful_shutdown_timeout_ms }}"
+            - name: ENV
+              value: {{ $env }}
+            - name: SUB_ENV_ID
+              value: {{ $sub_env_id }}
+            - name: NAMESPACE
+              value: {{ $namespace }}
+            - name: PATH_REGEXPS
+              value: "{{ $sidecar_normalized_path_regexps }}"
+          resources:
+            limits:
+              cpu: "1"
+              memory: 2Gi
+            requests:
+              cpu: 250m
+              memory: 512Mi
+          terminationMessagePath: "/dev/termination-log"
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
         - name: nginx
           image: rainist/nginx:{{ $nginx_tag }}
           resources:
