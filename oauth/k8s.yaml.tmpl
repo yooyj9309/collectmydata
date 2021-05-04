@@ -18,10 +18,10 @@
   {{ $namespace = join (slice $env $sub_env_id) "-" }}
 {{ end }}
 
-{{ $ingress_host := "collectmydata-oauth.staging.banksalad.com" }} #TODO
+{{ $ingress_host := "mydata-oauth.staging.banksalad.com" }}
 
 {{ if eq $env "production" }}
-  {{ $ingress_host = "collectmydata-oauth.banksalad.com" }}  #TODO
+  {{ $ingress_host = "mydata-oauth.banksalad.com" }}  #TODO
 {{ end }}
 
 {{ $redis_cidr_a := "10.120.251.128/25" }}
