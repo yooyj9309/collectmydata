@@ -41,11 +41,11 @@ public class CollectmydataConnectClientServiceImpl implements CollectmydataConne
         .build();
   }
 
-  @Cacheable(value = "getOrganizationByOrganizationObjectidCache", key = "#organizationObjectId")
-  public Organization getOrganizationByOrganizationObjectid(String organizationObjectId) {
+  @Cacheable(value = "organizationByOrganizationObjectidCache", key = "#organizationObjectid")
+  public Organization getOrganizationByOrganizationObjectid(String organizationObjectid) {
 
     GetOrganizationResponse response = connectmydataBlockingStub.getOrganizationByOrganizationObjectid(
-        GetOrganizationByOrganizationObjectidRequest.newBuilder().setOrganizationObjectid(organizationObjectId)
+        GetOrganizationByOrganizationObjectidRequest.newBuilder().setOrganizationObjectid(organizationObjectid)
             .build());
 
     return Organization.builder()
