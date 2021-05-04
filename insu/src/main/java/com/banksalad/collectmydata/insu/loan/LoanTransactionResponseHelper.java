@@ -1,29 +1,24 @@
 package com.banksalad.collectmydata.insu.loan;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
 import com.banksalad.collectmydata.finance.api.transaction.dto.TransactionResponse;
 import com.banksalad.collectmydata.insu.common.db.entity.LoanTransactionEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.LoanTransactionInterestEntity;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanTransactionInterestRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.LoanTransactionRepository;
-import com.banksalad.collectmydata.insu.common.mapper.LoanTransactionMapper;
 import com.banksalad.collectmydata.insu.common.service.LoanSummaryService;
 import com.banksalad.collectmydata.insu.loan.dto.ListLoanTransactionResponse;
 import com.banksalad.collectmydata.insu.loan.dto.LoanTransaction;
 import com.banksalad.collectmydata.insu.loan.dto.LoanTransactionInterest;
 import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-
-import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
 @Component
 @RequiredArgsConstructor
@@ -32,7 +27,6 @@ public class LoanTransactionResponseHelper implements TransactionResponseHelper<
   private final LoanSummaryService loanSummaryService;
   private final LoanTransactionRepository loanTransactionRepository;
   private final LoanTransactionInterestRepository loanTransactionInterestRepository;
-  private final LoanTransactionMapper loanTransactionMapper = Mappers.getMapper(LoanTransactionMapper.class);
 
   @Override
   public List<LoanTransaction> getTransactionsFromResponse(TransactionResponse transactionResponse) {
@@ -40,19 +34,15 @@ public class LoanTransactionResponseHelper implements TransactionResponseHelper<
   }
 
   @Override
+  @Transactional
   public void saveTransactions(ExecutionContext executionContext, LoanSummary loanSummary,
       List<LoanTransaction> loanTransactions) {
-    long banksaladUserId = executionContext.getBanksaladUserId();
-    String organizationId = executionContext.getOrganizationId();
-
     for (LoanTransaction loanTransaction : loanTransactions) {
-      Integer transactionYearMonth = Integer.valueOf(loanTransaction.getTransDtime().substring(0, 6));
-
       LoanTransactionEntity loanTransactionEntity = LoanTransactionEntity.builder()
-          .transactionYearMonth(transactionYearMonth)
+          .transactionYearMonth(Integer.valueOf(loanTransaction.getTransDtime().substring(0, 6)))
           .syncedAt(executionContext.getSyncStartedAt())
-          .banksaladUserId(banksaladUserId)
-          .organizationId(organizationId)
+          .banksaladUserId(executionContext.getBanksaladUserId())
+          .organizationId(executionContext.getOrganizationId())
           .accountNum(loanSummary.getAccountNum())
           .transDtime(loanTransaction.getTransDtime())
           .transNo(loanTransaction.getTransNo())
@@ -60,54 +50,43 @@ public class LoanTransactionResponseHelper implements TransactionResponseHelper<
           .loanPaidAmt(loanTransaction.getLoanPaidAmt())
           .intPaidAmt(loanTransaction.getIntPaidAmt())
           .build();
-
-      LoanTransactionEntity loanTransactionEntityFromTable = loanTransactionRepository
-          .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndTransDtimeAndTransNoAndTransactionYearMonth(
-              executionContext.getBanksaladUserId(), executionContext.getOrganizationId(), loanSummary.getAccountNum(),
-              loanTransaction.getTransDtime(), loanTransaction.getTransNo(), transactionYearMonth)
-          .orElse(LoanTransactionEntity.builder().build());
-
-      if (loanTransactionEntityFromTable.getId() != null) {
-        loanTransactionEntity.setId(loanTransactionEntityFromTable.getId());
-      }
-
-      loanTransactionEntity.setCreatedBy(Optional.ofNullable(loanTransactionEntityFromTable.getCreatedBy())
-          .orElseGet(executionContext::getRequestedBy));
+      loanTransactionEntity.setCreatedBy(executionContext.getRequestedBy());
       loanTransactionEntity.setUpdatedBy(executionContext.getRequestedBy());
 
-      if (!ObjectComparator.isSame(loanTransactionEntity, loanTransactionEntityFromTable, ENTITY_EXCLUDE_FIELD)) {
-        loanTransactionRepository.save(loanTransactionEntity);
+      LoanTransactionEntity existingLoanTransactionEntity = loanTransactionRepository
+          .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndTransDtimeAndTransNoAndTransactionYearMonth(
+              executionContext.getBanksaladUserId(), executionContext.getOrganizationId(), loanSummary.getAccountNum(),
+              loanTransaction.getTransDtime(), loanTransaction.getTransNo(),
+              loanTransactionEntity.getTransactionYearMonth())
+          .orElse(null);
 
-        loanTransactionInterestRepository
-            .deleteAllByBanksaladUserIdAndOrganizationIdAndAccountNumAndTransDtimeAndTransNoAndTransactionYearMonth(
-                executionContext.getBanksaladUserId(),
-                executionContext.getOrganizationId(),
-                loanSummary.getAccountNum(),
-                loanTransaction.getTransDtime(),
-                loanTransaction.getTransNo(),
-                transactionYearMonth
-            );
-        loanTransactionInterestRepository.flush();
-
-        int intNo = 1;
-        for (LoanTransactionInterest loanTransactionInterest : loanTransaction.getIntList()) {
-          LoanTransactionInterestEntity loanTransactionInterestEntity = LoanTransactionInterestEntity.builder()
-              .transactionYearMonth(transactionYearMonth)
-              .syncedAt(executionContext.getSyncStartedAt())
-              .banksaladUserId(banksaladUserId)
-              .organizationId(organizationId)
-              .accountNum(loanSummary.getAccountNum())
-              .transDtime(loanTransaction.getTransDtime())
-              .transNo(loanTransaction.getTransNo())
-              .intNo(intNo++)
-              .intStartDate(loanTransactionInterest.getIntStartDate())
-              .intEndDate(loanTransactionInterest.getIntEndDate())
-              .intRate(loanTransactionInterest.getIntRate())
-              .intType(loanTransactionInterest.getIntType())
-              .build();
-          loanTransactionInterestRepository.save(loanTransactionInterestEntity);
-        }
+      if (existingLoanTransactionEntity != null) {
+        continue;
       }
+
+      loanTransactionRepository.save(loanTransactionEntity);
+      saveTransactionInterests(loanTransaction, loanTransactionEntity);
+    }
+  }
+
+  private void saveTransactionInterests(LoanTransaction loanTransaction, LoanTransactionEntity loanTransactionEntity) {
+    int intNo = 1;
+    for (LoanTransactionInterest interest : loanTransaction.getIntList()) {
+      LoanTransactionInterestEntity loanTransactionInterestEntity = LoanTransactionInterestEntity.builder()
+          .transactionYearMonth(loanTransactionEntity.getTransactionYearMonth())
+          .syncedAt(loanTransactionEntity.getSyncedAt())
+          .banksaladUserId(loanTransactionEntity.getBanksaladUserId())
+          .organizationId(loanTransactionEntity.getOrganizationId())
+          .accountNum(loanTransactionEntity.getAccountNum())
+          .transDtime(loanTransactionEntity.getTransDtime())
+          .transNo(loanTransactionEntity.getTransNo())
+          .intNo(intNo++)
+          .intStartDate(interest.getIntStartDate())
+          .intEndDate(interest.getIntEndDate())
+          .intRate(interest.getIntRate())
+          .intType(interest.getIntType())
+          .build();
+      loanTransactionInterestRepository.save(loanTransactionInterestEntity);
     }
   }
 
