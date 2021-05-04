@@ -6,22 +6,31 @@ import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 
 import com.banksalad.collectmydata.card.collect.Executions;
+import com.banksalad.collectmydata.card.common.db.entity.CardSummaryEntity;
 import com.banksalad.collectmydata.card.common.db.entity.LoanSummaryEntity;
 import com.banksalad.collectmydata.card.common.db.repository.LoanSummaryRepository;
 import com.banksalad.collectmydata.card.loan.dto.GetLoanSummaryRequest;
 import com.banksalad.collectmydata.card.loan.dto.LoanSummary;
+import com.banksalad.collectmydata.card.template.ServiceTest;
+import com.banksalad.collectmydata.card.template.provider.CardSummaryInvocationContextProvider;
+import com.banksalad.collectmydata.card.template.provider.LoanSummaryInvocationContextProvider;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.userbase.UserBaseRequestHelper;
 import com.banksalad.collectmydata.finance.api.userbase.UserBaseResponseHelper;
 import com.banksalad.collectmydata.finance.api.userbase.UserBaseService;
+import com.banksalad.collectmydata.finance.common.db.entity.UserSyncStatusEntity;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
+import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.List;
 
@@ -38,8 +47,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-@DisplayName("대출상품 목록 조회")
-class LoanSummaryServiceTest {
+@DisplayName("카드-009 대출상품 목록 조회")
+class LoanSummaryServiceTest extends ServiceTest<Object, UserSyncStatusEntity, LoanSummaryEntity, Object> {
 
   @Autowired
   private UserBaseService<GetLoanSummaryRequest, LoanSummary> loanSummaryService;
@@ -53,55 +62,80 @@ class LoanSummaryServiceTest {
   @Autowired
   private LoanSummaryRepository loanSummaryRepository;
 
-  private static WireMockServer wireMockServer;
+  private static WireMockServer wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
 
   @BeforeAll
   static void setup() {
-    wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
     wireMockServer.start();
-    setupMockServer();
+  }
+
+  @AfterEach
+  void tearDown() {
+    wireMockServer.resetAll();
   }
 
   @AfterAll
-  static void tearDown() {
+  static void shutDown() {
     wireMockServer.shutdown();
   }
 
-  @Test
-  @DisplayName("6.3.9 대출상품 목록 조회")
-  void loanSummary_userBaseService_getUserBaseInfo_test() throws ResponseNotOkException {
-    // given
-    ExecutionContext executionContext = getExecutionContext(wireMockServer.port());
+  @TestTemplate
+  @ExtendWith(LoanSummaryInvocationContextProvider.class)
+  public void unitTests(TestCase<Object, UserSyncStatusEntity, LoanSummaryEntity, Object> testCase)
+      throws ResponseNotOkException {
 
-    // when
-    loanSummaryService.getUserBaseInfo(executionContext, Executions.finance_loan_summary, loanSummaryRequestHelper,
-        loanSummaryResponseHelper);
+    prepare(testCase, wireMockServer);
 
-    List<LoanSummaryEntity> loanSummaryEntities = loanSummaryRepository.findAll();
+    final Integer status = testCase.getExpectedResponses().get(testCase.getExpectedResponses().size() - 1).getStatus();
 
-    // then
-    assertThat(loanSummaryEntities).usingRecursiveComparison()
-        .ignoringFields(ENTITY_IGNORE_FIELD)
-        .isEqualTo(List.of(
-            LoanSummaryEntity.builder()
-                .banksaladUserId(BANKSALAD_USER_ID)
-                .organizationId(ORGANIZATION_ID)
-                .loanRevolving(true)
-                .loanShortTerm(false)
-                .loanLongTerm(true)
-                .build())
-        );
+    if (status != null && status != 200) { // if (mainService instanceof SummaryService)
+      runAndTestException(testCase);
+    } else {
+      runMainService(testCase);
+    }
+    validate(testCase);
   }
 
-  private static void setupMockServer() {
-    // 6.3.9 대출상품 목록 조회
-    wireMockServer.stubFor(get(urlMatching("/loans.*"))
-        .withRequestBody(
-            equalToJson(readText("classpath:mock/request/CD31_001_single_page_00.json")))
-        .willReturn(
-            aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/CD31_001_single_page_00.json"))));
+
+  @Override
+  protected void saveGParents(List<Object> objects) {
+
+  }
+
+  @Override
+  protected void saveParents(List<UserSyncStatusEntity> userSyncStatusEntities) {
+
+  }
+
+  @Override
+  protected void saveMains(List<LoanSummaryEntity> loanSummaryEntities) {
+
+  }
+
+  @Override
+  protected void saveChildren(List<Object> objects) {
+
+  }
+
+  @Override
+  protected void runMainService(TestCase<Object, UserSyncStatusEntity, LoanSummaryEntity, Object> testCase)
+      throws ResponseNotOkException {
+    throw new ResponseNotOkException(500, "50001", "responseMessage");
+
+  }
+
+  @Override
+  protected void validateParents(List<UserSyncStatusEntity> expectedParents) {
+
+  }
+
+  @Override
+  protected void validateMains(List<LoanSummaryEntity> expectedMains) {
+
+  }
+
+  @Override
+  protected void validateChildren(List<Object> expectedChildren) {
+
   }
 }

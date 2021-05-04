@@ -12,30 +12,33 @@ import com.banksalad.collectmydata.card.common.db.entity.PointEntity;
 import com.banksalad.collectmydata.card.common.db.entity.PointHistoryEntity;
 import com.banksalad.collectmydata.card.common.db.repository.PointHistoryRepository;
 import com.banksalad.collectmydata.card.common.db.repository.PointRepository;
+import com.banksalad.collectmydata.card.template.ServiceTest;
+import com.banksalad.collectmydata.card.template.provider.PointInvocationContextProvider;
 import com.banksalad.collectmydata.card.util.TestHelper;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.userbase.UserBaseRequestHelper;
 import com.banksalad.collectmydata.finance.api.userbase.UserBaseResponseHelper;
 import com.banksalad.collectmydata.finance.api.userbase.UserBaseService;
+import com.banksalad.collectmydata.finance.common.db.entity.UserSyncStatusEntity;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
+import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.List;
 
-import static com.banksalad.collectmydata.card.util.FileUtil.readText;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 @SpringBootTest
-public class PointServiceTest {
+@Transactional
+@DisplayName("카드-003 포인트 정보 조회")
+public class PointServiceTest extends ServiceTest<Object, UserSyncStatusEntity, PointEntity, Object> {
 
   @Autowired
   private UserBaseService<ListPointsRequest, List<Point>> pointService;
@@ -52,41 +55,79 @@ public class PointServiceTest {
   @Autowired
   private PointHistoryRepository pointHistoryRepository;
 
-  private static WireMockServer wireMockServer;
+  private static WireMockServer wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
 
   @BeforeAll
   static void setup() {
-    wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
     wireMockServer.start();
-    setupMockServer();
+  }
+
+  @AfterEach
+  void tearDown() {
+    wireMockServer.resetAll();
   }
 
   @AfterAll
-  static void tearDown() {
-    wireMockServer.shutdown();
+  static void shutDown() {
+    wireMockServer.stop();
   }
 
-  @Test
-  @Transactional
-  @DisplayName("6.3.3 포인트 정보 조회")
-  public void listPoints() throws ResponseNotOkException {
-    // FIXME: 정해질 테스트 케이스에 따라 작성
-    ExecutionContext context = TestHelper.getExecutionContext(wireMockServer.port());
+  @TestTemplate
+  @ExtendWith(PointInvocationContextProvider.class)
+  public void unitTests(TestCase<Object, UserSyncStatusEntity, PointEntity, Object> testCase) throws ResponseNotOkException {
 
-    pointService.getUserBaseInfo(context, Executions.finance_card_point, requestHelper, responseHelper);
+    prepare(testCase, wireMockServer);
 
-    List<PointEntity> pointEntities = pointRepository.findAll();
-    List<PointHistoryEntity> pointHistoryEntities = pointHistoryRepository.findAll();
-    assertEquals(2, pointEntities.size());
-    assertEquals(2, pointHistoryEntities.size());
+    final Integer status = testCase.getExpectedResponses().get(testCase.getExpectedResponses().size() - 1).getStatus();
+
+    if (status != null && status != 200) {
+      runAndTestException(testCase);
+    } else {
+      runMainService(testCase);
+    }
+    validate(testCase);
+
   }
 
-  private static void setupMockServer() {
-    wireMockServer.stubFor(get(urlMatching("/cards/point.*"))
-        .willReturn(
-            aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/CD11_001_single_page_00.json"))));
+  @Override
+  protected void saveGParents(List<Object> objects) {
+
+  }
+
+  @Override
+  protected void saveParents(List<UserSyncStatusEntity> userSyncStatusEntities) {
+
+  }
+
+  @Override
+  protected void saveMains(List<PointEntity> pointEntities) {
+
+  }
+
+  @Override
+  protected void saveChildren(List<Object> objects) {
+
+  }
+
+  @Override
+  protected void runMainService(TestCase<Object, UserSyncStatusEntity, PointEntity, Object> testCase)
+      throws ResponseNotOkException {
+    throw new ResponseNotOkException(500, "50001", "responseMessage");
+
+  }
+
+  @Override
+  protected void validateParents(List<UserSyncStatusEntity> expectedParents) {
+
+  }
+
+  @Override
+  protected void validateMains(List<PointEntity> expectedMains) {
+
+  }
+
+  @Override
+  protected void validateChildren(List<Object> expectedChildren) {
+
   }
 }

@@ -1,11 +1,11 @@
 package com.banksalad.collectmydata.card.template.provider;
 
 import com.banksalad.collectmydata.card.collect.Executions;
-import com.banksalad.collectmydata.card.common.db.entity.BillEntity;
-import com.banksalad.collectmydata.card.template.testcase.BillBasicTestCaseGenerator;
+import com.banksalad.collectmydata.card.common.db.entity.PointEntity;
+import com.banksalad.collectmydata.card.template.testcase.PointTestCaseGenerator;
 import com.banksalad.collectmydata.common.collect.execution.Execution;
+import com.banksalad.collectmydata.finance.common.db.entity.UserSyncStatusEntity;
 import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
-
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -19,15 +19,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static com.banksalad.collectmydata.common.util.NumberUtil.bigDecimalOf;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_USS_ST;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_USS_ST;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 
-public class BillBasicInvocationContextProvider implements TestTemplateInvocationContextProvider {
+public class PointInvocationContextProvider implements TestTemplateInvocationContextProvider {
 
-  private static final Execution exeuciton = Executions.finance_card_bills;
+  private static final Execution execution = Executions.finance_card_point;
 
   @Override
   public boolean supportsTestTemplate(ExtensionContext context) {
@@ -37,53 +38,42 @@ public class BillBasicInvocationContextProvider implements TestTemplateInvocatio
   @Override
   public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 
-    BillEntity main1 = BillEntity.builder()
+    UserSyncStatusEntity parent1 = UserSyncStatusEntity.builder()
         .syncedAt(OLD_SYNCED_AT)
         .banksaladUserId(BANKSALAD_USER_ID)
         .organizationId(ORGANIZATION_ID)
-        .chargeAmt(bigDecimalOf(100000, 3))
-        .chargeDay((byte) 14)
-        .chargeMonth(202103)
-        .paidOutDate("20210314")
-        .cardType("01")
+        .apiId(execution.getApi().getId())
+        .searchTimestamp(OLD_USS_ST)
         .build();
-    BillEntity main2 = BillEntity.builder()
-        .syncedAt(OLD_SYNCED_AT)
-        .banksaladUserId(BANKSALAD_USER_ID)
-        .organizationId(ORGANIZATION_ID)
-        .chargeAmt(bigDecimalOf(120000, 3))
-        .chargeDay((byte) 14)
-        .chargeMonth(202102)
-        .paidOutDate("20210214")
-        .cardType("01")
-        .build();
-    BillEntity main3 = BillEntity.builder()
-        .syncedAt(OLD_SYNCED_AT)
-        .banksaladUserId(BANKSALAD_USER_ID)
-        .organizationId(ORGANIZATION_ID)
-        .chargeAmt(bigDecimalOf(500, 3))
-        .chargeDay((byte) 15)
-        .chargeMonth(202103)
-        .paidOutDate("20210317")
-        .cardType("02")
-        .build();
-    Map<String, BillEntity> mainMap = Map.of(
-        "main1", main1,
-        "updatedMain1", main1.toBuilder().syncedAt(NEW_SYNCED_AT).chargeAmt(bigDecimalOf(100001, 3)).build(),
-        "newMain1", main1.toBuilder().syncedAt(NEW_SYNCED_AT).build(),
-        "newMain2", main2.toBuilder().syncedAt(NEW_SYNCED_AT).build(),
-        "newMain3", main3.toBuilder().syncedAt(NEW_SYNCED_AT).build()
+    Map<String, UserSyncStatusEntity> parentMap = Map.of(
+        "parent1", parent1,
+        "newParent1", parent1.toBuilder().syncedAt(NEW_SYNCED_AT).searchTimestamp(OLD_USS_ST).build(),
+        "touchedParent1", parent1.toBuilder().syncedAt(NEW_SYNCED_AT).searchTimestamp(OLD_USS_ST).build(),
+        "updatedParent1", parent1.toBuilder().syncedAt(NEW_SYNCED_AT).searchTimestamp(NEW_USS_ST).build()
     );
 
-    BillBasicTestCaseGenerator<Object, Object, BillEntity, Object> generator =
-        new BillBasicTestCaseGenerator<>(exeuciton, null, null, mainMap, null);
+    PointEntity main1 = PointEntity.builder()
+        .syncedAt(OLD_SYNCED_AT)
+        .banksaladUserId(BANKSALAD_USER_ID)
+        .organizationId(ORGANIZATION_ID)
+        .pointNo((short) 1)
+        .pointName("pointName")
+        .remainPointAmt(1000L)
+        .expiringPointAmt(1000L)
+        .build();
+
+    Map<String, PointEntity> mainMap = Map.of(
+        "main1", main1
+    );
+
+    PointTestCaseGenerator<Object, UserSyncStatusEntity, PointEntity, Object> generator = new PointTestCaseGenerator<>(
+        execution, null, parentMap, mainMap, null);
 
     return generator.generate().stream().map(this::invocationContext);
   }
 
   private TestTemplateInvocationContext invocationContext(
-      TestCase<Object, Object, BillEntity, Object> testCase) {
-
+      TestCase<Object, UserSyncStatusEntity, PointEntity, Object> testCase) {
     return new TestTemplateInvocationContext() {
       @Override
       public String getDisplayName(int invocationIndex) {

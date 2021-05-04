@@ -10,21 +10,32 @@ import com.banksalad.collectmydata.card.card.dto.ApprovalDomestic;
 import com.banksalad.collectmydata.card.card.dto.ListApprovalDomesticRequest;
 import com.banksalad.collectmydata.card.collect.Executions;
 import com.banksalad.collectmydata.card.common.db.entity.ApprovalDomesticEntity;
+import com.banksalad.collectmydata.card.common.db.entity.CardEntity;
+import com.banksalad.collectmydata.card.common.db.entity.CardSummaryEntity;
+import com.banksalad.collectmydata.card.common.db.entity.PointEntity;
 import com.banksalad.collectmydata.card.common.db.repository.ApprovalDomesticRepository;
 import com.banksalad.collectmydata.card.common.service.CardSummaryService;
 import com.banksalad.collectmydata.card.summary.dto.CardSummary;
+import com.banksalad.collectmydata.card.template.ServiceTest;
+import com.banksalad.collectmydata.card.template.provider.ApprovalDomesticInvocationContextProvider;
 import com.banksalad.collectmydata.card.util.TestHelper;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionRequestHelper;
 import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
+import com.banksalad.collectmydata.finance.common.db.entity.UserSyncStatusEntity;
+import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
+import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import javax.transaction.Transactional;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -42,7 +53,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-public class ApprovalDomesticServiceTest {
+@Transactional
+@DisplayName("카드-007 국내 승인내역 조회")
+public class ApprovalDomesticServiceTest extends ServiceTest<Object, CardSummaryEntity, ApprovalDomesticEntity, Object> {
 
   @Autowired
   private TransactionApiService<CardSummary, ListApprovalDomesticRequest, ApprovalDomestic> transactionApiService;
@@ -59,85 +72,81 @@ public class ApprovalDomesticServiceTest {
   @MockBean
   private CardSummaryService cardSummaryService;
 
-  private static WireMockServer wireMockServer;
+  private static WireMockServer wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
 
   @BeforeAll
   static void setup() {
-    wireMockServer = new WireMockServer(WireMockSpring.options().dynamicPort());
     wireMockServer.start();
-    setupMockServer();
+  }
+
+  @AfterEach
+  void tearDown() {
+    wireMockServer.resetAll();
   }
 
   @AfterAll
-  static void tearDown() {
+  static void shutDown() {
     wireMockServer.shutdown();
   }
 
-  @Test
-  @Transactional
-  @DisplayName("6.3.7 국내 승인내역 조회 : 성공 케이스")
-  public void getApprovalDomesticTest_case1() {
-    ExecutionContext context = TestHelper.getExecutionContext(wireMockServer.port());
+  @TestTemplate
+  @ExtendWith(ApprovalDomesticInvocationContextProvider.class)
+  public void unitTests(TestCase<Object, CardSummaryEntity, ApprovalDomesticEntity, Object> testCase) throws ResponseNotOkException {
 
-    when(cardSummaryService.listSummariesConsented(BANKSALAD_USER_ID, ORGANIZATION_ID))
-        .thenReturn(List.of(
-            CardSummary.builder()
-                .cardId("card001")
-                .cardNum("123456******456")
-                .consent(true)
-                .cardName("하나카드01")
-                .cardMember(1)
-                .searchTimestamp(1000L)
-                .build()
-        ));
+    prepare(testCase, wireMockServer);
 
-    transactionApiService
-        .listTransactions(context, Executions.finance_card_approval_domestic, requestHelper, responseHelper);
+    final Integer status = testCase.getExpectedResponses().get(testCase.getExpectedResponses().size() - 1).getStatus();
 
-    List<ApprovalDomesticEntity> approvalDomesticEntities = approvalDomesticRepository.findAll();
-    assertEquals(2, approvalDomesticEntities.size());
-    assertThat(approvalDomesticEntities.get(0)).usingRecursiveComparison()
-        .ignoringFields(ENTITY_IGNORE_FIELD)
-        .isEqualTo(
-            ApprovalDomesticEntity.builder()
-                .approvalYearMonth(202103)
-                .banksaladUserId(BANKSALAD_USER_ID)
-                .organizationId(ORGANIZATION_ID)
-                .cardId("card001")
-                .approvedNum("001")
-                .status("01")
-                .payType("01")
-                .approvedDtime("20210301091000")
-                .merchantName("스타벅스")
-                .approvedAmt(BigDecimal.valueOf(5000).setScale(3, RoundingMode.CEILING))
-                .totalInstallCnt(2)
-                .build()
-        );
-    assertThat(approvalDomesticEntities.get(1)).usingRecursiveComparison()
-        .ignoringFields(ENTITY_IGNORE_FIELD)
-        .isEqualTo(
-            ApprovalDomesticEntity.builder()
-                .approvalYearMonth(202103)
-                .banksaladUserId(BANKSALAD_USER_ID)
-                .organizationId(ORGANIZATION_ID)
-                .cardId("card001")
-                .approvedNum("002")
-                .status("02")
-                .payType("01")
-                .approvedDtime("20210302101000")
-                .cancelDtime("20210302102000")
-                .merchantName("메가커피")
-                .approvedAmt(BigDecimal.valueOf(15000).setScale(3, RoundingMode.CEILING))
-                .build()
-        );
+    if (status != null && status != 200) {
+      runAndTestException(testCase);
+    } else {
+      runMainService(testCase);
+    }
+    validate(testCase);
+
   }
 
-  private static void setupMockServer() {
-    wireMockServer.stubFor(get(urlMatching("/cards.*"))
-        .willReturn(
-            aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", ContentType.APPLICATION_JSON.toString())
-                .withBody(readText("classpath:mock/response/CD03_001_single_page_00.json"))));
+
+
+  @Override
+  protected void saveGParents(List<Object> objects) {
+
+  }
+
+  @Override
+  protected void saveParents(List<CardSummaryEntity> cardSummaryEntities) {
+
+  }
+
+  @Override
+  protected void saveMains(List<ApprovalDomesticEntity> approvalDomesticEntities) {
+
+  }
+
+  @Override
+  protected void saveChildren(List<Object> objects) {
+
+  }
+
+  @Override
+  protected void runMainService(TestCase<Object, CardSummaryEntity, ApprovalDomesticEntity, Object> testCase)
+      throws ResponseNotOkException {
+    throw new ResponseNotOkException(500, "50001", "responseMessage");
+
+  }
+
+  @Override
+  protected void validateParents(List<CardSummaryEntity> expectedParents) {
+
+  }
+
+  @Override
+  protected void validateMains(List<ApprovalDomesticEntity> expectedMains) {
+
+  }
+
+  @Override
+  protected void validateChildren(List<Object> expectedChildren) {
+
   }
 }

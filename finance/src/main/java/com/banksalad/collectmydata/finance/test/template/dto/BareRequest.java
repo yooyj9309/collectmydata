@@ -12,4 +12,7 @@ public class BareRequest {
   private String nextPage;
 
   private Integer chargeMonth;
+
+  /* 6.3.5 조회 시 필요 */
+  private String seqno;
 }
