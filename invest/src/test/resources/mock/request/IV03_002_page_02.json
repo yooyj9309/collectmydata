@@ -4,5 +4,5 @@
   "from_date": "${json-unit.any-string}",
   "to_date": "${json-unit.any-string}",
   "next_page": "02",
-  "limit": 500
+  "limit": "500"
 }

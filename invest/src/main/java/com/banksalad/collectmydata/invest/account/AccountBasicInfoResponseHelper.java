@@ -9,6 +9,7 @@ import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
 import com.banksalad.collectmydata.invest.account.dto.AccountBasic;
 import com.banksalad.collectmydata.invest.account.dto.GetAccountBasicResponse;
 import com.banksalad.collectmydata.invest.common.db.entity.AccountBasicEntity;
+import com.banksalad.collectmydata.invest.common.db.entity.AccountBasicHistoryEntity;
 import com.banksalad.collectmydata.invest.common.db.entity.mapper.AccountBasicHistoryMapper;
 import com.banksalad.collectmydata.invest.common.db.entity.mapper.AccountBasicMapper;
 import com.banksalad.collectmydata.invest.common.db.repository.AccountBasicHistoryRepository;
@@ -59,10 +60,14 @@ public class AccountBasicInfoResponseHelper implements AccountInfoResponseHelper
       accountBasicEntity.setId(existingAccountBasicEntity.getId());
     }
 
-    if (!ObjectComparator
-        .isSame(accountBasicEntity, existingAccountBasicEntity, ENTITY_EXCLUDE_FIELD)) {
+    if (!ObjectComparator.isSame(accountBasicEntity, existingAccountBasicEntity, ENTITY_EXCLUDE_FIELD)) {
       accountBasicRepository.save(accountBasicEntity);
-      accountBasicHistoryRepository.save(accountBasicHistoryMapper.toHistoryEntity(accountBasicEntity));
+
+      AccountBasicHistoryEntity accountBasicHistoryEntity = accountBasicHistoryMapper.toHistoryEntity(accountBasicEntity);
+      accountBasicHistoryEntity.setCreatedBy(executionContext.getRequestedBy());
+      accountBasicHistoryEntity.setUpdatedBy(executionContext.getRequestedBy());
+
+      accountBasicHistoryRepository.save(accountBasicHistoryEntity);
     }
   }
 

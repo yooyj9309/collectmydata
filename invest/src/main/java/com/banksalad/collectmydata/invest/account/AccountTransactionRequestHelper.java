@@ -53,7 +53,7 @@ public class AccountTransactionRequestHelper implements TransactionRequestHelper
         .fromDate(dateFormatter.format(fromDate))
         .toDate(dateFormatter.format(toDate))
         .nextPage(nextPage)
-        .limit(DEFAULT_PAGING_LIMIT)
+        .limit(String.valueOf(DEFAULT_PAGING_LIMIT))
         .build();
   }
 }

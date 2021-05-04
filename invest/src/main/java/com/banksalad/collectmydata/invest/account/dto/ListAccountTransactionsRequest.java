@@ -20,5 +20,5 @@ public class ListAccountTransactionsRequest {
   private String fromDate;
   private String toDate;
   private String nextPage;
-  private int limit;
+  private String limit; // TODO jaeseong: 명세에 맞게 long으로 변경 (테스트배드 연동을 위해 String으로 임시 수정)
 }

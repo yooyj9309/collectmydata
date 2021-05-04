@@ -37,7 +37,7 @@ public class AccountBasicInfoRequestHelper implements AccountInfoRequestHelper<G
     return GetAccountBasicRequest.builder()
         .orgCode(executionContext.getOrganizationCode())
         .accountNum(accountSummary.getAccountNum())
-        .searchTimestamp(searchTimestamp)
+        .searchTimestamp(String.valueOf(searchTimestamp))
         .build();
   }
 }

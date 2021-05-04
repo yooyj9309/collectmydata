@@ -17,5 +17,5 @@ public class GetAccountBasicRequest {
 
   private String orgCode;
   private String accountNum;
-  private long searchTimestamp;
+  private String searchTimestamp; // TODO jaeseong: 명세에 맞게 long으로 변경 (테스트배드 연동을 위해 String으로 임시 수정)
 }

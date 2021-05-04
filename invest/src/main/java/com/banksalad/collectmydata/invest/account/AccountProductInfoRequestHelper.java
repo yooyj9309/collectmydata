@@ -38,7 +38,7 @@ public class AccountProductInfoRequestHelper implements
     return ListAccountProductsRequest.builder()
         .orgCode(executionContext.getOrganizationCode())
         .accountNum(accountSummary.getAccountNum())
-        .searchTimestamp(productSearchTimestamp)
+        .searchTimestamp(String.valueOf(productSearchTimestamp))
         .build();
   }
 }

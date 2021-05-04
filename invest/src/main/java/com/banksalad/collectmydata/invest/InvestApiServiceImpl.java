@@ -103,7 +103,8 @@ public class InvestApiServiceImpl implements InvestApiService {
             accountSummaryResponseHelper, summaryPublishmentHelper);
 
     // IRP Account Summary
-    irpAccountSummaryService.listAccountSummaries(executionContext);
+    // TODO jaeseong: 스테이징에서 금투업권 API 먼저 확인 후 주석 해제
+//    irpAccountSummaryService.listAccountSummaries(executionContext);
 
     CompletableFuture.allOf(
         CompletableFuture.runAsync(() -> accountBasicInfoService
@@ -117,12 +118,13 @@ public class InvestApiServiceImpl implements InvestApiService {
         CompletableFuture.runAsync(() -> accountProductInfoService
             .listAccountInfos(executionContext, Executions.finance_invest_account_products,
                 accountProductInfoRequestHelper, accountProductInfoResponseHelper,
-                accountProductInfoPublishmentHelper)),
+                accountProductInfoPublishmentHelper))
 
         // IRP Account Basic, Detail, Transaction
-        CompletableFuture.runAsync(() -> irpAccountService.listIrpAccountBasics(executionContext)),
-        CompletableFuture.runAsync(() -> irpAccountService.listIrpAccountDetails(executionContext)),
-        CompletableFuture.runAsync(() -> irpAccountTransactionService.listTransactions(executionContext))
+        // TODO jaeseong: 스테이징에서 금투업권 API 먼저 확인 후 주석 해제
+//        CompletableFuture.runAsync(() -> irpAccountService.listIrpAccountBasics(executionContext)),
+//        CompletableFuture.runAsync(() -> irpAccountService.listIrpAccountDetails(executionContext)),
+//        CompletableFuture.runAsync(() -> irpAccountTransactionService.listTransactions(executionContext))
     ).join();
 
     financeMessageService.produceSyncCompleted(
@@ -137,4 +139,3 @@ public class InvestApiServiceImpl implements InvestApiService {
 
   // TODO jaeseong: 스케쥴 request api 구현
 }
-

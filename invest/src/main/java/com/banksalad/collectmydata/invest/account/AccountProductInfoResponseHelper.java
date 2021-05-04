@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.invest.account;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
@@ -9,6 +10,7 @@ import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
 import com.banksalad.collectmydata.invest.account.dto.AccountProduct;
 import com.banksalad.collectmydata.invest.account.dto.ListAccountProductsResponse;
 import com.banksalad.collectmydata.invest.common.db.entity.AccountProductEntity;
+import com.banksalad.collectmydata.invest.common.db.entity.AccountProductHistoryEntity;
 import com.banksalad.collectmydata.invest.common.db.entity.mapper.AccountProductHistoryMapper;
 import com.banksalad.collectmydata.invest.common.db.entity.mapper.AccountProductMapper;
 import com.banksalad.collectmydata.invest.common.db.repository.AccountProductHistoryRepository;
@@ -39,6 +41,7 @@ public class AccountProductInfoResponseHelper implements
   }
 
   @Override
+  @Transactional
   public void saveAccountAndHistory(ExecutionContext executionContext, AccountSummary accountSummary,
       List<AccountProduct> accountProducts) {
 
@@ -69,7 +72,12 @@ public class AccountProductInfoResponseHelper implements
         accountProductEntity.setUpdatedBy(executionContext.getRequestedBy());
 
         accountProductRepository.save(accountProductEntity);
-        accountProductHistoryRepository.save(accountProductHistoryMapper.toHistoryEntity(accountProductEntity));
+
+        AccountProductHistoryEntity accountProductHistoryEntity = accountProductHistoryMapper.toHistoryEntity(accountProductEntity);
+        accountProductHistoryEntity.setCreatedBy(executionContext.getRequestedBy());
+        accountProductHistoryEntity.setUpdatedBy(executionContext.getRequestedBy());
+
+        accountProductHistoryRepository.save(accountProductHistoryEntity);
       }
     }
   }
