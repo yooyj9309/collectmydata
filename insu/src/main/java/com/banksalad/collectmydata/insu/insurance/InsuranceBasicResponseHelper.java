@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.insu.insurance;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
@@ -24,6 +25,9 @@ import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
 @Component
@@ -35,7 +39,7 @@ public class InsuranceBasicResponseHelper implements AccountInfoResponseHelper<I
   private final InsuranceBasicHistoryRepository insuranceBasicHistoryRepository;
   private final InsuredRepository insuredRepository;
   private final InsuredHistoryRepository insuredHistoryRepository;
-  
+
   private final InsuranceBasicMapper insuranceBasicMapper = Mappers.getMapper(InsuranceBasicMapper.class);
   private final InsuranceBasicHistoryMapper insuranceBasicHistoryMapper = Mappers
       .getMapper(InsuranceBasicHistoryMapper.class);
@@ -48,60 +52,60 @@ public class InsuranceBasicResponseHelper implements AccountInfoResponseHelper<I
   }
 
   @Override
+  @Transactional
   public void saveAccountAndHistory(ExecutionContext executionContext, InsuranceSummary insuranceSummary,
       InsuranceBasic insuranceBasic) {
-
-    long banksaladUserId = executionContext.getBanksaladUserId();
-    String organizationId = executionContext.getOrganizationId();
-    String insuNum = insuranceSummary.getInsuNum();
-
     InsuranceBasicEntity insuranceBasicEntity = insuranceBasicMapper.dtoToEntity(insuranceBasic);
     insuranceBasicEntity.setSyncedAt(executionContext.getSyncStartedAt());
-    insuranceBasicEntity.setBanksaladUserId(banksaladUserId);
-    insuranceBasicEntity.setOrganizationId(organizationId);
+    insuranceBasicEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
+    insuranceBasicEntity.setOrganizationId(executionContext.getOrganizationId());
     insuranceBasicEntity.setInsuNum(insuranceSummary.getInsuNum());
 
     InsuranceBasicEntity existingInsuranceBasicEntity = insuranceBasicRepository
         .findByBanksaladUserIdAndOrganizationIdAndInsuNum(
-            banksaladUserId,
-            organizationId,
-            insuNum
-        ).orElse(null);
+            insuranceBasicEntity.getBanksaladUserId(), insuranceBasicEntity.getOrganizationId(),
+            insuranceSummary.getInsuNum())
+        .orElse(null);
 
     if (existingInsuranceBasicEntity != null) {
       insuranceBasicEntity.setId(existingInsuranceBasicEntity.getId());
     }
 
     if (!ObjectComparator.isSame(insuranceBasicEntity, existingInsuranceBasicEntity, ENTITY_EXCLUDE_FIELD)) {
-      // 보험기본 및 history save;
       insuranceBasicRepository.save(insuranceBasicEntity);
       insuranceBasicHistoryRepository.save(insuranceBasicHistoryMapper.toHistoryEntity(insuranceBasicEntity));
+    }
 
-      // 피보험자 목록 비교 및 저장.
-      if (insuranceBasic.getInsuredList() != null) {
-        for (Insured insured : insuranceBasic.getInsuredList()) {
-          InsuredEntity insuredEntity = insuredMapper.dtoToEntity(insured);
-          insuredEntity.setSyncedAt(executionContext.getSyncStartedAt());
-          insuredEntity.setBanksaladUserId(banksaladUserId);
-          insuredEntity.setOrganizationId(organizationId);
-          insuredEntity.setInsuNum(insuNum);
+    saveInsureds(insuranceBasic, insuranceBasicEntity);
+  }
 
-          InsuredEntity existingInsuredEntity = insuredRepository
-              .findByBanksaladUserIdAndOrganizationIdAndInsuNumAndInsuredNo(
-                  banksaladUserId, organizationId, insuNum, insured.getInsuredNo()
-              ).orElse(null);
+  private void saveInsureds(InsuranceBasic insuranceBasic, InsuranceBasicEntity insuranceBasicEntity) {
+    List<Insured> existingInsureds = insuredRepository
+        .findByBanksaladUserIdAndOrganizationIdAndInsuNum(
+            insuranceBasicEntity.getBanksaladUserId(), insuranceBasicEntity.getOrganizationId(),
+            insuranceBasicEntity.getInsuNum())
+        .stream()
+        .map(insuredMapper::entityToDto)
+        .collect(Collectors.toList());
 
-          if (existingInsuredEntity != null) {
-            insuredEntity.setId(existingInsuredEntity.getId());
-            insuredEntity.setContractResponseCode(existingInsuredEntity.getContractResponseCode());
-            insuredEntity.setContractSearchTimestamp(existingInsuredEntity.getContractSearchTimestamp());
-          }
+    if (!ObjectComparator.isSameListIgnoreOrder(insuranceBasic.getInsuredList(), existingInsureds)) {
+      insuredRepository
+          .deleteInsuredByBanksaladUserIdAndOrganizationIdAndInsuNum(insuranceBasicEntity.getBanksaladUserId(),
+              insuranceBasicEntity.getOrganizationId(), insuranceBasicEntity.getInsuNum());
+      insuredRepository.flush();
 
-          if (!ObjectComparator.isSame(insuredEntity, existingInsuredEntity, ENTITY_EXCLUDE_FIELD)) {
-            insuredRepository.save(insuredEntity);
-            insuredHistoryRepository.save(insuredHistoryMapper.toHistoryEntity(insuredEntity));
-          }
-        }
+      short insuredNo = 1;
+      for (Insured insured : insuranceBasic.getInsuredList()) {
+        InsuredEntity insuredEntity = insuredMapper.dtoToEntity(insured);
+        insuredEntity.setBanksaladUserId(insuranceBasicEntity.getBanksaladUserId());
+        insuredEntity.setOrganizationId(insuranceBasicEntity.getOrganizationId());
+        insuredEntity.setSyncedAt(insuranceBasicEntity.getSyncedAt());
+        insuredEntity.setInsuNum(insuranceBasicEntity.getInsuNum());
+        insuredEntity.setInsuredNo(String.valueOf(insuredNo++));
+        insuredEntity.setInsuredName(insured.getInsuredName());
+
+        insuredRepository.save(insuredEntity);
+        insuredHistoryRepository.save(insuredHistoryMapper.toHistoryEntity(insuredEntity));
       }
     }
   }
