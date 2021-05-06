@@ -3,9 +3,14 @@
 {{ $service_grpc_port := "18081" }}
 {{ $service_http_port := "18082" }}
 
+# NOTE : 우선 30초로 지정.
 {{ $graceful_shutdown_timeout_sec := "30" }}
+{{ $telegraf_graceful_shutdown_timeout_sec := "30" }}
 
 {{ $telegraf_tag := "1.11.5" }}
+
+{{ $sidecar_tag := "096cc53117695d10fa1d86030fd974777d776ac4" }}
+{{ $sidecar_port := "8081" }}
 
 {{ $env := .Env.ENV }}
 {{ $sub_env_id := .Env.SUB_ENV_ID }}
@@ -18,6 +23,12 @@
 {{ end }}
 
 {{ $namespace := $env }}
+
+{{ $ingress_host := "mydata.staging.banksalad.com" }}
+
+{{ if eq $env "production" }}
+  {{ $ingress_host = "mydata.banksalad.com" }}  #TODO
+{{ end }}
 
 {{ $stg_collectmydata_connect_db_password := getenv "STG_COLLECTMYDATA_CONNECT_DB_PASSWORD" "" }}
 
@@ -35,7 +46,55 @@
   {{ $mysql_cidr_c = "10.121.12.176/28" }}
 {{ end }}
 
+# TODO (hyunjun) : logging할 path 추가 예정.
+{{ $sidecar_normalized_path_regexps := conv.Join (`
+/api/ping
+` | strings.TrimSpace | strings.Split "\n") "," }}
 
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ $service_name }}-sidecar-telegraf
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ $service_name }}
+data:
+  telegraf.conf: |
+    [global_tags]
+
+    [agent]
+      interval = "10s"
+      round_interval = true
+      metric_batch_size = 1000
+      metric_buffer_limit = 10000
+      collection_jitter = "0s"
+      flush_interval = "10s"
+      flush_jitter = "0s"
+      precision = ""
+      hostname = ""
+      omit_hostname = false
+
+    [[outputs.influxdb]]
+      urls = ["http://influxdb-service.{{ $namespace }}.banksalad.in:8086"]
+      database = "observability-telegraf"
+
+    [[inputs.statsd]]
+      protocol = "udp"
+      max_tcp_connections = 250
+      tcp_keep_alive = false
+      service_address = ":8125"
+      delete_gauges = true
+      delete_counters = true
+      delete_sets = true
+      delete_timings = true
+      percentiles = [99, 95, 90, 50]
+      metric_separator = "."
+      parse_data_dog_tags = false
+      datadog_extensions = false
+      allowed_pending_messages = 10000
+      percentile_limit = 1000
 ---
 kind: ConfigMap
 apiVersion: v1
@@ -101,7 +160,67 @@ spec:
           configMap:
             name: {{ $service_name }}-telegraf
             defaultMode: 420
+        - name: telegraf-conf
+          configMap:
+            name: {{ $service_name }}-sidecar-telegraf
+            defaultMode: 420
       containers:
+        - name: telegraf-for-sidecar
+          image: telegraf:{{ $telegraf_tag }}
+          ports:
+            - containerPort: 8125
+              protocol: UDP
+          resources:
+            limits:
+              cpu: 1
+              memory: 500Mi
+            requests:
+              cpu: 500m
+              memory: 300Mi
+          volumeMounts:
+            - name: telegraf-conf
+              mountPath: "/etc/telegraf"
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - sh
+                  - "-c"
+                  - sleep {{ $telegraf_graceful_shutdown_timeout_sec }}
+        - name: sidecar-for-internal
+          image: rainist/sidecar:{{ $sidecar_tag }}
+          ports:
+            - containerPort: {{ $sidecar_port }}
+              protocol: TCP
+          env:
+            - name: SIDECAR_HTTP_PORT
+              value: "{{ $sidecar_port }}"
+            - name: SERVICE_HTTP_HOSTNAME
+              value: localhost
+            - name: SERVICE_HTTP_PORT
+              value: "{{ $service_http_port }}"
+            - name: SERVICE_NAME
+              value: {{ $service_name }}
+            - name: SIDECAR_GRACEFUL_SHUTDOWN_TIMEOUT_MS
+              value: "{{ $graceful_shutdown_timeout_sec }}"
+            - name: ENV
+              value: {{ $env }}
+            - name: SUB_ENV_ID
+              value: {{ $sub_env_id }}
+            - name: NAMESPACE
+              value: {{ $namespace }}
+            - name: PATH_REGEXPS
+              value: "{{ $sidecar_normalized_path_regexps }}"
+          resources:
+            limits:
+              cpu: "1"
+              memory: 2Gi
+            requests:
+              cpu: 250m
+              memory: 512Mi
+          terminationMessagePath: "/dev/termination-log"
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
         - name: {{ $service_name }}-telegraf
           image: telegraf:{{ $telegraf_tag }}
           ports:
@@ -226,6 +345,10 @@ spec:
       protocol: TCP
       port: 8080
       targetPort: {{ $service_grpc_port }}
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: {{ $sidecar_port }}
   selector:
     app: {{ $service_name }}
   type: ClusterIP
@@ -301,3 +424,26 @@ spec:
   selector:
     matchLabels:
       app: {{ $service_name }}
+---
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ $service_name }}
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ $service_name }}
+  annotations:
+    kubernetes.io/ingress.class: internal
+    ingress.kubernetes.io/service-upstream: "true"
+spec:
+  rules:
+    - host: {{ $ingress_host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $service_name }}
+                port:
+                  number: 80
