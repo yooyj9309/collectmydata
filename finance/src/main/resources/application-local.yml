@@ -1,8 +1,6 @@
 spring:
   profiles:
     active: local
-  application:
-    name: collectmydatafinance
 
 # cipher는 현 상황에서는 연동하지 않는 서비스라 88888처럼 임의 포트로 지정.
 # 아래 서비스 uri을 지정하지 않으면 grpcConfig에서 channel을 만들 때 에러 발생.
