@@ -43,6 +43,7 @@ public class InsuranceBasicInvocationContextProvider implements TestTemplateInvo
         .prodName("01")
         .insuStatus("01")
         .basicSearchTimestamp(null)
+        .basicResponseCode(RSP_CODE_SUCCESS)
         .build();
 
     InsuranceSummaryEntity parent2 = InsuranceSummaryEntity.builder()
@@ -55,6 +56,7 @@ public class InsuranceBasicInvocationContextProvider implements TestTemplateInvo
         .prodName("02")
         .insuStatus("02")
         .basicSearchTimestamp(null)
+        .basicResponseCode(RSP_CODE_SUCCESS)
         .build();
 
     Map<String, InsuranceSummaryEntity> parentMap = Map.of(

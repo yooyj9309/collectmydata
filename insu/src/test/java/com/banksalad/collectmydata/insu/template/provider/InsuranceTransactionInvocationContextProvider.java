@@ -44,6 +44,7 @@ public class InsuranceTransactionInvocationContextProvider implements TestTempla
         .prodName("01")
         .insuStatus("01")
         .transactionSyncedAt(null)
+        .transactionResponseCode(RSP_CODE_SUCCESS)
         .build();
     Map<String, InsuranceSummaryEntity> parentMap = Map.of(
         "freshParent1", parent1,

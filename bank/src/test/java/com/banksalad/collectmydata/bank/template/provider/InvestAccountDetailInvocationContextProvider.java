@@ -46,6 +46,7 @@ public class InvestAccountDetailInvocationContextProvider implements TestTemplat
         .accountType("2001")
         .accountStatus("01")
         .detailSearchTimestamp(null)
+        .detailResponseCode(RSP_CODE_SUCCESS)
         .build();
 
     AccountSummaryEntity parent2 = AccountSummaryEntity.builder()
@@ -60,6 +61,7 @@ public class InvestAccountDetailInvocationContextProvider implements TestTemplat
         .accountType("2001")
         .accountStatus("01")
         .detailSearchTimestamp(null)
+        .detailResponseCode(RSP_CODE_SUCCESS)
         .build();
 
     Map<String, AccountSummaryEntity> parentMap = Map.of(

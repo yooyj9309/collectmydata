@@ -47,6 +47,7 @@ public class InvestAccountTransactionInvocationContextProvider implements TestTe
         .accountType("2001")
         .accountStatus("01")
         .transactionSyncedAt(null)
+        .transactionResponseCode(RSP_CODE_SUCCESS)
         .build();
     Map<String, AccountSummaryEntity> parentMap = Map.of(
         "freshParent1", parent1,

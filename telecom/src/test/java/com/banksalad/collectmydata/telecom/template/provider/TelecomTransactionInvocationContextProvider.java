@@ -27,6 +27,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_OVER_QUOTA;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SUCCESS;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static com.banksalad.collectmydata.telecom.common.constant.TelecomTestConstants.MGMT_ID1;
 
@@ -52,6 +53,7 @@ public class TelecomTransactionInvocationContextProvider implements TestTemplate
         .type("02")
         .status("01")
         .transactionSyncedAt(null)
+        .transactionResponseCode(RSP_CODE_SUCCESS)
         .consentId(CONSENT_ID)
         .syncRequestId(SYNC_REQUEST_ID)
         .build();

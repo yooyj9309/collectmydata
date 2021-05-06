@@ -30,6 +30,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_NO_ACCOUNT;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SUCCESS;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 
 public class AccountBasicInvocationContextProvider implements TestTemplateInvocationContextProvider {
@@ -53,6 +54,7 @@ public class AccountBasicInvocationContextProvider implements TestTemplateInvoca
         .accountType("101")
         .accountStatus("201")
         .basicSearchTimestamp(OLD_ST1)
+        .basicResponseCode(RSP_CODE_SUCCESS)
         .consentId(CONSENT_ID)
         .syncRequestId(SYNC_REQUEST_ID)
         .build();
@@ -67,6 +69,7 @@ public class AccountBasicInvocationContextProvider implements TestTemplateInvoca
         .accountType("101")
         .accountStatus("201")
         .basicSearchTimestamp(0L)
+        .basicResponseCode(RSP_CODE_SUCCESS)
         .consentId(CONSENT_ID)
         .syncRequestId(SYNC_REQUEST_ID)
         .build();

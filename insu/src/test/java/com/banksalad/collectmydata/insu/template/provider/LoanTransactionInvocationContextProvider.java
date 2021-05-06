@@ -44,6 +44,7 @@ public class LoanTransactionInvocationContextProvider implements TestTemplateInv
         .accountType("01")
         .accountStatus("01")
         .transactionSyncedAt(null)
+        .transactionResponseCode(RSP_CODE_SUCCESS)
         .build();
     Map<String, LoanSummaryEntity> parentMap = Map.of(
         "freshParent1", parent1,

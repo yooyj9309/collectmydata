@@ -28,6 +28,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_OVER_QUOTA;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SUCCESS;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 
 @RequiredArgsConstructor
@@ -52,6 +53,7 @@ public class AccountTransactionInvocationContextProvider implements TestTemplate
         .accountName("증권계좌1")
         .accountType("101")
         .accountStatus("201")
+        .transactionResponseCode(RSP_CODE_SUCCESS)
         .consentId(CONSENT_ID)
         .syncRequestId(SYNC_REQUEST_ID)
         .build();

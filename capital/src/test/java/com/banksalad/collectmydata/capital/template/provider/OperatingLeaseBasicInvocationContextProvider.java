@@ -28,6 +28,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_NO_ACCOUNT;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SUCCESS;
 
 public class OperatingLeaseBasicInvocationContextProvider implements TestTemplateInvocationContextProvider {
 
@@ -52,6 +53,7 @@ public class OperatingLeaseBasicInvocationContextProvider implements TestTemplat
         .accountType("3710")
         .accountStatus("01")
         .operatingLeaseBasicSearchTimestamp(OLD_ST1)
+        .operatingLeaseBasicResponseCode(RSP_CODE_SUCCESS)
         .build();
     AccountSummaryEntity newParent = AccountSummaryEntity.builder()
         .syncedAt(OLD_SYNCED_AT)
@@ -64,6 +66,7 @@ public class OperatingLeaseBasicInvocationContextProvider implements TestTemplat
         .accountType("3710")
         .accountStatus("03")
         .operatingLeaseBasicSearchTimestamp(null)
+        .operatingLeaseBasicResponseCode(RSP_CODE_SUCCESS)
         .build();
     Map<String, AccountSummaryEntity> parentMap = Map.of(
         "existingParent", existingParent,

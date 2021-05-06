@@ -66,15 +66,14 @@ public class AccountInfoServiceImpl<Summary, AccountRequest, Account> implements
               .request(requestHelper.make(executionContext, summary))
               .build());
 
+      /* update response code to summary table */
+      responseHelper.saveResponseCode(executionContext, summary,
+          Optional.ofNullable(executionResponse.getResponse())
+              .map(AccountResponse::getRspCode)
+              .orElse(String.valueOf(executionResponse.getHttpStatusCode())));
+
       /* validate response  */
       if (executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
-
-        /* update response code to summary table if not ok */
-        responseHelper.saveResponseCode(executionContext, summary,
-            Optional.ofNullable(executionResponse.getResponse())
-                .map(AccountResponse::getRspCode)
-                .orElse(String.valueOf(executionResponse.getHttpStatusCode())));
-
         continue;
       }
 

@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.banksalad.collectmydata.bank.testutil.FileUtil.readText;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SUCCESS;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -269,7 +270,7 @@ class DepositAccountBasicServiceTest {
     /* check #2 : accountSummaryEntity */
     assertThat(accountSummaryRepository.findAll().size()).isEqualTo(1);
     assertThat(accountSummaryRepository.findAll().get(0)).usingRecursiveComparison().ignoringFields(ENTITY_IGNORE_FIELD)
-        .isEqualTo(getAccountSummaryEntity(1000L));
+        .isEqualTo(getAccountSummaryEntity(1000L, RSP_CODE_SUCCESS));
 
     /* check #3 : accountBasicEntity */
     assertThat(depositAccountBasicRepository.findAll().size()).isEqualTo(1);
@@ -308,7 +309,7 @@ class DepositAccountBasicServiceTest {
     /* check #2 : accountSummaryEntity */
     assertThat(accountSummaryRepository.findAll().size()).isEqualTo(1);
     assertThat(accountSummaryRepository.findAll().get(0)).usingRecursiveComparison().ignoringFields(ENTITY_IGNORE_FIELD)
-        .isEqualTo(getAccountSummaryEntity(2000L));
+        .isEqualTo(getAccountSummaryEntity(2000L, RSP_CODE_SUCCESS));
 
     /* check #3 : accountBasicEntity - syncedAt, holderName */
     assertThat(depositAccountBasicRepository.findAll().size()).isEqualTo(1);
@@ -368,6 +369,24 @@ class DepositAccountBasicServiceTest {
         .accountStatus(ACCOUNT_STATUS)
         .basicSearchTimestamp(basicSearchTimestamp)
         .consentId(CONSENT_ID)
+        .build();
+  }
+
+  private AccountSummaryEntity getAccountSummaryEntity(Long basicSearchTimestamp, String responseCode) {
+    return AccountSummaryEntity.builder()
+        .syncedAt(SYNCED_AT)
+        .banksaladUserId(BANKSALAD_USER_ID)
+        .organizationId(ORGANIZATION_ID)
+        .accountNum(ACCOUNT_NUM)
+        .consent(TRUE)
+        .seqno(SEQNO1)
+        .foreignDeposit(FALSE)
+        .prodName(PRODUCT_NAME)
+        .accountType(ACCOUNT_TYPE)
+        .accountStatus(ACCOUNT_STATUS)
+        .basicSearchTimestamp(basicSearchTimestamp)
+        .consentId(CONSENT_ID)
+        .basicResponseCode(responseCode)
         .build();
   }
 

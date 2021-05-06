@@ -28,6 +28,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_NO_ACCOUNT;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SUCCESS;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ZERO_USS_ST;
 
@@ -52,6 +53,7 @@ public class IrpAccountBasicInvocationContextProvider implements TestTemplateInv
         .accountNum("100246541123")
         .accountStatus("01")
         .basicSearchTimestamp(OLD_ST1)
+        .basicResponseCode(RSP_CODE_SUCCESS)
         .detailSearchTimestamp(ZERO_USS_ST)
         .transactionSyncedAt(null)
         .isConsent(true)
@@ -68,6 +70,7 @@ public class IrpAccountBasicInvocationContextProvider implements TestTemplateInv
         .accountNum("234246541143")
         .accountStatus("01")
         .basicSearchTimestamp(ZERO_USS_ST)
+        .basicResponseCode(RSP_CODE_SUCCESS)
         .detailSearchTimestamp(ZERO_USS_ST)
         .transactionSyncedAt(null)
         .isConsent(true)

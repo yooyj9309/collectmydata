@@ -29,6 +29,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_NO_ACCOUNT;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SUCCESS;
 
 public class InsuranceBasicInvocationContextProvider implements TestTemplateInvocationContextProvider {
 
@@ -51,6 +52,7 @@ public class InsuranceBasicInvocationContextProvider implements TestTemplateInvo
         .insuType("20")
         .insuStatus("01")
         .basicSearchTimestamp(OLD_ST1)
+        .basicResponseCode(RSP_CODE_SUCCESS)
         .build();
 
     InsuranceSummaryEntity newParent = InsuranceSummaryEntity.builder()
@@ -63,6 +65,7 @@ public class InsuranceBasicInvocationContextProvider implements TestTemplateInvo
         .insuType("20")
         .insuStatus("01")
         .basicSearchTimestamp(0L)
+        .basicResponseCode(RSP_CODE_SUCCESS)
         .build();
 
     Map<String, InsuranceSummaryEntity> parentMap = Map.of(

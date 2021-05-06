@@ -28,6 +28,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_OVER_QUOTA;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SUCCESS;
 import static com.banksalad.collectmydata.insu.common.constant.InsuranceTestConstants.CAR_NUMBER;
 import static com.banksalad.collectmydata.insu.common.constant.InsuranceTestConstants.INSU_NUM;
 import static com.banksalad.collectmydata.insu.common.constant.InsuranceTestConstants.INSU_STATUS;
@@ -74,6 +75,7 @@ public class CarInsuranceTransactionInvocationContextProvider implements TestTem
         .selfPayRate("01")
         .selfPayAmt(NumberUtil.bigDecimalOf(200000, 3))
         .transactionSyncedAt(null)
+        .transactionResponseCode(RSP_CODE_SUCCESS)
         .build();
     Map<String, CarInsuranceEntity> parentMap = Map.of(
         "freshParent1", parent1,

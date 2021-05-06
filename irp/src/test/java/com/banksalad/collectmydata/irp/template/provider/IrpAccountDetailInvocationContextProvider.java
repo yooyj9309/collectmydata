@@ -29,6 +29,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_CANCELLATION;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_NO_ACCOUNT;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SUCCESS;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ZERO_USS_ST;
 
@@ -55,6 +56,7 @@ public class IrpAccountDetailInvocationContextProvider implements TestTemplateIn
         .accountStatus("01")
         .isConsent(true)
         .prodName("개인형 IRP 계좌1")
+        .detailResponseCode(RSP_CODE_SUCCESS)
         .build();
 
     Map<String, IrpAccountSummaryEntity> parentMap = Map.of(

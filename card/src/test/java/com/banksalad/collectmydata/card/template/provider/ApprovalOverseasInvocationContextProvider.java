@@ -28,6 +28,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_OVER_QUOTA;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SUCCESS;
 
 public class ApprovalOverseasInvocationContextProvider implements TestTemplateInvocationContextProvider {
 
@@ -52,7 +53,7 @@ public class ApprovalOverseasInvocationContextProvider implements TestTemplateIn
         .cardMember(1)
         .searchTimestamp(OLD_ST1)
         .approvalOverseasTransactionSyncedAt(null)
-        .approvalOverseasTransactionResponseCode(null)
+        .approvalOverseasTransactionResponseCode(RSP_CODE_SUCCESS)
         .build();
     Map<String, CardSummaryEntity> parentMap = Map.of(
         "freshParent1", parent1,

@@ -34,6 +34,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_OVER_QUOTA;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SUCCESS;
 
 public class AccountPrepaidTransactionInvocationContextProvider implements TestTemplateInvocationContextProvider {
 
@@ -57,6 +58,7 @@ public class AccountPrepaidTransactionInvocationContextProvider implements TestT
         .accountStatus("01")
         .payReg(true)
         .prepaidTransactionSyncedAt(null)
+        .prepaidTransactionResponseCode(RSP_CODE_SUCCESS)
         .build();
     Map<String, AccountSummaryEntity> parentMap = Map.of(
         "freshParent1", parent1,

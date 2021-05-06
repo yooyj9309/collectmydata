@@ -26,6 +26,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_NO_ACCOUNT;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SUCCESS;
 
 public class LoanBasicInvocationContextProvider implements TestTemplateInvocationContextProvider {
 
@@ -48,6 +49,7 @@ public class LoanBasicInvocationContextProvider implements TestTemplateInvocatio
         .accountType("01")
         .accountStatus("01")
         .basicSearchTimestamp(null)
+        .basicResponseCode(RSP_CODE_SUCCESS)
         .build();
 
     LoanSummaryEntity parent2 = LoanSummaryEntity.builder()
@@ -60,6 +62,7 @@ public class LoanBasicInvocationContextProvider implements TestTemplateInvocatio
         .accountType("02")
         .accountStatus("02")
         .basicSearchTimestamp(null)
+        .basicResponseCode(RSP_CODE_SUCCESS)
         .build();
 
     Map<String, LoanSummaryEntity> parentMap = Map.of(

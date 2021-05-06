@@ -56,6 +56,7 @@ public class InsuranceContractInvocationContextProvider implements TestTemplateI
         .insuredNo("01")
         .insuredName("kim")
         .contractSearchTimestamp(null)
+        .contractResponseCode(RSP_CODE_SUCCESS)
         .build();
     InsuredEntity parent2 = InsuredEntity.builder()
         .syncedAt(OLD_SYNCED_AT)
@@ -65,6 +66,7 @@ public class InsuranceContractInvocationContextProvider implements TestTemplateI
         .insuredNo("02")
         .insuredName("park")
         .contractSearchTimestamp(null)
+        .contractResponseCode(RSP_CODE_SUCCESS)
         .build();
     Map<String, InsuredEntity> parentMap = Map.of(
         "freshParent1", parent1,

@@ -29,6 +29,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_NO_ACCOUNT;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SUCCESS;
 import static com.banksalad.collectmydata.insu.common.constant.InsuranceTestConstants.CAR_INSU_TYPE;
 import static com.banksalad.collectmydata.insu.common.constant.InsuranceTestConstants.CAR_NUMBER;
 import static com.banksalad.collectmydata.insu.common.constant.InsuranceTestConstants.CAR_PROD_NAME;
@@ -57,6 +58,7 @@ public class CarInsuranceInvocationContextProvider implements TestTemplateInvoca
         .insuType(CAR_INSU_TYPE)
         .insuStatus(INSU_STATUS)
         .carSearchTimestamp(OLD_ST1)
+        .carResponseCode(RSP_CODE_SUCCESS)
         .build();
     InsuranceSummaryEntity newParent = InsuranceSummaryEntity.builder()
         .syncedAt(OLD_SYNCED_AT)
@@ -68,6 +70,7 @@ public class CarInsuranceInvocationContextProvider implements TestTemplateInvoca
         .insuType(CAR_INSU_TYPE)
         .insuStatus(INSU_STATUS)
         .carSearchTimestamp(null)
+        .carResponseCode(RSP_CODE_SUCCESS)
         .build();
     Map<String, InsuranceSummaryEntity> parentMap = Map.of(
         "existingParent", existingParent,

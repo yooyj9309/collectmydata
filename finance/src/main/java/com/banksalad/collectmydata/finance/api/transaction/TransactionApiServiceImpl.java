@@ -79,9 +79,11 @@ public class TransactionApiServiceImpl<Summary, TransactionRequest, Transaction>
         /* populate response */
         transactionResponse = executionResponse.getResponse();
 
+        /* update response code to summary table */
+        responseHelper.saveResponseCode(executionContext, summary, transactionResponse.getRspCode());
+
         /* validate response and break pagination */
         if (executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
-          responseHelper.saveResponseCode(executionContext, summary, transactionResponse.getRspCode());
           isAllPaginationResponseOk = false;
           break;
         }

@@ -51,6 +51,7 @@ import static com.banksalad.collectmydata.capital.common.TestHelper.REPAY_ORG_CO
 import static com.banksalad.collectmydata.capital.common.TestHelper.SEQNO1;
 import static com.banksalad.collectmydata.capital.common.TestHelper.getExecutionContext;
 import static com.banksalad.collectmydata.capital.util.FileUtil.readText;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SUCCESS;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -265,7 +266,7 @@ public class AccountBasicServiceTest {
     /* check #2 : accountSummaryEntity */
     assertThat(accountSummaryRepository.findAll().size()).isEqualTo(1);
     assertThat(accountSummaryRepository.findAll().get(0)).usingRecursiveComparison().ignoringFields(ENTITY_IGNORE_FIELD)
-        .isEqualTo(getAccountSummaryEntity(1000L));
+        .isEqualTo(getAccountSummaryEntity(1000L, RSP_CODE_SUCCESS));
 
     /* check #3 : accountBasicEntity */
     assertThat(accountBasicRepository.findAll().size()).isEqualTo(1);
@@ -305,7 +306,7 @@ public class AccountBasicServiceTest {
     /* check #2 : accountSummaryEntity */
     assertThat(accountSummaryRepository.findAll().size()).isEqualTo(1);
     assertThat(accountSummaryRepository.findAll().get(0)).usingRecursiveComparison().ignoringFields(ENTITY_IGNORE_FIELD)
-        .isEqualTo(getAccountSummaryEntity(2000L));
+        .isEqualTo(getAccountSummaryEntity(2000L, RSP_CODE_SUCCESS));
 
     /* check #3 : accountBasicEntity - syncedAt, holderName */
     assertThat(accountBasicRepository.findAll().size()).isEqualTo(1);
@@ -366,6 +367,22 @@ public class AccountBasicServiceTest {
         .accountType(ACCOUNT_TYPE)
         .accountStatus(ACCOUNT_STATUS)
         .basicSearchTimestamp(basicSearchTimestamp)
+        .build();
+  }
+
+  private AccountSummaryEntity getAccountSummaryEntity(Long basicSearchTimestamp, String responseCode) {
+    return AccountSummaryEntity.builder()
+        .syncedAt(SYNCED_AT)
+        .banksaladUserId(BANKSALAD_USER_ID)
+        .organizationId(ORGANIZATION_ID)
+        .accountNum(ACCOUNT_NUM)
+        .seqno(SEQNO1)
+        .isConsent(TRUE)
+        .prodName(PRODUCT_NAME)
+        .accountType(ACCOUNT_TYPE)
+        .accountStatus(ACCOUNT_STATUS)
+        .basicSearchTimestamp(basicSearchTimestamp)
+        .basicResponseCode(responseCode)
         .build();
   }
 
