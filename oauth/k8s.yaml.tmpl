@@ -37,6 +37,7 @@
   {{ $redis_cidr_c = "10.130.252.128/25" }}
 {{ end }}
 
+{{ $sidecar_normalized_path_regexps := "/ping/health,/v1/mydata-auth/ready,/v1/mydata-auth/authorize"}}
 ---
 kind: ConfigMap
 apiVersion: v1
@@ -80,44 +81,6 @@ data:
       datadog_extensions = false
       allowed_pending_messages = 10000
       percentile_limit = 1000
-
----
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: {{ $service_name }}-nginx
-  namespace: {{ $namespace }}
-data:
-  default.conf: |
-    upstream oauth-app {
-        server 127.0.0.1:{{ $service_port }};
-    }
-
-    server {
-        gzip on;
-        gzip_disable "msie6";
-        gzip_vary on;
-        gzip_proxied any;
-        gzip_comp_level 6;
-        gzip_buffers 16 8k;
-        gzip_http_version 1.1;
-        gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
-
-        listen 80;
-        charset utf-8;
-        proxy_buffer_size 128k;
-        proxy_buffers 4 256k;
-        proxy_busy_buffers_size 256k;
-        client_max_body_size 30M;
-
-        location / {
-            proxy_pass http://oauth-app;
-            proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
-            proxy_intercept_errors on;
-            expires -1;
-            add_header Cache-Control "private, no-cache, no-store, max-age=0";
-        }
-    }
 
 ---
 kind: ConfigMap
@@ -180,10 +143,6 @@ spec:
         app: {{ $service_name }}
     spec:
       volumes:
-        - name: nginx-conf
-          configMap:
-            name: {{ $service_name }}-nginx
-            defaultMode: 420
         - name: {{ $service_name }}-telegraf-conf
           configMap:
             name: {{ $service_name }}-telegraf
@@ -246,28 +205,6 @@ spec:
             requests:
               cpu: 250m
               memory: 512Mi
-          terminationMessagePath: "/dev/termination-log"
-          terminationMessagePolicy: File
-          imagePullPolicy: IfNotPresent
-        - name: nginx
-          image: rainist/nginx:{{ $nginx_tag }}
-          resources:
-            limits:
-              cpu: '1'
-              memory: 300Mi
-            requests:
-              cpu: 100m
-              memory: 100Mi
-          volumeMounts:
-            - name: nginx-conf
-              mountPath: "/etc/nginx/conf.d"
-          lifecycle:
-            preStop:
-              exec:
-                command:
-                  - sh
-                  - "-c"
-                  - sleep 5 && /usr/sbin/nginx -s quit
           terminationMessagePath: "/dev/termination-log"
           terminationMessagePolicy: File
           imagePullPolicy: IfNotPresent
@@ -371,7 +308,7 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 80
+      targetPort: 8080
   selector:
     app: {{ $service_name }}
   type: ClusterIP
