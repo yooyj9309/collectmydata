@@ -49,7 +49,7 @@ public class LoanAccountTransactionInvocationContextProvider implements TestTemp
         .seqno("1")
         .foreignDeposit(false)
         .prodName("자유입출금")
-        .accountType("3001")
+        .accountType("3100")
         .accountStatus("01")
         .transactionSyncedAt(null)
         .transactionResponseCode(RSP_CODE_SUCCESS)

@@ -36,13 +36,15 @@ public class BankPublishmentRequestedConsumer {
       /* deserialize message */
       PublishmentRequestedBankMessage message = objectMapper.readValue(source, PublishmentRequestedBankMessage.class);
 
-      LoggingMdcUtil.set(Sector.FINANCE.name(), Industry.BANK.name(), message.getBanksaladUserId(), message.getOrganizationId(),
-          message.getSyncRequestId());
-      log.info("[collect] consume PublishmentRequestedBankMessage syncRequestId: {} ", message.getSyncRequestId());
+      LoggingMdcUtil
+          .set(Sector.FINANCE.name(), Industry.BANK.name(), message.getBanksaladUserId(), message.getOrganizationId(),
+              message.getSyncRequestId());
+      log.info("[collect] consume PublishmentRequestedBankMessage. financeSyncItem: {}, syncRequestId: {}",
+          message.getFinanceSyncItem(), message.getSyncRequestId());
 
       /* notify */
       financeStub.notifyCollectmydatabankSynced(message.toNotifyRequest(),
-          new StreamObserver<NotifyCollectmydatabankSyncedResponse>() {
+          new StreamObserver<>() {
             @Override
             public void onNext(NotifyCollectmydatabankSyncedResponse value) {
 
@@ -50,18 +52,19 @@ public class BankPublishmentRequestedConsumer {
 
             @Override
             public void onError(Throwable t) {
-              log.error("[collect] error while notifying to finance syncRequestId: {}, t: {} ",
-                  message.getSyncRequestId(), t.getMessage());
+              log.error("[collect] error while notifying to finance. financeSyncItem: {}, syncRequestId: {}, t: {}",
+                  message.getFinanceSyncItem(), message.getSyncRequestId(), t.getMessage());
             }
 
             @Override
             public void onCompleted() {
-              log.debug("[collect] notified to finance syncRequestId: {} ", message.getSyncRequestId());
+              log.info("[collect] notified to finance. financeSyncItem: {},syncRequestId: {}",
+                  message.getFinanceSyncItem(), message.getSyncRequestId());
             }
           });
 
     } catch (JsonProcessingException e) {
-      log.error("Fail to deserialize PublishmentRequestedBankMessage: {}", e.getMessage());
+      log.error("Fail to deserialize. PublishmentRequestedBankMessage: {}", e.getMessage());
 
     } finally {
       LoggingMdcUtil.clear();

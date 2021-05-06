@@ -32,7 +32,7 @@ public class DepositAccountDetailInfoRequestHelper implements
         .orgCode(executionContext.getOrganizationCode())
         .accountNum(accountSummary.getAccountNum())
         .seqno(accountSummary.getSeqno())
-        .searchTimestamp(accountSummary.getDetailSearchTimestamp())
+        .searchTimestamp(String.valueOf(accountSummary.getDetailSearchTimestamp()))
         .build();
   }
 }

@@ -61,7 +61,7 @@ public class InvestAccountTransactionRequestHelper implements
         .fromDate(DateUtil.toDateString(fromDate))
         .toDate(DateUtil.toDateString(toDate))
         .nextPage(nextPage)
-        .limit(DEFAULT_PAGING_LIMIT)
+        .limit(String.valueOf(DEFAULT_PAGING_LIMIT))
         .build();
   }
 }

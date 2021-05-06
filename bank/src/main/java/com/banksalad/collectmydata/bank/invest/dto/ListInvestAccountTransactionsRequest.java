@@ -30,5 +30,5 @@ public class ListInvestAccountTransactionsRequest {
 
   private String nextPage;
 
-  private int limit;
+  private String limit; // fixme : int
 }

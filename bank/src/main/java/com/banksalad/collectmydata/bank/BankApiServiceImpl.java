@@ -157,8 +157,7 @@ public class BankApiServiceImpl implements BankApiService {
     accountSummaryService.listAccountSummaries(executionContext, Executions.finance_bank_summaries,
         summaryRequestHelper, summaryResponseHelper, bankAccountSummaryPublishmentHelper);
 
-    // IRP Account Summary
-    irpAccountSummaryService.listAccountSummaries(executionContext);
+//    irpAccountSummaryService.listAccountSummaries(executionContext);
 
     CompletableFuture.allOf(
         // Deposit
@@ -166,61 +165,66 @@ public class BankApiServiceImpl implements BankApiService {
             depositAccountBasicApiService
                 .listAccountInfos(executionContext, Executions.finance_bank_deposit_account_basic,
                     depositAccountBasicInfoRequestHelper, depositAccountBasicInfoResponseHelper,
-                    depositAccountBasicPublishmentHelper)),
+                    depositAccountBasicPublishmentHelper)).handle(this::handleException),
 
         CompletableFuture.runAsync(() ->
             depositAccountDetailApiService
                 .listAccountInfos(executionContext, Executions.finance_bank_deposit_account_detail,
                     depositAccountDetailInfoRequestHelper, depositAccountDetailInfoResponseHelper,
-                    depositAccountDetailPublishmentHelper)),
+                    depositAccountDetailPublishmentHelper)).handle(this::handleException),
 
         CompletableFuture.runAsync(() ->
             depositTransactionApiService
                 .listTransactions(executionContext, Executions.finance_bank_deposit_account_transaction,
                     depositAccountTransactionRequestHelper, depositAccountTransactionResponseHelper,
-                    depositAccountTransactionPublishmentHelper)),
+                    depositAccountTransactionPublishmentHelper)).handle(this::handleException),
 
         // Invest
         CompletableFuture.runAsync(() ->
             investAccountBasicApiService
                 .listAccountInfos(executionContext, Executions.finance_bank_invest_account_basic,
                     investAccountBasicInfoRequestHelper, investAccountInfoBasicResponseHelper,
-                    investAccountBasicPublishmentHelper)),
+                    investAccountBasicPublishmentHelper)).handle(this::handleException),
 
         CompletableFuture.runAsync(() ->
             investAccountDetailApiService
                 .listAccountInfos(executionContext, Executions.finance_bank_invest_account_detail,
                     investAccountDetailInfoRequestHelper, investAccountDetailInfoResponseHelper,
-                    investAccountDetailPublishmentHelper)),
+                    investAccountDetailPublishmentHelper)).handle(this::handleException),
 
         CompletableFuture.runAsync(() ->
             investTransactionApiService
                 .listTransactions(executionContext, Executions.finance_bank_invest_account_transaction,
                     investAccountTransactionRequestHelper, investAccountTransactionResponseHelper,
-                    investAccountTransactionPublishmentHelper)),
+                    investAccountTransactionPublishmentHelper)).handle(this::handleException),
 
         // Loan
         CompletableFuture.runAsync(() ->
             loanAccountBasicApiService
                 .listAccountInfos(executionContext, Executions.finance_bank_loan_account_basic,
                     loanAccountBasicInfoRequestHelper, loanAccountInfoBasicResponseHelper,
-                    loanAccountBasicPublishmentHelper)),
+                    loanAccountBasicPublishmentHelper)).handle(this::handleException),
 
         CompletableFuture.runAsync(() ->
             loanAccountDetailApiService.listAccountInfos(executionContext, Executions.finance_bank_loan_account_detail,
                 loanAccountDetailInfoRequestHelper, loanAccountDetailInfoResponseHelper,
-                loanAccountDetailPublishmentHelper)),
+                loanAccountDetailPublishmentHelper)).handle(this::handleException),
 
         CompletableFuture.runAsync(() ->
             loanTransactionApiService
                 .listTransactions(executionContext, Executions.finance_bank_loan_account_transaction,
                     loanAccountTransactionRequestHelper, loanAccountTransactionResponseHelper,
-                    loanAccountTransactionPublishmentHelper)),
+                    loanAccountTransactionPublishmentHelper)).handle(this::handleException)
 
-        // IRP Account Basic, Detail, Transaction
-        CompletableFuture.runAsync(() -> irpAccountService.listIrpAccountBasics(executionContext)),
-        CompletableFuture.runAsync(() -> irpAccountService.listIrpAccountDetails(executionContext)),
-        CompletableFuture.runAsync(() -> irpAccountTransactionService.listTransactions(executionContext))
+//        // IRP
+//        CompletableFuture.runAsync(() -> irpAccountService.listIrpAccountBasics(executionContext))
+//            .handle(this::handleException),
+//
+//        CompletableFuture.runAsync(() -> irpAccountService.listIrpAccountDetails(executionContext))
+//            .handle(this::handleException),
+//
+//        CompletableFuture.runAsync(() -> irpAccountTransactionService.listTransactions(executionContext))
+//            .handle(this::handleException)
     ).join();
 
     /* produce sync completed */
@@ -232,5 +236,12 @@ public class BankApiServiceImpl implements BankApiService {
             .syncRequestId(executionContext.getSyncRequestId())
             .syncRequestType(syncRequestType)
             .build());
+  }
+
+  private Object handleException(Void v, Throwable t) {
+    if (t != null) {
+      log.error(t.getMessage());
+    }
+    return v;
   }
 }

@@ -33,13 +33,14 @@ public class FinanceMessageServiceImpl implements FinanceMessageService {
       ).addCallback(new ListenableFutureCallback<>() {
         @Override
         public void onSuccess(SendResult<String, String> result) {
-          log.debug("Produce PublishmentRequestedMessage. syncRequestId: {} ", publishmentRequestedMessage.getSyncRequestId());
+          log.info("Produce PublishmentRequestedMessage. messageTopic: {}, syncRequestId: {} ",
+              messageTopic, publishmentRequestedMessage.getSyncRequestId());
         }
 
         @Override
         public void onFailure(Throwable t) {
-          log.error("Fail to produce PublishmentRequestedMessage. syncRequestId: {}, exception: {}",
-              publishmentRequestedMessage.getSyncRequestId(), t.getMessage(), t);
+          log.error("Fail to produce PublishmentRequestedMessage. messageTopic: {},syncRequestId: {}, exception: {}",
+              messageTopic, publishmentRequestedMessage.getSyncRequestId(), t.getMessage(), t);
         }
       });
     } catch (JsonProcessingException e) {
@@ -55,13 +56,14 @@ public class FinanceMessageServiceImpl implements FinanceMessageService {
           .addCallback(new ListenableFutureCallback<>() {
             @Override
             public void onSuccess(SendResult<String, String> result) {
-              log.debug("Produce syncCompletedMessage. syncRequestId: {} ", syncCompletedMessage.getSyncRequestId());
+              log.info("Produce syncCompletedMessage. messageTopic: {}, syncRequestId: {} ",
+                  messageTopic, syncCompletedMessage.getSyncRequestId());
             }
 
             @Override
             public void onFailure(Throwable t) {
-              log.error("Fail to produce syncCompletedMessage. syncRequestId: {}, exception: {}",
-                  syncCompletedMessage.getSyncRequestId(), t.getMessage(), t);
+              log.error("Fail to produce syncCompletedMessage. messageTopic: {}, syncRequestId: {}, exception: {}",
+                  messageTopic, syncCompletedMessage.getSyncRequestId(), t.getMessage(), t);
             }
           });
     } catch (JsonProcessingException e) {

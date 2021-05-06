@@ -46,7 +46,7 @@ public class InvestAccountDetailInfoRequestHelper implements
         .orgCode(executionContext.getOrganizationCode())
         .accountNum(accountSummary.getAccountNum())
         .seqno(accountSummary.getSeqno())
-        .searchTimestamp(searchTimestamp)
+        .searchTimestamp(String.valueOf(searchTimestamp))
         .build();
   }
 }

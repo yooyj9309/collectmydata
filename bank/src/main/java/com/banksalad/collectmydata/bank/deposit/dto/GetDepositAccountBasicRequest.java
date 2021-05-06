@@ -18,7 +18,10 @@ import lombok.Setter;
 public class GetDepositAccountBasicRequest {
 
   private String orgCode;
+
   private String accountNum;
+
   private String seqno;
-  private long searchTimestamp;
+
+  private String searchTimestamp; // fixme : int
 }

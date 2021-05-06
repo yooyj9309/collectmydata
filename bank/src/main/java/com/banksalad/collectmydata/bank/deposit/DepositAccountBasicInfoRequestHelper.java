@@ -32,19 +32,11 @@ public class DepositAccountBasicInfoRequestHelper implements
 
   @Override
   public GetDepositAccountBasicRequest make(ExecutionContext executionContext, AccountSummary accountSummary) {
-    long searchTimestamp = accountSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(
-            executionContext.getBanksaladUserId(),
-            executionContext.getOrganizationId(),
-            accountSummary.getAccountNum(), accountSummary.getSeqno())
-        .map(AccountSummaryEntity::getBasicSearchTimestamp)
-        .orElse(0L);
-
     return GetDepositAccountBasicRequest.builder()
         .orgCode(executionContext.getOrganizationCode())
         .accountNum(accountSummary.getAccountNum())
         .seqno(accountSummary.getSeqno())
-        .searchTimestamp(searchTimestamp)
+        .searchTimestamp(String.valueOf(accountSummary.getBasicSearchTimestamp()))
         .build();
   }
 }

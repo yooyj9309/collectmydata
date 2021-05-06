@@ -36,13 +36,15 @@ public class BankSyncCompletedConsumer {
       /* deserialize message */
       SyncCompletedMessage message = objectMapper.readValue(source, SyncCompletedMessage.class);
 
-      LoggingMdcUtil.set(Sector.FINANCE.name(), Industry.BANK.name(), message.getBanksaladUserId(), message.getOrganizationId(),
-          message.getSyncRequestId());
-      log.debug("[collect] consume SyncCompletedMessage syncRequestId: {} ", message.getSyncRequestId());
+      LoggingMdcUtil
+          .set(Sector.FINANCE.name(), Industry.BANK.name(), message.getBanksaladUserId(), message.getOrganizationId(),
+              message.getSyncRequestId());
+      log.info("[collect] consume SyncCompletedMessage. synRequestType: {}, syncRequestId: {}",
+          message.getSyncRequestType(), message.getSyncRequestId());
 
       /* notify */
       financeStub.notifyCollectmydatabankSynced(message.toNotifyBankRequest(),
-          new StreamObserver<NotifyCollectmydatabankSyncedResponse>() {
+          new StreamObserver<>() {
             @Override
             public void onNext(NotifyCollectmydatabankSyncedResponse value) {
 
@@ -50,18 +52,19 @@ public class BankSyncCompletedConsumer {
 
             @Override
             public void onError(Throwable t) {
-              log.error("[collect] error while notifying to finance syncRequestId: {}, t: {} ",
-                  message.getSyncRequestId(), t.getMessage());
+              log.error("[collect] error while notifying to finance. synRequestType: {}, syncRequestId: {}, t: {}",
+                  message.getSyncRequestType(), message.getSyncRequestId(), t.getMessage());
             }
 
             @Override
             public void onCompleted() {
-              log.debug("[collect] notified to finance syncRequestId: {} ", message.getSyncRequestId());
+              log.info("[collect] notified to finance. synRequestType: {}, syncRequestId: {}",
+                  message.getSyncRequestType(), message.getSyncRequestId());
             }
           });
 
     } catch (JsonProcessingException e) {
-      log.error("Fail to deserialize SyncCompletedMessage: {}", e.getMessage());
+      log.error("Fail to deserialize. SyncCompletedMessage: {}", e.getMessage());
 
     } finally {
       LoggingMdcUtil.clear();

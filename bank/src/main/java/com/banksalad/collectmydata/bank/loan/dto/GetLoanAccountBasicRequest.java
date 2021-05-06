@@ -21,6 +21,6 @@ public class GetLoanAccountBasicRequest {
 
   private String seqno;
 
-  private long searchTimestamp;
+  private String searchTimestamp; // fixme : int
 
 }

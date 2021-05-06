@@ -4,5 +4,5 @@
   "seqno": "1",
   "from_date": "${json-unit.any-string}",
   "to_date": "${json-unit.any-string}",
-  "limit": 500
+  "limit": "500"
 }
