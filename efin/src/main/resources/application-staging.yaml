@@ -3,28 +3,29 @@ spring:
     active: staging
   jpa:
     show-sql: false
-#    properties:
-#      hibernate:
-#        format_sql: false
-#        dialect: org.hibernate.dialect.MySQLDialect
-#        default_batch_fetch_size: 100
-#    open-in-view: false
-#    hibernate:
-#      ddl-auto: validate
-#  datasource:
-#    url: jdbc:mysql://collectmydata-bank:3306
-#    driver-class-name: org.mariadb.jdbc.Driver
-#    username: developer
-#    password: ${DEVELOPMENT_COLLECTMYDATA_BANK_DB_PASSWORD}
-#    hikari:
-#      maximum-pool-size: 20
-#      connection-timeout: 5000
-#      validation-timeout: 4000
-#      max-lifetime: 60000
-#      minimum-idle: 10
-#      idle-timeout: 54000
-#    type: com.zaxxer.hikari.HikariDataSource
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.MySQLDialect
+        default_batch_fetch_size: 100
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:mysql://collectmydataefin-cluster.cluster-ciy3wcu0axct.ap-northeast-2.rds.amazonaws.com:3306/collectmydataefin?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: collectmydataefin_was
+    password: ${STG_COLLECTMYDATA_EFIN_DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 20
+      connection-timeout: 5000
+      validation-timeout: 4000
+      max-lifetime: 60000
+      minimum-idle: 10
+      idle-timeout: 54000
+    type: com.zaxxer.hikari.HikariDataSource
 
+# gRPC 설정
 grpc:
   port: 18081
   enable-reflection: true
@@ -32,6 +33,7 @@ grpc:
   in-process-server-name: collectmydataefin-server-process
   shutdownGrace: 30
 
+# health check 위한 http port
 server:
   port: 18082
 
