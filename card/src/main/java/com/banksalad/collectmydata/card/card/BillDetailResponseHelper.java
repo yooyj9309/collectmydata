@@ -39,22 +39,13 @@ public class BillDetailResponseHelper implements BillTransactionResponseHelper<B
   public void saveBillTransactions(ExecutionContext executionContext, BillBasic billBasic,
       List<BillDetail> billDetails) {
 
-    List<BillDetailEntity> existingBillDetailEntities =
-        billDetailRepository.findByBanksaladUserIdAndOrganizationIdAndChargeMonthAndSeqno(
-            executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
-            billBasic.getChargeMonth(), billBasic.getSeqno());
+    /* delete & insert */
+    billDetailRepository.deleteAllByBanksaladUserIdAndOrganizationIdAndChargeMonthAndSeqnoInQuery(
+        executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
+        billBasic.getChargeMonth(), billBasic.getSeqno()
+    );
 
-    if (!existingBillDetailEntities.isEmpty()) {
-
-      billDetailRepository.deleteByBanksaladUserIdAndOrganizationIdAndChargeMonthAndSeqno(
-          executionContext.getBanksaladUserId(), executionContext.getOrganizationId(),
-          billBasic.getChargeMonth(), billBasic.getSeqno());
-    }
-
-    AtomicInteger nextBillDetailNo = new AtomicInteger(existingBillDetailEntities.stream()
-        .mapToInt(BillDetailEntity::getBillDetailNo)
-        .max()
-        .orElse(-1));
+    AtomicInteger atomicInteger = new AtomicInteger(1);
 
     List<BillDetailEntity> billDetailEntities = billDetails
         .stream()
@@ -65,7 +56,7 @@ public class BillDetailResponseHelper implements BillTransactionResponseHelper<B
           billDetailEntity.setOrganizationId(executionContext.getOrganizationId());
           billDetailEntity.setChargeMonth(billBasic.getChargeMonth());
           billDetailEntity.setSeqno(billBasic.getSeqno());
-          billDetailEntity.setBillDetailNo((short) nextBillDetailNo.incrementAndGet());
+          billDetailEntity.setBillDetailNo((short) atomicInteger.getAndIncrement());
           return billDetailEntity;
         }).collect(Collectors.toList());
 

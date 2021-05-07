@@ -106,7 +106,7 @@ public class BillBasicTestCaseGenerator<GParent, Parent, Main, Child> {
             .expectedResponses(List.of(
                 BareResponse.builder().mockId("006_page_01").build()
             ))
-            .expectedMainEntities(List.of(mainMap.get("main1")))
+            .expectedMainEntities(List.of(mainMap.get("newMain1")))
             .build()
         ,
         TestCase.<GParent, Parent, Main, Child>builder()

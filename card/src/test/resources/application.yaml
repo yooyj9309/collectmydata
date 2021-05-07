@@ -8,8 +8,8 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
-    jpa:
-      show-sql: false
+  jpa:
+    show-sql: false
 
 kafka:
   bootstrap-servers: localhost:9092
@@ -20,3 +20,12 @@ banksalad:
 
 grpc:
   port: 0
+
+# query parameter도 보여주는 옵션. 디버깅
+#logging:
+#  level:
+#    org:
+#      hibernate:
+#        type:
+#          descriptor:
+#            sql: trace
