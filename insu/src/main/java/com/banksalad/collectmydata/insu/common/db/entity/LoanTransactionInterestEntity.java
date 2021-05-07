@@ -65,4 +65,10 @@ public class LoanTransactionInterestEntity extends BaseEntity {
 
   @Column(nullable = false)
   private String intType;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  @Column(nullable = false)
+  private String syncRequestId;
 }

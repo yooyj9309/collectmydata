@@ -53,6 +53,12 @@ public class InsuranceSummaryEntity extends BaseEntity {
   @Column(nullable = false)
   private String insuStatus;
 
+  @Column(nullable = false)
+  private String consentId;
+
+  @Column(nullable = false)
+  private String syncRequestId;
+
   private Long basicSearchTimestamp;
 
   private String basicResponseCode;

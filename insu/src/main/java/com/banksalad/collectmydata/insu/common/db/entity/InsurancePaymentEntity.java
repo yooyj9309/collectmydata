@@ -67,4 +67,10 @@ public class InsurancePaymentEntity extends BaseEntity {
 
   @Column(name = "is_auto_pay", columnDefinition = "BIT", length = 1)
   private Boolean autoPay;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  @Column(nullable = false)
+  private String syncRequestId;
 }

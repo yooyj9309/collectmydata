@@ -44,6 +44,8 @@ public class InsuranceBasicInvocationContextProvider implements TestTemplateInvo
         .insuStatus("01")
         .basicSearchTimestamp(null)
         .basicResponseCode(RSP_CODE_SUCCESS)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     InsuranceSummaryEntity parent2 = InsuranceSummaryEntity.builder()
@@ -57,6 +59,8 @@ public class InsuranceBasicInvocationContextProvider implements TestTemplateInvo
         .insuStatus("02")
         .basicSearchTimestamp(null)
         .basicResponseCode(RSP_CODE_SUCCESS)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     Map<String, InsuranceSummaryEntity> parentMap = Map.of(
@@ -87,6 +91,8 @@ public class InsuranceBasicInvocationContextProvider implements TestTemplateInvo
         .pensionRcvCycle("3M")
         .loanable(true)
         .insuredCount(1)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     InsuranceBasicEntity main2 = InsuranceBasicEntity.builder()
@@ -105,6 +111,8 @@ public class InsuranceBasicInvocationContextProvider implements TestTemplateInvo
         .pensionRcvCycle("4M")
         .loanable(true)
         .insuredCount(1)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     Map<String, InsuranceBasicEntity> mainMap = Map.of(

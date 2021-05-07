@@ -1,7 +1,6 @@
 package com.banksalad.collectmydata.insu.template.provider;
 
 import com.banksalad.collectmydata.common.collect.execution.Execution;
-import com.banksalad.collectmydata.common.crypto.HashUtil;
 import com.banksalad.collectmydata.common.util.NumberUtil;
 import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
 import com.banksalad.collectmydata.insu.collect.Executions;
@@ -24,11 +23,13 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_OVER_QUOTA;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SUCCESS;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static com.banksalad.collectmydata.insu.common.constant.InsuranceTestConstants.CAR_NUMBER;
 import static com.banksalad.collectmydata.insu.common.constant.InsuranceTestConstants.INSU_NUM;
 import static com.banksalad.collectmydata.insu.common.constant.InsuranceTestConstants.INSU_STATUS;
@@ -56,6 +57,8 @@ public class CarInsuranceTransactionInvocationContextProvider implements TestTem
         .prodName(PROD_NAME)
         .insuType(INSU_TYPE)
         .insuStatus(INSU_STATUS)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     Map<String, InsuranceSummaryEntity> gParentMap = Map.of("existingGParent1", gParent1);
 
@@ -76,6 +79,8 @@ public class CarInsuranceTransactionInvocationContextProvider implements TestTem
         .selfPayAmt(NumberUtil.bigDecimalOf(200000, 3))
         .transactionSyncedAt(null)
         .transactionResponseCode(RSP_CODE_SUCCESS)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     Map<String, CarInsuranceEntity> parentMap = Map.of(
         "freshParent1", parent1,
@@ -98,6 +103,8 @@ public class CarInsuranceTransactionInvocationContextProvider implements TestTem
         .faceAmt(NumberUtil.bigDecimalOf(900000, 3))
         .paidAmt(NumberUtil.bigDecimalOf(450000, 3))
         .payMethod("02")
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     CarInsuranceTransactionEntity main2 = CarInsuranceTransactionEntity.builder()
         .syncedAt(OLD_SYNCED_AT)
@@ -109,6 +116,8 @@ public class CarInsuranceTransactionInvocationContextProvider implements TestTem
         .faceAmt(NumberUtil.bigDecimalOf(100000, 3))
         .paidAmt(NumberUtil.bigDecimalOf(70000, 3))
         .payMethod("04")
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     CarInsuranceTransactionEntity main3 = CarInsuranceTransactionEntity.builder()
         .syncedAt(OLD_SYNCED_AT)
@@ -120,6 +129,8 @@ public class CarInsuranceTransactionInvocationContextProvider implements TestTem
         .faceAmt(NumberUtil.bigDecimalOf(50000, 3))
         .paidAmt(NumberUtil.bigDecimalOf(0, 3))
         .payMethod("03")
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     Map<String, CarInsuranceTransactionEntity> mainMap = Map.of(
         "main1", main1,

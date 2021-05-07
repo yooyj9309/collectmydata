@@ -56,6 +56,8 @@ public class InsuranceSummaryInvocationContextProvider implements TestTemplateIn
         .prodName("01")
         .insuType("01")
         .insuStatus("01")
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     InsuranceSummaryEntity main2 = InsuranceSummaryEntity.builder()
@@ -67,6 +69,8 @@ public class InsuranceSummaryInvocationContextProvider implements TestTemplateIn
         .prodName("02")
         .insuType("02")
         .insuStatus("02")
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     Map<String, InsuranceSummaryEntity> mainMap = Map.of(

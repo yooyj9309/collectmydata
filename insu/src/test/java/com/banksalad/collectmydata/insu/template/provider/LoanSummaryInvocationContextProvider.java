@@ -20,11 +20,13 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_USS_ST;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_USS_ST;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 
 public class LoanSummaryInvocationContextProvider implements TestTemplateInvocationContextProvider {
 
@@ -61,6 +63,8 @@ public class LoanSummaryInvocationContextProvider implements TestTemplateInvocat
         .prodName("01")
         .accountType("01")
         .accountStatus("01")
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     LoanSummaryEntity main2 = LoanSummaryEntity.builder()
@@ -72,6 +76,8 @@ public class LoanSummaryInvocationContextProvider implements TestTemplateInvocat
         .prodName("02")
         .accountType("02")
         .accountStatus("02")
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     Map<String, LoanSummaryEntity> mainMap = Map.of(

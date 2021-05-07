@@ -43,6 +43,8 @@ public class InsuranceContractInvocationContextProvider implements TestTemplateI
         .insuType("01")
         .prodName("01")
         .insuStatus("01")
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     Map<String, InsuranceSummaryEntity> grandParentMap = Map.of(
         "freshGrandParent1", grandParent1
@@ -57,6 +59,8 @@ public class InsuranceContractInvocationContextProvider implements TestTemplateI
         .insuredName("kim")
         .contractSearchTimestamp(null)
         .contractResponseCode(RSP_CODE_SUCCESS)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     InsuredEntity parent2 = InsuredEntity.builder()
         .syncedAt(OLD_SYNCED_AT)
@@ -67,6 +71,8 @@ public class InsuranceContractInvocationContextProvider implements TestTemplateI
         .insuredName("park")
         .contractSearchTimestamp(null)
         .contractResponseCode(RSP_CODE_SUCCESS)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     Map<String, InsuredEntity> parentMap = Map.of(
         "freshParent1", parent1,
@@ -93,6 +99,8 @@ public class InsuranceContractInvocationContextProvider implements TestTemplateI
         .contractFaceAmt(NumberUtil.bigDecimalOf(10000, 3))
         .currencyCode("KRW")
         .required(true)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     InsuranceContractEntity main2 = InsuranceContractEntity.builder()
         .syncedAt(OLD_SYNCED_AT)
@@ -107,6 +115,8 @@ public class InsuranceContractInvocationContextProvider implements TestTemplateI
         .contractFaceAmt(NumberUtil.bigDecimalOf(20000, 3))
         .currencyCode("KRW")
         .required(true)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     Map<String, InsuranceContractEntity> mainMap = Map.of(
         "main1", main1,

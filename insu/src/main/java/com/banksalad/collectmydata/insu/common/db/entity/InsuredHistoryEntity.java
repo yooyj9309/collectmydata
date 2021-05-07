@@ -12,11 +12,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -44,6 +46,12 @@ public class InsuredHistoryEntity extends BaseEntity {
 
   @Column(name = "insured_name_encrypted", nullable = false)
   private String insuredName;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  @Column(nullable = false)
+  private String syncRequestId;
 
   private Long contractSearchTimestamp;
 }

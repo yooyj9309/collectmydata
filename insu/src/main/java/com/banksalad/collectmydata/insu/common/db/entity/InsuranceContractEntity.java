@@ -65,4 +65,10 @@ public class InsuranceContractEntity extends BaseEntity {
 
   @Column(nullable = false, name = "is_required", columnDefinition = "BIT", length = 1)
   private Boolean required;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  @Column(nullable = false)
+  private String syncRequestId;
 }

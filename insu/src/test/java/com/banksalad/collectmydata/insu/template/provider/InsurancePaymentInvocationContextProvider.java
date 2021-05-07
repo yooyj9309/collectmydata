@@ -44,6 +44,8 @@ public class InsurancePaymentInvocationContextProvider implements TestTemplateIn
         .insuStatus("01")
         .paymentSearchTimestamp(null)
         .paymentResponseCode(RSP_CODE_SUCCESS)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     InsuranceSummaryEntity parent2 = InsuranceSummaryEntity.builder()
@@ -57,6 +59,8 @@ public class InsurancePaymentInvocationContextProvider implements TestTemplateIn
         .insuStatus("02")
         .paymentSearchTimestamp(null)
         .paymentResponseCode(RSP_CODE_SUCCESS)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     Map<String, InsuranceSummaryEntity> parentMap = Map.of(
@@ -85,6 +89,8 @@ public class InsurancePaymentInvocationContextProvider implements TestTemplateIn
         .payAmt(NumberUtil.bigDecimalOf(10000, 3))
         .currencyCode("KRW")
         .autoPay(true)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     InsurancePaymentEntity main2 = InsurancePaymentEntity.builder()
@@ -101,6 +107,8 @@ public class InsurancePaymentInvocationContextProvider implements TestTemplateIn
         .payAmt(NumberUtil.bigDecimalOf(20000, 3))
         .currencyCode("KRW")
         .autoPay(true)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     Map<String, InsurancePaymentEntity> mainMap = Map.of(

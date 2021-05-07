@@ -47,6 +47,12 @@ public class InsuredEntity extends BaseEntity {
   @Column(name = "insured_name_encrypted", nullable = false)
   private String insuredName;
 
+  @Column(nullable = false)
+  private String consentId;
+
+  @Column(nullable = false)
+  private String syncRequestId;
+
   private Long contractSearchTimestamp;
 
   private String contractResponseCode;

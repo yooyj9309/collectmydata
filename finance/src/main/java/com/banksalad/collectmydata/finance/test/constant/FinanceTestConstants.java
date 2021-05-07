@@ -11,6 +11,7 @@ public class FinanceTestConstants {
 
   public static final String CONSENT_ID = "consent_id1";
   public static final String SYNC_REQUEST_ID = "sync_request_id1";
+  public static final String REQUEST_BY = "banksalad_user1";
   public static final String ORGANIZATION_ID = "organization_id1";
   public static final String ORGANIZATION_CODE = "organization_code1";
   public static final String ORGANIZATION_HOST = "localhost";

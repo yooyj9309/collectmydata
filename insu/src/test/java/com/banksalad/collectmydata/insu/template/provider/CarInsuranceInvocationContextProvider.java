@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 
 import static com.banksalad.collectmydata.common.util.NumberUtil.bigDecimalOf;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_ST1;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_ST1;
@@ -30,10 +31,10 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_NO_ACCOUNT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SUCCESS;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static com.banksalad.collectmydata.insu.common.constant.InsuranceTestConstants.CAR_INSU_TYPE;
 import static com.banksalad.collectmydata.insu.common.constant.InsuranceTestConstants.CAR_NUMBER;
 import static com.banksalad.collectmydata.insu.common.constant.InsuranceTestConstants.CAR_PROD_NAME;
-import static com.banksalad.collectmydata.insu.common.constant.InsuranceTestConstants.INSU_NUM;
 import static com.banksalad.collectmydata.insu.common.constant.InsuranceTestConstants.INSU_STATUS;
 
 public class CarInsuranceInvocationContextProvider implements TestTemplateInvocationContextProvider {
@@ -59,6 +60,8 @@ public class CarInsuranceInvocationContextProvider implements TestTemplateInvoca
         .insuStatus(INSU_STATUS)
         .carSearchTimestamp(OLD_ST1)
         .carResponseCode(RSP_CODE_SUCCESS)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     InsuranceSummaryEntity newParent = InsuranceSummaryEntity.builder()
         .syncedAt(OLD_SYNCED_AT)
@@ -71,6 +74,8 @@ public class CarInsuranceInvocationContextProvider implements TestTemplateInvoca
         .insuStatus(INSU_STATUS)
         .carSearchTimestamp(null)
         .carResponseCode(RSP_CODE_SUCCESS)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     Map<String, InsuranceSummaryEntity> parentMap = Map.of(
         "existingParent", existingParent,
@@ -95,6 +100,8 @@ public class CarInsuranceInvocationContextProvider implements TestTemplateInvoca
         .ownDmgCoverage(true)
         .selfPayRate("01")
         .selfPayAmt(bigDecimalOf(200000, 3))
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     CarInsuranceEntity newMain = CarInsuranceEntity.builder()
         .syncedAt(OLD_SYNCED_AT)
@@ -111,6 +118,8 @@ public class CarInsuranceInvocationContextProvider implements TestTemplateInvoca
         .ownDmgCoverage(false)
         .selfPayRate("02")
         .selfPayAmt(bigDecimalOf(30000, 3))
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     Map<String, CarInsuranceEntity> mainMap = Map.of(
         "existingMain", existingMain,

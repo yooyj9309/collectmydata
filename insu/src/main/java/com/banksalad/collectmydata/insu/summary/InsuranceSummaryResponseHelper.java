@@ -47,6 +47,11 @@ public class InsuranceSummaryResponseHelper implements SummaryResponseHelper<Ins
     insuranceSummaryEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
     insuranceSummaryEntity.setOrganizationId(executionContext.getOrganizationId());
     insuranceSummaryEntity.setSyncedAt(executionContext.getSyncStartedAt());
+    insuranceSummaryEntity.setConsentId(executionContext.getConsentId());
+    insuranceSummaryEntity.setSyncRequestId(executionContext.getSyncRequestId());
+    insuranceSummaryEntity.setCreatedBy(executionContext.getRequestedBy());
+    insuranceSummaryEntity.setUpdatedBy(executionContext.getRequestedBy());
+
     insuranceSummaryRepository.save(insuranceSummaryEntity);
   }
 }

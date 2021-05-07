@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_ST1;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_ST1;
@@ -28,6 +29,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_NO_ACCOUNT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SUCCESS;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 
 public class LoanDetailInvocationContextProvider implements TestTemplateInvocationContextProvider {
 
@@ -51,6 +53,8 @@ public class LoanDetailInvocationContextProvider implements TestTemplateInvocati
         .accountStatus("01")
         .detailSearchTimestamp(null)
         .detailResponseCode(RSP_CODE_SUCCESS)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     LoanSummaryEntity parent2 = LoanSummaryEntity.builder()
@@ -64,6 +68,8 @@ public class LoanDetailInvocationContextProvider implements TestTemplateInvocati
         .accountStatus("02")
         .detailSearchTimestamp(null)
         .detailResponseCode(RSP_CODE_SUCCESS)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     Map<String, LoanSummaryEntity> parentMap = Map.of(
@@ -87,6 +93,8 @@ public class LoanDetailInvocationContextProvider implements TestTemplateInvocati
         .balanceAmt(NumberUtil.bigDecimalOf(10000, 3))
         .loanPrincipal(NumberUtil.bigDecimalOf(20000, 3))
         .nextRepayDate("20210131")
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     LoanDetailEntity main2 = LoanDetailEntity.builder()
@@ -98,6 +106,8 @@ public class LoanDetailInvocationContextProvider implements TestTemplateInvocati
         .balanceAmt(NumberUtil.bigDecimalOf(30000, 3))
         .loanPrincipal(NumberUtil.bigDecimalOf(40000, 3))
         .nextRepayDate("20210131")
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     Map<String, LoanDetailEntity> mainMap = Map.of(

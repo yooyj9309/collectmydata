@@ -52,4 +52,10 @@ public class LoanDetailEntity extends BaseEntity {
 
   @Column(nullable = false)
   private String nextRepayDate;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  @Column(nullable = false)
+  private String syncRequestId;
 }

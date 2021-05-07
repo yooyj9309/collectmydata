@@ -10,6 +10,7 @@ import com.banksalad.collectmydata.finance.common.constant.FinanceConstant;
 import com.banksalad.collectmydata.insu.car.dto.CarInsurance;
 import com.banksalad.collectmydata.insu.car.dto.GetCarInsuranceResponse;
 import com.banksalad.collectmydata.insu.common.db.entity.CarInsuranceEntity;
+import com.banksalad.collectmydata.insu.common.db.entity.CarInsuranceHistoryEntity;
 import com.banksalad.collectmydata.insu.common.mapper.CarInsuranceHistoryMapper;
 import com.banksalad.collectmydata.insu.common.mapper.CarInsuranceMapper;
 import com.banksalad.collectmydata.insu.common.db.repository.CarInsuranceHistoryRepository;
@@ -50,6 +51,10 @@ public class CarInsuranceResponseHelper implements AccountInfoResponseHelper<Ins
       carInsuranceEntity.setOrganizationId(executionContext.getOrganizationId());
       carInsuranceEntity.setSyncedAt(executionContext.getSyncStartedAt());
       carInsuranceEntity.setInsuNum(insuranceSummary.getInsuNum());
+      carInsuranceEntity.setConsentId(executionContext.getConsentId());
+      carInsuranceEntity.setSyncRequestId(executionContext.getSyncRequestId());
+      carInsuranceEntity.setCreatedBy(executionContext.getRequestedBy());
+      carInsuranceEntity.setUpdatedBy(executionContext.getRequestedBy());
 
       /* load existing car insurance entity */
       CarInsuranceEntity existingCarInsuranceEntity = carInsuranceRepository
@@ -67,7 +72,10 @@ public class CarInsuranceResponseHelper implements AccountInfoResponseHelper<Ins
       if (!ObjectComparator
           .isSame(carInsuranceEntity, existingCarInsuranceEntity, FinanceConstant.ENTITY_EXCLUDE_FIELD)) {
         carInsuranceRepository.save(carInsuranceEntity);
-        carInsuranceHistoryRepository.save(carInsuranceHistoryMapper.toHistoryEntity(carInsuranceEntity));
+
+        CarInsuranceHistoryEntity carInsuranceHistoryEntity = carInsuranceHistoryMapper
+            .entityToHistoryEntity(carInsuranceEntity, CarInsuranceHistoryEntity.builder().build());
+        carInsuranceHistoryRepository.save(carInsuranceHistoryEntity);
       }
     }
   }

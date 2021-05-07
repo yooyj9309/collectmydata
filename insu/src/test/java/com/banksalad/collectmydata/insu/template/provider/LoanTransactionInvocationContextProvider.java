@@ -45,6 +45,8 @@ public class LoanTransactionInvocationContextProvider implements TestTemplateInv
         .accountStatus("01")
         .transactionSyncedAt(null)
         .transactionResponseCode(RSP_CODE_SUCCESS)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     Map<String, LoanSummaryEntity> parentMap = Map.of(
         "freshParent1", parent1,
@@ -67,6 +69,8 @@ public class LoanTransactionInvocationContextProvider implements TestTemplateInv
         .currencyCode("KRW")
         .loanPaidAmt(NumberUtil.bigDecimalOf(10000, 3))
         .intPaidAmt(NumberUtil.bigDecimalOf(20000, 3))
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     main1.setTransactionYearMonth(Integer.valueOf(main1.getTransDtime().substring(0, 6)));
 
@@ -80,6 +84,8 @@ public class LoanTransactionInvocationContextProvider implements TestTemplateInv
         .currencyCode("KRW")
         .loanPaidAmt(NumberUtil.bigDecimalOf(30000, 3))
         .intPaidAmt(NumberUtil.bigDecimalOf(40000, 3))
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     main2.setTransactionYearMonth(Integer.valueOf(main2.getTransDtime().substring(0, 6)));
 
@@ -93,6 +99,8 @@ public class LoanTransactionInvocationContextProvider implements TestTemplateInv
         .currencyCode("KRW")
         .loanPaidAmt(NumberUtil.bigDecimalOf(50000, 3))
         .intPaidAmt(NumberUtil.bigDecimalOf(60000, 3))
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     main3.setTransactionYearMonth(Integer.valueOf(main3.getTransDtime().substring(0, 6)));
 

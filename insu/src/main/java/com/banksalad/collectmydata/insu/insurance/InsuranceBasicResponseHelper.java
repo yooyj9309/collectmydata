@@ -8,7 +8,9 @@ import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceBasicEntity;
+import com.banksalad.collectmydata.insu.common.db.entity.InsuranceBasicHistoryEntity;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuredEntity;
+import com.banksalad.collectmydata.insu.common.db.entity.InsuredHistoryEntity;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceBasicHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceBasicRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuredHistoryRepository;
@@ -60,6 +62,10 @@ public class InsuranceBasicResponseHelper implements AccountInfoResponseHelper<I
     insuranceBasicEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
     insuranceBasicEntity.setOrganizationId(executionContext.getOrganizationId());
     insuranceBasicEntity.setInsuNum(insuranceSummary.getInsuNum());
+    insuranceBasicEntity.setConsentId(executionContext.getConsentId());
+    insuranceBasicEntity.setSyncRequestId(executionContext.getSyncRequestId());
+    insuranceBasicEntity.setCreatedBy(executionContext.getRequestedBy());
+    insuranceBasicEntity.setUpdatedBy(executionContext.getRequestedBy());
 
     InsuranceBasicEntity existingInsuranceBasicEntity = insuranceBasicRepository
         .findByBanksaladUserIdAndOrganizationIdAndInsuNum(
@@ -73,7 +79,10 @@ public class InsuranceBasicResponseHelper implements AccountInfoResponseHelper<I
 
     if (!ObjectComparator.isSame(insuranceBasicEntity, existingInsuranceBasicEntity, ENTITY_EXCLUDE_FIELD)) {
       insuranceBasicRepository.save(insuranceBasicEntity);
-      insuranceBasicHistoryRepository.save(insuranceBasicHistoryMapper.toHistoryEntity(insuranceBasicEntity));
+
+      InsuranceBasicHistoryEntity insuranceBasicHistoryEntity = insuranceBasicHistoryMapper
+          .entityToHistoryEntity(insuranceBasicEntity, InsuranceBasicHistoryEntity.builder().build());
+      insuranceBasicHistoryRepository.save(insuranceBasicHistoryEntity);
     }
 
     saveInsureds(insuranceBasic, insuranceBasicEntity);
@@ -103,9 +112,15 @@ public class InsuranceBasicResponseHelper implements AccountInfoResponseHelper<I
         insuredEntity.setInsuNum(insuranceBasicEntity.getInsuNum());
         insuredEntity.setInsuredNo(String.valueOf(insuredNo++));
         insuredEntity.setInsuredName(insured.getInsuredName());
-
+        insuredEntity.setConsentId(insuranceBasicEntity.getConsentId());
+        insuredEntity.setSyncRequestId(insuranceBasicEntity.getSyncRequestId());
+        insuredEntity.setCreatedBy(insuranceBasicEntity.getCreatedBy());
+        insuredEntity.setUpdatedBy(insuranceBasicEntity.getUpdatedBy());
         insuredRepository.save(insuredEntity);
-        insuredHistoryRepository.save(insuredHistoryMapper.toHistoryEntity(insuredEntity));
+
+        InsuredHistoryEntity insuredHistoryEntity = insuredHistoryMapper
+            .entityToHistoryEntity(insuredEntity, InsuredHistoryEntity.builder().build());
+        insuredHistoryRepository.save(insuredHistoryEntity);
       }
     }
   }

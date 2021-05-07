@@ -54,7 +54,11 @@ public class InsuranceTransactionResponseHelper implements
           .paidAmt(insuranceTransaction.getPaidAmt())
           .currencyCode(insuranceTransaction.getCurrencyCode())
           .payMethod(insuranceTransaction.getPayMethod())
+          .consentId(executionContext.getConsentId())
+          .syncRequestId(executionContext.getSyncRequestId())
           .build();
+      insuranceTransactionEntity.setCreatedBy(executionContext.getRequestedBy());
+      insuranceTransactionEntity.setUpdatedBy(executionContext.getRequestedBy());
 
       InsuranceTransactionEntity existingTransactionEntity = insuranceTransactionRepository
           .findByBanksaladUserIdAndOrganizationIdAndInsuNumAndTransNoAndTransactionYearMonth(

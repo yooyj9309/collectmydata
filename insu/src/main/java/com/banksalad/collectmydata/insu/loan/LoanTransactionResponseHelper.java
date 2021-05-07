@@ -49,6 +49,8 @@ public class LoanTransactionResponseHelper implements TransactionResponseHelper<
           .currencyCode(loanTransaction.getCurrencyCode())
           .loanPaidAmt(loanTransaction.getLoanPaidAmt())
           .intPaidAmt(loanTransaction.getIntPaidAmt())
+          .consentId(executionContext.getConsentId())
+          .syncRequestId(executionContext.getSyncRequestId())
           .build();
       loanTransactionEntity.setCreatedBy(executionContext.getRequestedBy());
       loanTransactionEntity.setUpdatedBy(executionContext.getRequestedBy());
@@ -85,7 +87,12 @@ public class LoanTransactionResponseHelper implements TransactionResponseHelper<
           .intEndDate(interest.getIntEndDate())
           .intRate(interest.getIntRate())
           .intType(interest.getIntType())
+          .consentId(loanTransactionEntity.getConsentId())
+          .syncRequestId(loanTransactionEntity.getSyncRequestId())
           .build();
+      loanTransactionInterestEntity.setCreatedBy(loanTransactionInterestEntity.getCreatedBy());
+      loanTransactionInterestEntity.setUpdatedBy(loanTransactionInterestEntity.getUpdatedBy());
+
       loanTransactionInterestRepository.save(loanTransactionInterestEntity);
     }
   }

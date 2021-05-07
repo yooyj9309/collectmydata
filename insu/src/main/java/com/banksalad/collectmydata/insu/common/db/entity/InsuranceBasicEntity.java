@@ -71,4 +71,10 @@ public class InsuranceBasicEntity extends BaseEntity {
 
   @Column(nullable = false, columnDefinition = "tinyint")
   private Integer insuredCount;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  @Column(nullable = false)
+  private String syncRequestId;
 }

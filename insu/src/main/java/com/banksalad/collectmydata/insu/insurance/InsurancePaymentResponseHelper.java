@@ -7,6 +7,7 @@ import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
 import com.banksalad.collectmydata.insu.common.db.entity.InsurancePaymentEntity;
+import com.banksalad.collectmydata.insu.common.db.entity.InsurancePaymentHistoryEntity;
 import com.banksalad.collectmydata.insu.common.db.repository.InsurancePaymentHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsurancePaymentRepository;
 import com.banksalad.collectmydata.insu.common.mapper.InsurancePaymentHistoryMapper;
@@ -56,7 +57,11 @@ public class InsurancePaymentResponseHelper implements AccountInfoResponseHelper
         .payAmt(insurancePayment.getPayAmt())
         .currencyCode(insurancePayment.getCurrencyCode())
         .autoPay(insurancePayment.isAutoPay())
+        .consentId(executionContext.getConsentId())
+        .syncRequestId(executionContext.getSyncRequestId())
         .build();
+    entity.setCreatedBy(executionContext.getRequestedBy());
+    entity.setUpdatedBy(executionContext.getRequestedBy());
 
     InsurancePaymentEntity existingEntity = insurancePaymentRepository
         .findByBanksaladUserIdAndOrganizationIdAndInsuNum(executionContext.getBanksaladUserId(),
@@ -69,8 +74,10 @@ public class InsurancePaymentResponseHelper implements AccountInfoResponseHelper
 
     if (!ObjectComparator.isSame(entity, existingEntity, ENTITY_EXCLUDE_FIELD)) {
       insurancePaymentRepository.save(entity);
-      insurancePaymentHistoryRepository
-          .save(insurancePaymentHistoryMapper.toHistoryEntity(entity));
+
+      InsurancePaymentHistoryEntity insurancePaymentHistoryEntity = insurancePaymentHistoryMapper
+          .entityToHistoryEntity(entity, InsurancePaymentHistoryEntity.builder().build());
+      insurancePaymentHistoryRepository.save(insurancePaymentHistoryEntity);
     }
   }
 

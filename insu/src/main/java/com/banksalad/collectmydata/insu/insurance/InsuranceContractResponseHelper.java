@@ -5,6 +5,7 @@ import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceContractEntity;
+import com.banksalad.collectmydata.insu.common.db.entity.InsuranceContractHistoryEntity;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceContractHistoryRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuranceContractRepository;
 import com.banksalad.collectmydata.insu.common.db.repository.InsuredRepository;
@@ -78,9 +79,15 @@ public class InsuranceContractResponseHelper implements
       insuranceContractEntity.setBanksaladUserId(banksaladUserId);
       insuranceContractEntity.setOrganizationId(organizationId);
       insuranceContractEntity.setContractNo(idx);
-
+      insuranceContractEntity.setConsentId(executionContext.getConsentId());
+      insuranceContractEntity.setSyncRequestId(executionContext.getSyncRequestId());
+      insuranceContractEntity.setCreatedBy(executionContext.getRequestedBy());
+      insuranceContractEntity.setUpdatedBy(executionContext.getRequestedBy());
       insuranceContractRepository.save(insuranceContractEntity);
-      insuranceContractHistoryRepository.save(insuranceContractHistoryMapper.toHistoryEntity(insuranceContractEntity));
+
+      InsuranceContractHistoryEntity insuranceContractHistoryEntity = insuranceContractHistoryMapper
+          .entityToHistoryEntity(insuranceContractEntity, InsuranceContractHistoryEntity.builder().build());
+      insuranceContractHistoryRepository.save(insuranceContractHistoryEntity);
     }
   }
 

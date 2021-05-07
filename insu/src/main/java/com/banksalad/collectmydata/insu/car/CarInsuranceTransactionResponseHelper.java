@@ -50,6 +50,10 @@ public class CarInsuranceTransactionResponseHelper implements
       carInsuranceTransactionEntity.setOrganizationId(executionContext.getOrganizationId());
       carInsuranceTransactionEntity.setInsuNum(carInsurance.getInsuNum());
       carInsuranceTransactionEntity.setCarNumber(carInsurance.getCarNumber());
+      carInsuranceTransactionEntity.setConsentId(executionContext.getConsentId());
+      carInsuranceTransactionEntity.setSyncRequestId(executionContext.getSyncRequestId());
+      carInsuranceTransactionEntity.setCreatedBy(executionContext.getRequestedBy());
+      carInsuranceTransactionEntity.setUpdatedBy(executionContext.getRequestedBy());
 
       /* load existing entity */
       CarInsuranceTransactionEntity existingCarInsuranceTransactionEntity = carInsuranceTransactionRepository

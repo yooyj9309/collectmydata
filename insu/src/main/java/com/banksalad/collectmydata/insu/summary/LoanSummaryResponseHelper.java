@@ -50,9 +50,9 @@ public class LoanSummaryResponseHelper implements SummaryResponseHelper<LoanSumm
     loanSummaryEntity.setBanksaladUserId(banksaladUserId);
     loanSummaryEntity.setOrganizationId(organizationId);
     loanSummaryEntity.setSyncedAt(executionContext.getSyncStartedAt());
-
-    loanSummaryEntity.setCreatedBy(Optional.ofNullable(loanSummaryEntity.getCreatedBy())
-        .orElseGet(executionContext::getRequestedBy));
+    loanSummaryEntity.setConsentId(executionContext.getConsentId());
+    loanSummaryEntity.setSyncRequestId(executionContext.getSyncRequestId());
+    loanSummaryEntity.setCreatedBy(executionContext.getRequestedBy());
     loanSummaryEntity.setUpdatedBy(executionContext.getRequestedBy());
 
     loanSummaryRepository.save(loanSummaryEntity);

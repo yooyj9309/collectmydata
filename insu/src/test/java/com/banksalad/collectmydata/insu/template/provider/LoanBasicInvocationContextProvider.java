@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_ST1;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_ST1;
@@ -27,6 +28,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_NO_ACCOUNT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SUCCESS;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 
 public class LoanBasicInvocationContextProvider implements TestTemplateInvocationContextProvider {
 
@@ -50,6 +52,8 @@ public class LoanBasicInvocationContextProvider implements TestTemplateInvocatio
         .accountStatus("01")
         .basicSearchTimestamp(null)
         .basicResponseCode(RSP_CODE_SUCCESS)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     LoanSummaryEntity parent2 = LoanSummaryEntity.builder()
@@ -63,6 +67,8 @@ public class LoanBasicInvocationContextProvider implements TestTemplateInvocatio
         .accountStatus("02")
         .basicSearchTimestamp(null)
         .basicResponseCode(RSP_CODE_SUCCESS)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     Map<String, LoanSummaryEntity> parentMap = Map.of(
@@ -86,6 +92,8 @@ public class LoanBasicInvocationContextProvider implements TestTemplateInvocatio
         .loanExpDate("20200131")
         .repayMethod("01")
         .insuNum("01")
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     LoanBasicEntity main2 = LoanBasicEntity.builder()
@@ -97,6 +105,8 @@ public class LoanBasicInvocationContextProvider implements TestTemplateInvocatio
         .loanExpDate("20200131")
         .repayMethod("02")
         .insuNum("02")
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
 
     Map<String, LoanBasicEntity> mainMap = Map.of(

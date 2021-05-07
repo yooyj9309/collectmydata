@@ -52,4 +52,10 @@ public class LoanBasicEntity extends BaseEntity {
 
   @Column(nullable = false)
   private String insuNum;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  @Column(nullable = false)
+  private String syncRequestId;
 }

@@ -45,6 +45,8 @@ public class InsuranceTransactionInvocationContextProvider implements TestTempla
         .insuStatus("01")
         .transactionSyncedAt(null)
         .transactionResponseCode(RSP_CODE_SUCCESS)
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     Map<String, InsuranceSummaryEntity> parentMap = Map.of(
         "freshParent1", parent1,
@@ -68,6 +70,8 @@ public class InsuranceTransactionInvocationContextProvider implements TestTempla
         .paidAmt(NumberUtil.bigDecimalOf(10000, 3))
         .currencyCode("KRW")
         .payMethod("01")
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     main1.setTransactionYearMonth(main1.getTransAppliedMonth());
 
@@ -82,6 +86,8 @@ public class InsuranceTransactionInvocationContextProvider implements TestTempla
         .paidAmt(NumberUtil.bigDecimalOf(20000, 3))
         .currencyCode("KRW")
         .payMethod("02")
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     main2.setTransactionYearMonth(main2.getTransAppliedMonth());
 
@@ -96,6 +102,8 @@ public class InsuranceTransactionInvocationContextProvider implements TestTempla
         .paidAmt(NumberUtil.bigDecimalOf(30000, 3))
         .currencyCode("KRW")
         .payMethod("02")
+        .syncRequestId(SYNC_REQUEST_ID)
+        .consentId(CONSENT_ID)
         .build();
     main3.setTransactionYearMonth(main2.getTransAppliedMonth());
 
