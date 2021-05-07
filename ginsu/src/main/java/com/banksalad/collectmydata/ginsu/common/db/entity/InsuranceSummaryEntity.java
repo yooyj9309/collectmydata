@@ -41,7 +41,7 @@ public class InsuranceSummaryEntity extends BaseEntity {
   @Column(nullable = false)
   private String insuNum;
 
-  @Column(nullable = false, name = "is_consent", columnDefinition = "TINYINT")
+  @Column(nullable = false, name = "is_consent", columnDefinition = "BIT", length = 1)
   private Boolean consent;
 
   @Column(nullable = false)

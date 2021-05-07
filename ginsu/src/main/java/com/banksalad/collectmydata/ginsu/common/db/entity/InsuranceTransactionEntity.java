@@ -43,7 +43,7 @@ public class InsuranceTransactionEntity extends BaseEntity {
   private String insuNum;
 
   @Column(nullable = false)
-  private String transNo;
+  private Short transNo;
 
   @Column(nullable = false)
   private String transDate;

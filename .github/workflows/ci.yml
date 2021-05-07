@@ -227,6 +227,20 @@ jobs:
           push: true
           tags: rainist/collectmydatainvest:${{ github.sha }}
 
+      - name: ginsu docker push
+        uses: docker/build-push-action@v2
+        with:
+          context: ginsu
+          push: true
+          tags: rainist/collectmydataginsu:${{ github.sha }}
+
+      - name: telecom docker push
+        uses: docker/build-push-action@v2
+        with:
+          context: telecom
+          push: true
+          tags: rainist/collectmydatagtelecom:${{ github.sha }}
+
       - name: oauth docker push
         uses: docker/build-push-action@v2
         with:
