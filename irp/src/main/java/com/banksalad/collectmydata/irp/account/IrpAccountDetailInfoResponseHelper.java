@@ -8,6 +8,7 @@ import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
 import com.banksalad.collectmydata.irp.api.AccountInfoResponsePaginationHelper;
 import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountDetailEntity;
+import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountDetailHistoryEntity;
 import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountDetailHistoryRepository;
 import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountDetailRepository;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountDetail;
@@ -91,7 +92,9 @@ public class IrpAccountDetailInfoResponseHelper implements
       irpAccountDetailEntity.setSyncRequestId(executionContext.getSyncRequestId());
 
       irpAccountDetailRepository.save(irpAccountDetailEntity);
-      irpAccountDetailHistoryRepository.save(irpAccountDetailHistoryMapper.toHistoryEntity(irpAccountDetailEntity));
+
+      irpAccountDetailHistoryRepository.save(irpAccountDetailHistoryMapper
+          .entityToHistoryEntity(irpAccountDetailEntity, IrpAccountDetailHistoryEntity.builder().build()));
     }
   }
 

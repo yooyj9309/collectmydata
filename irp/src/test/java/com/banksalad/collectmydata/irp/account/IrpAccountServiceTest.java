@@ -45,7 +45,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -141,6 +140,8 @@ class IrpAccountServiceTest {
         .issueDate("20200204")
         .firstDepositDate("20200204")
         .build();
+    expectedAccountBasicEntity.setCreatedBy(String.valueOf(BANKSALAD_USER_ID));
+    expectedAccountBasicEntity.setUpdatedBy(String.valueOf(BANKSALAD_USER_ID));
 
     executionContext = ExecutionContext.builder()
         .consentId(CONSENT_ID)
@@ -152,6 +153,7 @@ class IrpAccountServiceTest {
         .organizationCode(ORGANIZATION_CODE)
         .executionRequestId(UUID.randomUUID().toString())
         .syncStartedAt(now)
+        .requestedBy(String.valueOf(BANKSALAD_USER_ID))
         .build();
   }
 
@@ -223,7 +225,7 @@ class IrpAccountServiceTest {
 
       IrpAccountSummaryEntity accountSummaryEntity = accountSummaryEntities.get(i);
       assertEquals(BASIC_SEARCH_TIMESTAMP * (i + 1), accountSummaryEntity.getBasicSearchTimestamp());
-      assertNull(accountSummaryEntity.getBasicResponseCode());
+      assertEquals("000", accountSummaryEntity.getBasicResponseCode());
     }
   }
 
@@ -267,7 +269,7 @@ class IrpAccountServiceTest {
       }
 
       assertEquals(expectedSearchTimestamp, accountSummaryEntity.getBasicSearchTimestamp());
-      assertNull(accountSummaryEntity.getBasicResponseCode());
+      assertEquals("000", accountSummaryEntity.getBasicResponseCode());
     }
 
     List<IrpAccountBasicEntity> accountBasicEntities = accountBasicRepository.findAll();
@@ -313,7 +315,7 @@ class IrpAccountServiceTest {
     IrpAccountSummaryEntity accountSummaryEntity = accountSummaryEntities.get(0);
 
     assertEquals(BASIC_SEARCH_TIMESTAMP, accountSummaryEntity.getBasicSearchTimestamp());
-    assertNull(accountSummaryEntity.getBasicResponseCode());
+    assertEquals("000", accountSummaryEntity.getBasicResponseCode());
 
     assertAccountBasicEntitySyncedAt(accountBasicRepository.findAll(), accountBasicHistoryRepository.findAll());
   }
@@ -347,7 +349,7 @@ class IrpAccountServiceTest {
     IrpAccountSummaryEntity accountSummaryEntity = accountSummaryEntities.get(0);
 
     assertEquals(BASIC_SEARCH_TIMESTAMP * 2, accountSummaryEntity.getBasicSearchTimestamp());
-    assertNull(accountSummaryEntity.getBasicResponseCode());
+    assertEquals("000", accountSummaryEntity.getBasicResponseCode());
 
     List<IrpAccountBasicEntity> accountBasicEntities = accountBasicRepository.findAll();
     List<IrpAccountBasicHistoryEntity> accountBasicHistoryEntities = accountBasicHistoryRepository.findAll();
@@ -395,7 +397,7 @@ class IrpAccountServiceTest {
 //    IrpAccountSummaryEntity accountSummaryEntity = accountSummaryEntities.get(0);
 //
 //    assertEquals(BASIC_SEARCH_TIMESTAMP, accountSummaryEntity.getBasicSearchTimestamp());
-//    assertNull(accountSummaryEntity.getBasicResponseCode());
+//    assertEquals("000", accountSummaryEntity.getBasicResponseCode());
 //  }
 
   private void setupMockServer(HttpStatus httpStatus, String fileName) {
@@ -411,9 +413,11 @@ class IrpAccountServiceTest {
   private void saveAccountBasicsAndHistorySource() {
 
     accountBasicRepository.save(expectedAccountBasicEntity);
-    IrpAccountBasicHistoryEntity accountBasicHistoryEntity = accountBasicHistoryMapper
-        .toHistoryEntity(expectedAccountBasicEntity);
-    accountBasicHistoryRepository.save(accountBasicHistoryEntity);
+
+//  @AfterMapping 사용 + Super Class field access
+    accountBasicHistoryRepository.save(
+        accountBasicHistoryMapper
+            .entityToHistoryEntity(expectedAccountBasicEntity, IrpAccountBasicHistoryEntity.builder().build()));
   }
 
   private UserSyncStatusEntity assertUserSyncStatusSearchTimestamp(long searchTimestamp) {

@@ -131,6 +131,8 @@ class IrpAccountDetailServiceTest {
         .expDate("20211230")
         .intRate(new BigDecimal("14.3"))
         .build();
+    expectedAccountDetailEntity.setCreatedBy(String.valueOf(BANKSALAD_USER_ID));
+    expectedAccountDetailEntity.setUpdatedBy(String.valueOf(BANKSALAD_USER_ID));
 
     executionContext = ExecutionContext.builder()
         .consentId(CONSENT_ID)
@@ -142,6 +144,7 @@ class IrpAccountDetailServiceTest {
         .organizationCode(ORGANIZATION_CODE)
         .executionRequestId(UUID.randomUUID().toString())
         .syncStartedAt(requestSyncedAt)
+        .requestedBy(String.valueOf(BANKSALAD_USER_ID))
         .build();
   }
 
@@ -444,9 +447,9 @@ class IrpAccountDetailServiceTest {
   private void saveAccountDetailsAndHistorySource() {
 
     accountDetailRepository.save(expectedAccountDetailEntity);
-    IrpAccountDetailHistoryEntity accountDetailHistoryEntity = accountDetailHistoryMapper
-        .toHistoryEntity(expectedAccountDetailEntity);
-    accountDetailHistoryRepository.save(accountDetailHistoryEntity);
+
+    accountDetailHistoryRepository.save(accountDetailHistoryMapper
+        .entityToHistoryEntity(expectedAccountDetailEntity, IrpAccountDetailHistoryEntity.builder().build()));
   }
 
   private void assertUserSyncStatusSearchTimestamp(long searchTimestamp) {

@@ -7,6 +7,7 @@ import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
 import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountBasicEntity;
+import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountBasicHistoryEntity;
 import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountBasicHistoryRepository;
 import com.banksalad.collectmydata.irp.common.db.repository.IrpAccountBasicRepository;
 import com.banksalad.collectmydata.irp.common.dto.IrpAccountBasic;
@@ -17,8 +18,6 @@ import com.banksalad.collectmydata.irp.common.mapper.IrpAccountBasicMapper;
 import com.banksalad.collectmydata.irp.summary.IrpAccountSummaryService;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
-
-import java.util.Optional;
 
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
@@ -58,6 +57,7 @@ public class IrpAccountBasicInfoResponseHelper implements
     irpAccountBasicEntity.setConsentId(executionContext.getConsentId());
     irpAccountBasicEntity.setSyncRequestId(executionContext.getSyncRequestId());
     irpAccountBasicEntity.setUpdatedBy(executionContext.getRequestedBy());
+    irpAccountBasicEntity.setCreatedBy(executionContext.getRequestedBy());
 
     // load existing account entity
     IrpAccountBasicEntity existingIrpAccountBasicEntity = irpAccountBasicRepository
@@ -71,23 +71,17 @@ public class IrpAccountBasicInfoResponseHelper implements
 
       irpAccountBasicEntity.setId(existingIrpAccountBasicEntity.getId());
       irpAccountBasicEntity.setCreatedBy(existingIrpAccountBasicEntity.getCreatedBy());
-    } else {
-      irpAccountBasicEntity.setCreatedBy(executionContext.getRequestedBy());
     }
-
-    irpAccountBasicEntity
-        .setCreatedBy(Optional.ofNullable(existingIrpAccountBasicEntity)
-            .map(IrpAccountBasicEntity::getCreatedBy)
-            .orElseGet(executionContext::getRequestedBy));
-    irpAccountBasicEntity.setUpdatedBy(executionContext.getRequestedBy());
 
     // upsert irp account basic and insert history if needed
     if (!ObjectComparator
         .isSame(irpAccountBasicEntity, existingIrpAccountBasicEntity, ENTITY_EXCLUDE_FIELD)) {
 
       irpAccountBasicRepository.save(irpAccountBasicEntity);
+
       irpAccountBasicHistoryRepository.save(
-          irpAccountBasicHistoryMapper.toHistoryEntity(irpAccountBasicEntity));
+          irpAccountBasicHistoryMapper.entityToHistoryEntity(irpAccountBasicEntity,
+              IrpAccountBasicHistoryEntity.builder().build()));
     }
   }
 
