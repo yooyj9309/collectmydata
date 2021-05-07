@@ -3,6 +3,7 @@ package com.banksalad.collectmydata.mock.irp.dto;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,8 +15,8 @@ public class IrpAccountTransactionSearch {
   private String accountNum;
   private String seqno;
   private LocalDateTime updatedAt;
-  private LocalDateTime fromCreatedAt;
-  private LocalDateTime toCreatedAt;
+  private LocalDate fromDate;
+  private LocalDate toDate;
   private int pageNumber;
   private int pageSize;
 }

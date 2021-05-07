@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.banksalad.collectmydata.mock.common.config.TransDtimeFormatter;
 import com.banksalad.collectmydata.mock.common.db.repository.BankIrpAccountBasicRepository;
 import com.banksalad.collectmydata.mock.common.db.repository.BankIrpAccountDetailRepository;
 import com.banksalad.collectmydata.mock.common.db.repository.BankIrpAccountSummaryRepository;
@@ -99,14 +100,14 @@ public class BankIrpServiceImpl implements IrpService {
   @Override
   public int getIrpAccountTransactionCount(IrpAccountTransactionSearch irpAccountTransactionSearch) {
     return bankIrpAccountTransactionRepository
-        .countByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndUpdatedAtGreaterThanAndCreatedAtBetween(
+        .countByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndUpdatedAtGreaterThanAndTransDtimeBetween(
             irpAccountTransactionSearch.getBanksaladUserId(),
             irpAccountTransactionSearch.getOrganizationId(),
             irpAccountTransactionSearch.getAccountNum(),
             irpAccountTransactionSearch.getSeqno(),
             irpAccountTransactionSearch.getUpdatedAt(),
-            irpAccountTransactionSearch.getFromCreatedAt(),
-            irpAccountTransactionSearch.getToCreatedAt()
+            irpAccountTransactionSearch.getFromDate().format(TransDtimeFormatter.get()),
+            irpAccountTransactionSearch.getToDate().format(TransDtimeFormatter.get())
         );
   }
 
@@ -116,14 +117,14 @@ public class BankIrpServiceImpl implements IrpService {
     Pageable pageable = PageRequest.of(irpAccountTransactionSearch.getPageNumber(),
         irpAccountTransactionSearch.getPageSize(), Sort.by("transDtime", "transType", "transAmt").ascending());
     return bankIrpAccountTransactionRepository
-        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndUpdatedAtGreaterThanAndCreatedAtBetween(
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndUpdatedAtGreaterThanAndTransDtimeBetween(
             irpAccountTransactionSearch.getBanksaladUserId(),
             irpAccountTransactionSearch.getOrganizationId(),
             irpAccountTransactionSearch.getAccountNum(),
             irpAccountTransactionSearch.getSeqno(),
             irpAccountTransactionSearch.getUpdatedAt(),
-            irpAccountTransactionSearch.getFromCreatedAt(),
-            irpAccountTransactionSearch.getToCreatedAt(),
+            irpAccountTransactionSearch.getFromDate().format(TransDtimeFormatter.get()),
+            irpAccountTransactionSearch.getToDate().format(TransDtimeFormatter.get()),
             pageable
         ).stream()
         .map(irpAccountTransactionMapper::entityToDto)

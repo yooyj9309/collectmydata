@@ -142,8 +142,8 @@ public class IrpApiController {
             .accountNum(postIrpsTransactionsRequest.getAccountNum())
             .seqno(postIrpsTransactionsRequest.getSeqno())
             .updatedAt(searchTimestamp)
-            .fromCreatedAt(postIrpsTransactionsRequest.getFromDate().atStartOfDay())
-            .toCreatedAt(postIrpsTransactionsRequest.getToDate().atTime(23, 59, 59))
+            .fromDate(postIrpsTransactionsRequest.getFromDate())
+            .toDate(postIrpsTransactionsRequest.getToDate())
             .build());
 
     int pageNumber = NumberUtils.toInt(postIrpsTransactionsRequest.getNextPage());
@@ -155,8 +155,8 @@ public class IrpApiController {
             .accountNum(postIrpsTransactionsRequest.getAccountNum())
             .seqno(postIrpsTransactionsRequest.getSeqno())
             .updatedAt(searchTimestamp)
-            .fromCreatedAt(postIrpsTransactionsRequest.getFromDate().atStartOfDay())
-            .toCreatedAt(postIrpsTransactionsRequest.getToDate().atTime(23, 59, 59))
+            .fromDate(postIrpsTransactionsRequest.getFromDate())
+            .toDate(postIrpsTransactionsRequest.getToDate())
             .pageNumber(pageNumber)
             .pageSize(pageSize)
             .build());

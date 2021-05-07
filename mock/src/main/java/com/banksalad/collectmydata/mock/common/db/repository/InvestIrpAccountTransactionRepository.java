@@ -10,12 +10,11 @@ import java.util.List;
 
 public interface InvestIrpAccountTransactionRepository extends JpaRepository<InvestIrpAccountTransactionEntity, Long> {
 
-  int countByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndUpdatedAtGreaterThanAndCreatedAtBetween(
-      long banksaladUserId,
-      String organizationId, String accountNum, String seqno, LocalDateTime updatedAt, LocalDateTime fromCreatedAt,
-      LocalDateTime toCreatedAt);
-
-  List<InvestIrpAccountTransactionEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndUpdatedAtGreaterThanAndCreatedAtBetween(
+  int countByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndUpdatedAtGreaterThanAndTransDtimeBetween(
       long banksaladUserId, String organizationId, String accountNum, String seqno, LocalDateTime updatedAt,
-      LocalDateTime fromCreatedAt, LocalDateTime toCreatedAt, Pageable pageable);
+      String fromDate, String toDate);
+
+  List<InvestIrpAccountTransactionEntity> findByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqnoAndUpdatedAtGreaterThanAndTransDtimeBetween(
+      long banksaladUserId, String organizationId, String accountNum, String seqno, LocalDateTime updatedAt,
+      String fromDate, String toDate, Pageable pageable);
 }
