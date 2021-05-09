@@ -1,0 +1,333 @@
+{{ $service_name := "collectmydatacapital" }}
+
+{{ $service_grpc_port := "18081" }}
+{{ $service_http_port := "18082" }}
+
+{{ $graceful_shutdown_timeout_sec := "30" }}
+
+{{ $telegraf_tag := "1.11.5" }}
+
+{{ $env := .Env.ENV }}
+{{ $sub_env_id := .Env.SUB_ENV_ID }}
+
+{{ assert (ne .Env.IMAGE_TAG "") }}
+
+{{ $no_sub_env_id_envs := slice "production" "staging" }}
+{{ if has $no_sub_env_id_envs $env }}
+  {{ assert (eq $env $sub_env_id) }}
+{{ end }}
+
+{{ $namespace := $env }}
+
+# development
+{{ $stg_collectmydata_capital_db_password := getenv "STG_COLLECTMYDATA_CAPITAL_DB_PASSWORD" }}
+
+# production
+{{ $stg_collectmydata_capital_db_password := getenv "STG_COLLECTMYDATA_CAPITAL_DB_PASSWORD" }} # PRODUCTION 설정으로 변경
+
+{{ if ne $env $sub_env_id }}
+  {{ $namespace = join (slice $env $sub_env_id) "-" }}
+{{ end }}
+
+{{ $mysql_cidr_a := "10.121.12.48/28" }}
+{{ $mysql_cidr_b := "10.121.12.64/28" }}
+{{ $mysql_cidr_c := "10.121.12.80/28" }}
+
+{{ $msk_cidr_a := "10.120.250.0/25" }}
+{{ $msk_cidr_b := "10.120.250.128/25" }}
+{{ $msk_cidr_c := "10.120.251.0/25" }}
+
+{{ if eq $env "production" }}
+  {{ $mysql_cidr_a = "10.131.12.48/28" }}
+  {{ $mysql_cidr_b = "10.131.12.64/28" }}
+  {{ $mysql_cidr_c = "10.131.12.80/28" }}
+
+  {{ $msk_cidr_a = "10.130.250.0/25" }}
+  {{ $msk_cidr_b = "10.130.250.128/25" }}
+  {{ $msk_cidr_c = "10.130.251.0/25" }}
+{{ end }}
+
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ $service_name }}-telegraf
+  namespace: {{ $namespace }}
+data:
+  telegraf.conf: |
+    [global_tags]
+
+    [agent]
+      interval = "10s"
+      round_interval = true
+      metric_batch_size = 1000
+      metric_buffer_limit = 10000
+      collection_jitter = "0s"
+      flush_interval = "10s"
+      flush_jitter = "0s"
+      precision = ""
+      hostname = ""
+      omit_hostname = false
+
+    [[outputs.influxdb]]
+      urls = ["http://influxdb-service.{{ $namespace }}.banksalad.in:8086"]
+      database = "collect"
+
+    [[inputs.statsd]]
+      protocol = "udp"
+      max_tcp_connections = 250
+      tcp_keep_alive = false
+      service_address = ":8126"
+      delete_gauges = true
+      delete_counters = true
+      delete_sets = true
+      delete_timings = true
+      percentiles = [99, 95, 90, 50]
+      metric_separator = "."
+      parse_data_dog_tags = false
+      datadog_extensions = false
+      allowed_pending_messages = 10000
+      percentile_limit = 1000
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ $service_name }}
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ $service_name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ $service_name }}
+  template:
+    metadata:
+      name: {{ $service_name }}
+      labels:
+        app: {{ $service_name }}
+    spec:
+      volumes:
+        - name: {{ $service_name }}-telegraf-conf
+          configMap:
+            name: {{ $service_name }}-telegraf
+            defaultMode: 420
+      containers:
+        - name: {{ $service_name }}-telegraf
+          image: telegraf:{{ $telegraf_tag }}
+          ports:
+            - containerPort: 8126
+              protocol: UDP
+          resources:
+            limits:
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          volumeMounts:
+            - name: {{ $service_name }}-telegraf-conf
+              mountPath: "/etc/telegraf"
+          terminationMessagePath: "/dev/termination-log"
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - sh
+                  - "-c"
+                  - sleep {{ $graceful_shutdown_timeout_sec }} && /usr/sbin/nginx -s quit
+        - name: {{ $service_name }}
+          image: rainist/{{ $service_name }}:{{ getenv "IMAGE_TAG" }}
+          ports:
+            - containerPort: {{ $service_grpc_port }}
+              protocol: TCP
+            - containerPort: {{ $service_http_port }}
+              protocol: TCP
+          env:
+            - name: ENV
+              value: {{ $env }}
+            - name: SUB_ENV_ID
+              value: {{ $sub_env_id }}
+            - name: NAMESPACE
+              value: {{ $namespace }}
+            - name: STG_COLLECTMYDATA_CAPITAL_DB_PASSWORD
+              value: {{ $stg_collectmydata_capital_db_password }}
+          resources:
+            limits:
+              memory: 8Gi
+            requests:
+              cpu: 300m
+              memory: 4Gi
+          livenessProbe:
+            httpGet:
+              path: "/actuator/health/liveness"
+              port: {{ $service_http_port }}
+              scheme: HTTP
+            initialDelaySeconds: 60
+            timeoutSeconds: 2
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: "/actuator/health/readiness"
+              port: {{ $service_http_port }}
+              scheme: HTTP
+            initialDelaySeconds: 20
+            timeoutSeconds: 1
+            periodSeconds: 3
+            successThreshold: 1
+            failureThreshold: 2
+          terminationMessagePath: "/dev/termination-log"
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        options:
+          - name: single-request-reopen
+      securityContext: {}
+      imagePullSecrets:
+        - name: docker-hub-registry-credential
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+
+---
+kind: HorizontalPodAutoscaler
+apiVersion: autoscaling/v1
+metadata:
+  name: {{ $service_name }}
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ $service_name }}
+
+spec:
+  scaleTargetRef:
+    kind: Deployment
+    name: {{ $service_name }}
+    apiVersion: apps/v1
+{{ if eq $env "production" }}
+  minReplicas: 3
+  maxReplicas: 5
+{{ else }}
+  minReplicas: 2
+  maxReplicas: 2
+{{ end }}
+  targetCPUUtilizationPercentage: 60
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ $service_name }}
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ $service_name }}
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: {{ $service_grpc_port }}
+  selector:
+    app: {{ $service_name }}
+  type: ClusterIP
+  sessionAffinity: None
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ $service_name }}-headless
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ $service_name }}
+spec:
+  ports:
+    - name: grpc
+      protocol: TCP
+      port: {{ $service_grpc_port }}
+      targetPort: {{ $service_grpc_port }}
+  selector:
+    app: {{ $service_name }}
+  clusterIP: None
+  sessionAffinity: None
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ $service_name }}
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ $service_name }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ $service_name }}
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: collectmydataconnect
+    - podSelector:
+        matchLabels:
+          app: cipher
+    - podSelector:
+        matchLabels:
+          app: finance
+    ports:
+    - protocol: TCP
+      port: 80
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 18081
+  - to:
+    - ipBlock:
+        cidr: {{ $mysql_cidr_a }}
+    - ipBlock:
+        cidr: {{ $mysql_cidr_b }}
+    - ipBlock:
+        cidr: {{ $mysql_cidr_c }}
+    ports:
+    - protocol: TCP
+      port: 3306
+  - to:
+    - ipBlock:
+        cidr: {{ $msk_cidr_a }}
+    - ipBlock:
+        cidr: {{ $msk_cidr_b }}
+    - ipBlock:
+        cidr: {{ $msk_cidr_c }}
+    ports:
+    - protocol: TCP
+      port: 9092
+  - to:
+    - ipBlock:
+        cidr: 0.0.0.0/0 # mydata information provider
+    ports:
+    - protocol: TCP
+      port: 9443
+---
+kind: PodDisruptionBudget
+apiVersion: policy/v1beta1
+metadata:
+  name: {{ $service_name }}
+  namespace: {{ $namespace }}
+  labels:
+    app: {{ $service_name }}
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: {{ $service_name }}

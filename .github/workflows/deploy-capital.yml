@@ -1,0 +1,71 @@
+name: Deploy
+
+env:
+  module: 'capital'
+
+on:
+  - deployment
+
+jobs:
+  deploy-capital:
+    runs-on: [ self-hosted, default ]
+    if: (github.event.deployment.task == 'deploy:capital') && (github.event.deployment.environment == 'production' || github.event.deployment.environment == 'staging')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 50
+
+      - name: Checkout actions
+        uses: actions/checkout@v2
+        with:
+          repository: banksalad/actions
+          token: ${{ secrets.GH_ACCESS_TOKEN }}
+          path: .github/actions/
+
+      - name: Set deployment status to in_progress
+        uses: ./.github/actions/github-deploy-status
+        with:
+          state: 'in_progress'
+          description: 'deployment started'
+        env:
+          GITHUB_DEPLOY_EVENT_URL: ${{ github.event.deployment.statuses_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          version: v1.19.2
+
+      - name: Setup kubernetes environment
+        uses: azure/k8s-set-context@v1
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.K8S_KUBE_CONFIG }}
+          context: ${{ github.event.deployment.environment }}
+
+      - name: Deploy to k8s
+        run: |
+          cat ${{ env.module }}/k8s.yaml.tmpl | \
+            docker run --rm -i \
+                  -e ENV \
+                  -e SUB_ENV_ID \
+                  -e IMAGE_TAG \
+                  -e STG_COLLECTMYDATA_CAPITAL_DB_PASSWORD \
+                  hairyhenderson/gomplate:v3.5.0-slim -f - | \
+               kubectl apply -f -
+        env:
+          ENV: ${{ github.event.deployment.environment }}
+          SUB_ENV_ID: ${{ github.event.deployment.environment }}
+          IMAGE_TAG: ${{ github.sha }}
+          STG_COLLECTMYDATA_CAPITAL_DB_PASSWORD: ${{ secrets.STG_COLLECTMYDATA_CAPITAL_DB_PASSWORD }}
+
+      - name: Set deployment status
+        if: always()
+        uses: ./.github/actions/github-deploy-status
+        with:
+          state: '${{ job.status }}'
+          description: 'deployment ${{ job.status }}'
+        env:
+          GITHUB_DEPLOY_EVENT_URL: ${{ github.event.deployment.statuses_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
