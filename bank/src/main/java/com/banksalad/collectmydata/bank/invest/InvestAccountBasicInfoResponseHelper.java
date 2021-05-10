@@ -67,14 +67,10 @@ public class InvestAccountBasicInfoResponseHelper implements
     }
 
     if (!ObjectComparator.isSame(investAccountBasicEntity, existingInvestAccountBasicEntity, ENTITY_EXCLUDE_FIELD)) {
-      InvestAccountBasicHistoryEntity investAccountBasicHistoryEntity = investAccountBasicHistoryMapper
-          .toInvestAccountBasicHistoryEntity(investAccountBasicEntity);
-      investAccountBasicHistoryEntity.setCreatedAt(investAccountBasicEntity.getCreatedAt());
-      investAccountBasicHistoryEntity.setCreatedBy(investAccountBasicEntity.getCreatedBy());
-      investAccountBasicHistoryEntity.setUpdatedAt(investAccountBasicEntity.getUpdatedAt());
-      investAccountBasicHistoryEntity.setUpdatedBy(investAccountBasicEntity.getUpdatedBy());
-
       investAccountBasicRepository.save(investAccountBasicEntity);
+
+      InvestAccountBasicHistoryEntity investAccountBasicHistoryEntity = investAccountBasicHistoryMapper
+          .entityToHistoryEntity(investAccountBasicEntity, InvestAccountBasicHistoryEntity.builder().build());
       investAccountBasicHistoryRepository.save(investAccountBasicHistoryEntity);
     }
   }

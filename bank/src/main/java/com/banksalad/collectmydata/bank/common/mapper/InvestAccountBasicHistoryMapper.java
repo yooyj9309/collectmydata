@@ -4,11 +4,12 @@ import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountBasicEntit
 import com.banksalad.collectmydata.bank.common.db.entity.InvestAccountBasicHistoryEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper
 public interface InvestAccountBasicHistoryMapper {
 
   @Mapping(target = "id", ignore = true)
-  InvestAccountBasicHistoryEntity toInvestAccountBasicHistoryEntity(
-      InvestAccountBasicEntity investAccountBasicEntity);
+  InvestAccountBasicHistoryEntity entityToHistoryEntity(InvestAccountBasicEntity investAccountBasicEntity,
+      @MappingTarget InvestAccountBasicHistoryEntity investAccountBasicHistoryEntity);
 }

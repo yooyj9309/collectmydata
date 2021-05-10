@@ -66,14 +66,10 @@ public class LoanAccountBasicInfoResponseHelper implements AccountInfoResponseHe
     }
 
     if (!ObjectComparator.isSame(loanAccountBasicEntity, existingLoanAccountBasicEntity, ENTITY_EXCLUDE_FIELD)) {
-      LoanAccountBasicHistoryEntity loanAccountBasicHistoryEntity = loanAccountBasicHistoryMapper
-          .toLoanAccountBasicHistoryEntity(loanAccountBasicEntity);
-      loanAccountBasicHistoryEntity.setCreatedAt(loanAccountBasicEntity.getCreatedAt());
-      loanAccountBasicHistoryEntity.setCreatedBy(loanAccountBasicEntity.getCreatedBy());
-      loanAccountBasicHistoryEntity.setUpdatedAt(loanAccountBasicEntity.getUpdatedAt());
-      loanAccountBasicHistoryEntity.setUpdatedBy(loanAccountBasicEntity.getUpdatedBy());
-
       loanAccountBasicRepository.save(loanAccountBasicEntity);
+
+      LoanAccountBasicHistoryEntity loanAccountBasicHistoryEntity = loanAccountBasicHistoryMapper
+          .entityToHistoryEntity(loanAccountBasicEntity, LoanAccountBasicHistoryEntity.builder().build());
       loanAccountBasicHistoryRepository.save(loanAccountBasicHistoryEntity);
     }
   }

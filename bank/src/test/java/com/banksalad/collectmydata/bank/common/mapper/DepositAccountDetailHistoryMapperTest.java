@@ -36,7 +36,7 @@ class DepositAccountDetailHistoryMapperTest {
         .build();
 
     DepositAccountDetailHistoryEntity historyEntity = depositAccountDetailHistoryMapper
-        .toHistoryEntity(entity);
+        .entityToHistoryEntity(entity, DepositAccountDetailHistoryEntity.builder().build());
 
     assertAll(
         () -> assertNotEquals(entity.getId(), historyEntity.getId()),

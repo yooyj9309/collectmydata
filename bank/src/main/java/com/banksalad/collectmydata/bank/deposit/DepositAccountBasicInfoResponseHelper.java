@@ -74,14 +74,10 @@ public class DepositAccountBasicInfoResponseHelper implements
 
     // upsert deposit account basic and insert history if needed
     if (!ObjectComparator.isSame(depositAccountBasicEntity, existingDepositAccountBasicEntity, ENTITY_EXCLUDE_FIELD)) {
-      DepositAccountBasicHistoryEntity depositAccountBasicHistoryEntity = depositAccountBasicHistoryMapper
-          .toHistoryEntity(depositAccountBasicEntity);
-      depositAccountBasicHistoryEntity.setCreatedAt(depositAccountBasicEntity.getCreatedAt());
-      depositAccountBasicHistoryEntity.setCreatedBy(depositAccountBasicEntity.getCreatedBy());
-      depositAccountBasicHistoryEntity.setUpdatedAt(depositAccountBasicEntity.getUpdatedAt());
-      depositAccountBasicHistoryEntity.setUpdatedBy(depositAccountBasicEntity.getUpdatedBy());
-
       depositAccountBasicRepository.save(depositAccountBasicEntity);
+
+      DepositAccountBasicHistoryEntity depositAccountBasicHistoryEntity = depositAccountBasicHistoryMapper
+          .entityToHistoryEntity(depositAccountBasicEntity, DepositAccountBasicHistoryEntity.builder().build());
       depositAccountBasicHistoryRepository.save(depositAccountBasicHistoryEntity);
     }
   }

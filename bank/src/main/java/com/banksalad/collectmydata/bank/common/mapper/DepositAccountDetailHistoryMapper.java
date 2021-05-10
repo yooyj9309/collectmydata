@@ -4,10 +4,12 @@ import com.banksalad.collectmydata.bank.common.db.entity.DepositAccountDetailEnt
 import com.banksalad.collectmydata.bank.common.db.entity.DepositAccountDetailHistoryEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper
 public interface DepositAccountDetailHistoryMapper {
 
   @Mapping(target = "id", ignore = true)
-  DepositAccountDetailHistoryEntity toHistoryEntity(DepositAccountDetailEntity depositAccountDetailEntity);
+  DepositAccountDetailHistoryEntity entityToHistoryEntity(DepositAccountDetailEntity depositAccountDetailEntity,
+      @MappingTarget DepositAccountDetailHistoryEntity depositAccountDetailHistoryEntity);
 }

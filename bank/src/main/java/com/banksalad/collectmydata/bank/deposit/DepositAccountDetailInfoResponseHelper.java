@@ -84,14 +84,10 @@ public class DepositAccountDetailInfoResponseHelper implements
       // upsert deposit account detail and insert history if needed
       if (!ObjectComparator
           .isSame(depositAccountDetailEntity, existingDepositAccountDetailEntity, ENTITY_EXCLUDE_FIELD)) {
-        DepositAccountDetailHistoryEntity depositAccountDetailHistoryEntity = depositAccountDetailHistoryMapper
-            .toHistoryEntity(depositAccountDetailEntity);
-        depositAccountDetailHistoryEntity.setCreatedAt(depositAccountDetailEntity.getCreatedAt());
-        depositAccountDetailHistoryEntity.setCreatedBy(depositAccountDetailEntity.getCreatedBy());
-        depositAccountDetailHistoryEntity.setUpdatedAt(depositAccountDetailEntity.getUpdatedAt());
-        depositAccountDetailHistoryEntity.setUpdatedBy(depositAccountDetailEntity.getUpdatedBy());
-
         depositAccountDetailRepository.save(depositAccountDetailEntity);
+
+        DepositAccountDetailHistoryEntity depositAccountDetailHistoryEntity = depositAccountDetailHistoryMapper
+            .entityToHistoryEntity(depositAccountDetailEntity, DepositAccountDetailHistoryEntity.builder().build());
         depositAccountDetailHistoryRepository.save(depositAccountDetailHistoryEntity);
       }
     }
