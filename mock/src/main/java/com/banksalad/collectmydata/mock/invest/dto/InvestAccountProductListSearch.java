@@ -3,14 +3,16 @@ package com.banksalad.collectmydata.mock.invest.dto;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class InvestAccountBasicSearch {
+public class InvestAccountProductListSearch {
 
   private long banksaladUserId;
   private String organizationId;
-  private LocalDateTime updateAt;
+  private LocalDateTime updatedAt;
   private String accountNum;
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.banksalad.collectmydata.mock.common.config.TransDtimeFormatter;
 import com.banksalad.collectmydata.mock.common.db.entity.InvestAccountTransactionEntity;
 import com.banksalad.collectmydata.mock.common.db.repository.InvestAccountBasicRepository;
+import com.banksalad.collectmydata.mock.common.db.repository.InvestAccountProductRepository;
 import com.banksalad.collectmydata.mock.common.db.repository.InvestAccountSummaryRepository;
 import com.banksalad.collectmydata.mock.common.db.repository.InvestAccountTransactionRepository;
 import com.banksalad.collectmydata.mock.common.db.repository.InvestOrganizationUserRepository;
@@ -16,11 +17,14 @@ import com.banksalad.collectmydata.mock.common.exception.CollectmydataMockRuntim
 import com.banksalad.collectmydata.mock.common.exception.code.CollectmydataMockExceptionCode;
 import com.banksalad.collectmydata.mock.invest.dto.InvestAccountBasic;
 import com.banksalad.collectmydata.mock.invest.dto.InvestAccountBasicSearch;
+import com.banksalad.collectmydata.mock.invest.dto.InvestAccountProduct;
+import com.banksalad.collectmydata.mock.invest.dto.InvestAccountProductListSearch;
 import com.banksalad.collectmydata.mock.invest.dto.InvestAccountSummary;
 import com.banksalad.collectmydata.mock.invest.dto.InvestAccountSummarySearch;
 import com.banksalad.collectmydata.mock.invest.dto.InvestAccountTransactionPage;
 import com.banksalad.collectmydata.mock.invest.dto.InvestAccountTransactionPageSearch;
 import com.banksalad.collectmydata.mock.invest.service.mapper.InvestAccountBasicMapper;
+import com.banksalad.collectmydata.mock.invest.service.mapper.InvestAccountProductMapper;
 import com.banksalad.collectmydata.mock.invest.service.mapper.InvestAccountSummaryMapper;
 import com.banksalad.collectmydata.mock.invest.service.mapper.InvestAccountTransactionMapper;
 import lombok.RequiredArgsConstructor;
@@ -37,12 +41,16 @@ public class InvestServiceImpl implements InvestService {
   private final InvestAccountSummaryRepository investAccountSummaryRepository;
   private final InvestAccountBasicRepository investAccountBasicRepository;
   private final InvestAccountTransactionRepository investAccountTransactionRepository;
+  private final InvestAccountProductRepository investAccountProductRepository;
 
   private final InvestAccountSummaryMapper investAccountSummaryMapper = Mappers
       .getMapper(InvestAccountSummaryMapper.class);
   private final InvestAccountBasicMapper investAccountBasicMapper = Mappers.getMapper(InvestAccountBasicMapper.class);
   private final InvestAccountTransactionMapper investAccountTransactionMapper = Mappers
       .getMapper(InvestAccountTransactionMapper.class);
+  private final InvestAccountProductMapper investAccountProductMapper = Mappers
+      .getMapper(InvestAccountProductMapper.class);
+
 
   @Override
   public String getRegistrationDate(InvestAccountSummarySearch investAccountSummarySearch) {
@@ -69,10 +77,11 @@ public class InvestServiceImpl implements InvestService {
   @Override
   public InvestAccountBasic getInvestAccountBasic(InvestAccountBasicSearch investAccountBasicSearch) {
     return investAccountBasicRepository
-        .findByBanksaladUserIdAndOrganizationIdAndAccountNum(
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndUpdatedAtGreaterThan(
             investAccountBasicSearch.getBanksaladUserId(),
             investAccountBasicSearch.getOrganizationId(),
-            investAccountBasicSearch.getAccountNum()
+            investAccountBasicSearch.getAccountNum(),
+            investAccountBasicSearch.getUpdateAt()
         ).map(investAccountBasicMapper::entityToDto)
         .orElseThrow(() -> new CollectmydataMockRuntimeException(CollectmydataMockExceptionCode.NOT_FOUND_ASSETS));
   }
@@ -107,5 +116,19 @@ public class InvestServiceImpl implements InvestService {
             investAccountTransactionEntityPage.getContent().stream()
                 .map(investAccountTransactionMapper::entityToDto).collect(Collectors.toList()))
         .build();
+  }
+
+  @Override
+  public List<InvestAccountProduct> getInvestAccountProductList(
+      InvestAccountProductListSearch investAccountProductListSearch) {
+    return investAccountProductRepository
+        .findByBanksaladUserIdAndOrganizationIdAndAccountNumAndUpdatedAtGreaterThan(
+            investAccountProductListSearch.getBanksaladUserId(),
+            investAccountProductListSearch.getOrganizationId(),
+            investAccountProductListSearch.getAccountNum(),
+            investAccountProductListSearch.getUpdatedAt()
+        ).stream()
+        .map(investAccountProductMapper::entityToDto)
+        .collect(Collectors.toList());
   }
 }

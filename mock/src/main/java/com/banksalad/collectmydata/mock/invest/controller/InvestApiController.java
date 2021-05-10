@@ -12,11 +12,15 @@ import com.banksalad.collectmydata.mock.common.api.annotation.OrgCode;
 import com.banksalad.collectmydata.mock.common.api.annotation.SearchTimestamp;
 import com.banksalad.collectmydata.mock.invest.controller.model.GetInvestAccountBasicRequest;
 import com.banksalad.collectmydata.mock.invest.controller.model.GetInvestAccountBasicResponse;
+import com.banksalad.collectmydata.mock.invest.controller.model.GetInvestAccountProductsRequest;
+import com.banksalad.collectmydata.mock.invest.controller.model.GetInvestAccountProductsResponse;
 import com.banksalad.collectmydata.mock.invest.controller.model.GetInvestAccountTransactionRequest;
 import com.banksalad.collectmydata.mock.invest.controller.model.GetInvestAccountTransactionResponse;
 import com.banksalad.collectmydata.mock.invest.controller.model.GetInvestAccountsResponse;
 import com.banksalad.collectmydata.mock.invest.dto.InvestAccountBasic;
 import com.banksalad.collectmydata.mock.invest.dto.InvestAccountBasicSearch;
+import com.banksalad.collectmydata.mock.invest.dto.InvestAccountProduct;
+import com.banksalad.collectmydata.mock.invest.dto.InvestAccountProductListSearch;
 import com.banksalad.collectmydata.mock.invest.dto.InvestAccountSummary;
 import com.banksalad.collectmydata.mock.invest.dto.InvestAccountSummarySearch;
 import com.banksalad.collectmydata.mock.invest.dto.InvestAccountTransactionPage;
@@ -69,6 +73,7 @@ public class InvestApiController {
     InvestAccountBasic investAccountBasic = investService.getInvestAccountBasic(InvestAccountBasicSearch.builder()
         .banksaladUserId(banksaladUserId)
         .organizationId(orgCode)
+        .updateAt(searchTimestamp)
         .accountNum(getInvestAccountBasicRequest.getAccountNum())
         .build());
 
@@ -99,6 +104,26 @@ public class InvestApiController {
         .nextPage(investAccountTransactionPage.isLast() ? null : String.valueOf(nextPageNumber))
         .transCnt(investAccountTransactionPage.getTotalElements())
         .investAccountTransactionList(investAccountTransactionPage.getInvestAccountTransaction())
+        .build();
+  }
+
+  @PostMapping("/products")
+  public GetInvestAccountProductsResponse getInvestAccountProducts(@BanksaladUserId Long banksaladUserId,
+      @OrgCode String orgCode,
+      @SearchTimestamp LocalDateTime searchTimestamp,
+      @Valid @RequestBody GetInvestAccountProductsRequest getInvestAccountProductsRequest) {
+
+    List<InvestAccountProduct> investAccountProductList = investService
+        .getInvestAccountProductList(InvestAccountProductListSearch.builder()
+            .banksaladUserId(banksaladUserId)
+            .organizationId(orgCode)
+            .accountNum(getInvestAccountProductsRequest.getAccountNum())
+            .updatedAt(searchTimestamp)
+            .build());
+
+    return GetInvestAccountProductsResponse.builder()
+        .prodCnt(investAccountProductList.size())
+        .investAccountProducts(investAccountProductList)
         .build();
   }
 }
