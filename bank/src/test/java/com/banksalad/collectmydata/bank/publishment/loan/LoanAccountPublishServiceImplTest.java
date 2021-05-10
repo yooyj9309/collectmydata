@@ -212,7 +212,7 @@ class LoanAccountPublishServiceImplTest {
   private ListBankLoanAccountTransactionsRequest getListBankLoanAccountTransactionsRequest() {
     return ListBankLoanAccountTransactionsRequest.newBuilder()
         .setBanksaladUserId("1")
-        .setOrganizationObjectid("objectid")
+        .setOrganizationGuid("organizationGuid")
         .setAccountNum("1234567890")
         .setSeqno(StringValue.newBuilder().setValue("01").build())
         .setCreatedAfterMs(0)

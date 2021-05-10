@@ -27,8 +27,8 @@ public class EhcacheConfig {
   @Bean
   public JCacheManagerCustomizer cacheManagerCustomizer() {
     return cm -> {
-      if (cm.getCache("getOrganizationByOrganizationObjectidCache") == null) {
-        cm.createCache("getOrganizationByOrganizationObjectidCache", configuration);
+      if (cm.getCache("getOrganizationByOrganizationGuidCache") == null) {
+        cm.createCache("getOrganizationByOrganizationGuidCache", configuration);
       }
     };
   }

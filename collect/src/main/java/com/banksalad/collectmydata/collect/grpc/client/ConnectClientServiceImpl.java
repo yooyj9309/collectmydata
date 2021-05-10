@@ -5,23 +5,23 @@ import com.banksalad.collectmydata.common.exception.CollectRuntimeException;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataGrpc.ConnectmydataBlockingStub;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationObjectidRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectGrpc.CollectmydataconnectBlockingStub;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetOrganizationByOrganizationGuidRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetOrganizationResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class ConnectClientServiceImpl implements ConnectClientService {
 
-  private final ConnectmydataBlockingStub connectmydataBlockingStub;
+  private final CollectmydataconnectBlockingStub collectmydataconnectBlockingStub;
 
-  @Cacheable(value = "getOrganizationByOrganizationObjectidCache", key = "#organizationObjectId")
-  public GetOrganizationResponse getOrganizationByOrganizationObjectid(String organizationObjectId) {
+  @Cacheable(value = "getOrganizationByOrganizationGuidCache", key = "#organizationGuId")
+  public GetOrganizationResponse getOrganizationByOrganizationGuid(String organizationGuId) {
 
     try {
-      return connectmydataBlockingStub.getOrganizationByOrganizationObjectid(
-          GetOrganizationByOrganizationObjectidRequest.newBuilder().setOrganizationObjectid(organizationObjectId)
+      return collectmydataconnectBlockingStub.getOrganizationByOrganizationGuid(
+          GetOrganizationByOrganizationGuidRequest.newBuilder().setOrganizationGuid(organizationGuId)
               .build());
 
     } catch (Exception e) {

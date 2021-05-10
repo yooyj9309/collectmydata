@@ -184,7 +184,7 @@ class DepositAccountPublishServiceImplTest {
   private ListBankDepositAccountTransactionsRequest getListBankDepositAccountTransactionsRequest() {
     return ListBankDepositAccountTransactionsRequest.newBuilder()
         .setBanksaladUserId("1")
-        .setOrganizationObjectid("objectid")
+        .setOrganizationGuid("organizationGuid")
         .setAccountNum("1234567890")
         .setSeqno(StringValue.newBuilder().setValue("01").build())
         .setCreatedAfterMs(0)

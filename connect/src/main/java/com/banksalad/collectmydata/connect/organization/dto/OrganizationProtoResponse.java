@@ -1,6 +1,6 @@
 package com.banksalad.collectmydata.connect.organization.dto;
 
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetOrganizationResponse;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -19,8 +19,8 @@ import com.banksalad.collectmydata.oauth.common.repository.UserRedisRepository;
 import com.banksalad.collectmydata.oauth.dto.IssueTokenRequest;
 import com.banksalad.collectmydata.oauth.dto.OauthPageRequest;
 import com.banksalad.collectmydata.oauth.util.OauthTestUtil;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataGrpc.ConnectmydataBlockingStub;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.IssueTokenResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectGrpc.CollectmydataconnectBlockingStub;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.IssueTokenResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -51,7 +51,7 @@ public class OauthServiceTest {
   private UserRedisRepository userRedisRepository;
 
   @MockBean
-  private ConnectmydataBlockingStub connectmydataBlockingStub;
+  private CollectmydataconnectBlockingStub collectmydataconnectBlockingStub;
 
   private Map<String, String> headers = new HashMap<>();
 
@@ -161,7 +161,7 @@ public class OauthServiceTest {
         .thenReturn(OauthTestUtil.generateUserAuthInfo());
 //    when(organizationService.getOrganizationByObjectId(any())).thenReturn(
 //        OauthTestUtil.generateOrganization(mydataSector));
-    when(connectmydataBlockingStub.getOrganizationByOrganizationObjectid(any()))
+    when(collectmydataconnectBlockingStub.getOrganizationByOrganizationGuid(any()))
         .thenReturn(OauthTestUtil.getOrganizationResponseAssembler(mydataSector));
     when(userRedisRepository.setUserInfo(any(), any())).thenReturn(true);
   }
@@ -171,9 +171,9 @@ public class OauthServiceTest {
         .thenReturn(Optional.of(OauthTestUtil.userEntityAssembler()));
 
     if (hasException) {
-      when(connectmydataBlockingStub.issueToken(any())).thenThrow(new RuntimeException());
+      when(collectmydataconnectBlockingStub.issueToken(any())).thenThrow(new RuntimeException());
     } else {
-      when(connectmydataBlockingStub.issueToken(any())).thenReturn(
+      when(collectmydataconnectBlockingStub.issueToken(any())).thenReturn(
           IssueTokenResponse.getDefaultInstance());
     }
   }

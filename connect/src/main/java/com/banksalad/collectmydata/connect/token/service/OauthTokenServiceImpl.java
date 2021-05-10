@@ -42,10 +42,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.IssueTokenRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RefreshTokenRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeAllTokensRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeTokenRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
@@ -82,10 +78,8 @@ public class OauthTokenServiceImpl implements OauthTokenService {
   private String redirectUrl;
 
   @Override
-  public OauthToken issueToken(IssueTokenRequest request) {
+  public OauthToken issueToken(long banksaladUserId, String organizationId, String authorizationCode) {
     /* load connectOrganizationEntity */
-    Long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-    String organizationId = request.getOrganizationId();
     String consentId = UUID.randomUUID().toString();
     ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
         .findByOrganizationId(organizationId)
@@ -93,7 +87,7 @@ public class OauthTokenServiceImpl implements OauthTokenService {
 
     /* request api */
     Organization organization = getOrganization(connectOrganizationEntity);
-    GetOauthTokenResponse getOauthTokenResponse = requestIssueToken(organization, request.getAuthorizationCode());
+    GetOauthTokenResponse getOauthTokenResponse = requestIssueToken(organization, authorizationCode);
 
     /* load oauthTokenEntity */
     OauthTokenEntity oauthTokenEntity = oauthTokenRepository
@@ -108,7 +102,7 @@ public class OauthTokenServiceImpl implements OauthTokenService {
     oauthTokenEntity = oauthTokenMapper.dtoToEntity(getOauthTokenResponse, oauthTokenEntity);
     oauthTokenEntity.setSyncedAt(LocalDateTime.now());
     oauthTokenEntity.setConsentId(consentId);
-    oauthTokenEntity.setAuthorizationCode(request.getAuthorizationCode());
+    oauthTokenEntity.setAuthorizationCode(authorizationCode);
     oauthTokenEntity.setAccessTokenExpiresAt(LocalDateTime.now().plusSeconds(getOauthTokenResponse.getExpiresIn())); // fixme : epoch time
     oauthTokenEntity.setRefreshTokenExpiresAt(
         LocalDateTime.now().plusSeconds(getOauthTokenResponse.getRefreshTokenExpiresIn())); // fixme : epoch time
@@ -134,9 +128,6 @@ public class OauthTokenServiceImpl implements OauthTokenService {
   @Override
   @Transactional(readOnly = true)
   public OauthToken getAccessToken(long banksaladUserId, String organizationId) {
-
-    log.info("collectmydata-connct getAccessToken banksaladUserId: {}, organizationId: {}", banksaladUserId, organizationId);
-
     /* load connectOrganizationEntity */
     OauthTokenEntity oauthTokenEntity = oauthTokenRepository
         .findByBanksaladUserIdAndOrganizationId(banksaladUserId, organizationId)
@@ -144,10 +135,6 @@ public class OauthTokenServiceImpl implements OauthTokenService {
 
     /* check if access token expired */
     if (isTokenExpired(oauthTokenEntity.getAccessTokenExpiresAt())) {
-      RefreshTokenRequest refreshTokenRequest = RefreshTokenRequest.newBuilder()
-          .setBanksaladUserId(String.valueOf(banksaladUserId))
-          .setOrganizationId(organizationId)
-          .build();
       return refreshToken(banksaladUserId, organizationId);
     }
 
@@ -198,18 +185,17 @@ public class OauthTokenServiceImpl implements OauthTokenService {
   }
 
   @Override
-  public void revokeToken(RevokeTokenRequest request) {
+  public void revokeToken(long banksaladUserId, String organizationId) {
     /* delete oauthTokenEntity */
-    Long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
     OauthTokenEntity oauthTokenEntity = oauthTokenRepository
-        .findByBanksaladUserIdAndOrganizationId(banksaladUserId, request.getOrganizationId())
+        .findByBanksaladUserIdAndOrganizationId(banksaladUserId, organizationId)
         .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_TOKEN));
     oauthTokenRepository.delete(oauthTokenEntity);
     oauthTokenHistoryRepository.save(oauthTokenHistoryMapper.toHistoryEntity(oauthTokenEntity));
 
     /* load connectOrganizationEntity */
     ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
-        .findByOrganizationId(request.getOrganizationId())
+        .findByOrganizationId(organizationId)
         .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_ORGANIZATION));
 
     /* request api */
@@ -227,30 +213,12 @@ public class OauthTokenServiceImpl implements OauthTokenService {
   }
 
   @Override
-  public void revokeAllTokens(RevokeAllTokensRequest request) {
-    Long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+  public void revokeAllTokens(long banksaladUserId) {
     List<OauthTokenEntity> oauthTokenEntities = oauthTokenRepository
         .findAllByBanksaladUserId(banksaladUserId);
 
     for (OauthTokenEntity oauthTokenEntity : oauthTokenEntities) {
-      // TODO : remove duplicate
-      oauthTokenRepository.delete(oauthTokenEntity);
-      oauthTokenHistoryRepository.save(oauthTokenHistoryMapper.toHistoryEntity(oauthTokenEntity));
-      ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
-          .findByOrganizationId(oauthTokenEntity.getOrganizationId())
-          .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_ORGANIZATION));
-
-      Organization organization = getOrganization(connectOrganizationEntity);
-      requestRevokeToken(organization, oauthTokenEntity.getAccessToken());
-
-      ConsentEntity consentEntity = consentRepository
-          .findByBanksaladUserIdAndOrganizationId(banksaladUserId, organization.getOrganizationId())
-          .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_CONSENT));
-
-      Consent consent = consentMapper.entityToDto(consentEntity);
-      if (consent.isScheduled()) {
-        collectScheduleClientService.unregisterScheduledSync(banksaladUserId, organization, consent);
-      }
+      revokeToken(banksaladUserId, oauthTokenEntity.getOrganizationId());
     }
   }
 

@@ -18,22 +18,20 @@ import com.banksalad.collectmydata.connect.token.dto.OauthToken;
 import com.banksalad.collectmydata.connect.token.dto.OauthTokenProtoResponse;
 import com.banksalad.collectmydata.connect.token.service.OauthTokenService;
 
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataGrpc;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenResponse;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationIdRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationObjectidRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.HealthCheckRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.HealthCheckResponse;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.IssueTokenRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.IssueTokenResponse;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RefreshTokenRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RefreshTokenResponse;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeAllTokensRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeAllTokensResponse;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeTokenRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeTokenResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectGrpc;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetAccessTokenRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetAccessTokenResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetOrganizationByOrganizationGuidRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetOrganizationByOrganizationIdRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetOrganizationResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.IssueTokenRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.IssueTokenResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.RefreshTokenRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.RefreshTokenResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.RevokeAllTokensRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.RevokeAllTokensResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.RevokeTokenRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.RevokeTokenResponse;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,24 +40,11 @@ import org.lognet.springboot.grpc.GRpcService;
 @Slf4j
 @GRpcService(interceptors = {StatsUnaryServerInterceptor.class})
 @RequiredArgsConstructor
-public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase {
+public class ConnectGrpcService extends CollectmydataconnectGrpc.CollectmydataconnectImplBase {
 
   private final OauthTokenService oauthTokenService;
   private final OrganizationService organizationService;
   private final ValidatorService validatorService;
-
-  @Override
-  public void healthCheck(HealthCheckRequest request, StreamObserver<HealthCheckResponse> responseObserver) {
-    try {
-      responseObserver.onNext(HealthCheckResponse.getDefaultInstance());
-      responseObserver.onCompleted();
-    } catch (GrpcException e) {
-      responseObserver.onError(e.handle());
-    } catch (Exception e) {
-      log.error("healthCheck error message,{}", e.getMessage(), e);
-      responseObserver.onError(new GrpcException().handle());
-    }
-  }
 
   @Override
   public void issueToken(IssueTokenRequest request, StreamObserver<IssueTokenResponse> responseObserver) {
@@ -67,33 +52,42 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
       IssueTokenRequestValidator validator = IssueTokenRequestValidator.of(request);
       validatorService.validate(validator);
 
-      OauthToken oauthToken = oauthTokenService.issueToken(request);
+      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+
+      LoggingMdcUtil.set(Sector.FINANCE.name(), null, banksaladUserId, request.getOrganizationId(), null);
+      log.info("Collectmydata-connect ConnectGrpcService.issueToken()");
+
+      OauthToken oauthToken = oauthTokenService
+          .issueToken(banksaladUserId, request.getOrganizationId(), request.getAuthorizationCode());
       OauthTokenProtoResponse oauthTokenProtoResponse = OauthTokenProtoResponse.builder()
           .oauthToken(oauthToken)
           .build();
 
       responseObserver.onNext(oauthTokenProtoResponse.toIssueTokenResponseProto());
       responseObserver.onCompleted();
+
     } catch (GrpcException e) {
       responseObserver.onError(e.handle());
+
     } catch (Exception e) {
       log.error("issueToken error message,{}", e.getMessage(), e);
       responseObserver.onError(new GrpcException().handle());
+
+    } finally {
+      LoggingMdcUtil.clear();
     }
   }
 
   @Override
   public void getAccessToken(GetAccessTokenRequest request, StreamObserver<GetAccessTokenResponse> responseObserver) {
     try {
-      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-      String organizationId = request.getOrganizationId();
-
-      LoggingMdcUtil.set(Sector.FINANCE.name(), null, banksaladUserId, organizationId, null);
-
-      log.info("Collectmydata-connect ConnectGrpcService.getAccessToken()");
-
       GetAccessTokenRequestValidator validator = GetAccessTokenRequestValidator.of(request);
       validatorService.validate(validator);
+
+      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+
+      LoggingMdcUtil.set(Sector.FINANCE.name(), null, banksaladUserId, request.getOrganizationId(), null);
+      log.info("Collectmydata-connect ConnectGrpcService.getAccessToken()");
 
       OauthToken oauthToken = oauthTokenService.getAccessToken(banksaladUserId, request.getOrganizationId());
       OauthTokenProtoResponse oauthTokenProtoResponse = OauthTokenProtoResponse.builder()
@@ -102,11 +96,14 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
 
       responseObserver.onNext(oauthTokenProtoResponse.toGetAccessTokenResponseProto());
       responseObserver.onCompleted();
+
     } catch (GrpcException e) {
       responseObserver.onError(e.handle());
+
     } catch (Exception e) {
       log.error("getAccessToken error message,{}", e.getMessage(), e);
       responseObserver.onError(new GrpcException().handle());
+
     } finally {
       LoggingMdcUtil.clear();
     }
@@ -120,6 +117,9 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
 
       long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
 
+      LoggingMdcUtil.set(Sector.FINANCE.name(), null, banksaladUserId, request.getOrganizationId(), null);
+      log.info("Collectmydata-connect ConnectGrpcService.refreshToken()");
+
       OauthToken oauthToken = oauthTokenService.refreshToken(banksaladUserId, request.getOrganizationId());
       OauthTokenProtoResponse oauthTokenProtoResponse = OauthTokenProtoResponse.builder()
           .oauthToken(oauthToken)
@@ -127,11 +127,16 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
 
       responseObserver.onNext(oauthTokenProtoResponse.toRefreshTokenResponseProto());
       responseObserver.onCompleted();
+
     } catch (GrpcException e) {
       responseObserver.onError(e.handle());
+
     } catch (Exception e) {
       log.error("refreshToken error message,{}", e.getMessage(), e);
       responseObserver.onError(new GrpcException().handle());
+
+    } finally {
+      LoggingMdcUtil.clear();
     }
   }
 
@@ -141,15 +146,25 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
       RevokeTokenRequestValidator validator = RevokeTokenRequestValidator.of(request);
       validatorService.validate(validator);
 
-      oauthTokenService.revokeToken(request);
+      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+
+      LoggingMdcUtil.set(Sector.FINANCE.name(), null, banksaladUserId, request.getOrganizationId(), null);
+      log.info("Collectmydata-connect ConnectGrpcService.revokeToken()");
+
+      oauthTokenService.revokeToken(banksaladUserId, request.getOrganizationId());
 
       responseObserver.onNext(RevokeTokenResponse.getDefaultInstance());
       responseObserver.onCompleted();
+
     } catch (GrpcException e) {
       responseObserver.onError(e.handle());
+
     } catch (Exception e) {
       log.error("revokeToken error message,{}", e.getMessage(), e);
       responseObserver.onError(new GrpcException().handle());
+
+    } finally {
+      LoggingMdcUtil.clear();
     }
   }
 
@@ -160,20 +175,30 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
       RevokeAllTokensRequestValidator validator = RevokeAllTokensRequestValidator.of(request);
       validatorService.validate(validator);
 
-      oauthTokenService.revokeAllTokens(request);
+      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+
+      LoggingMdcUtil.set(Sector.FINANCE.name(), null, banksaladUserId, null, null);
+      log.info("Collectmydata-connect ConnectGrpcService.revokeAllTokens()");
+
+      oauthTokenService.revokeAllTokens(banksaladUserId);
 
       responseObserver.onNext(RevokeAllTokensResponse.getDefaultInstance());
       responseObserver.onCompleted();
+
     } catch (GrpcException e) {
       responseObserver.onError(e.handle());
+
     } catch (Exception e) {
       log.error("revokeAllTokens error message,{}", e.getMessage(), e);
       responseObserver.onError(new GrpcException().handle());
+
+    } finally {
+      LoggingMdcUtil.clear();
     }
   }
 
   @Override
-  public void getOrganizationByOrganizationObjectid(GetOrganizationByOrganizationObjectidRequest request,
+  public void getOrganizationByOrganizationGuid(GetOrganizationByOrganizationGuidRequest request,
       StreamObserver<GetOrganizationResponse> responseObserver) {
     try {
       GetOrganizationRequestValidator validator = GetOrganizationRequestValidator.of(request);
@@ -186,8 +211,10 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
 
       responseObserver.onNext(organizationProtoResponse.toGetOrganizationProto());
       responseObserver.onCompleted();
+
     } catch (GrpcException e) {
       responseObserver.onError(e.handle());
+
     } catch (Exception e) {
       log.error("getOrganizationByOrganizationObjectid error message,{}", e.getMessage(), e);
       responseObserver.onError(new GrpcException().handle());
@@ -208,8 +235,10 @@ public class ConnectGrpcService extends ConnectmydataGrpc.ConnectmydataImplBase 
 
       responseObserver.onNext(organizationProtoResponse.toGetOrganizationProto());
       responseObserver.onCompleted();
+
     } catch (GrpcException e) {
       responseObserver.onError(e.handle());
+
     } catch (Exception e) {
       log.error("getOrganizationByOrganizationId error message,{}", e.getMessage(), e);
       responseObserver.onError(new GrpcException().handle());

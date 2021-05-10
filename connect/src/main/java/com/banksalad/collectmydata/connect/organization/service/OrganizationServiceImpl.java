@@ -7,8 +7,8 @@ import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizat
 import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
 import com.banksalad.collectmydata.connect.common.exception.ConnectException;
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationIdRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationObjectidRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetOrganizationByOrganizationGuidRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetOrganizationByOrganizationIdRequest;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -18,9 +18,9 @@ public class OrganizationServiceImpl implements OrganizationService {
   private final ConnectOrganizationRepository connectOrganizationRepository;
 
   @Override
-  public Organization getOrganization(GetOrganizationByOrganizationObjectidRequest request) {
+  public Organization getOrganization(GetOrganizationByOrganizationGuidRequest request) {
     ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
-        .findByOrganizationObjectid(request.getOrganizationObjectid())
+        .findByOrganizationObjectid(request.getOrganizationGuid())
         .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_ORGANIZATION));
 
     return organizationAssembler(connectOrganizationEntity);

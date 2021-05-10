@@ -6,7 +6,7 @@ import com.banksalad.collectmydata.oauth.common.db.UserEntity;
 import com.banksalad.collectmydata.oauth.dto.OauthPageRequest;
 import com.banksalad.collectmydata.oauth.dto.Organization;
 import com.banksalad.collectmydata.oauth.dto.UserAuthInfo;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetOrganizationResponse;
 
 public class OauthTestUtil {
 

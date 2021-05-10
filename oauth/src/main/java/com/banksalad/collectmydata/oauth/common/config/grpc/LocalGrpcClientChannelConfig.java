@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Profile;
 
 import com.github.banksalad.idl.apis.v1.auth.AuthGrpc;
 import com.github.banksalad.idl.apis.v1.auth.AuthGrpc.AuthBlockingStub;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataGrpc;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataGrpc.ConnectmydataBlockingStub;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectGrpc;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectGrpc.CollectmydataconnectBlockingStub;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
@@ -38,10 +38,10 @@ public class LocalGrpcClientChannelConfig {
   }
 
   @Bean
-  public ConnectmydataBlockingStub connectmydataBlockingStub() {
+  public CollectmydataconnectBlockingStub collectmydataconnectBlockingStub() {
     ManagedChannel connectChannel = ManagedChannelBuilder.forAddress(connectHost, connectPort)
         .usePlaintext()
         .build();
-    return ConnectmydataGrpc.newBlockingStub(connectChannel);
+    return CollectmydataconnectGrpc.newBlockingStub(connectChannel);
   }
 }

@@ -1,8 +1,8 @@
 package com.banksalad.collectmydata.connect.token.dto;
 
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenResponse;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.IssueTokenResponse;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RefreshTokenResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetAccessTokenResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.IssueTokenResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.RefreshTokenResponse;
 import lombok.Builder;
 import lombok.Getter;
 

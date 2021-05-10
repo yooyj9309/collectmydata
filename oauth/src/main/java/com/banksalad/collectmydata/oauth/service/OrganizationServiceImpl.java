@@ -7,7 +7,7 @@ import com.banksalad.collectmydata.common.enums.MydataSector;
 import com.banksalad.collectmydata.oauth.common.db.UserEntity;
 import com.banksalad.collectmydata.oauth.dto.Organization;
 import com.banksalad.collectmydata.oauth.grpc.client.ConnectClient;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetOrganizationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

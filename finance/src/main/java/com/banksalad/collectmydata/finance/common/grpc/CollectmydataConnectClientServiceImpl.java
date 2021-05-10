@@ -8,12 +8,12 @@ import com.banksalad.collectmydata.finance.common.dto.Organization;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataGrpc.ConnectmydataBlockingStub;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenResponse;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationIdRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationObjectidRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectGrpc.CollectmydataconnectBlockingStub;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetAccessTokenRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetAccessTokenResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetOrganizationByOrganizationGuidRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetOrganizationByOrganizationIdRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetOrganizationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,12 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class CollectmydataConnectClientServiceImpl implements CollectmydataConnectClientService {
 
-  private final ConnectmydataBlockingStub connectmydataBlockingStub;
+  private final CollectmydataconnectBlockingStub collectmydataconnectBlockingStub;
 
   @Cacheable(value = "organizationCache", key = "#organizationId")
   public Organization getOrganization(String organizationId) {
 
-    GetOrganizationResponse response = connectmydataBlockingStub.getOrganizationByOrganizationId(
+    GetOrganizationResponse response = collectmydataconnectBlockingStub.getOrganizationByOrganizationId(
         GetOrganizationByOrganizationIdRequest.newBuilder()
             .setOrganizationId(organizationId)
             .build());
@@ -41,11 +41,11 @@ public class CollectmydataConnectClientServiceImpl implements CollectmydataConne
         .build();
   }
 
-  @Cacheable(value = "organizationByOrganizationObjectidCache", key = "#organizationObjectid")
-  public Organization getOrganizationByOrganizationObjectid(String organizationObjectid) {
+  @Cacheable(value = "organizationByOrganizationGuidCache", key = "#organizationGuid")
+  public Organization getOrganizationByOrganizationGuid(String organizationGuid) {
 
-    GetOrganizationResponse response = connectmydataBlockingStub.getOrganizationByOrganizationObjectid(
-        GetOrganizationByOrganizationObjectidRequest.newBuilder().setOrganizationObjectid(organizationObjectid)
+    GetOrganizationResponse response = collectmydataconnectBlockingStub.getOrganizationByOrganizationGuid(
+        GetOrganizationByOrganizationGuidRequest.newBuilder().setOrganizationGuid(organizationGuid)
             .build());
 
     return Organization.builder()
@@ -59,7 +59,7 @@ public class CollectmydataConnectClientServiceImpl implements CollectmydataConne
 
   public OauthToken getAccessToken(long banksaladUserId, String organizationId) {
 
-    GetAccessTokenResponse response = connectmydataBlockingStub.getAccessToken(GetAccessTokenRequest.newBuilder()
+    GetAccessTokenResponse response = collectmydataconnectBlockingStub.getAccessToken(GetAccessTokenRequest.newBuilder()
         .setBanksaladUserId(String.valueOf(banksaladUserId))
         .setOrganizationId(organizationId)
         .build());

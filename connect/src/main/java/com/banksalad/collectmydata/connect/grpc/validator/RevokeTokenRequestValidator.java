@@ -1,6 +1,6 @@
 package com.banksalad.collectmydata.connect.grpc.validator;
 
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeTokenRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.RevokeTokenRequest;
 import io.netty.util.internal.StringUtil;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;

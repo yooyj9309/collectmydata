@@ -56,7 +56,7 @@ public class InvestGrpcService extends CollectmydatainvestGrpc.Collectmydatainve
 
     try {
       long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-      String organizationId = connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
+      String organizationId = connectClientService.getOrganizationByOrganizationGuid(request.getOrganizationGuid())
           .getOrganizationId();
 
       List<AccountSummaryResponse> accountSummaryResponses = accountSummaryPublishService
@@ -89,7 +89,7 @@ public class InvestGrpcService extends CollectmydatainvestGrpc.Collectmydatainve
 
     try {
       long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-      String organizationId = connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
+      String organizationId = connectClientService.getOrganizationByOrganizationGuid(request.getOrganizationGuid())
           .getOrganizationId();
 
       List<AccountBasicResponse> accountBasicResponses = accountBasicPublishService
@@ -121,7 +121,7 @@ public class InvestGrpcService extends CollectmydatainvestGrpc.Collectmydatainve
 
     try {
       long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-      String organizationId = connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
+      String organizationId = connectClientService.getOrganizationByOrganizationGuid(request.getOrganizationGuid())
           .getOrganizationId();
       LocalDateTime createdAfterMs = LocalDateTime
           .ofInstant(Instant.ofEpochSecond(request.getCreatedAfterMs()), UTC_ZONE_ID);
@@ -156,7 +156,7 @@ public class InvestGrpcService extends CollectmydatainvestGrpc.Collectmydatainve
 
     try {
       long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
-      String organizationId = connectClientService.getOrganizationByOrganizationObjectid(request.getOrganizationObjectid())
+      String organizationId = connectClientService.getOrganizationByOrganizationGuid(request.getOrganizationGuid())
           .getOrganizationId();
 
       List<AccountProductResponse> accountProductResponses = accountProductPublishService

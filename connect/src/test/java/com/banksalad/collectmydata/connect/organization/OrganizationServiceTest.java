@@ -10,8 +10,8 @@ import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizat
 import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
 import com.banksalad.collectmydata.connect.organization.service.OrganizationService;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationIdRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationByOrganizationObjectidRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetOrganizationByOrganizationGuidRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetOrganizationByOrganizationIdRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,7 +52,7 @@ class OrganizationServiceTest {
   public void getOrganizationByObjectIid_success() {
     // given
     Organization givenOrganization = getOrganization();
-    GetOrganizationByOrganizationObjectidRequest request = getOrganizationByOrganizationObjectidRequest(
+    GetOrganizationByOrganizationGuidRequest request = getOrganizationByOrganizationGuidRequest(
         connectOrganizationEntity.getOrganizationObjectid());
 
     // when
@@ -67,7 +67,7 @@ class OrganizationServiceTest {
   @DisplayName("organization 정보 조회 실패 : 존재하지 않는 organizationObjectid로 조회")
   public void getOrganizationByObjectid_fail() {
     // given
-    GetOrganizationByOrganizationObjectidRequest request = getOrganizationByOrganizationObjectidRequest(
+    GetOrganizationByOrganizationGuidRequest request = getOrganizationByOrganizationGuidRequest(
         "non-exist-organizationObjectid");
 
     // when, then
@@ -130,10 +130,10 @@ class OrganizationServiceTest {
         .build();
   }
 
-  private GetOrganizationByOrganizationObjectidRequest getOrganizationByOrganizationObjectidRequest(
+  private GetOrganizationByOrganizationGuidRequest getOrganizationByOrganizationGuidRequest(
       String organizationObjectid) {
-    return GetOrganizationByOrganizationObjectidRequest.newBuilder()
-        .setOrganizationObjectid(organizationObjectid)
+    return GetOrganizationByOrganizationGuidRequest.newBuilder()
+        .setOrganizationGuid(organizationObjectid)
         .build();
   }
 

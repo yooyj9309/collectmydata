@@ -18,9 +18,9 @@ import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.Syn
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.SyncCollectmydatabankResponse;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatacardProto.SyncCollectmydatacardRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatacardProto.SyncCollectmydatacardResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetOrganizationResponse;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatainvestProto.SyncCollectmydatainvestRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatainvestProto.SyncCollectmydatainvestResponse;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetOrganizationResponse;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +56,7 @@ public class CollectmydataCollectGrpcService extends CollectmydataGrpc.Collectmy
 
     try {
       GetOrganizationResponse getOrganizationResponse = connectClientService
-          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid());
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid());
 
       long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
       String organizationId = getOrganizationResponse.getOrganizationId();
@@ -92,7 +92,7 @@ public class CollectmydataCollectGrpcService extends CollectmydataGrpc.Collectmy
 
     try {
       GetOrganizationResponse getOrganizationResponse = connectClientService
-          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid());
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid());
 
       long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
       String organizationId = getOrganizationResponse.getOrganizationId();
@@ -126,7 +126,7 @@ public class CollectmydataCollectGrpcService extends CollectmydataGrpc.Collectmy
 
     try {
       GetOrganizationResponse getOrganizationResponse = connectClientService
-          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid());
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid());
 
       long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
       String organizationId = getOrganizationResponse.getOrganizationId();

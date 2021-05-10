@@ -32,8 +32,6 @@ import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatacardProto.Lis
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatacardProto.ListCardRevolvingsResponse;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatacardProto.ListCardSummariesRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatacardProto.ListCardSummariesResponse;
-import com.google.protobuf.DescriptorProtos.EnumDescriptorProto.EnumReservedRangeOrBuilder;
-import io.grpc.stub.ServerCalls;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +57,7 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
     try {
       long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
       String organizationId = collectmydataConnectClientService
-          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
 
       List<CardSummary> cardSummaryResponses = cardSummaryPublishService
           .getCardSummaryResponses(banksaladUserId, organizationId);

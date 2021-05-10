@@ -2,7 +2,7 @@ group 'com.banksalad'
 version '1.0-SNAPSHOT'
 
 ext {
-    idlVersion = "20210430.8837f9c.RELEASE"
+    idlVersion = "20210509.3f0de7e.RELEASE"
 
     springBootVersion = "2.4.1"
     springDependencyVersion = "1.0.10.RELEASE"

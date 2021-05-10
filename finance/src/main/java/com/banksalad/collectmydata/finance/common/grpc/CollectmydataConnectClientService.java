@@ -7,7 +7,7 @@ public interface CollectmydataConnectClientService {
 
   Organization getOrganization(String organizationId);
 
-  Organization getOrganizationByOrganizationObjectid(String organizationObjectId);
+  Organization getOrganizationByOrganizationGuid(String organizationGuId);
 
   OauthToken getAccessToken(long banksaladUserId, String organizationId);
 }

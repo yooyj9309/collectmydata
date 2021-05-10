@@ -76,7 +76,7 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       // TODO : validate parameter value
       long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
       String organizationId = collectmydataConnectClientService
-          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
 
       List<AccountSummaryResponse> accountSummaryResponses = accountSummaryPublishService
           .getAccountSummaryResponses(banksaladUserId, organizationId);
@@ -104,7 +104,7 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       // TODO : validate parameter value
       long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
       String organizationId = collectmydataConnectClientService
-          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
 
       List<DepositAccountBasicResponse> depositAccountBasicResponses = depositAccountPublishService
           .getDepositAccountBasicResponses(banksaladUserId, organizationId);
@@ -132,7 +132,7 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       // TODO : validate parameter value
       long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
       String organizationId = collectmydataConnectClientService
-          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
 
       List<DepositAccountDetailResponse> depositAccountDetailResponses = depositAccountPublishService
           .getDepositAccountDetailResponses(banksaladUserId, organizationId);
@@ -161,7 +161,7 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       // TODO : validate parameter value
       long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
       String organizationId = collectmydataConnectClientService
-          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
       LocalDateTime createdAt = LocalDateTime.ofEpochSecond(request.getCreatedAfterMs(), 0, ZoneOffset.UTC);
 
       List<DepositAccountTransactionResponse> depositAccountTransactionResponses = depositAccountPublishService
@@ -193,7 +193,7 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       // TODO : validate parameter value
       long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
       String organizationId = collectmydataConnectClientService
-          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
 
       List<InvestAccountBasicResponse> investAccountBasicResponses = investAccountPublishService
           .getInvestAccountBasicResponses(banksaladUserId, organizationId);
@@ -221,7 +221,7 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       // TODO : validate parameter value
       long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
       String organizationId = collectmydataConnectClientService
-          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
 
       List<InvestAccountDetailResponse> investAccountDetailResponses = investAccountPublishService
           .getInvestAccountDetailResponses(banksaladUserId, organizationId);
@@ -249,7 +249,7 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       // TODO : validate parameter value
       long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
       String organizationId = collectmydataConnectClientService
-          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
       LocalDateTime createdAt = LocalDateTime.ofEpochSecond(request.getCreatedAfterMs(), 0, ZoneOffset.UTC);
 
       List<InvestAccountTransactionResponse> investAccountTransactionResponses = investAccountPublishService
@@ -280,7 +280,7 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       // TODO : validate parameter value  & type converter
       long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
       String organizationId = collectmydataConnectClientService
-          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
 
       List<LoanAccountBasicResponse> loanAccountBasicResponses = loanAccountPublishService
           .getLoanAccountBasicResponses(banksaladUserId, organizationId);
@@ -308,7 +308,7 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       // TODO : validate parameter value & type converter
       long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
       String organizationId = collectmydataConnectClientService
-          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
 
       List<LoanAccountDetailResponse> loanAccountDetailResponses = loanAccountPublishService
           .getLoanAccountDetailResponses(banksaladUserId, organizationId);
@@ -336,7 +336,7 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       // TODO : validate parameter value & type converter
       long banksaladUserId = Long.valueOf(request.getBanksaladUserId());
       String organizationId = collectmydataConnectClientService
-          .getOrganizationByOrganizationObjectid(request.getOrganizationObjectid()).getOrganizationId();
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
       LocalDateTime createdAt = LocalDateTime.ofEpochSecond(request.getCreatedAfterMs(), 0, ZoneOffset.UTC);
 
       List<LoanAccountTransactionResponse> loanAccountTransactionsProtoResponses = loanAccountPublishService

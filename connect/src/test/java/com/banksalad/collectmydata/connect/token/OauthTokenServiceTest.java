@@ -31,13 +31,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetAccessTokenRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.IssueTokenRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.RefreshTokenRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.RevokeAllTokensRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.RevokeTokenRequest;
 import com.github.banksalad.idl.apis.v1.collectschedule.CollectScheduleProto.UnregisterScheduledSyncResponse;
 import com.github.banksalad.idl.apis.v1.collectschedule.CollectscheduleGrpc.CollectscheduleBlockingStub;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.GetAccessTokenRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.IssueTokenRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RefreshTokenRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeAllTokensRequest;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataProto.RevokeTokenRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -127,8 +127,8 @@ class OauthTokenServiceTest {
     // given
     GetAccessTokenRequest request = getAccessTokenRequest(oauthTokenEntity.getBanksaladUserId().toString(),
         oauthTokenEntity.getOrganizationId());
-
     long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+
     // when
     OauthToken oauthToken = oauthTokenService.getAccessToken(banksaladUserId, request.getOrganizationId());
 
@@ -145,8 +145,8 @@ class OauthTokenServiceTest {
     Long NonExistBanksaladUserId = 98765L;
     GetAccessTokenRequest request = getAccessTokenRequest(NonExistBanksaladUserId.toString(),
         oauthTokenEntity.getOrganizationId());
-
     long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+
     // when, then
     Exception responseException = assertThrows(Exception.class,
         () -> oauthTokenService.getAccessToken(banksaladUserId, request.getOrganizationId()));
@@ -165,8 +165,9 @@ class OauthTokenServiceTest {
     oauthTokenEntity.setAccessTokenExpiresAt(LocalDateTime.now().minusDays(5));
     oauthTokenRepository.save(oauthTokenEntity);
 
-    GetAccessTokenRequest accessTokenRequest = getAccessTokenRequest(oauthTokenEntity.getBanksaladUserId().toString(),
+    GetAccessTokenRequest request = getAccessTokenRequest(oauthTokenEntity.getBanksaladUserId().toString(),
         oauthTokenEntity.getOrganizationId());
+    long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
 
     GetOauthTokenResponse getOauthTokenResponse = getExternalTokenResponse();
     when(collectExecutor.execute(any(ExecutionContext.class), any(Execution.class), any(ExecutionRequest.class)))
@@ -176,9 +177,8 @@ class OauthTokenServiceTest {
                 .response(getOauthTokenResponse)
                 .build());
 
-    long banksaladUserId = Long.parseLong(accessTokenRequest.getBanksaladUserId());
     // when
-    OauthToken oauthToken = oauthTokenService.getAccessToken(banksaladUserId, accessTokenRequest.getOrganizationId());
+    OauthToken oauthToken = oauthTokenService.getAccessToken(banksaladUserId, request.getOrganizationId());
 
     // then
     assertEquals(getOauthTokenResponse.getAccessToken(), oauthToken.getAccessToken());
@@ -193,6 +193,7 @@ class OauthTokenServiceTest {
     IssueTokenRequest request = getIssueTokenRequest(oauthTokenEntity.getBanksaladUserId().toString(),
         oauthTokenEntity.getOrganizationId(),
         oauthTokenEntity.getAuthorizationCode());
+    long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
 
     GetOauthTokenResponse getOauthTokenResponse = getExternalTokenResponse();
 
@@ -219,7 +220,8 @@ class OauthTokenServiceTest {
                 .build());
 
     // when
-    OauthToken oauthToken = oauthTokenService.issueToken(request);
+    OauthToken oauthToken = oauthTokenService
+        .issueToken(banksaladUserId, request.getOrganizationId(), request.getAuthorizationCode());
 
     // then
     assertEquals(getOauthTokenResponse.getAccessToken(), oauthToken.getAccessToken());
@@ -232,8 +234,8 @@ class OauthTokenServiceTest {
   void issueToken_fail() {
     // given
     IssueTokenRequest request = getIssueTokenRequest(oauthTokenEntity.getBanksaladUserId().toString(),
-        "non_exist_organizationId",
-        oauthTokenEntity.getAuthorizationCode());
+        "non_exist_organizationId", oauthTokenEntity.getAuthorizationCode());
+    long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
 
     GetOauthTokenResponse getOauthTokenResponse = getExternalTokenResponse();
     when(collectExecutor.execute(any(ExecutionContext.class), any(Execution.class), any(ExecutionRequest.class)))
@@ -244,7 +246,8 @@ class OauthTokenServiceTest {
                 .build());
 
     // when, then
-    Exception responseException = assertThrows(Exception.class, () -> oauthTokenService.issueToken(request));
+    Exception responseException = assertThrows(Exception.class, () -> oauthTokenService
+        .issueToken(banksaladUserId, request.getOrganizationId(), request.getAuthorizationCode()));
     assertThat(responseException).isInstanceOf(ConnectException.class);
     assertEquals(ConnectErrorType.NOT_FOUND_ORGANIZATION.getMessage(), responseException.getMessage());
   }
@@ -255,6 +258,7 @@ class OauthTokenServiceTest {
     // given
     RefreshTokenRequest request = getRefreshTokenRequest(oauthTokenEntity.getBanksaladUserId().toString(),
         oauthTokenEntity.getOrganizationId());
+    long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
 
     GetOauthTokenResponse getOauthTokenResponse = getExternalTokenResponse();
     when(collectExecutor.execute(any(ExecutionContext.class), any(Execution.class), any(ExecutionRequest.class)))
@@ -264,7 +268,6 @@ class OauthTokenServiceTest {
                 .response(getOauthTokenResponse)
                 .build());
 
-    long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
     // when
     OauthToken oauthToken = oauthTokenService.refreshToken(banksaladUserId, request.getOrganizationId());
 
@@ -288,6 +291,7 @@ class OauthTokenServiceTest {
 
     RefreshTokenRequest request = getRefreshTokenRequest(oauthTokenEntity.getBanksaladUserId().toString(),
         oauthTokenEntity.getOrganizationId());
+    long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
 
     GetOauthTokenResponse getOauthTokenResponse = getExternalTokenResponse();
     when(collectExecutor.execute(any(ExecutionContext.class), any(Execution.class), any(ExecutionRequest.class)))
@@ -297,7 +301,6 @@ class OauthTokenServiceTest {
                 .response(getOauthTokenResponse)
                 .build());
 
-    long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
     // when, then
     Exception responseException = assertThrows(Exception.class,
         () -> oauthTokenService.refreshToken(banksaladUserId, request.getOrganizationId()));
@@ -311,6 +314,7 @@ class OauthTokenServiceTest {
     // given
     RevokeTokenRequest request = getRevokeTokenRequest(oauthTokenEntity.getBanksaladUserId().toString(),
         oauthTokenEntity.getOrganizationId());
+    long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
 
     when(collectExecutor.execute(any(ExecutionContext.class), any(Execution.class), any(ExecutionRequest.class)))
         .thenReturn(
@@ -319,11 +323,10 @@ class OauthTokenServiceTest {
                 .build());
 
     when(collectscheduleBlockingStub.unregisterScheduledSync(any()))
-        .thenReturn(
-            UnregisterScheduledSyncResponse.getDefaultInstance()
-        );
+        .thenReturn(UnregisterScheduledSyncResponse.getDefaultInstance());
+
     // when
-    oauthTokenService.revokeToken(request);
+    oauthTokenService.revokeToken(banksaladUserId, request.getOrganizationId());
 
     // then
     assertThrows(GrpcException.class, () -> oauthTokenRepository
@@ -338,6 +341,7 @@ class OauthTokenServiceTest {
     // given
     RevokeTokenRequest request = getRevokeTokenRequest(oauthTokenEntity.getBanksaladUserId().toString(),
         "non-exist-organizationId");
+    long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
 
     when(collectExecutor.execute(any(ExecutionContext.class), any(Execution.class), any(ExecutionRequest.class)))
         .thenReturn(
@@ -346,7 +350,8 @@ class OauthTokenServiceTest {
                 .build());
 
     // when, then
-    Exception responseException = assertThrows(Exception.class, () -> oauthTokenService.revokeToken(request));
+    Exception responseException = assertThrows(Exception.class,
+        () -> oauthTokenService.revokeToken(banksaladUserId, request.getOrganizationId()));
     assertThat(responseException).isInstanceOf(ConnectException.class);
     assertEquals(ConnectErrorType.NOT_FOUND_TOKEN.getMessage(), responseException.getMessage());
   }
@@ -357,6 +362,7 @@ class OauthTokenServiceTest {
     // given
     RevokeTokenRequest request = getRevokeTokenRequest(oauthTokenEntity.getBanksaladUserId().toString(),
         oauthTokenEntity.getOrganizationId());
+    long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
 
     when(collectExecutor.execute(any(ExecutionContext.class), any(Execution.class), any(ExecutionRequest.class)))
         .thenThrow(new GrpcException());
@@ -366,7 +372,8 @@ class OauthTokenServiceTest {
         .findByBanksaladUserIdAndOrganizationId(oauthTokenEntity.getBanksaladUserId(),
             connectOrganizationEntity.getOrganizationId()))
         .isNotEmpty();
-    assertThrows(GrpcException.class, () -> oauthTokenService.revokeToken(request));
+    assertThrows(GrpcException.class,
+        () -> oauthTokenService.revokeToken(banksaladUserId, request.getOrganizationId()));
     assertThat(oauthTokenRepository.findByBanksaladUserIdAndOrganizationId(
         oauthTokenEntity.getBanksaladUserId(), connectOrganizationEntity.getOrganizationId()))
         .isEmpty();
@@ -380,6 +387,7 @@ class OauthTokenServiceTest {
     oauthTokenRepository.save(oauthTokenEntityWithOtherBanksaladUserId);
 
     RevokeAllTokensRequest request = getRevokeAllTokensRequest(oauthTokenEntity.getBanksaladUserId().toString());
+    long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
 
     when(collectExecutor.execute(any(ExecutionContext.class), any(Execution.class), any(ExecutionRequest.class)))
         .thenReturn(
@@ -391,7 +399,7 @@ class OauthTokenServiceTest {
         .findAllByBanksaladUserId(oauthTokenEntityWithOtherBanksaladUserId.getBanksaladUserId());
 
     // when
-    oauthTokenService.revokeAllTokens(request);
+    oauthTokenService.revokeAllTokens(banksaladUserId);
     List<OauthTokenEntity> AfterOauthTokenEntitiesWithOtherBanksaladUserId = oauthTokenRepository
         .findAllByBanksaladUserId(oauthTokenEntityWithOtherBanksaladUserId.getBanksaladUserId());
 
@@ -409,13 +417,14 @@ class OauthTokenServiceTest {
     OauthTokenEntity oauthTokenEntityWithDifferentBanksaladUserId = getOauthTokenEntityWithOtherBanksaladUserId();
     RevokeAllTokensRequest request = getRevokeAllTokensRequest(
         oauthTokenEntityWithDifferentBanksaladUserId.getBanksaladUserId().toString());
+    long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
 
     when(collectExecutor.execute(any(ExecutionContext.class), any(Execution.class), any(ExecutionRequest.class)))
         .thenThrow(CollectRuntimeException.class);
 
     // when
     List<OauthTokenEntity> beforeOauthTokenEntities = oauthTokenRepository.findAll();
-    oauthTokenService.revokeAllTokens(request);
+    oauthTokenService.revokeAllTokens(banksaladUserId);
     List<OauthTokenEntity> afterOauthTokenEntities = oauthTokenRepository.findAll();
 
     // then

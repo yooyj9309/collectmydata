@@ -30,8 +30,8 @@ public class EhcacheConfig {
       if (cm.getCache("organizationCache") == null) {
         cm.createCache("organizationCache", configuration);
       }
-      if (cm.getCache("organizationByOrganizationObjectidCache") == null) {
-        cm.createCache("organizationByOrganizationObjectidCache", configuration);
+      if (cm.getCache("organizationByOrganizationGuidCache") == null) {
+        cm.createCache("organizationByOrganizationGuidCache", configuration);
       }
     };
   }

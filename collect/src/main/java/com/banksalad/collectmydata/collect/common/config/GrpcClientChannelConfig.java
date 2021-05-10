@@ -1,15 +1,13 @@
 package com.banksalad.collectmydata.collect.common.config;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 import com.github.banksalad.idl.apis.v1.cipher.CipherGrpc;
 import com.github.banksalad.idl.apis.v1.cipher.CipherGrpc.CipherBlockingStub;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataGrpc;
-import com.github.banksalad.idl.apis.v1.connectmydata.ConnectmydataGrpc.ConnectmydataBlockingStub;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectGrpc;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectGrpc.CollectmydataconnectBlockingStub;
 import com.github.banksalad.idl.apis.v1.finance.FinanceGrpc;
 import com.github.banksalad.idl.apis.v1.finance.FinanceGrpc.FinanceStub;
 import com.github.banksalad.idl.apis.v1.user.UserGrpc;
@@ -37,12 +35,12 @@ public class GrpcClientChannelConfig {
   public static final String CLIENT_LOAD_BALANCING_POLICY_ROUND_ROBIN = "round_robin";
 
   @Bean
-  public ConnectmydataBlockingStub connectmydataBlockingStub() {
+  public CollectmydataconnectBlockingStub collectmydataconnectBlockingStub() {
     ManagedChannel connectChannel = ManagedChannelBuilder.forTarget(connectUri)
         .defaultLoadBalancingPolicy(CLIENT_LOAD_BALANCING_POLICY_ROUND_ROBIN)
         .usePlaintext()
         .build();
-    return ConnectmydataGrpc.newBlockingStub(connectChannel);
+    return CollectmydataconnectGrpc.newBlockingStub(connectChannel);
   }
 
   @Bean
