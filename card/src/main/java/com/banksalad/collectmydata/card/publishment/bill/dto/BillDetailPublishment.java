@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.card.card.dto;
+package com.banksalad.collectmydata.card.publishment.bill.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -16,7 +16,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class BillDetail {
+public class BillDetailPublishment {
+
+  private Integer chargeMonth;
+
+  private String seqNo;
 
   private String cardId;
 
@@ -37,4 +41,9 @@ public class BillDetail {
   private BigDecimal balanceAmt;
 
   private String prodType;
+
+  private LocalDateTime createdAt;
+
+  private LocalDateTime updatedAt;
+
 }

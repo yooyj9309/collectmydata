@@ -1,9 +1,13 @@
 package com.banksalad.collectmydata.card.grpc.handler;
 
-
 import com.banksalad.collectmydata.card.publishment.accountinfo.CardBasicPublishService;
 import com.banksalad.collectmydata.card.publishment.accountinfo.dto.CardBasicPublishment;
 import com.banksalad.collectmydata.card.publishment.accountinfo.dto.CardBasicsProtoResponse;
+import com.banksalad.collectmydata.card.publishment.bill.CardBillPublishService;
+import com.banksalad.collectmydata.card.publishment.bill.dto.BillBasicPublishment;
+import com.banksalad.collectmydata.card.publishment.bill.dto.BillDetailPublishment;
+import com.banksalad.collectmydata.card.publishment.bill.dto.CardBillBasicProtoResponse;
+import com.banksalad.collectmydata.card.publishment.bill.dto.CardBillDetailProtoResponse;
 import com.banksalad.collectmydata.card.publishment.summary.CardSummaryPublishService;
 import com.banksalad.collectmydata.card.publishment.summary.dto.CardSummariesProtoResponse;
 import com.banksalad.collectmydata.card.publishment.summary.dto.CardSummaryPublishment;
@@ -74,6 +78,7 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
   private static final String UNKNOWN_ERROR_MESSAGE = "unknown error message";
 
   private final CardSummaryPublishService cardSummaryPublishService;
+  private final CardBillPublishService cardBillPublishService;
   private final CardTransactionPublishService cardTransactionPublishService;
   private final CardBasicPublishService cardBasicPublishService;
   private final UserBasePublishService userBasePublishService;
@@ -165,13 +170,63 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
   @Override
   public void listCardBillBasics(ListCardBillBasicsRequest request,
       StreamObserver<ListCardBillBasicsResponse> responseObserver) {
-    super.listCardBillBasics(request, responseObserver);
+    try {
+
+      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
+      LocalDateTime createdAt = DateUtil.utcEpochMilliSecondTokstLocalDateTime(request.getCreatedAfterMs());
+      int limit = request.getLimit();
+
+      List<BillBasicPublishment> cardBillBasicResponse = cardBillPublishService
+          .getCardBillBasicResponse(banksaladUserId, organizationId, createdAt, limit);
+
+      CardBillBasicProtoResponse cardBillBasicProtoResponse = CardBillBasicProtoResponse.builder()
+          .billBasicPublishments(cardBillBasicResponse)
+          .build();
+
+      responseObserver.onNext(cardBillBasicProtoResponse.toListCardBillBasicsResponseProto());
+      responseObserver.onCompleted();
+
+    } catch (GrpcException e) {
+      log.error(LogFormatUtil.makeLogFormat("listCardBillBasics", GRPC_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e.handle());
+
+    } catch (Exception e) {
+      log.error(LogFormatUtil.makeLogFormat("listCardBillBasics", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e);
+    }
   }
 
   @Override
   public void listCardBillDetails(ListCardBillDetailsRequest request,
       StreamObserver<ListCardBillDetailsResponse> responseObserver) {
-    super.listCardBillDetails(request, responseObserver);
+    try {
+      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
+      // TODO : getSeqno()을 할지, getValue()를 할지 테스트로 확인.
+      String seqNo = request.getSeqno().getValue().equals("") ? null : request.getSeqno().getValue() ;
+      String chargeMonth = request.getChargeMonth();
+
+      List<BillDetailPublishment> cardBillDetailResponse = cardBillPublishService
+          .getCardBillDetailResponse(banksaladUserId, organizationId, seqNo, chargeMonth);
+
+      CardBillDetailProtoResponse cardBillDetailProtoResponse = CardBillDetailProtoResponse.builder()
+          .billDetailPublishments(cardBillDetailResponse)
+          .build();
+
+      responseObserver.onNext(cardBillDetailProtoResponse.toListCardBillDetailsResponseProto());
+      responseObserver.onCompleted();
+
+    } catch (GrpcException e) {
+      log.error(LogFormatUtil.makeLogFormat("listCardBillDetails", GRPC_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e.handle());
+
+    } catch (Exception e) {
+      log.error(LogFormatUtil.makeLogFormat("listCardBillDetails", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e);
+    }
   }
 
   @Override

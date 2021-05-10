@@ -1,5 +1,7 @@
 package com.banksalad.collectmydata.card.common.db.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -8,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import com.banksalad.collectmydata.card.common.db.entity.BillEntity;
 import javax.transaction.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +20,9 @@ public interface BillRepository extends JpaRepository<BillEntity, Long> {
 
   Optional<BillEntity> findByBanksaladUserIdAndOrganizationIdAndChargeMonthAndCardTypeAndSeqno(long banksaladUserId,
       String organizationId, int chargeMonth, String cardType, String seqno);
+
+  Page<BillEntity> findAllByBanksaladUserIdAndOrganizationIdAndCreatedAtAfter(
+      long banksaladUserId, String organizationId, LocalDateTime createdAt, Pageable pageable);
 
   /**
    * @Modifiying는 Insert, update, delete, DDL 등 DB 데이터를 변경하는 @Query와 함께 붙여야하는 어노테이션.

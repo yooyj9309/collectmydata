@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.card.card.dto;
+package com.banksalad.collectmydata.card.publishment.bill.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -7,34 +7,33 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@ToString
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class BillDetail {
+public class BillBasicPublishment {
 
-  private String cardId;
+  private String seqno;
 
-  private String paidDtime;
+  private BigDecimal chargeAmt;
 
-  private BigDecimal paidAmt;
+  private int chargeDay;
 
-  private String currencyCode;
+  private int chargeMonth;
 
-  private String merchantName;
+  private String paidOutDate;
 
-  private BigDecimal creditFeeAmt;
+  private String cardType;
 
-  private int totalInstallCnt;
+  private LocalDateTime createdAt;
 
-  private int curInstallCnt;
+  private LocalDateTime updatedAt;
 
-  private BigDecimal balanceAmt;
-
-  private String prodType;
 }
