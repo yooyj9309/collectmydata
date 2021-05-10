@@ -2,6 +2,7 @@ package com.banksalad.collectmydata.card.common.mapper;
 
 import com.banksalad.collectmydata.card.card.dto.Revolving;
 import com.banksalad.collectmydata.card.common.db.entity.RevolvingEntity;
+import com.banksalad.collectmydata.card.publishment.userbase.dto.RevolvingPublishment;
 import com.banksalad.collectmydata.common.mapper.BigDecimalMapper;
 
 import org.mapstruct.BeanMapping;
@@ -34,4 +35,8 @@ public interface RevolvingMapper {
       }
   )
   Revolving entityToDto(RevolvingEntity revolvingEntity);
+
+  RevolvingPublishment entityToPublishmentDto(RevolvingEntity revolvingEntity);
+
+
 }

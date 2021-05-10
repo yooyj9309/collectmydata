@@ -2,6 +2,7 @@ package com.banksalad.collectmydata.card.common.mapper;
 
 import com.banksalad.collectmydata.card.common.db.entity.LoanShortTermEntity;
 import com.banksalad.collectmydata.card.loan.dto.LoanShortTerm;
+import com.banksalad.collectmydata.card.publishment.userbase.dto.LoanShortTermPublishment;
 import com.banksalad.collectmydata.common.mapper.BigDecimalMapper;
 
 import org.mapstruct.BeanMapping;
@@ -30,4 +31,6 @@ public interface LoanShortTermMapper {
       }
   )
   LoanShortTerm entityToDto(LoanShortTermEntity loanShortTermEntity);
+
+  LoanShortTermPublishment entityToPublishmentDto(LoanShortTermEntity loanShortTermEntity);
 }

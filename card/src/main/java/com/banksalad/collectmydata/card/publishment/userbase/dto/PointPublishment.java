@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.card.loan.dto;
+package com.banksalad.collectmydata.card.publishment.userbase.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -16,25 +15,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class LoanLongTerm {
+public class PointPublishment {
 
-  private String loanDtime;
+  private String pointName;
 
-  private int loanCnt;
+  private Long remainPointAmt;
 
-  private String loanType;
+  private Long expiringPointAmt;
 
-  private String loanName;
+  private LocalDateTime createdAt;
 
-  private BigDecimal loanAmt;
-
-  private BigDecimal intRate;
-
-  private String expDate;
-
-  private BigDecimal balanceAmt;
-
-  private String repayMethod;
-
-  private BigDecimal intAmt;
+  private LocalDateTime updatedAt;
 }

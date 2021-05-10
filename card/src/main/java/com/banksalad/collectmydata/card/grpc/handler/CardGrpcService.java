@@ -2,9 +2,21 @@ package com.banksalad.collectmydata.card.grpc.handler;
 
 import com.banksalad.collectmydata.card.publishment.summary.CardSummaryPublishService;
 import com.banksalad.collectmydata.card.publishment.summary.dto.CardSummariesProtoResponse;
+import com.banksalad.collectmydata.card.publishment.userbase.UserBasePublishService;
+import com.banksalad.collectmydata.card.publishment.userbase.dto.CardLoanLongTermProtoResponse;
+import com.banksalad.collectmydata.card.publishment.userbase.dto.CardLoanShortTermProtoResponse;
+import com.banksalad.collectmydata.card.publishment.userbase.dto.CardLoanSummaryProtoResponse;
+import com.banksalad.collectmydata.card.publishment.userbase.dto.CardRevolvingProtoResponse;
+import com.banksalad.collectmydata.card.publishment.userbase.dto.LoanLongTermPublishment;
+import com.banksalad.collectmydata.card.publishment.userbase.dto.LoanShortTermPublishment;
+import com.banksalad.collectmydata.card.publishment.userbase.dto.LoanSummaryPublishment;
+import com.banksalad.collectmydata.card.publishment.userbase.dto.PaymentProtoResponse;
+import com.banksalad.collectmydata.card.publishment.userbase.dto.PaymentPublishment;
+import com.banksalad.collectmydata.card.publishment.userbase.dto.PointProtoResponse;
+import com.banksalad.collectmydata.card.publishment.userbase.dto.PointPublishment;
+import com.banksalad.collectmydata.card.publishment.userbase.dto.RevolvingPublishment;
 import com.banksalad.collectmydata.card.summary.dto.CardSummary;
 import com.banksalad.collectmydata.common.exception.GrpcException;
-import com.banksalad.collectmydata.common.util.LogFormatUtil;
 import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
 import com.banksalad.collectmydata.finance.common.grpc.handler.interceptor.StatsUnaryServerInterceptor;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatacardGrpc;
@@ -39,6 +51,8 @@ import org.lognet.springboot.grpc.GRpcService;
 
 import java.util.List;
 
+import static com.banksalad.collectmydata.common.util.LogFormatUtil.makeLogFormat;
+
 @Slf4j
 @GRpcService(interceptors = {StatsUnaryServerInterceptor.class})
 @RequiredArgsConstructor
@@ -48,6 +62,8 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
   private static final String UNKNOWN_ERROR_MESSAGE  = "unknown error message";
 
   private final CardSummaryPublishService cardSummaryPublishService;
+  private final UserBasePublishService userBasePublishService;
+
   private final CollectmydataConnectClientService collectmydataConnectClientService;
 
 
@@ -70,10 +86,12 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
       responseObserver.onCompleted();
 
     } catch (GrpcException e) {
-      log.error(LogFormatUtil.makeLogFormat("listCardSummaries", GRPC_ERROR_MESSAGE), e.getMessage(), e);
+      log.error(makeLogFormat("listCardSummaries", GRPC_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e.handle());
 
     } catch (Exception e) {
-      log.error(LogFormatUtil.makeLogFormat("listCardSummaries", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      log.error(makeLogFormat("listCardSummaries", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e);
     }
   }
 
@@ -84,7 +102,28 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
 
   @Override
   public void listCardPoints(ListCardPointsRequest request, StreamObserver<ListCardPointsResponse> responseObserver) {
-    super.listCardPoints(request, responseObserver);
+    try {
+      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
+
+      List<PointPublishment> cardPointResponses = userBasePublishService.getCardPointResponses(banksaladUserId, organizationId);
+
+      PointProtoResponse pointProtoResponse = PointProtoResponse.builder()
+          .pointPublishments(cardPointResponses)
+          .build();
+
+      responseObserver.onNext(pointProtoResponse.toListCardPointResponseProto());
+      responseObserver.onCompleted();
+
+    } catch (GrpcException e) {
+      log.error(makeLogFormat("listCardPoints", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e.handle());
+
+    } catch (Exception e ) {
+      log.error(makeLogFormat("listCardPoints", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e);
+    }
   }
 
   @Override
@@ -102,7 +141,28 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
   @Override
   public void listCardPayments(ListCardPaymentsRequest request,
       StreamObserver<ListCardPaymentsResponse> responseObserver) {
-    super.listCardPayments(request, responseObserver);
+    try {
+      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
+
+      List<PaymentPublishment> payments = userBasePublishService.getPaymentsResponses(banksaladUserId, organizationId);
+
+      PaymentProtoResponse paymentProtoResponse = PaymentProtoResponse.builder()
+          .paymentPublishments(payments)
+          .build();
+
+      responseObserver.onNext(paymentProtoResponse.toListCardPaymentResponseProto());
+      responseObserver.onCompleted();
+
+    } catch (GrpcException e) {
+      log.error(makeLogFormat("listCardPayments", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e.handle());
+
+    } catch (Exception e ) {
+      log.error(makeLogFormat("listCardPayments", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e);
+    }
   }
 
   @Override
@@ -120,24 +180,112 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
   @Override
   public void listCardLoanSummaries(ListCardLoanSummariesRequest request,
       StreamObserver<ListCardLoanSummariesResponse> responseObserver) {
-    super.listCardLoanSummaries(request, responseObserver);
+    try {
+      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
+
+      List<LoanSummaryPublishment> cardLoanSummaries = userBasePublishService
+          .getCardLoanSummaries(banksaladUserId, organizationId);
+
+      CardLoanSummaryProtoResponse cardLoanSummaryProtoResponse = CardLoanSummaryProtoResponse.builder()
+          .loanSummaryPublishments(cardLoanSummaries)
+          .build();
+
+      responseObserver.onNext(cardLoanSummaryProtoResponse.toListCardLoanSummariesResponseProto());
+      responseObserver.onCompleted();
+
+    } catch (GrpcException e) {
+      log.error(makeLogFormat("listCardLoanSummaries", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e.handle());
+
+    } catch (Exception e ) {
+      log.error(makeLogFormat("listCardLoanSummaries", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e);
+    }
   }
 
   @Override
   public void listCardRevolvings(ListCardRevolvingsRequest request,
       StreamObserver<ListCardRevolvingsResponse> responseObserver) {
-    super.listCardRevolvings(request, responseObserver);
+    try {
+      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
+
+      List<RevolvingPublishment> cardRevolvingsResponse = userBasePublishService
+          .getCardRevolvingsResponse(banksaladUserId, organizationId);
+
+      CardRevolvingProtoResponse cardRevolvingProtoResponse = CardRevolvingProtoResponse.builder()
+          .revolvingPublishments(cardRevolvingsResponse)
+          .build();
+
+      responseObserver.onNext(cardRevolvingProtoResponse.toListCardRevolvingResponse());
+      responseObserver.onCompleted();
+
+    } catch (GrpcException e) {
+      log.error(makeLogFormat("listCardRevolvings", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e.handle());
+
+    } catch (Exception e ) {
+      log.error(makeLogFormat("listCardRevolvings", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e);
+    }
   }
 
   @Override
   public void listCardLoanShortTerms(ListCardLoanShortTermsRequest request,
       StreamObserver<ListCardLoanShortTermsResponse> responseObserver) {
-    super.listCardLoanShortTerms(request, responseObserver);
+    try {
+      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
+
+      List<LoanShortTermPublishment> cardLoanShortTermsResponse = userBasePublishService
+          .getCardLoanShortTermsResponse(banksaladUserId, organizationId);
+
+      CardLoanShortTermProtoResponse cardLoanShortTermProtoResponse = CardLoanShortTermProtoResponse.builder()
+          .loanShortTermPublishments(cardLoanShortTermsResponse)
+          .build();
+
+      responseObserver.onNext(cardLoanShortTermProtoResponse.toListCardLoanShortTermsResponseProto());
+      responseObserver.onCompleted();
+
+    } catch (GrpcException e) {
+      log.error(makeLogFormat("listCardLoanShortTerms", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e.handle());
+
+    } catch (Exception e ) {
+      log.error(makeLogFormat("listCardLoanShortTerms", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e);
+    }
   }
 
   @Override
   public void listCardLoanLongTerms(ListCardLoanLongTermsRequest request,
       StreamObserver<ListCardLoanLongTermsResponse> responseObserver) {
-    super.listCardLoanLongTerms(request, responseObserver);
+    try {
+      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
+
+      List<LoanLongTermPublishment> cardLoanLongTermsResponse = userBasePublishService
+          .getCardLoanLongTermsResponse(banksaladUserId, organizationId);
+
+      CardLoanLongTermProtoResponse cardLoanLongTermProtoResponse = CardLoanLongTermProtoResponse.builder()
+          .loanLongTermPublishments(cardLoanLongTermsResponse)
+          .build();
+
+      responseObserver.onNext(cardLoanLongTermProtoResponse.toListCardLoanLongTermsResponseProto());
+      responseObserver.onCompleted();
+
+    } catch (GrpcException e) {
+      log.error(makeLogFormat("listCardLoanLongTerms", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e.handle());
+
+    } catch (Exception e ) {
+      log.error(makeLogFormat("listCardLoanLongTerms", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e);
+    }
   }
 }

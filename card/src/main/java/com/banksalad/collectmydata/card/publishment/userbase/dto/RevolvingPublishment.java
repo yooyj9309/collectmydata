@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.card.loan.dto;
+package com.banksalad.collectmydata.card.publishment.userbase.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -7,34 +7,36 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class LoanLongTerm {
+public class RevolvingPublishment {
 
-  private String loanDtime;
+  private Short revolvingNo;
 
-  private int loanCnt;
+  // revolvingList에서 반복되는 값이지만 편의를 위해 추가한다.
+  private int revolvingMonth;
 
-  private String loanType;
+  private String reqDate;
 
-  private String loanName;
+  private BigDecimal minPayRate;
 
-  private BigDecimal loanAmt;
+  private BigDecimal minPayAmt;
 
-  private BigDecimal intRate;
+  private BigDecimal agreedPayRate;
 
-  private String expDate;
+  private BigDecimal remainedAmt;
 
-  private BigDecimal balanceAmt;
+  private LocalDateTime createdAt;
 
-  private String repayMethod;
+  private LocalDateTime updatedAt;
 
-  private BigDecimal intAmt;
 }
