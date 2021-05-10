@@ -1,7 +1,11 @@
 package com.banksalad.collectmydata.card.grpc.handler;
 
+import com.banksalad.collectmydata.card.publishment.accountinfo.CardBasicPublishService;
+import com.banksalad.collectmydata.card.publishment.accountinfo.dto.CardBasicPublishment;
+import com.banksalad.collectmydata.card.publishment.accountinfo.dto.CardBasicsProtoResponse;
 import com.banksalad.collectmydata.card.publishment.summary.CardSummaryPublishService;
 import com.banksalad.collectmydata.card.publishment.summary.dto.CardSummariesProtoResponse;
+import com.banksalad.collectmydata.card.publishment.summary.dto.CardSummaryPublishment;
 import com.banksalad.collectmydata.card.publishment.userbase.UserBasePublishService;
 import com.banksalad.collectmydata.card.publishment.userbase.dto.CardLoanLongTermProtoResponse;
 import com.banksalad.collectmydata.card.publishment.userbase.dto.CardLoanShortTermProtoResponse;
@@ -15,7 +19,6 @@ import com.banksalad.collectmydata.card.publishment.userbase.dto.PaymentPublishm
 import com.banksalad.collectmydata.card.publishment.userbase.dto.PointProtoResponse;
 import com.banksalad.collectmydata.card.publishment.userbase.dto.PointPublishment;
 import com.banksalad.collectmydata.card.publishment.userbase.dto.RevolvingPublishment;
-import com.banksalad.collectmydata.card.summary.dto.CardSummary;
 import com.banksalad.collectmydata.common.exception.GrpcException;
 import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
 import com.banksalad.collectmydata.finance.common.grpc.handler.interceptor.StatsUnaryServerInterceptor;
@@ -62,6 +65,7 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
   private static final String UNKNOWN_ERROR_MESSAGE  = "unknown error message";
 
   private final CardSummaryPublishService cardSummaryPublishService;
+  private final CardBasicPublishService cardBasicPublishService;
   private final UserBasePublishService userBasePublishService;
 
   private final CollectmydataConnectClientService collectmydataConnectClientService;
@@ -75,11 +79,11 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
       String organizationId = collectmydataConnectClientService
           .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
 
-      List<CardSummary> cardSummaryResponses = cardSummaryPublishService
+      List<CardSummaryPublishment> cardSummaryPublishments = cardSummaryPublishService
           .getCardSummaryResponses(banksaladUserId, organizationId);
 
       CardSummariesProtoResponse cardSummariesProtoResponse = CardSummariesProtoResponse.builder()
-          .cardSummaries(cardSummaryResponses)
+          .cardSummaryPublishments(cardSummaryPublishments)
           .build();
 
       responseObserver.onNext(cardSummariesProtoResponse.toListCardSummariesResponseProto());
@@ -97,7 +101,29 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
 
   @Override
   public void listCardBasics(ListCardBasicsRequest request, StreamObserver<ListCardBasicsResponse> responseObserver) {
-    super.listCardBasics(request, responseObserver);
+    try {
+      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
+
+      List<CardBasicPublishment> cardBasicResponses = cardBasicPublishService
+          .getCardBasicResponses(banksaladUserId, organizationId);
+
+      CardBasicsProtoResponse cardBasicsProtoResponse = CardBasicsProtoResponse.builder()
+          .cardBasicPublishments(cardBasicResponses)
+          .build();
+
+      responseObserver.onNext(cardBasicsProtoResponse.toListCardBasicResponsesProto());
+      responseObserver.onCompleted();
+
+    } catch (GrpcException e) {
+      log.error(makeLogFormat("listCardBasics", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e.handle());
+
+    } catch (Exception e) {
+      log.error(makeLogFormat("listCardBasics", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e);
+    }
   }
 
   @Override

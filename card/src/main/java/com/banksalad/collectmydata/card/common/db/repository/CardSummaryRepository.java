@@ -14,4 +14,7 @@ public interface CardSummaryRepository extends JpaRepository<CardSummaryEntity, 
 
   List<CardSummaryEntity> findByBanksaladUserIdAndOrganizationIdAndConsentIsTrue(long banksaladUserId,
       String organizationId);
+
+  List<CardSummaryEntity> findAllByBanksaladUserIdAndOrganizationIdAndResponseCodeInAndConsentIsTrue(long banksaladUserId,
+      String organizationId, String[] responseCodes);
 }

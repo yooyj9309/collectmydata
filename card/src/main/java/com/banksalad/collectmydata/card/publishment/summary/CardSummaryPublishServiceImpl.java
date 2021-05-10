@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.card.common.db.repository.CardSummaryRepository;
 import com.banksalad.collectmydata.card.common.mapper.CardSummaryMapper;
+import com.banksalad.collectmydata.card.publishment.summary.dto.CardSummaryPublishment;
 import com.banksalad.collectmydata.card.summary.dto.CardSummary;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
@@ -20,11 +21,11 @@ public class CardSummaryPublishServiceImpl implements CardSummaryPublishService 
   private final CardSummaryMapper cardSummaryMapper = Mappers.getMapper(CardSummaryMapper.class);
 
   @Override
-  public List<CardSummary> getCardSummaryResponses(long banksaladUserId, String organizationId) {
+  public List<CardSummaryPublishment> getCardSummaryResponses(long banksaladUserId, String organizationId) {
 
     return cardSummaryRepository.findByBanksaladUserIdAndOrganizationIdAndConsentIsTrue(
         banksaladUserId, organizationId).stream()
-        .map(cardSummaryMapper::entityToDto)
+        .map(cardSummaryMapper::entityToPublishmentDto)
         .collect(Collectors.toList());
   }
 }

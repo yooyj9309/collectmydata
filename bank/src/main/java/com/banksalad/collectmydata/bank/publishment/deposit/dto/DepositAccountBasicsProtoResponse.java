@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.bank.publishment.deposit.dto;
 
 import com.banksalad.collectmydata.common.util.DateUtil;
+import com.banksalad.collectmydata.common.util.NumberUtil;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.BankDepositAccountBasic;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankDepositAccountBasicsResponse;
 import com.google.protobuf.Int64Value;
@@ -35,7 +36,7 @@ public class DepositAccountBasicsProtoResponse {
             .setCommitAmt3F(
                 Int64Value.newBuilder().setValue(depositAccountBasicResponse.getCommitAmt().longValue()).build())
             .setMonthlyPaidInAmt3F(
-                Int64Value.newBuilder().setValue(depositAccountBasicResponse.getMonthlyPaidInAmt().longValue())
+                Int64Value.newBuilder().setValue(NumberUtil.multiply1000(depositAccountBasicResponse.getMonthlyPaidInAmt()))
                     .build())
             .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(depositAccountBasicResponse.getCreatedAt()))
             .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(depositAccountBasicResponse.getUpdatedAt()))

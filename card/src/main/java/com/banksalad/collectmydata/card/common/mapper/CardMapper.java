@@ -2,6 +2,7 @@ package com.banksalad.collectmydata.card.common.mapper;
 
 import com.banksalad.collectmydata.card.card.dto.CardBasic;
 import com.banksalad.collectmydata.card.common.db.entity.CardEntity;
+import com.banksalad.collectmydata.card.publishment.accountinfo.dto.CardBasicPublishment;
 import com.banksalad.collectmydata.common.mapper.BigDecimalMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,4 +18,8 @@ public interface CardMapper {
       }
   )
   CardEntity dtoToEntity(CardBasic cardBasic);
+
+  CardBasic entityToDto(CardEntity cardEntity);
+
+  CardBasicPublishment entityToPublishmentDto(CardEntity cardEntity);
 }

@@ -33,10 +33,6 @@ public class CardSummary {
 
   private long searchTimestamp;
 
-  private LocalDateTime createdAt;
-
-  private LocalDateTime updatedAt;
-
   private LocalDateTime approvalDomesticTransactionSyncedAt;
 
   private LocalDateTime approvalOverseasTransactionSyncedAt;

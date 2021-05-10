@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.card.common.mapper;
 
 import com.banksalad.collectmydata.card.common.db.entity.CardSummaryEntity;
+import com.banksalad.collectmydata.card.publishment.summary.dto.CardSummaryPublishment;
 import com.banksalad.collectmydata.card.summary.dto.CardSummary;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -21,5 +22,7 @@ public interface CardSummaryMapper {
   void mergeDtoToEntity(CardSummary cardSummary, @MappingTarget CardSummaryEntity cardSummaryEntity);
 
   CardSummary entityToDto(CardSummaryEntity cardSummaryEntity);
+
+  CardSummaryPublishment entityToPublishmentDto(CardSummaryEntity cardSummaryEntity);
 
 }

@@ -19,18 +19,18 @@ import java.util.stream.Collectors;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CardSummariesProtoResponse {
 
-  List<CardSummary> cardSummaries;
+  List<CardSummaryPublishment> cardSummaryPublishments;
 
   public ListCardSummariesResponse toListCardSummariesResponseProto() {
-    List<CollectmydatacardProto.CardSummary> cardSummariesProto = cardSummaries.stream()
-        .map(cardSummary -> CollectmydatacardProto.CardSummary.newBuilder()
-            .setCardId(cardSummary.getCardId())
-            .setCardNum(cardSummary.getCardNum())
-            .setIsConsent(cardSummary.isConsent())
-            .setCardName(cardSummary.getCardName())
-            .setCardMember(cardSummary.getCardMember())
-            .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(cardSummary.getCreatedAt()))
-            .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(cardSummary.getUpdatedAt()))
+    List<CollectmydatacardProto.CardSummary> cardSummariesProto = cardSummaryPublishments.stream()
+        .map(cardSummaryPublishment -> CollectmydatacardProto.CardSummary.newBuilder()
+            .setCardId(cardSummaryPublishment.getCardId())
+            .setCardNum(cardSummaryPublishment.getCardNum())
+            .setIsConsent(cardSummaryPublishment.isConsent())
+            .setCardName(cardSummaryPublishment.getCardName())
+            .setCardMember(cardSummaryPublishment.getCardMember())
+            .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(cardSummaryPublishment.getCreatedAt()))
+            .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(cardSummaryPublishment.getUpdatedAt()))
             .build())
         .collect(Collectors.toList());
 

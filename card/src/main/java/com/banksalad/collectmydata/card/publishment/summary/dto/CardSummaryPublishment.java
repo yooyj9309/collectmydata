@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.card.card.dto;
+package com.banksalad.collectmydata.card.publishment.summary.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -8,30 +8,36 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class CardBasic {
+public class CardSummaryPublishment {
 
-  private String cardType;
+  private String cardId;
 
-  @JsonProperty("is_trans_payable")
-  private boolean transPayable;
+  private String cardNum;
 
-  @JsonProperty("is_cash_card")
-  private boolean cashCard;
+  @JsonProperty("is_consent")
+  private boolean consent;
 
-  private String linkedBankCode;
+  private String cardName;
 
-  private String cardBrand;
+  private Integer cardMember;
 
-  private BigDecimal annualFee;
+  private long searchTimestamp;
 
-  private String issueDate;
+  private LocalDateTime createdAt;
+
+  private LocalDateTime updatedAt;
+
+  private LocalDateTime approvalDomesticTransactionSyncedAt;
+
+  private LocalDateTime approvalOverseasTransactionSyncedAt;
 }
