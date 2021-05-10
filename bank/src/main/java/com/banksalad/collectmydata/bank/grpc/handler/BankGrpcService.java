@@ -27,7 +27,6 @@ import com.banksalad.collectmydata.bank.publishment.summary.dto.AccountSummaryRe
 import com.banksalad.collectmydata.common.exception.GrpcException;
 import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
 import com.banksalad.collectmydata.finance.common.grpc.handler.interceptor.StatsUnaryServerInterceptor;
-
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankGrpc;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankAccountSummariesRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankAccountSummariesResponse;

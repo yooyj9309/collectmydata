@@ -1,11 +1,17 @@
 package com.banksalad.collectmydata.card.grpc.handler;
 
+
 import com.banksalad.collectmydata.card.publishment.accountinfo.CardBasicPublishService;
 import com.banksalad.collectmydata.card.publishment.accountinfo.dto.CardBasicPublishment;
 import com.banksalad.collectmydata.card.publishment.accountinfo.dto.CardBasicsProtoResponse;
 import com.banksalad.collectmydata.card.publishment.summary.CardSummaryPublishService;
 import com.banksalad.collectmydata.card.publishment.summary.dto.CardSummariesProtoResponse;
 import com.banksalad.collectmydata.card.publishment.summary.dto.CardSummaryPublishment;
+import com.banksalad.collectmydata.card.publishment.transaction.CardTransactionPublishService;
+import com.banksalad.collectmydata.card.publishment.transaction.dto.ApprovalDomesticProtoResponse;
+import com.banksalad.collectmydata.card.publishment.transaction.dto.ApprovalDomesticPublishment;
+import com.banksalad.collectmydata.card.publishment.transaction.dto.ApprovalOverseasPublishment;
+import com.banksalad.collectmydata.card.publishment.transaction.dto.CardApprovalOverseaProtoResponse;
 import com.banksalad.collectmydata.card.publishment.userbase.UserBasePublishService;
 import com.banksalad.collectmydata.card.publishment.userbase.dto.CardLoanLongTermProtoResponse;
 import com.banksalad.collectmydata.card.publishment.userbase.dto.CardLoanShortTermProtoResponse;
@@ -20,6 +26,8 @@ import com.banksalad.collectmydata.card.publishment.userbase.dto.PointProtoRespo
 import com.banksalad.collectmydata.card.publishment.userbase.dto.PointPublishment;
 import com.banksalad.collectmydata.card.publishment.userbase.dto.RevolvingPublishment;
 import com.banksalad.collectmydata.common.exception.GrpcException;
+import com.banksalad.collectmydata.common.util.DateUtil;
+import com.banksalad.collectmydata.common.util.LogFormatUtil;
 import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
 import com.banksalad.collectmydata.finance.common.grpc.handler.interceptor.StatsUnaryServerInterceptor;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatacardGrpc;
@@ -52,6 +60,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.GRpcService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.banksalad.collectmydata.common.util.LogFormatUtil.makeLogFormat;
@@ -62,9 +71,10 @@ import static com.banksalad.collectmydata.common.util.LogFormatUtil.makeLogForma
 public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImplBase {
 
   private static final String GRPC_ERROR_MESSAGE = "gRPC error message";
-  private static final String UNKNOWN_ERROR_MESSAGE  = "unknown error message";
+  private static final String UNKNOWN_ERROR_MESSAGE = "unknown error message";
 
   private final CardSummaryPublishService cardSummaryPublishService;
+  private final CardTransactionPublishService cardTransactionPublishService;
   private final CardBasicPublishService cardBasicPublishService;
   private final UserBasePublishService userBasePublishService;
 
@@ -194,13 +204,66 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
   @Override
   public void listCardApprovalDomestics(ListCardApprovalDomesticsRequest request,
       StreamObserver<ListCardApprovalDomesticsResponse> responseObserver) {
-    super.listCardApprovalDomestics(request, responseObserver);
+    try {
+      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
+      String cardId = request.getCardId();
+      LocalDateTime createdAt = DateUtil.utcEpochMilliSecondTokstLocalDateTime(request.getCreatedAfterMs());
+      int limit = request.getLimit();
+
+      List<ApprovalDomesticPublishment> cardApprovalDomesticResponses = cardTransactionPublishService
+          .getCardApprovalDomesticResponse(banksaladUserId, organizationId, cardId, createdAt, limit);
+
+      ApprovalDomesticProtoResponse approvalDomesticProtoResponse = ApprovalDomesticProtoResponse.builder()
+          .approvalDomesticPublishments(cardApprovalDomesticResponses)
+          .build();
+
+      responseObserver.onNext(approvalDomesticProtoResponse.toListCardApprovalDomesticsResponseProto());
+      responseObserver.onCompleted();
+
+    } catch (GrpcException e) {
+      log.error(LogFormatUtil.makeLogFormat("listCardApprovalDomestics", GRPC_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e.handle());
+
+    } catch (Exception e) {
+      log.error(LogFormatUtil.makeLogFormat("listCardApprovalDomestics", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e);
+    }
   }
 
   @Override
   public void listCardApprovalOverseas(ListCardApprovalOverseasRequest request,
       StreamObserver<ListCardApprovalOverseasResponse> responseObserver) {
-    super.listCardApprovalOverseas(request, responseObserver);
+    try {
+      long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+      String organizationId = collectmydataConnectClientService
+          .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
+      String cardId = request.getCardId();
+      LocalDateTime createdAt = DateUtil.utcEpochMilliSecondTokstLocalDateTime(request.getCreatedAfterMs());
+      int limit = request.getLimit();
+
+      List<ApprovalOverseasPublishment> cardApprovalOverseasResponses = cardTransactionPublishService
+          .getCardApprovalOverseasResponses(
+              banksaladUserId, organizationId, cardId, createdAt, limit
+          );
+
+      CardApprovalOverseaProtoResponse cardApprovalOverseaProtoResponse = CardApprovalOverseaProtoResponse.builder()
+          .approvalOverseasPublishments(cardApprovalOverseasResponses)
+          .build();
+
+      responseObserver.onNext(cardApprovalOverseaProtoResponse.toListCardApprovalOverseasResponseProto());
+      responseObserver.onCompleted();
+
+    } catch (GrpcException e) {
+      log.error(LogFormatUtil.makeLogFormat("listCardApprovalOverseas", GRPC_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e.handle());
+
+    } catch (Exception e) {
+      log.error(LogFormatUtil.makeLogFormat("listCardApprovalOverseas", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
+      responseObserver.onError(e);
+    }
+
   }
 
   @Override

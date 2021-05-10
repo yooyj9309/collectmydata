@@ -143,4 +143,7 @@ public class DateUtil {
     }
   }
 
+  public static LocalDateTime utcEpochMilliSecondTokstLocalDateTime(long utcEpochmilliSecond) {
+    return LocalDateTime.ofEpochSecond(utcEpochmilliSecond, 0, ZoneOffset.UTC);
+  }
 }

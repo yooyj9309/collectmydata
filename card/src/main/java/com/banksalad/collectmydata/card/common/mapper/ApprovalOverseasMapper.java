@@ -2,6 +2,7 @@ package com.banksalad.collectmydata.card.common.mapper;
 
 import com.banksalad.collectmydata.card.card.dto.ApprovalOverseas;
 import com.banksalad.collectmydata.card.common.db.entity.ApprovalOverseasEntity;
+import com.banksalad.collectmydata.card.publishment.transaction.dto.ApprovalOverseasPublishment;
 import com.banksalad.collectmydata.common.mapper.BigDecimalMapper;
 
 import org.mapstruct.Mapper;
@@ -19,4 +20,8 @@ public interface ApprovalOverseasMapper {
       }
   )
   ApprovalOverseasEntity dtoToEntity(ApprovalOverseas approvalOverseas);
+
+  ApprovalOverseas entityToDto(ApprovalOverseasEntity approvalOverseasEntity);
+
+  ApprovalOverseasPublishment entityToPublishmentDto(ApprovalOverseasEntity approvalOverseasEntity);
 }

@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.card.card.dto;
+package com.banksalad.collectmydata.card.publishment.transaction.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -16,7 +16,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class ApprovalDomestic {
+public class ApprovalDomesticPublishment {
+
+  private String cardId;
 
   private String approvedNum;
 
@@ -32,5 +34,10 @@ public class ApprovalDomestic {
 
   private BigDecimal approvedAmt;
 
-  private int totalInstallCnt;
+  private Integer totalInstallCnt;
+
+  private LocalDateTime createdAt;
+
+  private LocalDateTime updatedAt;
+
 }
