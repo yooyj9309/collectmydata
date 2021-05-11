@@ -19,6 +19,7 @@ import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
+import static com.banksalad.collectmydata.common.util.ObjectComparator.*;
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
 @Component
@@ -70,10 +71,11 @@ public class DepositAccountBasicInfoResponseHelper implements
     // copy PK for update
     if (existingDepositAccountBasicEntity != null) {
       depositAccountBasicEntity.setId(existingDepositAccountBasicEntity.getId());
+      depositAccountBasicEntity.setCreatedBy(existingDepositAccountBasicEntity.getCreatedBy());
     }
 
     // upsert deposit account basic and insert history if needed
-    if (!ObjectComparator.isSame(depositAccountBasicEntity, existingDepositAccountBasicEntity, ENTITY_EXCLUDE_FIELD)) {
+    if (!isSame(depositAccountBasicEntity, existingDepositAccountBasicEntity, ENTITY_EXCLUDE_FIELD)) {
       depositAccountBasicRepository.save(depositAccountBasicEntity);
 
       DepositAccountBasicHistoryEntity depositAccountBasicHistoryEntity = depositAccountBasicHistoryMapper

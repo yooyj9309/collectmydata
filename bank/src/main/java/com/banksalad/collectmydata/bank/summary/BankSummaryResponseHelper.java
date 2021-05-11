@@ -64,7 +64,12 @@ public class BankSummaryResponseHelper implements SummaryResponseHelper<AccountS
             executionContext.getOrganizationId(),
             accountSummary.getAccountNum(),
             accountSummary.getSeqno()
-        ).orElseGet(() -> AccountSummaryEntity.builder().build());
+        )
+        .orElseGet(() -> {
+          AccountSummaryEntity newAccountSummaryEntity = AccountSummaryEntity.builder().build();
+          newAccountSummaryEntity.setCreatedBy(executionContext.getRequestedBy());
+          return newAccountSummaryEntity;
+        });
 
     // merge
     accountSummaryMapper.mergeDtoToEntity(accountSummary, accountSummaryEntity);

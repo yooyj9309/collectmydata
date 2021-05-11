@@ -22,6 +22,7 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
+import static com.banksalad.collectmydata.common.util.ObjectComparator.*;
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.CURRENCY_KRW;
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
@@ -79,11 +80,11 @@ public class DepositAccountDetailInfoResponseHelper implements
       // copy PK for update
       if (existingDepositAccountDetailEntity != null) {
         depositAccountDetailEntity.setId(existingDepositAccountDetailEntity.getId());
+        depositAccountDetailEntity.setCreatedBy(existingDepositAccountDetailEntity.getCreatedBy());
       }
 
       // upsert deposit account detail and insert history if needed
-      if (!ObjectComparator
-          .isSame(depositAccountDetailEntity, existingDepositAccountDetailEntity, ENTITY_EXCLUDE_FIELD)) {
+      if (!isSame(depositAccountDetailEntity, existingDepositAccountDetailEntity, ENTITY_EXCLUDE_FIELD)) {
         depositAccountDetailRepository.save(depositAccountDetailEntity);
 
         DepositAccountDetailHistoryEntity depositAccountDetailHistoryEntity = depositAccountDetailHistoryMapper

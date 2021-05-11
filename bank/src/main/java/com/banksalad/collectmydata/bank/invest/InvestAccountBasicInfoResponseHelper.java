@@ -19,6 +19,7 @@ import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
+import static com.banksalad.collectmydata.common.util.ObjectComparator.*;
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
 @Component
@@ -64,9 +65,10 @@ public class InvestAccountBasicInfoResponseHelper implements
 
     if (existingInvestAccountBasicEntity != null) {
       investAccountBasicEntity.setId(existingInvestAccountBasicEntity.getId());
+      investAccountBasicEntity.setCreatedBy(existingInvestAccountBasicEntity.getCreatedBy());
     }
 
-    if (!ObjectComparator.isSame(investAccountBasicEntity, existingInvestAccountBasicEntity, ENTITY_EXCLUDE_FIELD)) {
+    if (!isSame(investAccountBasicEntity, existingInvestAccountBasicEntity, ENTITY_EXCLUDE_FIELD)) {
       investAccountBasicRepository.save(investAccountBasicEntity);
 
       InvestAccountBasicHistoryEntity investAccountBasicHistoryEntity = investAccountBasicHistoryMapper
