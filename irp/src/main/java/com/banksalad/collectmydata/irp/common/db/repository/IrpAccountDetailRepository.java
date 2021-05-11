@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.irp.common.db.entity.IrpAccountDetailEntity;
 
@@ -14,7 +15,8 @@ public interface IrpAccountDetailRepository extends JpaRepository<IrpAccountDeta
 
   List<IrpAccountDetailEntity> findByBanksaladUserIdAndOrganizationId(Long banksaladUserId, String organizationId);
 
-  @Modifying
+  @Transactional
+  @Modifying(clearAutomatically = true)
   @Query("delete from IrpAccountDetailEntity where banksaladUserId = :banksaladUserId and organizationId = :organizationId and accountNum = :accountNum and seqno = :seqno")
   void deleteByBanksaladUserIdAndOrganizationIdAndAccountNumAndSeqno(@Param("banksaladUserId") Long banksaladUserId,
       @Param("organizationId") String organizationId,
