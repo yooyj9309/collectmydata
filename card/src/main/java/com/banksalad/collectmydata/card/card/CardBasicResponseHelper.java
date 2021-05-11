@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import com.banksalad.collectmydata.card.card.dto.CardBasic;
 import com.banksalad.collectmydata.card.card.dto.GetCardBasicResponse;
 import com.banksalad.collectmydata.card.common.db.entity.CardEntity;
+import com.banksalad.collectmydata.card.common.db.entity.CardHistoryEntity;
 import com.banksalad.collectmydata.card.common.db.repository.CardHistoryRepository;
 import com.banksalad.collectmydata.card.common.db.repository.CardRepository;
 import com.banksalad.collectmydata.card.common.mapper.CardHistoryMapper;
@@ -52,6 +53,8 @@ public class CardBasicResponseHelper implements AccountInfoResponseHelper<CardSu
     cardEntity.setBanksaladUserId(banksaladUserId);
     cardEntity.setOrganizationId(organizationId);
     cardEntity.setCardId(cardSummary.getCardId());
+    cardEntity.setConsentId(executionContext.getConsentId());
+    cardEntity.setSyncRequestId(executionContext.getSyncRequestId());
     cardEntity.setCreatedBy(executionContext.getRequestedBy());
     cardEntity.setUpdatedBy(executionContext.getRequestedBy());
 

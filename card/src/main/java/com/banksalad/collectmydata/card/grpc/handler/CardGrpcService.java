@@ -187,7 +187,6 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
 
       responseObserver.onNext(cardBillBasicProtoResponse.toListCardBillBasicsResponseProto());
       responseObserver.onCompleted();
-
     } catch (GrpcException e) {
       log.error(LogFormatUtil.makeLogFormat("listCardBillBasics", GRPC_ERROR_MESSAGE), e.getMessage(), e);
       responseObserver.onError(e.handle());

@@ -3,15 +3,12 @@ package com.banksalad.collectmydata.card.publishment.bill;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import com.banksalad.collectmydata.card.card.dto.BillBasic;
-import com.banksalad.collectmydata.card.card.dto.BillDetail;
 import com.banksalad.collectmydata.card.common.db.repository.BillDetailRepository;
 import com.banksalad.collectmydata.card.common.db.repository.BillRepository;
 import com.banksalad.collectmydata.card.common.mapper.BillDetailMapper;
 import com.banksalad.collectmydata.card.common.mapper.BillMapper;
 import com.banksalad.collectmydata.card.publishment.bill.dto.BillBasicPublishment;
 import com.banksalad.collectmydata.card.publishment.bill.dto.BillDetailPublishment;
-import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatacardProto.CardBillBasic;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
@@ -30,6 +27,7 @@ public class CardBillPublishServiceImpl implements CardBillPublishService {
   private final BillDetailMapper billDetailMapper = Mappers.getMapper(BillDetailMapper.class);
 
   @Override
+
   public List<BillBasicPublishment> getCardBillBasicResponse(long banksaladUserId, String organizationId,
       LocalDateTime createdAt, int limit) {
 

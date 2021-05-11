@@ -63,4 +63,9 @@ public class CardEntity extends BaseEntity {
   @Column(nullable = false)
   private String issueDate;
 
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
+
 }

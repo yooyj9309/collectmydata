@@ -18,6 +18,10 @@ import java.time.LocalDateTime;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class BillDetail {
 
+  private Integer chargeMonth;
+
+  private String seqNo;
+
   private String cardId;
 
   private String paidDtime;
@@ -37,4 +41,8 @@ public class BillDetail {
   private BigDecimal balanceAmt;
 
   private String prodType;
+
+  private LocalDateTime createdAt;
+
+  private LocalDateTime updatedAt;
 }

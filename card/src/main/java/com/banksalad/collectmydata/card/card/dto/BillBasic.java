@@ -31,4 +31,8 @@ public class BillBasic {
   private String paidOutDate;
 
   private String cardType;
+
+  private LocalDateTime createdAt;
+
+  private LocalDateTime updatedAt;
 }

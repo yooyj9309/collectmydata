@@ -1,5 +1,6 @@
 package com.banksalad.collectmydata.card.publishment.bill.dto;
 
+
 import com.banksalad.collectmydata.common.grpc.converter.ProtoTypeConverter;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatacardProto.CardBillDetail;
