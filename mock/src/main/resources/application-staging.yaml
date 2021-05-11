@@ -1,0 +1,14 @@
+spring:
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.MySQLDialect
+        default_batch_fetch_size: 100
+    open-in-view: false
+  datasource:
+    url: jdbc:mysql://collectmydatamock-cluster.cluster-ciy3wcu0axct.ap-northeast-2.rds.amazonaws.com:3306/collectmydatamock?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: collectmydatamock_was
+    password: ${STG_COLLECTMYDATA_MOCK_DB_PASSWORD}
