@@ -36,7 +36,7 @@ public class ConnectOrganizationEntity extends BaseEntity {
   private String organizationId;
 
   @Column(nullable = false)
-  private String organizationObjectid;
+  private String organizationGuid;
 
   private String orgCode;
 

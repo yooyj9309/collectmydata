@@ -159,7 +159,7 @@ public class OauthServiceTest {
   private void ready_mockSetting(MydataSector mydataSector) {
     when(authService.getUserAuthInfo(OauthTestUtil.organizationId, request))
         .thenReturn(OauthTestUtil.generateUserAuthInfo());
-//    when(organizationService.getOrganizationByObjectId(any())).thenReturn(
+//    when(organizationService.getOrganizationByGuid(any())).thenReturn(
 //        OauthTestUtil.generateOrganization(mydataSector));
     when(collectmydataconnectBlockingStub.getOrganizationByOrganizationGuid(any()))
         .thenReturn(OauthTestUtil.getOrganizationResponseAssembler(mydataSector));

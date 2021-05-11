@@ -216,7 +216,7 @@ public class ConnectGrpcService extends CollectmydataconnectGrpc.Collectmydataco
       responseObserver.onError(e.handle());
 
     } catch (Exception e) {
-      log.error("getOrganizationByOrganizationObjectid error message,{}", e.getMessage(), e);
+      log.error("getOrganizationByOrganizationGuid error message,{}", e.getMessage(), e);
       responseObserver.onError(new GrpcException().handle());
     }
   }

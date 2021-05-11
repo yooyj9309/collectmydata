@@ -5,7 +5,7 @@ import com.banksalad.collectmydata.oauth.dto.Organization;
 
 public interface OrganizationService {
 
-  public Organization getOrganizationByObjectId(String organizationObjectId);
+  Organization getOrganizationByOrganizationGuid(String organizationGuid);
 
-  public void issueToken(UserEntity userEntity, String authorizationCode);
+  void issueToken(UserEntity userEntity, String authorizationCode);
 }

@@ -14,7 +14,7 @@ public class OauthTestUtil {
   public static final String organizationCode = "000";
   public static final String os = "android";
   public static final String organizationId = "shinhancard";
-  public static final String organizationObjectId = "objectId";
+  public static final String organizationGuid = "guid";
   public static final String state = "state";
 
 
@@ -46,7 +46,7 @@ public class OauthTestUtil {
 
   public static OauthPageRequest generateOauthPageRequest() {
     OauthPageRequest request = new OauthPageRequest();
-    request.setOrganizationObjectId(organizationObjectId);
+    request.setOrganizationGuid(organizationGuid);
     return request;
   }
 

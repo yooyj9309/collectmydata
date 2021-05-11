@@ -38,9 +38,9 @@ public class OauthServiceImpl implements OauthService {
 
   @Override
   public String ready(ServerHttpRequest httpRequest, OauthPageRequest oauthPageRequest, Model model) {
-    // banksalad token을 통해 user정보조회, organizationObjectId를 통해 organization조회
+    // banksalad token을 통해 user정보조회, organizationGuid를 통해 organization조회
     Organization organization = organizationService
-        .getOrganizationByObjectId(oauthPageRequest.getOrganizationObjectId());
+        .getOrganizationByOrganizationGuid(oauthPageRequest.getOrganizationGuid());
     UserAuthInfo userAuthInfo = authService.getUserAuthInfo(organization.getOrganizationId(), httpRequest);
 
     // 유저정보 저장및 key return

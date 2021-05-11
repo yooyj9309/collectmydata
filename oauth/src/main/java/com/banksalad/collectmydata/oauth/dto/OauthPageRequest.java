@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 public class OauthPageRequest {
 
-  @NotEmpty(message = "organizationObjectId값 필수입니다.")
-  private String organizationObjectId;
+  @NotEmpty(message = "organizationGuid 값 필수입니다.")
+  private String organizationGuid;
 }

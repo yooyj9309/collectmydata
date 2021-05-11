@@ -20,7 +20,7 @@ public class OrganizationServiceImpl implements OrganizationService {
   @Override
   public Organization getOrganization(GetOrganizationByOrganizationGuidRequest request) {
     ConnectOrganizationEntity connectOrganizationEntity = connectOrganizationRepository
-        .findByOrganizationObjectid(request.getOrganizationGuid())
+        .findByOrganizationGuid(request.getOrganizationGuid())
         .orElseThrow(() -> new ConnectException(ConnectErrorType.NOT_FOUND_ORGANIZATION));
 
     return organizationAssembler(connectOrganizationEntity);

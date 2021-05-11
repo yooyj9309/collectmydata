@@ -11,7 +11,7 @@ public class Organization {
 
   private String organizationId;
   private String organizationCode;
-  private String organizationObjectId;
+  private String organizationGuid;
   private String organizationHost;
   private Industry industry; // TODO 해당부분 6개? 또는 마이데이터 이외의 기관 들어오는경우 enum으로 수정
   private MydataSector mydataSector;

@@ -48,12 +48,12 @@ class OrganizationServiceTest {
 
   @Test
   @Transactional
-  @DisplayName("organization 정보 조회 성공 : organizationObjectid로 조회")
+  @DisplayName("organization 정보 조회 성공 : organizationGuid로 조회")
   public void getOrganizationByObjectIid_success() {
     // given
     Organization givenOrganization = getOrganization();
     GetOrganizationByOrganizationGuidRequest request = getOrganizationByOrganizationGuidRequest(
-        connectOrganizationEntity.getOrganizationObjectid());
+        connectOrganizationEntity.getOrganizationGuid());
 
     // when
     Organization organization = organizationService.getOrganization(request);
@@ -64,11 +64,11 @@ class OrganizationServiceTest {
 
   @Test
   @Transactional
-  @DisplayName("organization 정보 조회 실패 : 존재하지 않는 organizationObjectid로 조회")
-  public void getOrganizationByObjectid_fail() {
+  @DisplayName("organization 정보 조회 실패 : 존재하지 않는 organizationGuid로 조회")
+  public void getOrganizationByGuid_fail() {
     // given
     GetOrganizationByOrganizationGuidRequest request = getOrganizationByOrganizationGuidRequest(
-        "non-exist-organizationObjectid");
+        "non-exist-organizationGuid");
 
     // when, then
     Exception responseException = assertThrows(Exception.class, () -> organizationService.getOrganization(request));
@@ -78,7 +78,7 @@ class OrganizationServiceTest {
 
   @Test
   @Transactional
-  @DisplayName("organization 정보 조회 성공 : organizationId로 조회")
+  @DisplayName("organization 정보 조회 성공 : organizationGuid로 조회")
   public void getOrganizationByOrganizationId_success() {
     // given
     Organization givenOrganization = getOrganization();
@@ -98,7 +98,7 @@ class OrganizationServiceTest {
   public void getOrganizationByOrganizationId_fail() {
     // given
     GetOrganizationByOrganizationIdRequest request = getOrganizationByOrganizationIdRequest(
-        "non-exist-organizationObjectid");
+        "non-exist-organizationGuid");
 
     // when, then
     Exception responseException = assertThrows(Exception.class, () -> organizationService.getOrganization(request));
@@ -112,7 +112,7 @@ class OrganizationServiceTest {
         .sector(SECTOR)
         .industry(INDUSTRY)
         .organizationId(ORGANIZATION_ID)
-        .organizationObjectid(ORGANIZATION_OBJECT_ID)
+        .organizationGuid(ORGANIZATION_GUID)
         .orgCode(ORGANIZATION_CODE)
         .organizationStatus(ORGANIZATION_STATUS)
         .domain(DOMAIN)
@@ -131,9 +131,9 @@ class OrganizationServiceTest {
   }
 
   private GetOrganizationByOrganizationGuidRequest getOrganizationByOrganizationGuidRequest(
-      String organizationObjectid) {
+      String organizationGuid) {
     return GetOrganizationByOrganizationGuidRequest.newBuilder()
-        .setOrganizationGuid(organizationObjectid)
+        .setOrganizationGuid(organizationGuid)
         .build();
   }
 

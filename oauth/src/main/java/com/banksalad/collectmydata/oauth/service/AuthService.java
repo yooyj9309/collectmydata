@@ -6,5 +6,5 @@ import com.banksalad.collectmydata.oauth.dto.UserAuthInfo;
 
 public interface AuthService {
 
-  public UserAuthInfo getUserAuthInfo(String organizationId, ServerHttpRequest httpRequest);
+  UserAuthInfo getUserAuthInfo(String organizationId, ServerHttpRequest httpRequest);
 }

@@ -10,7 +10,7 @@ public class ConnectConstant {
   public static final String SECTOR = "sector";
   public static final String INDUSTRY = "industry";
   public static final long BANKSALAD_USER_ID = 1L;
-  public static final String ORGANIZATION_OBJECT_ID = "organizationObjectid";
+  public static final String ORGANIZATION_GUID = "1234567";
   public static final String ORGANIZATION_ID = "X-loan";
   public static final String ORGANIZATION_CODE = "10041004";
   public static final String ORGANIZATION_HOST = "localhost";

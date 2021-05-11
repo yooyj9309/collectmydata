@@ -59,8 +59,8 @@ import static com.banksalad.collectmydata.connect.common.ConnectConstant.CONSENT
 import static com.banksalad.collectmydata.connect.common.ConnectConstant.DOMAIN;
 import static com.banksalad.collectmydata.connect.common.ConnectConstant.INDUSTRY;
 import static com.banksalad.collectmydata.connect.common.ConnectConstant.ORGANIZATION_CODE;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.ORGANIZATION_GUID;
 import static com.banksalad.collectmydata.connect.common.ConnectConstant.ORGANIZATION_ID;
-import static com.banksalad.collectmydata.connect.common.ConnectConstant.ORGANIZATION_OBJECT_ID;
 import static com.banksalad.collectmydata.connect.common.ConnectConstant.ORGANIZATION_STATUS;
 import static com.banksalad.collectmydata.connect.common.ConnectConstant.REFRESH_TOKEN;
 import static com.banksalad.collectmydata.connect.common.ConnectConstant.REFRESH_TOKEN_EXPIRES_AT;
@@ -499,7 +499,7 @@ class OauthTokenServiceTest {
           .sector(SECTOR)
           .industry(INDUSTRY)
           .organizationId(ORGANIZATION_ID + i)
-          .organizationObjectid(ORGANIZATION_OBJECT_ID)
+          .organizationGuid(ORGANIZATION_GUID)
           .orgCode(ORGANIZATION_CODE)
           .organizationStatus(ORGANIZATION_STATUS)
           .deleted(false)
@@ -582,7 +582,7 @@ class OauthTokenServiceTest {
         .sector(SECTOR)
         .industry(INDUSTRY)
         .organizationId(ORGANIZATION_ID)
-        .organizationObjectid(ORGANIZATION_OBJECT_ID)
+        .organizationGuid(ORGANIZATION_GUID)
         .orgCode(ORGANIZATION_CODE)
         .organizationStatus(ORGANIZATION_STATUS)
         .deleted(FALSE)

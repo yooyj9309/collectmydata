@@ -14,7 +14,7 @@ public class Organization {
   private final MydataSector sector;
   private final Industry industry;
   private final String organizationId;
-  private final String organizationObjectId;
+  private final String organizationGuid;
   private final String organizationCode;
   private final String hostUrl;
 }

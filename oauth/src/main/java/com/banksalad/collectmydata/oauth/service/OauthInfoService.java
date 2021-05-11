@@ -5,6 +5,6 @@ import com.banksalad.collectmydata.oauth.dto.Organization;
 
 public interface OauthInfoService {
 
-  public String getRedirectUrl(MydataSector sector, String key, Organization organization);
+  String getRedirectUrl(MydataSector sector, String key, Organization organization);
 
 }

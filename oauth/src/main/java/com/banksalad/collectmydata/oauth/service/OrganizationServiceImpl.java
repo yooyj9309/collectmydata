@@ -19,9 +19,9 @@ public class OrganizationServiceImpl implements OrganizationService {
   private final ConnectClient connectClient;
 
   @Override
-  public Organization getOrganizationByObjectId(String organizationObjectId) {
+  public Organization getOrganizationByOrganizationGuid(String organizationGuid) {
     // connect Client에 조회하기전에 한번에 다가져오거나 캐시하는게 어떨까
-    return organizationAssembler(connectClient.getOrganization(organizationObjectId), organizationObjectId);
+    return organizationAssembler(connectClient.getOrganization(organizationGuid), organizationGuid);
   }
 
   @Override
@@ -29,14 +29,14 @@ public class OrganizationServiceImpl implements OrganizationService {
     connectClient.issueToken(userEntity.getBanksaladUserId(), userEntity.getOrganizationId(), authorizationCode);
   }
 
-  private Organization organizationAssembler(GetOrganizationResponse response, String organizationObjectId) {
+  private Organization organizationAssembler(GetOrganizationResponse response, String organizationGuid) {
     return Organization.builder()
         .mydataSector(MydataSector.getSector(response.getSector()))
         .organizationId(response.getOrganizationId())
         .organizationCode(response.getOrganizationCode())
         .organizationHost(response.getDomain())
         .industry(Industry.getIndustry(response.getIndustry()))
-        .organizationObjectId(organizationObjectId)
+        .organizationGuid(organizationGuid)
         .build();
   }
 
