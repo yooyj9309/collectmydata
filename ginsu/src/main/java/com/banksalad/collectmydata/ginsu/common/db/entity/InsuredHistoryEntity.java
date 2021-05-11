@@ -47,4 +47,9 @@ public class InsuredHistoryEntity extends BaseEntity {
   @Column(nullable = false, name = "insured_name_encrypted")
   private String insuredName;
 
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
+
 }

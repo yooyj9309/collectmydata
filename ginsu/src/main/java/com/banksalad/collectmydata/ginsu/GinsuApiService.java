@@ -5,6 +5,6 @@ import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkExcepti
 
 public interface GinsuApiService {
 
-  void requestApi(long banksaladUserId, String organizationId, String syncRequestId,
+  void onDemandRequestApi(long banksaladUserId, String organizationId, String syncRequestId,
       SyncRequestType syncRequestType) throws ResponseNotOkException;
 }

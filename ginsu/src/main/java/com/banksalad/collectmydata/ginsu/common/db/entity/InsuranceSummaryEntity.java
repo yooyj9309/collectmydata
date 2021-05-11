@@ -60,4 +60,9 @@ public class InsuranceSummaryEntity extends BaseEntity {
   private LocalDateTime transactionSyncedAt;
 
   private String transactionResponseCode;
+
+  private String consentId;
+
+  private String syncRequestId;
+
 }

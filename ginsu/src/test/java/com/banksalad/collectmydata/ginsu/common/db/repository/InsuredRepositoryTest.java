@@ -12,6 +12,11 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.stream.IntStream;
 
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
+
 @Transactional
 @SpringBootTest
 class InsuredRepositoryTest {
@@ -23,24 +28,24 @@ class InsuredRepositoryTest {
   @Test
   void deleteQueryTest() {
     String insuNum = "insuNum";
-    String organizationId = "organizationId";
-    Long banksaladUserId = 1L;
 
     IntStream.range(0, 100)
         .forEach(i -> {
           InsuredEntity insuredEntity = InsuredEntity.builder()
-              .organizationId(organizationId)
-              .banksaladUserId(banksaladUserId)
+              .organizationId(ORGANIZATION_ID)
+              .banksaladUserId(BANKSALAD_USER_ID)
               .insuNum(insuNum)
               .insuredName("1")
               .insuredNo((short) i)
               .syncedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+              .consentId(CONSENT_ID)
+              .syncRequestId(SYNC_REQUEST_ID)
               .build();
 
           insuredRepository.save(insuredEntity);
         });
 
-    insuredRepository.deleteInsuredByBanksaladUserIdAndOrganizationIdAndInsuNum(banksaladUserId,
-        organizationId, insuNum);
+    insuredRepository.deleteInsuredByBanksaladUserIdAndOrganizationIdAndInsuNum(BANKSALAD_USER_ID,
+        ORGANIZATION_ID, insuNum);
   }
 }

@@ -20,11 +20,13 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_USS_ST;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_USS_ST;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 
 public class InsuranceSummaryInvocationContextProvider implements TestTemplateInvocationContextProvider {
 
@@ -62,6 +64,8 @@ public class InsuranceSummaryInvocationContextProvider implements TestTemplateIn
         .insuType("20")
         .insuStatus("01")
         .basicSearchTimestamp(0L)
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
 
     InsuranceSummaryEntity main2 = InsuranceSummaryEntity.builder()
@@ -74,6 +78,8 @@ public class InsuranceSummaryInvocationContextProvider implements TestTemplateIn
         .insuType("20")
         .insuStatus("01")
         .basicSearchTimestamp(0L)
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
 
     Map<String, InsuranceSummaryEntity> mainMap = Map.of(

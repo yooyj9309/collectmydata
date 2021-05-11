@@ -4,8 +4,6 @@ import org.springframework.stereotype.Component;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
-import com.banksalad.collectmydata.ginsu.common.db.entity.InsuranceSummaryEntity;
-import com.banksalad.collectmydata.ginsu.common.db.repository.InsuranceSummaryRepository;
 import com.banksalad.collectmydata.ginsu.common.service.InsuranceSummaryService;
 import com.banksalad.collectmydata.ginsu.insurance.dto.GetInsuranceBasicRequest;
 import com.banksalad.collectmydata.ginsu.summary.dto.InsuranceSummary;

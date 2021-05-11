@@ -9,6 +9,10 @@ import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -19,18 +23,24 @@ class InsuredHistoryMapperTest {
   private InsuredHistoryMapper insuredHistoryMapper = Mappers.getMapper(InsuredHistoryMapper.class);
 
   @Test
-  void toHistoryEntity() {
+  void entityToHistoryEntityTest() {
     InsuredEntity insuredEntity = InsuredEntity.builder()
         .id(1L)
         .syncedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
-        .banksaladUserId(1L)
-        .organizationId("organizationId")
+        .banksaladUserId(BANKSALAD_USER_ID)
+        .organizationId(ORGANIZATION_ID)
         .insuredNo(Short.valueOf("1"))
         .insuredName("피보험자명")
         .insuNum("insuNum")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
 
-    InsuredHistoryEntity historyEntity = insuredHistoryMapper.toHistoryEntity(insuredEntity);
+    insuredEntity.setCreatedBy(String.valueOf(BANKSALAD_USER_ID));
+    insuredEntity.setUpdatedBy(String.valueOf(BANKSALAD_USER_ID));
+
+    InsuredHistoryEntity historyEntity = insuredHistoryMapper
+        .entityToHistoryEntity(insuredEntity, InsuredHistoryEntity.builder().build());
 
     assertAll(
         () -> assertNotEquals(insuredEntity.getId(), historyEntity.getId()),
@@ -39,7 +49,13 @@ class InsuredHistoryMapperTest {
         () -> assertEquals(insuredEntity.getOrganizationId(), historyEntity.getOrganizationId()),
         () -> assertEquals(insuredEntity.getInsuredNo(), historyEntity.getInsuredNo()),
         () -> assertEquals(insuredEntity.getInsuredName(), historyEntity.getInsuredName()),
-        () -> assertEquals(insuredEntity.getInsuNum(), historyEntity.getInsuNum())
+        () -> assertEquals(insuredEntity.getInsuNum(), historyEntity.getInsuNum()),
+        () -> assertEquals(insuredEntity.getConsentId(), historyEntity.getConsentId()),
+        () -> assertEquals(insuredEntity.getSyncRequestId(), historyEntity.getSyncRequestId()),
+        () -> assertEquals(insuredEntity.getCreatedAt(), historyEntity.getCreatedAt()),
+        () -> assertEquals(insuredEntity.getCreatedBy(), historyEntity.getCreatedBy()),
+        () -> assertEquals(insuredEntity.getUpdatedAt(), historyEntity.getUpdatedAt()),
+        () -> assertEquals(insuredEntity.getUpdatedBy(), historyEntity.getUpdatedBy())
     );
   }
 }

@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_ST1;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_ST1;
@@ -30,6 +31,7 @@ import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConst
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_NO_ACCOUNT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SUCCESS;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 
 public class InsuranceBasicInvocationContextProvider implements TestTemplateInvocationContextProvider {
 
@@ -53,6 +55,8 @@ public class InsuranceBasicInvocationContextProvider implements TestTemplateInvo
         .insuStatus("01")
         .basicSearchTimestamp(OLD_ST1)
         .basicResponseCode(RSP_CODE_SUCCESS)
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
 
     InsuranceSummaryEntity newParent = InsuranceSummaryEntity.builder()
@@ -66,6 +70,8 @@ public class InsuranceBasicInvocationContextProvider implements TestTemplateInvo
         .insuStatus("01")
         .basicSearchTimestamp(0L)
         .basicResponseCode(RSP_CODE_SUCCESS)
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
 
     Map<String, InsuranceSummaryEntity> parentMap = Map.of(
@@ -86,6 +92,8 @@ public class InsuranceBasicInvocationContextProvider implements TestTemplateInvo
         .faceAmt(BigDecimal.valueOf(11111.111))
         .payDue("02")
         .payAmt(BigDecimal.valueOf(11111.111))
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
 
     InsuranceBasicEntity newMain = InsuranceBasicEntity.builder()
@@ -98,6 +106,8 @@ public class InsuranceBasicInvocationContextProvider implements TestTemplateInvo
         .faceAmt(BigDecimal.valueOf(22222.222))
         .payDue("02")
         .payAmt(BigDecimal.valueOf(22222.222))
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
 
     Map<String, InsuranceBasicEntity> mainMap = Map.of(
@@ -113,6 +123,8 @@ public class InsuranceBasicInvocationContextProvider implements TestTemplateInvo
         .insuNum("1111111111")
         .insuredNo((short) 1)
         .insuredName("피보험자1")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
 
     InsuredEntity existingChild2 = InsuredEntity.builder()
@@ -122,6 +134,8 @@ public class InsuranceBasicInvocationContextProvider implements TestTemplateInvo
         .insuNum("1111111111")
         .insuredNo((short) 2)
         .insuredName("피보험자2")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
 
     InsuredEntity newChild1 = InsuredEntity.builder()
@@ -131,6 +145,8 @@ public class InsuranceBasicInvocationContextProvider implements TestTemplateInvo
         .insuNum("2222222222")
         .insuredNo((short) 1)
         .insuredName("피보험자3")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
 
     InsuredEntity newChild2 = InsuredEntity.builder()
@@ -140,6 +156,8 @@ public class InsuranceBasicInvocationContextProvider implements TestTemplateInvo
         .insuNum("2222222222")
         .insuredNo((short) 2)
         .insuredName("피보험자4")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
 
     Map<String, InsuredEntity> childMap = Map.of(

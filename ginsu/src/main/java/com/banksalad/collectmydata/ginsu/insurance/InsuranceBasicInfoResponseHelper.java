@@ -1,13 +1,16 @@
 package com.banksalad.collectmydata.ginsu.insurance;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.dto.AccountResponse;
 import com.banksalad.collectmydata.ginsu.common.db.entity.InsuranceBasicEntity;
+import com.banksalad.collectmydata.ginsu.common.db.entity.InsuranceBasicHistoryEntity;
 import com.banksalad.collectmydata.ginsu.common.db.entity.InsuredEntity;
+import com.banksalad.collectmydata.ginsu.common.db.entity.InsuredHistoryEntity;
 import com.banksalad.collectmydata.ginsu.common.db.repository.InsuranceBasicHistoryRepository;
 import com.banksalad.collectmydata.ginsu.common.db.repository.InsuranceBasicRepository;
 import com.banksalad.collectmydata.ginsu.common.db.repository.InsuredHistoryRepository;
@@ -26,6 +29,7 @@ import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
@@ -55,6 +59,7 @@ public class InsuranceBasicInfoResponseHelper implements AccountInfoResponseHelp
   }
 
   @Override
+  @Transactional
   public void saveAccountAndHistory(ExecutionContext executionContext, InsuranceSummary insuranceSummary,
       InsuranceBasic insuranceBasic) {
 
@@ -69,6 +74,10 @@ public class InsuranceBasicInfoResponseHelper implements AccountInfoResponseHelp
     insuranceBasicEntity.setOrganizationId(organizationId);
     insuranceBasicEntity.setSyncedAt(syncedAt);
     insuranceBasicEntity.setInsuNum(insuNum);
+    insuranceBasicEntity.setConsentId(executionContext.getConsentId());
+    insuranceBasicEntity.setSyncRequestId(executionContext.getSyncRequestId());
+    insuranceBasicEntity.setCreatedBy(executionContext.getRequestedBy());
+    insuranceBasicEntity.setUpdatedBy(executionContext.getRequestedBy());
 
     InsuranceBasicEntity existingInsuranceBasicEntity = insuranceBasicRepository
         .findByBanksaladUserIdAndOrganizationIdAndInsuNum(banksaladUserId, organizationId, insuNum)
@@ -76,14 +85,17 @@ public class InsuranceBasicInfoResponseHelper implements AccountInfoResponseHelp
 
     if (existingInsuranceBasicEntity != null) {
       insuranceBasicEntity.setId(existingInsuranceBasicEntity.getId());
+      insuranceBasicEntity.setCreatedBy(existingInsuranceBasicEntity.getCreatedBy());
     }
 
     if (!ObjectComparator.isSame(insuranceBasicEntity, existingInsuranceBasicEntity, ENTITY_EXCLUDE_FIELD)) {
       insuranceBasicRepository.save(insuranceBasicEntity);
-      insuranceBasicHistoryRepository.save(insuranceBasicHistoryMapper.toHistoryEntity(insuranceBasicEntity));
+
+      insuranceBasicHistoryRepository.save(insuranceBasicHistoryMapper
+          .entityToHistoryEntity(insuranceBasicEntity, InsuranceBasicHistoryEntity.builder().build()));
     }
 
-    // delete insert insured
+    // delete & insert insured
     List<Insured> existingInsureds = insuredRepository
         .findByBanksaladUserIdAndOrganizationIdAndInsuNum(banksaladUserId, organizationId, insuNum)
         .stream()
@@ -94,18 +106,21 @@ public class InsuranceBasicInfoResponseHelper implements AccountInfoResponseHelp
       insuredRepository
           .deleteInsuredByBanksaladUserIdAndOrganizationIdAndInsuNum(banksaladUserId, organizationId, insuNum);
 
-      short insuredNo = 1;
+      AtomicInteger insuredNo = new AtomicInteger(1);
       for (Insured insured : insuranceBasic.getInsuredList()) {
         InsuredEntity insuredEntity = insuredMapper.dtoToEntity(insured);
         insuredEntity.setBanksaladUserId(banksaladUserId);
         insuredEntity.setOrganizationId(organizationId);
         insuredEntity.setSyncedAt(syncedAt);
         insuredEntity.setInsuNum(insuNum);
-        insuredEntity.setInsuredNo(insuredNo++);
+        insuredEntity.setInsuredNo((short) insuredNo.getAndIncrement());
         insuredEntity.setInsuredName(insured.getInsuredName());
+        insuredEntity.setConsentId(executionContext.getConsentId());
+        insuredEntity.setSyncRequestId(executionContext.getSyncRequestId());
 
         insuredRepository.save(insuredEntity);
-        insuredHistoryRepository.save(insuredHistoryMapper.toHistoryEntity(insuredEntity));
+        insuredHistoryRepository
+            .save(insuredHistoryMapper.entityToHistoryEntity(insuredEntity, InsuredHistoryEntity.builder().build()));
       }
     }
   }

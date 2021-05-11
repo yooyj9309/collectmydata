@@ -10,6 +10,8 @@ import org.mapstruct.factory.Mappers;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -21,12 +23,12 @@ class InsuranceBasicHistoryMapperTest {
       .getMapper(InsuranceBasicHistoryMapper.class);
 
   @Test
-  void toHistoryEntityTest() {
+  void entityToHistoryEntityTest() {
     InsuranceBasicEntity insuranceBasicEntity = InsuranceBasicEntity.builder()
         .id(1L)
         .syncedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
-        .banksaladUserId(1L)
-        .organizationId("organizationId")
+        .banksaladUserId(BANKSALAD_USER_ID)
+        .organizationId(ORGANIZATION_ID)
         .insuNum("insuNum")
         .issueDate("20210301")
         .expDate("20300415")
@@ -35,8 +37,11 @@ class InsuranceBasicHistoryMapperTest {
         .payAmt(BigDecimal.valueOf(300000000, 3))
         .build();
 
+    insuranceBasicEntity.setCreatedBy(String.valueOf(BANKSALAD_USER_ID));
+    insuranceBasicEntity.setUpdatedBy(String.valueOf(BANKSALAD_USER_ID));
+
     InsuranceBasicHistoryEntity historyEntity = insuranceBasicHistoryMapper
-        .toHistoryEntity(insuranceBasicEntity);
+        .entityToHistoryEntity(insuranceBasicEntity, InsuranceBasicHistoryEntity.builder().build());
 
     assertAll(
         () -> assertNotEquals(insuranceBasicEntity.getId(), historyEntity.getId()),
@@ -48,7 +53,12 @@ class InsuranceBasicHistoryMapperTest {
         () -> assertEquals(insuranceBasicEntity.getExpDate(), historyEntity.getExpDate()),
         () -> assertEquals(insuranceBasicEntity.getFaceAmt(), historyEntity.getFaceAmt()),
         () -> assertEquals(insuranceBasicEntity.getPayDue(), historyEntity.getPayDue()),
-        () -> assertEquals(insuranceBasicEntity.getPayAmt(), historyEntity.getPayAmt())
+        () -> assertEquals(insuranceBasicEntity.getConsentId(), historyEntity.getConsentId()),
+        () -> assertEquals(insuranceBasicEntity.getSyncRequestId(), historyEntity.getSyncRequestId()),
+        () -> assertEquals(insuranceBasicEntity.getCreatedAt(), historyEntity.getCreatedAt()),
+        () -> assertEquals(insuranceBasicEntity.getCreatedBy(), historyEntity.getCreatedBy()),
+        () -> assertEquals(insuranceBasicEntity.getUpdatedAt(), historyEntity.getUpdatedAt()),
+        () -> assertEquals(insuranceBasicEntity.getUpdatedBy(), historyEntity.getUpdatedBy())
     );
   }
 }

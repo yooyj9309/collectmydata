@@ -57,4 +57,9 @@ public class InsuranceBasicHistoryEntity extends BaseEntity {
   @Column(nullable = false, precision = 18, scale = 3)
   private BigDecimal payAmt;
 
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
+
 }
