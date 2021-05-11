@@ -41,7 +41,11 @@ public class LoanSummaryResponseHelper implements SummaryResponseHelper<LoanSumm
     LoanSummaryEntity loanSummaryEntity = loanSummaryRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNum(
             banksaladUserId, organizationId, loanSummary.getAccountNum()
-        ).orElse(LoanSummaryEntity.builder().build());
+        ).orElseGet(() -> {
+          LoanSummaryEntity newLoanSummaryEntity = LoanSummaryEntity.builder().build();
+          newLoanSummaryEntity.setCreatedBy(executionContext.getRequestedBy());
+          return newLoanSummaryEntity;
+        });
 
     // merge
     loanSummaryMapper.mergeDtoToEntity(loanSummary, loanSummaryEntity);
@@ -52,7 +56,6 @@ public class LoanSummaryResponseHelper implements SummaryResponseHelper<LoanSumm
     loanSummaryEntity.setSyncedAt(executionContext.getSyncStartedAt());
     loanSummaryEntity.setConsentId(executionContext.getConsentId());
     loanSummaryEntity.setSyncRequestId(executionContext.getSyncRequestId());
-    loanSummaryEntity.setCreatedBy(executionContext.getRequestedBy());
     loanSummaryEntity.setUpdatedBy(executionContext.getRequestedBy());
 
     loanSummaryRepository.save(loanSummaryEntity);

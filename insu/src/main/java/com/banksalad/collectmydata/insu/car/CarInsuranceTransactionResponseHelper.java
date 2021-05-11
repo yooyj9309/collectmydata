@@ -21,6 +21,9 @@ import org.mapstruct.factory.Mappers;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.banksalad.collectmydata.common.util.ObjectComparator.*;
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
+
 @Component
 @RequiredArgsConstructor
 public class CarInsuranceTransactionResponseHelper implements
@@ -64,11 +67,10 @@ public class CarInsuranceTransactionResponseHelper implements
 
       if (existingCarInsuranceTransactionEntity != null) {
         carInsuranceTransactionEntity.setId(existingCarInsuranceTransactionEntity.getId());
+        carInsuranceTransactionEntity.setCreatedBy(existingCarInsuranceTransactionEntity.getCreatedBy());
       }
 
-      if (!ObjectComparator
-          .isSame(carInsuranceTransactionEntity, existingCarInsuranceTransactionEntity,
-              FinanceConstant.ENTITY_EXCLUDE_FIELD)) {
+      if (!isSame(carInsuranceTransactionEntity, existingCarInsuranceTransactionEntity, ENTITY_EXCLUDE_FIELD)) {
         carInsuranceTransactionRepository.save(carInsuranceTransactionEntity);
       }
     }

@@ -18,6 +18,7 @@ import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
+import static com.banksalad.collectmydata.common.util.ObjectComparator.*;
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
 @Component
@@ -66,9 +67,10 @@ public class InsurancePaymentResponseHelper implements AccountInfoResponseHelper
 
     if (existingEntity != null) {
       entity.setId(existingEntity.getId());
+      entity.setCreatedBy(existingEntity.getCreatedBy());
     }
 
-    if (!ObjectComparator.isSame(entity, existingEntity, ENTITY_EXCLUDE_FIELD)) {
+    if (!isSame(entity, existingEntity, ENTITY_EXCLUDE_FIELD)) {
       insurancePaymentRepository.save(entity);
 
       InsurancePaymentHistoryEntity insurancePaymentHistoryEntity = insurancePaymentHistoryMapper

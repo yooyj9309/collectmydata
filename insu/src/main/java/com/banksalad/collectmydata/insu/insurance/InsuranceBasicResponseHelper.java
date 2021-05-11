@@ -30,6 +30,7 @@ import org.mapstruct.factory.Mappers;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.banksalad.collectmydata.common.util.ObjectComparator.*;
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
 @Component
@@ -74,9 +75,10 @@ public class InsuranceBasicResponseHelper implements AccountInfoResponseHelper<I
 
     if (existingInsuranceBasicEntity != null) {
       insuranceBasicEntity.setId(existingInsuranceBasicEntity.getId());
+      insuranceBasicEntity.setCreatedBy(existingInsuranceBasicEntity.getCreatedBy());
     }
 
-    if (!ObjectComparator.isSame(insuranceBasicEntity, existingInsuranceBasicEntity, ENTITY_EXCLUDE_FIELD)) {
+    if (!isSame(insuranceBasicEntity, existingInsuranceBasicEntity, ENTITY_EXCLUDE_FIELD)) {
       insuranceBasicRepository.save(insuranceBasicEntity);
 
       InsuranceBasicHistoryEntity insuranceBasicHistoryEntity = insuranceBasicHistoryMapper
@@ -96,7 +98,7 @@ public class InsuranceBasicResponseHelper implements AccountInfoResponseHelper<I
         .map(insuredMapper::entityToDto)
         .collect(Collectors.toList());
 
-    if (!ObjectComparator.isSameListIgnoreOrder(insuranceBasic.getInsuredList(), existingInsureds)) {
+    if (!isSameListIgnoreOrder(insuranceBasic.getInsuredList(), existingInsureds)) {
       insuredRepository
           .deleteInsuredByBanksaladUserIdAndOrganizationIdAndInsuNum(insuranceBasicEntity.getBanksaladUserId(),
               insuranceBasicEntity.getOrganizationId(), insuranceBasicEntity.getInsuNum());

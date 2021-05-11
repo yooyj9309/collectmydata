@@ -22,6 +22,9 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
+import static com.banksalad.collectmydata.common.util.ObjectComparator.*;
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.*;
+
 @Component
 @RequiredArgsConstructor
 public class CarInsuranceResponseHelper implements AccountInfoResponseHelper<InsuranceSummary, List<CarInsurance>> {
@@ -46,7 +49,6 @@ public class CarInsuranceResponseHelper implements AccountInfoResponseHelper<Ins
     for (CarInsurance carInsurance : carInsurances) {
       /* mapping car insurance dto to entity */
       CarInsuranceEntity carInsuranceEntity = carInsuranceMapper.dtoToEntity(carInsurance);
-
       carInsuranceEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
       carInsuranceEntity.setOrganizationId(executionContext.getOrganizationId());
       carInsuranceEntity.setSyncedAt(executionContext.getSyncStartedAt());
@@ -66,11 +68,11 @@ public class CarInsuranceResponseHelper implements AccountInfoResponseHelper<Ins
       /* copy PK for update */
       if (existingCarInsuranceEntity != null) {
         carInsuranceEntity.setId(existingCarInsuranceEntity.getId());
+        carInsuranceEntity.setCreatedBy(existingCarInsuranceEntity.getCreatedBy());
       }
 
       /* upsert car insurance and history entity */
-      if (!ObjectComparator
-          .isSame(carInsuranceEntity, existingCarInsuranceEntity, FinanceConstant.ENTITY_EXCLUDE_FIELD)) {
+      if (!isSame(carInsuranceEntity, existingCarInsuranceEntity, ENTITY_EXCLUDE_FIELD)) {
         carInsuranceRepository.save(carInsuranceEntity);
 
         CarInsuranceHistoryEntity carInsuranceHistoryEntity = carInsuranceHistoryMapper

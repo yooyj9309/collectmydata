@@ -38,7 +38,11 @@ public class InsuranceSummaryResponseHelper implements SummaryResponseHelper<Ins
     InsuranceSummaryEntity insuranceSummaryEntity = insuranceSummaryRepository
         .findByBanksaladUserIdAndOrganizationIdAndInsuNum(
             executionContext.getBanksaladUserId(), executionContext.getOrganizationId(), insuranceSummary.getInsuNum()
-        ).orElse(InsuranceSummaryEntity.builder().build());
+        ).orElseGet(() -> {
+          InsuranceSummaryEntity newInsuranceSummaryEntity = InsuranceSummaryEntity.builder().build();
+          newInsuranceSummaryEntity.setCreatedBy(executionContext.getRequestedBy());
+          return newInsuranceSummaryEntity;
+        });
 
     // merge
     insuranceSummaryMapper.mergeDtoToEntity(insuranceSummary, insuranceSummaryEntity);
@@ -49,7 +53,6 @@ public class InsuranceSummaryResponseHelper implements SummaryResponseHelper<Ins
     insuranceSummaryEntity.setSyncedAt(executionContext.getSyncStartedAt());
     insuranceSummaryEntity.setConsentId(executionContext.getConsentId());
     insuranceSummaryEntity.setSyncRequestId(executionContext.getSyncRequestId());
-    insuranceSummaryEntity.setCreatedBy(executionContext.getRequestedBy());
     insuranceSummaryEntity.setUpdatedBy(executionContext.getRequestedBy());
 
     insuranceSummaryRepository.save(insuranceSummaryEntity);
