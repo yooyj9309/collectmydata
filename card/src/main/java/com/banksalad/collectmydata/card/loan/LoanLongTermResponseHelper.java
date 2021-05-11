@@ -18,9 +18,10 @@ import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
 @Component
 @RequiredArgsConstructor
@@ -38,6 +39,10 @@ public class LoanLongTermResponseHelper implements UserBaseResponseHelper<List<L
     return ((ListLoanLongTermsResponse) userBaseResponse).getLongTermList();
   }
 
+  /**
+   * 6.3.12 DB 저장로직 : upsert
+   * @author hyunjun
+   */
   @Override
   public void saveUserBaseInfo(ExecutionContext executionContext, List<LoanLongTerm> loanLongTerms) {
 
@@ -45,36 +50,37 @@ public class LoanLongTermResponseHelper implements UserBaseResponseHelper<List<L
     final String organizationId = executionContext.getOrganizationId();
     final LocalDateTime syncedAt = executionContext.getSyncStartedAt();
 
-    // FIXME: 신정원 종합포털 문의결과에 따라 로직 수정해야 함
-    //  현재 로직: 리스트가 동일하면 DB 업데이트 없고, 다르면 모두 삭제 후 추가한다.
-    List<LoanLongTerm> existingLoanLongTerms = loanLongTermRepository
-        .findByBanksaladUserIdAndOrganizationId(banksaladUserId, organizationId)
-        .stream().map(loanLongTermMapper::entityToDto).collect(Collectors.toList());
-
-    if (ObjectComparator.isSameListIgnoreOrder(loanLongTerms, existingLoanLongTerms)) {
-      return;
-    }
-
-    loanLongTermRepository.deleteByBanksaladUserIdAndOrganizationId(banksaladUserId, organizationId);
-
-    List<LoanLongTermEntity> loanLongTermEntities = new ArrayList<>();
-    List<LoanLongTermHistoryEntity> loanLongTermHistoryEntities = new ArrayList<>();
-    short loanLongTermNo = 0;
+    AtomicInteger atomicInteger = new AtomicInteger(1);
 
     for (LoanLongTerm loanLongTerm : loanLongTerms) {
+
       LoanLongTermEntity loanLongTermEntity = loanLongTermMapper.dtoToEntity(loanLongTerm);
       loanLongTermEntity.setSyncedAt(syncedAt);
       loanLongTermEntity.setBanksaladUserId(banksaladUserId);
       loanLongTermEntity.setOrganizationId(organizationId);
-      loanLongTermEntity.setLoanLongTermNo(loanLongTermNo++);
+      loanLongTermEntity.setLoanLongTermNo((short) atomicInteger.getAndIncrement());
       loanLongTermEntity.setCreatedBy(String.valueOf(banksaladUserId));
       loanLongTermEntity.setUpdatedBy(String.valueOf(banksaladUserId));
+      loanLongTermEntity.setConsentId(executionContext.getConsentId());
+      loanLongTermEntity.setSyncRequestId(executionContext.getSyncRequestId());
 
-      loanLongTermEntities.add(loanLongTermEntity);
-      loanLongTermHistoryEntities.add(loanLongTermHistoryMapper.toHistoryEntity(loanLongTermEntity));
+      LoanLongTermEntity existingLoanLongTermEntity = loanLongTermRepository
+          .findByBanksaladUserIdAndOrganizationIdAndLoanDtimeAndLoanCnt(banksaladUserId, organizationId,
+              loanLongTerm.getLoanDtime(), loanLongTerm.getLoanCnt()).orElse(null);
+
+      if (existingLoanLongTermEntity != null) {
+        loanLongTermEntity.setId(existingLoanLongTermEntity.getId());
+        loanLongTermEntity.setCreatedBy(existingLoanLongTermEntity.getCreatedBy());
+        loanLongTermEntity.setCreatedAt(existingLoanLongTermEntity.getCreatedAt());
+      }
+
+      /* update if entity has changed */
+      if (!ObjectComparator.isSame(existingLoanLongTermEntity, loanLongTermEntity, ENTITY_EXCLUDE_FIELD)) {
+        loanLongTermRepository.save(loanLongTermEntity);
+        loanLongTermHistoryRepository.save(
+            loanLongTermHistoryMapper
+                .toHistoryEntity(loanLongTermEntity, LoanLongTermHistoryEntity.builder().build()));
+      }
     }
-
-    loanLongTermRepository.saveAll(loanLongTermEntities);
-    loanLongTermHistoryRepository.saveAll(loanLongTermHistoryEntities);
   }
 }

@@ -12,11 +12,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -48,4 +50,9 @@ public class PointHistoryEntity extends BaseEntity {
 
   @Column(nullable = false)
   private Long expiringPointAmt;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
 }

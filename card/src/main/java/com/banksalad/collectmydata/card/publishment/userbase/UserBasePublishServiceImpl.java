@@ -2,9 +2,6 @@ package com.banksalad.collectmydata.card.publishment.userbase;
 
 import org.springframework.stereotype.Service;
 
-import com.banksalad.collectmydata.card.card.dto.Payment;
-import com.banksalad.collectmydata.card.card.dto.Point;
-import com.banksalad.collectmydata.card.card.dto.Revolving;
 import com.banksalad.collectmydata.card.common.db.repository.LoanLongTermRepository;
 import com.banksalad.collectmydata.card.common.db.repository.LoanShortTermRepository;
 import com.banksalad.collectmydata.card.common.db.repository.LoanSummaryRepository;
@@ -17,9 +14,6 @@ import com.banksalad.collectmydata.card.common.mapper.LoanSummaryMapper;
 import com.banksalad.collectmydata.card.common.mapper.PaymentMapper;
 import com.banksalad.collectmydata.card.common.mapper.PointMapper;
 import com.banksalad.collectmydata.card.common.mapper.RevolvingMapper;
-import com.banksalad.collectmydata.card.loan.dto.LoanLongTerm;
-import com.banksalad.collectmydata.card.loan.dto.LoanShortTerm;
-import com.banksalad.collectmydata.card.loan.dto.LoanSummary;
 import com.banksalad.collectmydata.card.publishment.userbase.dto.LoanLongTermPublishment;
 import com.banksalad.collectmydata.card.publishment.userbase.dto.LoanShortTermPublishment;
 import com.banksalad.collectmydata.card.publishment.userbase.dto.LoanSummaryPublishment;
@@ -82,7 +76,7 @@ public class UserBasePublishServiceImpl implements UserBasePublishService {
 
   @Override
   public List<LoanShortTermPublishment> getCardLoanShortTermsResponse(long banksaladUserId, String organizationId) {
-    return loanShortTermRepository.findByBanksaladUserIdAndOrganizationId(banksaladUserId, organizationId).stream()
+    return loanShortTermRepository.findAllByBanksaladUserIdAndOrganizationId(banksaladUserId, organizationId).stream()
         .map(loanShortTermMapper::entityToPublishmentDto).collect(
             Collectors.toList());
   }

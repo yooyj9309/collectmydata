@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.card.card;
+package com.banksalad.collectmydata.card.card.userbase;
 
 import org.springframework.stereotype.Component;
 
@@ -11,17 +11,14 @@ import com.banksalad.collectmydata.card.common.db.repository.PointRepository;
 import com.banksalad.collectmydata.card.common.mapper.PointHistoryMapper;
 import com.banksalad.collectmydata.card.common.mapper.PointMapper;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.userbase.UserBaseResponseHelper;
 import com.banksalad.collectmydata.finance.api.userbase.dto.UserBaseResponse;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-
-import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @RequiredArgsConstructor
@@ -34,10 +31,12 @@ public class PointResponseHelper implements UserBaseResponseHelper<List<Point>> 
 
   @Override
   public List<Point> getUserBaseInfoFromResponse(UserBaseResponse userBaseResponse) {
-
     return ((ListPointsResponse) userBaseResponse).getPointList();
   }
 
+  /** 6.3.3 포인트 조회는 유니크를 잡기 어려워 delete & insert로 변경
+   * @author hyunjun
+   */
   @Override
   public void saveUserBaseInfo(ExecutionContext executionContext, List<Point> points) {
 
@@ -45,10 +44,12 @@ public class PointResponseHelper implements UserBaseResponseHelper<List<Point>> 
     final String organizationId = executionContext.getOrganizationId();
     final LocalDateTime syncedAt = executionContext.getSyncStartedAt();
 
-    List<PointEntity> pointEntities = new ArrayList<>();
-    List<PointHistoryEntity> pointHistoryEntities = new ArrayList<>();
+    /* delete */
+    pointRepository.deleteAllByBanksaladUserIdAndOrganizationId(banksaladUserId, organizationId);
 
-    int pointNo = 0;
+    AtomicInteger atomicInteger = new AtomicInteger(1);
+
+    /* insert */
     for (Point point : points) {
       PointEntity pointEntity = pointMapper.dtoToEntity(point);
       pointEntity.setSyncedAt(syncedAt);
@@ -56,19 +57,13 @@ public class PointResponseHelper implements UserBaseResponseHelper<List<Point>> 
       pointEntity.setOrganizationId(organizationId);
       pointEntity.setCreatedBy(String.valueOf(banksaladUserId));
       pointEntity.setUpdatedBy(String.valueOf(banksaladUserId));
-      pointEntity.setPointNo((short) pointNo++);
+      pointEntity.setConsentId(executionContext.getConsentId());
+      pointEntity.setSyncRequestId(executionContext.getSyncRequestId());
+      pointEntity.setPointNo((short) atomicInteger.getAndIncrement());
 
-      PointEntity existingPointEntity = pointRepository
-          .findByBanksaladUserIdAndOrganizationIdAndPointName(banksaladUserId, organizationId, point.getPointName())
-          .orElse(PointEntity.builder().build());
-      existingPointEntity.setId(pointEntity.getId());
-      if (ObjectComparator.isSame(pointEntity, existingPointEntity, ENTITY_EXCLUDE_FIELD)) {
-        continue;
-      }
-      pointEntities.add(pointEntity);
-      pointHistoryEntities.add(pointHistoryMapper.toHistoryEntity(pointEntity));
+      pointRepository.save(pointEntity);
+      pointHistoryRepository
+          .save(pointHistoryMapper.toHistoryEntity(pointEntity, PointHistoryEntity.builder().build()));
     }
-    pointRepository.saveAll(pointEntities);
-    pointHistoryRepository.saveAll(pointHistoryEntities);
   }
 }

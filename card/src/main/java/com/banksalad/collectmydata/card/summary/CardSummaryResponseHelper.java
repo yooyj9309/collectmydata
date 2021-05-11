@@ -15,6 +15,7 @@ import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.Iterator;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -34,6 +35,11 @@ public class CardSummaryResponseHelper implements SummaryResponseHelper<CardSumm
     // do nothing
   }
 
+  /**
+   * FIXME : 재발급 카드가 존재할 경우, card_id가 같은 카드 2개가 올 수 있음. -> 추후 저장로직 변경 필요
+   * 6.3.1 저장로직 : upsert
+   * @author hyunjun
+   */
   @Override
   public void saveSummary(ExecutionContext executionContext, CardSummary cardSummary) {
 
@@ -42,17 +48,28 @@ public class CardSummaryResponseHelper implements SummaryResponseHelper<CardSumm
     final String cardId = cardSummary.getCardId();
     final LocalDateTime syncedAt = executionContext.getSyncStartedAt();
 
-    CardSummaryEntity cardSummaryEntity = cardSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndCardId(banksaladUserId, organizationId, cardId)
-        .orElse(CardSummaryEntity.builder().build());
+    Optional<CardSummaryEntity> existingEntity = cardSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndCardId(banksaladUserId, organizationId, cardId);
 
-    cardSummaryMapper.mergeDtoToEntity(cardSummary, cardSummaryEntity);
-    cardSummaryEntity.setBanksaladUserId(banksaladUserId);
-    cardSummaryEntity.setOrganizationId(organizationId);
-    cardSummaryEntity.setSyncedAt(syncedAt);
-    cardSummaryEntity.setCreatedBy(executionContext.getRequestedBy());
-    // TODO (hyunjun) : updatedBy 지정 필요
-    cardSummaryEntity.setUpdatedBy(executionContext.getRequestedBy());
-    cardSummaryRepository.save(cardSummaryEntity);
+    CardSummaryEntity newCardSummaryEntity = CardSummaryEntity.builder().build();
+    cardSummaryMapper.mergeDtoToEntity(cardSummary, newCardSummaryEntity);
+
+    newCardSummaryEntity.setBanksaladUserId(banksaladUserId);
+    newCardSummaryEntity.setOrganizationId(organizationId);
+    newCardSummaryEntity.setSyncedAt(syncedAt);
+    newCardSummaryEntity.setCreatedBy(executionContext.getRequestedBy());
+    newCardSummaryEntity.setUpdatedBy(executionContext.getRequestedBy());
+    newCardSummaryEntity.setConsentId(executionContext.getConsentId());
+    newCardSummaryEntity.setSyncRequestId(executionContext.getSyncRequestId());
+
+    /* update */
+    if (existingEntity.isPresent()) {
+      CardSummaryEntity cardSummaryEntity = existingEntity.get();
+      newCardSummaryEntity.setId(cardSummaryEntity.getId());
+      newCardSummaryEntity.setCreatedBy(cardSummaryEntity.getCreatedBy());
+      newCardSummaryEntity.setCreatedAt(cardSummaryEntity.getCreatedAt());
+    }
+
+    cardSummaryRepository.save(newCardSummaryEntity);
   }
 }

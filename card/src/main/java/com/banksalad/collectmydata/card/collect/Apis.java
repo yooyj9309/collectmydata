@@ -55,7 +55,7 @@ public class Apis {
       Api.builder()
           .id("CD11")
           .name("CD11-포인트 정보 조회")
-          .endpoint("/cards/point??org_code={org_code}&search_timestamp={search_timestamp}")
+          .endpoint("/cards/point?org_code={org_code}&search_timestamp={search_timestamp}")
           .method(HttpMethod.GET.name())
           .build();
 

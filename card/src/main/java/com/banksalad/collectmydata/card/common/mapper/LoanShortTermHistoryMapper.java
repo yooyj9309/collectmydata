@@ -5,10 +5,11 @@ import com.banksalad.collectmydata.card.common.db.entity.LoanShortTermHistoryEnt
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper
 public interface LoanShortTermHistoryMapper {
 
   @Mapping(target = "id", ignore = true)
-  LoanShortTermHistoryEntity toHistoryEntity(LoanShortTermEntity loanShortTermEntity);
+  LoanShortTermHistoryEntity toHistoryEntity(LoanShortTermEntity loanShortTermEntity, @MappingTarget LoanShortTermHistoryEntity loanShortTermHistoryEntity);
 }

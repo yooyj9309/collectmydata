@@ -148,7 +148,8 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
       String organizationId = collectmydataConnectClientService
           .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
 
-      List<PointPublishment> cardPointResponses = userBasePublishService.getCardPointResponses(banksaladUserId, organizationId);
+      List<PointPublishment> cardPointResponses = userBasePublishService
+          .getCardPointResponses(banksaladUserId, organizationId);
 
       PointProtoResponse pointProtoResponse = PointProtoResponse.builder()
           .pointPublishments(cardPointResponses)
@@ -161,7 +162,7 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
       log.error(makeLogFormat("listCardPoints", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
       responseObserver.onError(e.handle());
 
-    } catch (Exception e ) {
+    } catch (Exception e) {
       log.error(makeLogFormat("listCardPoints", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
       responseObserver.onError(e);
     }
@@ -205,7 +206,7 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
       String organizationId = collectmydataConnectClientService
           .getOrganizationByOrganizationGuid(request.getOrganizationGuid()).getOrganizationId();
       // TODO : getSeqno()을 할지, getValue()를 할지 테스트로 확인.
-      String seqNo = request.getSeqno().getValue().equals("") ? null : request.getSeqno().getValue() ;
+      String seqNo = request.getSeqno().getValue().equals("") ? null : request.getSeqno().getValue();
       String chargeMonth = request.getChargeMonth();
 
       List<BillDetailPublishment> cardBillDetailResponse = cardBillPublishService
@@ -249,7 +250,7 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
       log.error(makeLogFormat("listCardPayments", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
       responseObserver.onError(e.handle());
 
-    } catch (Exception e ) {
+    } catch (Exception e) {
       log.error(makeLogFormat("listCardPayments", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
       responseObserver.onError(e);
     }
@@ -342,7 +343,7 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
       log.error(makeLogFormat("listCardLoanSummaries", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
       responseObserver.onError(e.handle());
 
-    } catch (Exception e ) {
+    } catch (Exception e) {
       log.error(makeLogFormat("listCardLoanSummaries", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
       responseObserver.onError(e);
     }
@@ -370,7 +371,7 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
       log.error(makeLogFormat("listCardRevolvings", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
       responseObserver.onError(e.handle());
 
-    } catch (Exception e ) {
+    } catch (Exception e) {
       log.error(makeLogFormat("listCardRevolvings", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
       responseObserver.onError(e);
     }
@@ -398,7 +399,7 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
       log.error(makeLogFormat("listCardLoanShortTerms", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
       responseObserver.onError(e.handle());
 
-    } catch (Exception e ) {
+    } catch (Exception e) {
       log.error(makeLogFormat("listCardLoanShortTerms", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
       responseObserver.onError(e);
     }
@@ -426,7 +427,7 @@ public class CardGrpcService extends CollectmydatacardGrpc.CollectmydatacardImpl
       log.error(makeLogFormat("listCardLoanLongTerms", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
       responseObserver.onError(e.handle());
 
-    } catch (Exception e ) {
+    } catch (Exception e) {
       log.error(makeLogFormat("listCardLoanLongTerms", UNKNOWN_ERROR_MESSAGE), e.getMessage(), e);
       responseObserver.onError(e);
     }

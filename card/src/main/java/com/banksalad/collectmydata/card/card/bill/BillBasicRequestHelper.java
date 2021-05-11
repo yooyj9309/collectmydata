@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.card.card;
+package com.banksalad.collectmydata.card.card.bill;
 
 import org.springframework.stereotype.Component;
 

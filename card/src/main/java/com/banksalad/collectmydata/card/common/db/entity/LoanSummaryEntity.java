@@ -58,4 +58,9 @@ public class LoanSummaryEntity extends BaseEntity {
   private Long loanLongTermSearchTimestamp;
 
   private String loanLongTermResponseCode;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
 }

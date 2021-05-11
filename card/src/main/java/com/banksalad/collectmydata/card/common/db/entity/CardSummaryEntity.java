@@ -65,4 +65,9 @@ public class CardSummaryEntity extends BaseEntity {
 
   private String approvalOverseasTransactionResponseCode;
 
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
+
 }

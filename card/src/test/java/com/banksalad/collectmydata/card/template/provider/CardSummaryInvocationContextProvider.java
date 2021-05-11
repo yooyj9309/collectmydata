@@ -28,11 +28,13 @@ import static com.banksalad.collectmydata.card.common.constant.CardConstants.CAR
 import static com.banksalad.collectmydata.card.common.constant.CardConstants.CARD_NUM1;
 import static com.banksalad.collectmydata.card.common.constant.CardConstants.CARD_NUM2;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_USS_ST;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_USS_ST;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 
 public class CardSummaryInvocationContextProvider implements TestTemplateInvocationContextProvider {
 
@@ -69,6 +71,8 @@ public class CardSummaryInvocationContextProvider implements TestTemplateInvocat
         .consent(true)
         .cardName(CARD_NAME1)
         .cardMember(CARD_MEMBER)
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     CardSummaryEntity main2 = CardSummaryEntity.builder()
         .syncedAt(OLD_SYNCED_AT)
@@ -79,6 +83,8 @@ public class CardSummaryInvocationContextProvider implements TestTemplateInvocat
         .consent(true)
         .cardName(CARD_NAME2)
         .cardMember(CARD_MEMBER)
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     Map<String, CardSummaryEntity> mainMap = Map.of(
         "main1", main1,

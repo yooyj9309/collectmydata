@@ -1,5 +1,8 @@
 package com.banksalad.collectmydata.finance.api.userbase;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
@@ -11,17 +14,14 @@ import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkExcepti
 import com.banksalad.collectmydata.finance.common.service.FinanceMessageService;
 import com.banksalad.collectmydata.finance.common.service.HeaderService;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserBaseServiceImpl<UserBaseRequest, UserBaseInfo> implements UserBaseService<UserBaseRequest, UserBaseInfo> {
+public class UserBaseServiceImpl<UserBaseRequest, UserBaseInfo> implements
+    UserBaseService<UserBaseRequest, UserBaseInfo> {
 
   private static final String AUTHORIZATION = "Authorization";
 
@@ -36,7 +36,7 @@ public class UserBaseServiceImpl<UserBaseRequest, UserBaseInfo> implements UserB
       Execution execution,
       UserBaseRequestHelper<UserBaseRequest> requestHelper,
       UserBaseResponseHelper<UserBaseInfo> responseHelper
-  ) throws ResponseNotOkException {
+  ) {
 
     getUserBaseInfo(executionContext, execution, requestHelper, responseHelper, null);
   }
@@ -48,7 +48,7 @@ public class UserBaseServiceImpl<UserBaseRequest, UserBaseInfo> implements UserB
       UserBaseRequestHelper<UserBaseRequest> requestHelper,
       UserBaseResponseHelper<UserBaseInfo> responseHelper,
       UserbasePublishmentHelper publishmentHelper
-  ) throws ResponseNotOkException {
+  ) {
 
     /* copy ExecutionContext for new executionRequestId */
     ExecutionContext executionContextLocal = executionContext.copyWith(ExecutionContext.generateExecutionRequestId());
@@ -69,12 +69,16 @@ public class UserBaseServiceImpl<UserBaseRequest, UserBaseInfo> implements UserB
             .build());
 
     /* validate response  */
-    checkResponseAndThrow(executionResponse);
+    if (executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
+      return;
+    }
+
     UserBaseResponse userBaseResponse = executionResponse.getResponse();
+
     UserBaseInfo userBaseInfo = responseHelper.getUserBaseInfoFromResponse(userBaseResponse);
 
     /* save response */
-    responseHelper.saveUserBaseInfo(executionContextLocal, userBaseInfo);
+    responseHelper.saveUserBaseInfo(executionContext, userBaseInfo);
 
     // TODO : remove if condition after applying client code
     if (publishmentHelper != null) {
@@ -92,7 +96,8 @@ public class UserBaseServiceImpl<UserBaseRequest, UserBaseInfo> implements UserB
     );
   }
 
-  private void checkResponseAndThrow(ExecutionResponse<UserBaseResponse> executionResponse) throws ResponseNotOkException {
+  private void checkResponseAndThrow(ExecutionResponse<UserBaseResponse> executionResponse)
+      throws ResponseNotOkException {
     UserBaseResponse userBaseResponse = executionResponse.getResponse();
 
     if (executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {

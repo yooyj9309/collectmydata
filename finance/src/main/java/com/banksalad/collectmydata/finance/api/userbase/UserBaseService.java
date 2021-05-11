@@ -4,6 +4,8 @@ import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
 
+import java.util.List;
+
 public interface UserBaseService<UserBaseRequest, UserBaseInfo> {
 
   void getUserBaseInfo(
@@ -11,7 +13,7 @@ public interface UserBaseService<UserBaseRequest, UserBaseInfo> {
       Execution execution,
       UserBaseRequestHelper<UserBaseRequest> requestHelper,
       UserBaseResponseHelper<UserBaseInfo> responseHelper
-  ) throws ResponseNotOkException;
+  );
 
   void getUserBaseInfo(
       ExecutionContext executionContext,
@@ -19,5 +21,5 @@ public interface UserBaseService<UserBaseRequest, UserBaseInfo> {
       UserBaseRequestHelper<UserBaseRequest> requestHelper,
       UserBaseResponseHelper<UserBaseInfo> responseHelper,
       UserbasePublishmentHelper publishmentHelper
-  ) throws ResponseNotOkException;
+  );
 }

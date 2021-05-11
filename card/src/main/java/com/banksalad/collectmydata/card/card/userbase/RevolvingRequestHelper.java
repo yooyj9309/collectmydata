@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.card.card;
+package com.banksalad.collectmydata.card.card.userbase;
 
 import com.banksalad.collectmydata.card.card.dto.ListRevolvingsRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;

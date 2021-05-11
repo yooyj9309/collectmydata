@@ -50,4 +50,9 @@ public class PointEntity extends BaseEntity {
 
   @Column(nullable = false)
   private Long expiringPointAmt;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
 }

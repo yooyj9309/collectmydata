@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.card.card;
+package com.banksalad.collectmydata.card.card.accountInfo;
 
 import org.springframework.stereotype.Component;
 
@@ -68,7 +68,7 @@ public class CardBasicResponseHelper implements AccountInfoResponseHelper<CardSu
 
     if (!ObjectComparator.isSame(cardEntity, existingCardEntity, ENTITY_EXCLUDE_FIELD)) {
       cardRepository.save(cardEntity);
-      cardHistoryRepository.save(cardHistoryMapper.toHistoryEntity(cardEntity));
+      cardHistoryRepository.save(cardHistoryMapper.toHistoryEntity(cardEntity, CardHistoryEntity.builder().build()));
     }
   }
 

@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.card.card;
+package com.banksalad.collectmydata.card.card.userbase;
 
 import org.springframework.stereotype.Component;
 
@@ -11,16 +11,14 @@ import com.banksalad.collectmydata.card.common.db.repository.RevolvingRepository
 import com.banksalad.collectmydata.card.common.mapper.RevolvingHistoryMapper;
 import com.banksalad.collectmydata.card.common.mapper.RevolvingMapper;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
-import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.userbase.UserBaseResponseHelper;
 import com.banksalad.collectmydata.finance.api.userbase.dto.UserBaseResponse;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @RequiredArgsConstructor
@@ -45,42 +43,46 @@ public class RevolvingResponseHelper implements UserBaseResponseHelper<List<Revo
     return revolvings;
   }
 
+  /**
+   * 6.3.10 DB 저장로직 : 월 별로 delete & insert
+   * @author hyunjun
+   */
   @Override
   public void saveUserBaseInfo(ExecutionContext executionContext, List<Revolving> revolvings) {
 
     final long banksaladUserId = executionContext.getBanksaladUserId();
     final String organizationId = executionContext.getOrganizationId();
     final LocalDateTime syncedAt = executionContext.getSyncStartedAt();
+    /**
+     * 6.3.9에서 true인 경우만 6.3.10을 조회하니 revolvings는 항상 존재.
+     * @author hyunjun
+     */
+    final int revolvingMonth = revolvings.get(0).getRevolvingMonth();
 
-    // FIXME: 신정원 종합포털 문의결과에 따라 로직 수정해야 함
-    //  현재 로직: 리스트가 동일하면 DB 업데이트 없고, 다르면 모두 삭제 후 추가한다.
-    List<Revolving> existingRevolvings = revolvingRepository
-        .findByBanksaladUserIdAndOrganizationId(banksaladUserId, organizationId)
-        .stream().map(revolvingMapper::entityToDto).collect(Collectors.toList());
+    /* 월별로 delete */
+    revolvingRepository
+        .deleteAllByBanksaladUserIdAndOrganizationIdAndRevolvingMonthInQuery(banksaladUserId, organizationId,
+            revolvingMonth);
 
-    if (ObjectComparator.isSameListIgnoreOrder(revolvings, existingRevolvings)) {
-      return;
-    }
+    AtomicInteger atomicInteger = new AtomicInteger(1);
 
-    revolvingRepository.deleteByBanksaladUserIdAndOrganizationId(banksaladUserId, organizationId);
+    for (Revolving revolving : revolvings) {
 
-    List<RevolvingEntity> revolvingEntities = new ArrayList<>();
-    List<RevolvingHistoryEntity> revolvingHistoryEntities = new ArrayList<>();
-    for (int i = 0; i < revolvings.size(); i++) {
-      Revolving revolving = revolvings.get(i);
       RevolvingEntity revolvingEntity = revolvingMapper.dtoToEntity(revolving);
       revolvingEntity.setSyncedAt(syncedAt);
       revolvingEntity.setBanksaladUserId(banksaladUserId);
       revolvingEntity.setOrganizationId(organizationId);
-      revolvingEntity.setRevolvingNo((short) i);
+      revolvingEntity.setRevolvingNo((short) atomicInteger.getAndIncrement());
+      revolvingEntity.setReqDate(revolving.getReqDate());
       revolvingEntity.setCreatedBy(String.valueOf(banksaladUserId));
       revolvingEntity.setUpdatedBy(String.valueOf(banksaladUserId));
-      revolvingEntity.setReqDate(revolving.getReqDate());
+      revolvingEntity.setConsentId(executionContext.getConsentId());
+      revolvingEntity.setSyncRequestId(executionContext.getSyncRequestId());
 
-      revolvingEntities.add(revolvingEntity);
-      revolvingHistoryEntities.add(revolvingHistoryMapper.toHistoryEntity(revolvingEntity));
+      revolvingRepository.save(revolvingEntity);
+      revolvingHistoryRepository
+          .save(revolvingHistoryMapper.toHistoryEntity(revolvingEntity, RevolvingHistoryEntity.builder()
+              .build()));
     }
-    revolvingRepository.saveAll(revolvingEntities);
-    revolvingHistoryRepository.saveAll(revolvingHistoryEntities);
   }
 }

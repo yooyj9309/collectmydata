@@ -8,8 +8,10 @@ import com.banksalad.collectmydata.card.common.mapper.LoanSummaryMapper;
 import com.banksalad.collectmydata.card.loan.dto.GetLoanSummaryResponse;
 import com.banksalad.collectmydata.card.loan.dto.LoanSummary;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.userbase.UserBaseResponseHelper;
 import com.banksalad.collectmydata.finance.api.userbase.dto.UserBaseResponse;
+import com.banksalad.collectmydata.finance.common.constant.FinanceConstant;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 
@@ -26,22 +28,36 @@ public class LoanSummaryResponseHelper implements UserBaseResponseHelper<LoanSum
     return ((GetLoanSummaryResponse) userBaseResponse).getLoanSummary();
   }
 
+  /**
+   * 6.3.9 DB 저장로직 : upsert
+   * @author hyunjun
+   */
   @Override
   public void saveUserBaseInfo(ExecutionContext executionContext, LoanSummary loanSummary) {
-    /* load existing entity */
-    LoanSummaryEntity loanSummaryEntity = loanSummaryRepository
-        .findByBanksaladUserIdAndOrganizationId(
-            executionContext.getBanksaladUserId(), executionContext.getOrganizationId())
-        .orElseGet(() -> LoanSummaryEntity.builder().build());
 
-    /* mapping dto to entity */
-    loanSummaryEntity = loanSummaryMapper.dtoToEntity(loanSummary, loanSummaryEntity);
-
+    LoanSummaryEntity loanSummaryEntity = loanSummaryMapper
+        .dtoToEntity(loanSummary, LoanSummaryEntity.builder().build());
     loanSummaryEntity.setSyncedAt(executionContext.getSyncStartedAt());
     loanSummaryEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
     loanSummaryEntity.setOrganizationId(executionContext.getOrganizationId());
+    loanSummaryEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+    loanSummaryEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+    loanSummaryEntity.setConsentId(executionContext.getConsentId());
+    loanSummaryEntity.setSyncRequestId(executionContext.getSyncRequestId());
 
-    /* upsert entity */
-    loanSummaryRepository.save(loanSummaryEntity);
+    LoanSummaryEntity existingEntity = loanSummaryRepository
+        .findByBanksaladUserIdAndOrganizationId(executionContext.getBanksaladUserId(),
+            executionContext.getOrganizationId()).orElse(null);
+
+    if (existingEntity != null) {
+      loanSummaryEntity.setId(existingEntity.getId());
+      loanSummaryEntity.setCreatedBy(existingEntity.getCreatedBy());
+      loanSummaryEntity.setCreatedAt(existingEntity.getCreatedAt());
+    }
+
+    /* update if entity has changed */
+    if (!ObjectComparator.isSame(existingEntity, loanSummaryEntity, FinanceConstant.ENTITY_EXCLUDE_FIELD)) {
+      loanSummaryRepository.save(loanSummaryEntity);
+    }
   }
 }

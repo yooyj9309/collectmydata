@@ -8,7 +8,7 @@ logging:
   config: classpath:logback/logback-${spring.profiles.active}.xml
   level:
     com.zaxxer.hikari.HikariConfig: WARN
-    com.zaxxer.hikari: TRACE
+    com.zaxxer.hikari: INFO
 
 management:
   metrics:

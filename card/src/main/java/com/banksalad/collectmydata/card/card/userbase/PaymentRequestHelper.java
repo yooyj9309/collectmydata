@@ -1,6 +1,6 @@
-package com.banksalad.collectmydata.card.card;
+package com.banksalad.collectmydata.card.card.userbase;
 
-import com.banksalad.collectmydata.card.card.dto.ListPointsRequest;
+import com.banksalad.collectmydata.card.card.dto.ListPaymentsRequest;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.finance.api.userbase.UserBaseRequestHelper;
 
@@ -10,11 +10,11 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class PointRequestHelper implements UserBaseRequestHelper<ListPointsRequest> {
+public class PaymentRequestHelper implements UserBaseRequestHelper<ListPaymentsRequest> {
 
   @Override
-  public ListPointsRequest make(ExecutionContext executionContext, long searchTimestamp) {
-    return ListPointsRequest.builder()
+  public ListPaymentsRequest make(ExecutionContext executionContext, long searchTimestamp) {
+    return ListPaymentsRequest.builder()
         .orgCode(executionContext.getOrganizationCode())
         .searchTimestamp(searchTimestamp)
         .build();

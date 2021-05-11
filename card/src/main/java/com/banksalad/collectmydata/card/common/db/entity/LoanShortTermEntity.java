@@ -53,4 +53,9 @@ public class LoanShortTermEntity extends BaseEntity {
 
   @Column(nullable = false, precision = 5, scale = 3)
   private BigDecimal intRate;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
 }
