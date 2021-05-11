@@ -14,6 +14,9 @@ import com.banksalad.collectmydata.connect.grpc.validator.RevokeTokenRequestVali
 import com.banksalad.collectmydata.connect.organization.dto.Organization;
 import com.banksalad.collectmydata.connect.organization.dto.OrganizationProtoResponse;
 import com.banksalad.collectmydata.connect.organization.service.OrganizationService;
+import com.banksalad.collectmydata.connect.publishment.organization.dto.OrganizationForFinance;
+import com.banksalad.collectmydata.connect.publishment.organization.dto.OrganizationForFinanceProtoResponse;
+import com.banksalad.collectmydata.connect.publishment.organization.service.OrganizationPublishService;
 import com.banksalad.collectmydata.connect.token.dto.OauthToken;
 import com.banksalad.collectmydata.connect.token.dto.OauthTokenProtoResponse;
 import com.banksalad.collectmydata.connect.token.service.OauthTokenService;
@@ -26,6 +29,10 @@ import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetOrganizationResponse;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.IssueTokenRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.IssueTokenResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.ListConnectedFinanceOrganizationsRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.ListConnectedFinanceOrganizationsResponse;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.ListFinanceOrganizationsRequest;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.ListFinanceOrganizationsResponse;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.RefreshTokenRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.RefreshTokenResponse;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.RevokeAllTokensRequest;
@@ -37,6 +44,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.lognet.springboot.grpc.GRpcService;
 
+import java.util.List;
+
 @Slf4j
 @GRpcService(interceptors = {StatsUnaryServerInterceptor.class})
 @RequiredArgsConstructor
@@ -45,6 +54,7 @@ public class ConnectGrpcService extends CollectmydataconnectGrpc.Collectmydataco
   private final OauthTokenService oauthTokenService;
   private final OrganizationService organizationService;
   private final ValidatorService validatorService;
+  private final OrganizationPublishService organizationPublishService;
 
   @Override
   public void issueToken(IssueTokenRequest request, StreamObserver<IssueTokenResponse> responseObserver) {
@@ -241,6 +251,52 @@ public class ConnectGrpcService extends CollectmydataconnectGrpc.Collectmydataco
 
     } catch (Exception e) {
       log.error("getOrganizationByOrganizationId error message,{}", e.getMessage(), e);
+      responseObserver.onError(new GrpcException().handle());
+    }
+  }
+
+  @Override
+  public void listFinanceOrganizations(ListFinanceOrganizationsRequest request,
+      StreamObserver<ListFinanceOrganizationsResponse> responseObserver) {
+
+    try {
+      // Todo: to validate request
+
+      List<OrganizationForFinance> organizationForFinances = organizationPublishService.listFinanceOrganizations();
+      OrganizationForFinanceProtoResponse organizationForFinanceProtoResponse = OrganizationForFinanceProtoResponse
+          .builder()
+          .organizationForFinances(organizationForFinances)
+          .build();
+      responseObserver.onNext(organizationForFinanceProtoResponse.toListFinanceOrganizationsProto());
+      responseObserver.onCompleted();
+    } catch (GrpcException e) {
+      responseObserver.onError(e.handle());
+    } catch (Exception e) {
+      log.error("listFinanceOrganizations error message,{}", e.getMessage(), e);
+      responseObserver.onError(new GrpcException().handle());
+    }
+  }
+
+  @Override
+  public void listConnectedFinanceOrganizations(ListConnectedFinanceOrganizationsRequest request,
+      StreamObserver<ListConnectedFinanceOrganizationsResponse> responseObserver) {
+
+    try {
+      // Todo: to validate request
+
+      final long banksaladUserId = Long.parseLong(request.getBanksaladUserId());
+      List<OrganizationForFinance> organizationForFinances = organizationPublishService
+          .listConnectedFinanceOrganizations(banksaladUserId);
+      OrganizationForFinanceProtoResponse organizationForFinanceProtoResponse = OrganizationForFinanceProtoResponse
+          .builder()
+          .organizationForFinances(organizationForFinances)
+          .build();
+      responseObserver.onNext(organizationForFinanceProtoResponse.toListConnectedFinanceOrganizationsProto());
+      responseObserver.onCompleted();
+    } catch (GrpcException e) {
+      responseObserver.onError(e.handle());
+    } catch (Exception e) {
+      log.error("listFinanceOrganizations error message,{}", e.getMessage(), e);
       responseObserver.onError(new GrpcException().handle());
     }
   }

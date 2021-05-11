@@ -1,15 +1,16 @@
 package com.banksalad.collectmydata.connect.organization;
 
+import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
+import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;
+import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
+import com.banksalad.collectmydata.connect.common.exception.ConnectException;
+import com.banksalad.collectmydata.connect.organization.dto.Organization;
+import com.banksalad.collectmydata.connect.organization.service.OrganizationService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.banksalad.collectmydata.connect.common.exception.ConnectException;
-import com.banksalad.collectmydata.connect.common.db.entity.ConnectOrganizationEntity;
-import com.banksalad.collectmydata.connect.common.db.repository.ConnectOrganizationRepository;
-import com.banksalad.collectmydata.connect.common.enums.ConnectErrorType;
-import com.banksalad.collectmydata.connect.organization.dto.Organization;
-import com.banksalad.collectmydata.connect.organization.service.OrganizationService;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetOrganizationByOrganizationGuidRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydataconnectProto.GetOrganizationByOrganizationIdRequest;
 import org.junit.jupiter.api.AfterEach;
@@ -17,8 +18,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.banksalad.collectmydata.connect.common.ConnectConstant.*;
-import static java.lang.Boolean.*;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.DOMAIN;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.INDUSTRY;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.ORGANIZATION_CODE;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.ORGANIZATION_GUID;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.ORGANIZATION_STATUS;
+import static com.banksalad.collectmydata.connect.common.ConnectConstant.SECTOR;
+import static java.lang.Boolean.FALSE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -78,7 +85,7 @@ class OrganizationServiceTest {
 
   @Test
   @Transactional
-  @DisplayName("organization 정보 조회 성공 : organizationGuid로 조회")
+  @DisplayName("organization 정보 조회 성공 : organizationId로 조회")
   public void getOrganizationByOrganizationId_success() {
     // given
     Organization givenOrganization = getOrganization();
