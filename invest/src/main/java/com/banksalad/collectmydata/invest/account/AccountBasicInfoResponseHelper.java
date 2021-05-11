@@ -58,16 +58,13 @@ public class AccountBasicInfoResponseHelper implements AccountInfoResponseHelper
 
     if (existingAccountBasicEntity != null) {
       accountBasicEntity.setId(existingAccountBasicEntity.getId());
+      accountBasicEntity.setCreatedBy(existingAccountBasicEntity.getCreatedBy());
     }
 
     if (!ObjectComparator.isSame(accountBasicEntity, existingAccountBasicEntity, ENTITY_EXCLUDE_FIELD)) {
       accountBasicRepository.save(accountBasicEntity);
-
-      AccountBasicHistoryEntity accountBasicHistoryEntity = accountBasicHistoryMapper.toHistoryEntity(accountBasicEntity);
-      accountBasicHistoryEntity.setCreatedBy(executionContext.getRequestedBy());
-      accountBasicHistoryEntity.setUpdatedBy(executionContext.getRequestedBy());
-
-      accountBasicHistoryRepository.save(accountBasicHistoryEntity);
+      accountBasicHistoryRepository.save(
+          accountBasicHistoryMapper.toHistoryEntity(accountBasicEntity, AccountBasicHistoryEntity.builder().build()));
     }
   }
 

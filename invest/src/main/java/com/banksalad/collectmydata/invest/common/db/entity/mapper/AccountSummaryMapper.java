@@ -10,7 +10,6 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface AccountSummaryMapper {
 
-  // TODO jaeseong : dtoToEntity로 변경
   void merge(AccountSummary accountSummary, @MappingTarget AccountSummaryEntity accountSummaryEntity);
 
   AccountSummary entityToDto(AccountSummaryEntity accountSummaryEntity);

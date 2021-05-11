@@ -72,12 +72,8 @@ public class AccountProductInfoResponseHelper implements
         accountProductEntity.setUpdatedBy(executionContext.getRequestedBy());
 
         accountProductRepository.save(accountProductEntity);
-
-        AccountProductHistoryEntity accountProductHistoryEntity = accountProductHistoryMapper.toHistoryEntity(accountProductEntity);
-        accountProductHistoryEntity.setCreatedBy(executionContext.getRequestedBy());
-        accountProductHistoryEntity.setUpdatedBy(executionContext.getRequestedBy());
-
-        accountProductHistoryRepository.save(accountProductHistoryEntity);
+        accountProductHistoryRepository.save(accountProductHistoryMapper
+            .toHistoryEntity(accountProductEntity, AccountProductHistoryEntity.builder().build()));
       }
     }
   }

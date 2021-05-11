@@ -39,7 +39,7 @@ public class AccountSummaryResponseHelper implements SummaryResponseHelper<Accou
         .findByBanksaladUserIdAndOrganizationId(executionContext.getBanksaladUserId(),
             executionContext.getOrganizationId())
         .orElseGet(() -> {
-          OrganizationUserEntity createdUserEntity = OrganizationUserEntity.builder()
+          OrganizationUserEntity newOrganizationUserEntity = OrganizationUserEntity.builder()
               .syncedAt(executionContext.getSyncStartedAt())
               .banksaladUserId(executionContext.getBanksaladUserId())
               .organizationId(executionContext.getOrganizationId())
@@ -50,12 +50,11 @@ public class AccountSummaryResponseHelper implements SummaryResponseHelper<Accou
               .organizationId(executionContext.getOrganizationId())
               .build();
 
-          createdUserEntity.setCreatedBy(executionContext.getRequestedBy());
-          createdUserEntity.setUpdatedBy(executionContext.getRequestedBy());
-
-          return createdUserEntity;
+          newOrganizationUserEntity.setCreatedBy(executionContext.getRequestedBy());
+          return newOrganizationUserEntity;
         });
 
+    organizationUserEntity.setUpdatedBy(executionContext.getRequestedBy());
     organizationUserRepository.save(organizationUserEntity);
   }
 
@@ -64,7 +63,11 @@ public class AccountSummaryResponseHelper implements SummaryResponseHelper<Accou
     AccountSummaryEntity accountSummaryEntity = accountSummaryRepository
         .findByBanksaladUserIdAndOrganizationIdAndAccountNum(executionContext.getBanksaladUserId(),
             executionContext.getOrganizationId(), accountSummary.getAccountNum())
-        .orElse(AccountSummaryEntity.builder().build());
+        .orElseGet(() -> {
+          AccountSummaryEntity newAccountSummaryEntity = AccountSummaryEntity.builder().build();
+          newAccountSummaryEntity.setCreatedBy(executionContext.getRequestedBy());
+          return newAccountSummaryEntity;
+        });
 
     accountSummaryMapper.merge(accountSummary, accountSummaryEntity);
     accountSummaryEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
@@ -72,7 +75,6 @@ public class AccountSummaryResponseHelper implements SummaryResponseHelper<Accou
     accountSummaryEntity.setSyncedAt(executionContext.getSyncStartedAt());
     accountSummaryEntity.setConsentId(executionContext.getConsentId());
     accountSummaryEntity.setSyncRequestId(executionContext.getSyncRequestId());
-    accountSummaryEntity.setCreatedBy(executionContext.getRequestedBy());
     accountSummaryEntity.setUpdatedBy(executionContext.getRequestedBy());
 
     accountSummaryRepository.save(accountSummaryEntity);
