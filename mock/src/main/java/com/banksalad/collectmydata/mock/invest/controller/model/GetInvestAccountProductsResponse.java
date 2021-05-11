@@ -10,7 +10,6 @@ import java.util.List;
 
 @Getter
 @Builder
-@JsonInclude(Include.NON_NULL)
 public class GetInvestAccountProductsResponse {
 
   private int prodCnt;

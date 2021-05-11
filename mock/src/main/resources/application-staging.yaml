@@ -12,3 +12,7 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
     username: collectmydatamock_was
     password: ${STG_COLLECTMYDATA_MOCK_DB_PASSWORD}
+
+# for http health
+server:
+  port: 18082

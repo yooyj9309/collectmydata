@@ -254,3 +254,10 @@ jobs:
           context: schedule
           push: true
           tags: rainist/collectmydataschedule:${{ github.sha }}
+
+      - name: mock docker push
+        uses: docker/build-push-action@v2
+        with:
+          context: mock
+          push: true
+          tags: rainist/collectmydatamock:${{ github.sha }}

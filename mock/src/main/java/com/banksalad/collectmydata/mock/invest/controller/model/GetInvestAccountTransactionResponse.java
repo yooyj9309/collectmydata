@@ -11,7 +11,6 @@ import java.util.List;
 
 @Getter
 @Builder
-@JsonInclude(Include.NON_NULL)
 public class GetInvestAccountTransactionResponse {
 
   private String nextPage;
