@@ -58,19 +58,18 @@ public class InsuranceBasicResponseHelper implements AccountInfoResponseHelper<I
   public void saveAccountAndHistory(ExecutionContext executionContext, InsuranceSummary insuranceSummary,
       InsuranceBasic insuranceBasic) {
     InsuranceBasicEntity insuranceBasicEntity = insuranceBasicMapper.dtoToEntity(insuranceBasic);
+    insuranceBasicEntity.setInsuNum(insuranceSummary.getInsuNum());
     insuranceBasicEntity.setSyncedAt(executionContext.getSyncStartedAt());
     insuranceBasicEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
     insuranceBasicEntity.setOrganizationId(executionContext.getOrganizationId());
-    insuranceBasicEntity.setInsuNum(insuranceSummary.getInsuNum());
     insuranceBasicEntity.setConsentId(executionContext.getConsentId());
     insuranceBasicEntity.setSyncRequestId(executionContext.getSyncRequestId());
     insuranceBasicEntity.setCreatedBy(executionContext.getRequestedBy());
     insuranceBasicEntity.setUpdatedBy(executionContext.getRequestedBy());
 
     InsuranceBasicEntity existingInsuranceBasicEntity = insuranceBasicRepository
-        .findByBanksaladUserIdAndOrganizationIdAndInsuNum(
-            insuranceBasicEntity.getBanksaladUserId(), insuranceBasicEntity.getOrganizationId(),
-            insuranceSummary.getInsuNum())
+        .findByBanksaladUserIdAndOrganizationIdAndInsuNum(insuranceBasicEntity.getBanksaladUserId(),
+            insuranceBasicEntity.getOrganizationId(), insuranceBasicEntity.getInsuNum())
         .orElse(null);
 
     if (existingInsuranceBasicEntity != null) {

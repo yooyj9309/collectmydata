@@ -12,11 +12,5 @@ public interface InsuranceContractMapper {
 
   InsuranceContractEntity dtoToEntity(InsuranceContract insuranceContract);
 
-  @Mappings(
-      value = {
-          @Mapping(target = "insuNum", ignore = true),
-          @Mapping(target = "insuredNo", ignore = true)
-      }
-  )
   InsuranceContract entityToDto(InsuranceContractEntity entity);
 }

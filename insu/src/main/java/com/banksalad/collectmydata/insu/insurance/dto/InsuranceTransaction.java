@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class InsuranceTransaction {
 
-  private String insuNum;
   private String transDate;
   private String transAppliedMonth;
   private Integer transNo;

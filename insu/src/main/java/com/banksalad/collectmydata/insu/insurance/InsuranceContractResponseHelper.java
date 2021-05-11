@@ -71,10 +71,10 @@ public class InsuranceContractResponseHelper implements
     /* Save main entity and history entity */
     for (int idx = 0; idx < insuranceContracts.size(); idx++) {
       InsuranceContract insuranceContract = insuranceContracts.get(idx);
-      insuranceContract.setInsuNum(insuNum);
-      insuranceContract.setInsuredNo(insuredNo);
 
       InsuranceContractEntity insuranceContractEntity = insuranceContractMapper.dtoToEntity(insuranceContract);
+      insuranceContractEntity.setInsuNum(insuNum);
+      insuranceContractEntity.setInsuredNo(insuredNo);
       insuranceContractEntity.setSyncedAt(syncedAt);
       insuranceContractEntity.setBanksaladUserId(banksaladUserId);
       insuranceContractEntity.setOrganizationId(organizationId);

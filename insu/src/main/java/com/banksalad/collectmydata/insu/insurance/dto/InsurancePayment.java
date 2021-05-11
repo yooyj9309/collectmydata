@@ -22,7 +22,6 @@ import static lombok.AccessLevel.PROTECTED;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class InsurancePayment {
 
-  private String insuNum;
   private String payDue;
   private String payCycle;
   private Integer payCnt;

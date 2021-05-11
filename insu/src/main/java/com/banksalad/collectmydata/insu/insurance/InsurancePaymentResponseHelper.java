@@ -39,10 +39,6 @@ public class InsurancePaymentResponseHelper implements AccountInfoResponseHelper
   @Override
   public void saveAccountAndHistory(ExecutionContext executionContext, InsuranceSummary insuranceSummary,
       InsurancePayment insurancePayment) {
-
-    // publish를 어떻게하냐에 따라 제거해도 되는 필드, 개별로 publish하는경우, unique key 전부 dto에 적재필요
-    insurancePayment.setInsuNum(insuranceSummary.getInsuNum());
-
     InsurancePaymentEntity entity = InsurancePaymentEntity.builder()
         .syncedAt(executionContext.getSyncStartedAt())
         .banksaladUserId(executionContext.getBanksaladUserId())

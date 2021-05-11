@@ -22,10 +22,6 @@ import java.math.BigDecimal;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class InsuranceContract {
 
-  private String insuNum;
-
-  private String insuredNo;
-
   private String contractName;
 
   private String contractStatus;

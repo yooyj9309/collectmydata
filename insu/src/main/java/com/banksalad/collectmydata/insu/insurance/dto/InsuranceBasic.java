@@ -22,8 +22,6 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class InsuranceBasic {
 
-  private String insuNum;
-
   @JsonProperty("is_renewable")
   private boolean renewable;
 
