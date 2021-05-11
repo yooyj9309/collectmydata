@@ -34,6 +34,13 @@ public class ProtoTypeConverter {
         .orElse(Int64Value.getDefaultInstance());
   }
 
+  public static Int64Value toInt64ValueMultiply100000(BigDecimal source) {
+    return Optional.ofNullable(source)
+        .map(NumberUtil::multiply100000)
+        .map(Int64Value::of)
+        .orElse(Int64Value.getDefaultInstance());
+  }
+
   public static Int32Value toInt32Value(Integer source) {
     return Optional.ofNullable(source)
         .map(Int32Value::of)

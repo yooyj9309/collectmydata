@@ -23,7 +23,7 @@ public class AccountSummaryResponse {
   private boolean consent;
 
   @JsonProperty("is_foreign_deposit")
-  private boolean foreignDeposit;
+  private Boolean foreignDeposit;
 
   private String prodName;
 

@@ -1,33 +1,34 @@
 package com.banksalad.collectmydata.bank.grpc.handler;
 
+import com.banksalad.collectmydata.bank.grpc.converter.BankProtoConverter;
 import com.banksalad.collectmydata.bank.publishment.deposit.DepositAccountPublishService;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountBasicResponse;
-import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountBasicsProtoResponse;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountDetailResponse;
-import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountDetailsProtoResponse;
 import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountTransactionResponse;
-import com.banksalad.collectmydata.bank.publishment.deposit.dto.DepositAccountTransactionsProtoResponse;
 import com.banksalad.collectmydata.bank.publishment.invest.InvestAccountPublishService;
 import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountBasicResponse;
-import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountBasicsProtoResponse;
 import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountDetailResponse;
-import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountDetailsProtoResponse;
 import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountTransactionResponse;
-import com.banksalad.collectmydata.bank.publishment.invest.dto.InvestAccountTransactionsProtoResponse;
 import com.banksalad.collectmydata.bank.publishment.loan.LoanAccountPublishService;
 import com.banksalad.collectmydata.bank.publishment.loan.dto.LoanAccountBasicResponse;
-import com.banksalad.collectmydata.bank.publishment.loan.dto.LoanAccountBasicsProtoResponse;
 import com.banksalad.collectmydata.bank.publishment.loan.dto.LoanAccountDetailResponse;
-import com.banksalad.collectmydata.bank.publishment.loan.dto.LoanAccountDetailsProtoResponse;
 import com.banksalad.collectmydata.bank.publishment.loan.dto.LoanAccountTransactionResponse;
-import com.banksalad.collectmydata.bank.publishment.loan.dto.LoanAccountTransactionsProtoResponse;
 import com.banksalad.collectmydata.bank.publishment.summary.AccountSummaryPublishService;
-import com.banksalad.collectmydata.bank.publishment.summary.dto.AccountSummariesProtoResponse;
 import com.banksalad.collectmydata.bank.publishment.summary.dto.AccountSummaryResponse;
 import com.banksalad.collectmydata.common.exception.GrpcException;
 import com.banksalad.collectmydata.finance.common.grpc.CollectmydataConnectClientService;
 import com.banksalad.collectmydata.finance.common.grpc.handler.interceptor.StatsUnaryServerInterceptor;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankGrpc;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.BankAccountSummary;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.BankDepositAccountBasic;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.BankDepositAccountDetail;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.BankDepositAccountTransaction;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.BankInvestAccountBasic;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.BankInvestAccountDetail;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.BankInvestAccountTransaction;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.BankLoanAccountBasic;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.BankLoanAccountDetail;
+import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.BankLoanAccountTransaction;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankAccountSummariesRequest;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankAccountSummariesResponse;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatabankProto.ListBankDepositAccountBasicsRequest;
@@ -56,6 +57,7 @@ import org.lognet.springboot.grpc.GRpcService;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @GRpcService(interceptors = {StatsUnaryServerInterceptor.class})
@@ -67,6 +69,7 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
   private final InvestAccountPublishService investAccountPublishService;
   private final LoanAccountPublishService loanAccountPublishService;
   private final CollectmydataConnectClientService collectmydataConnectClientService;
+  private final BankProtoConverter bankProtoConverter;
 
   @Override
   public void listBankAccountSummaries(ListBankAccountSummariesRequest request,
@@ -79,11 +82,15 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
 
       List<AccountSummaryResponse> accountSummaryResponses = accountSummaryPublishService
           .getAccountSummaryResponses(banksaladUserId, organizationId);
-      AccountSummariesProtoResponse accountSummariesProtoResponse = AccountSummariesProtoResponse.builder()
-          .accountSummaryResponses(accountSummaryResponses)
-          .build();
 
-      responseObserver.onNext(accountSummariesProtoResponse.toListBankAccountSummariesResponseProto());
+      List<BankAccountSummary> bankAccountSummaries = accountSummaryResponses.stream()
+          .map(bankProtoConverter::toBankAccountSummary)
+          .collect(Collectors.toList());
+
+      responseObserver.onNext(
+          ListBankAccountSummariesResponse.newBuilder()
+              .addAllAccountSummaries(bankAccountSummaries)
+              .build());
       responseObserver.onCompleted();
 
     } catch (GrpcException e) {
@@ -107,11 +114,15 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
 
       List<DepositAccountBasicResponse> depositAccountBasicResponses = depositAccountPublishService
           .getDepositAccountBasicResponses(banksaladUserId, organizationId);
-      DepositAccountBasicsProtoResponse depositAccountBasicsProtoResponse = DepositAccountBasicsProtoResponse.builder()
-          .depositAccountBasicResponses(depositAccountBasicResponses)
-          .build();
 
-      responseObserver.onNext(depositAccountBasicsProtoResponse.toListBankDepositAccountBasicsResponseProto());
+      List<BankDepositAccountBasic> bankDepositAccountBasics = depositAccountBasicResponses.stream()
+          .map(bankProtoConverter::toBankDepositAccountBasic)
+          .collect(Collectors.toList());
+
+      responseObserver.onNext(
+          ListBankDepositAccountBasicsResponse.newBuilder()
+              .addAllDepositAccountBasics(bankDepositAccountBasics)
+              .build());
       responseObserver.onCompleted();
 
     } catch (GrpcException e) {
@@ -135,12 +146,15 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
 
       List<DepositAccountDetailResponse> depositAccountDetailResponses = depositAccountPublishService
           .getDepositAccountDetailResponses(banksaladUserId, organizationId);
-      DepositAccountDetailsProtoResponse depositAccountDetailsProtoResponse = DepositAccountDetailsProtoResponse
-          .builder()
-          .depositAccountDetailResponses(depositAccountDetailResponses)
-          .build();
 
-      responseObserver.onNext(depositAccountDetailsProtoResponse.toListBankDepositAccountDetailsResponseProto());
+      List<BankDepositAccountDetail> bankDepositAccountDetails = depositAccountDetailResponses.stream()
+          .map(bankProtoConverter::toBankDepositAccountDetail)
+          .collect(Collectors.toList());
+
+      responseObserver.onNext(
+          ListBankDepositAccountDetailsResponse.newBuilder()
+              .addAllDepositAccountDetails(bankDepositAccountDetails)
+              .build());
       responseObserver.onCompleted();
 
     } catch (GrpcException e) {
@@ -166,13 +180,15 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       List<DepositAccountTransactionResponse> depositAccountTransactionResponses = depositAccountPublishService
           .getDepositAccountTransactionResponses(banksaladUserId, organizationId, request.getAccountNum(),
               request.getSeqno().getValue(), createdAt, Long.valueOf(request.getLimit()).intValue());
-      DepositAccountTransactionsProtoResponse depositAccountTransactionsProtoResponse = DepositAccountTransactionsProtoResponse
-          .builder()
-          .depositAccountTransactionResponses(depositAccountTransactionResponses)
-          .build();
 
-      responseObserver
-          .onNext(depositAccountTransactionsProtoResponse.toListBankDepositAccountTransactionsResponseProto());
+      List<BankDepositAccountTransaction> bankDepositAccountTransactions = depositAccountTransactionResponses.stream()
+          .map(bankProtoConverter::toBankDepositAccountTransaction)
+          .collect(Collectors.toList());
+
+      responseObserver.onNext(
+          ListBankDepositAccountTransactionsResponse.newBuilder()
+              .addAllDepositAccountTransactions(bankDepositAccountTransactions)
+              .build());
       responseObserver.onCompleted();
 
     } catch (GrpcException e) {
@@ -196,11 +212,15 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
 
       List<InvestAccountBasicResponse> investAccountBasicResponses = investAccountPublishService
           .getInvestAccountBasicResponses(banksaladUserId, organizationId);
-      InvestAccountBasicsProtoResponse investAccountBasicsProtoResponse = InvestAccountBasicsProtoResponse.builder()
-          .investAccountBasicResponses(investAccountBasicResponses)
-          .build();
 
-      responseObserver.onNext(investAccountBasicsProtoResponse.toListBankInvestAccountBasicsResponse());
+      List<BankInvestAccountBasic> bankInvestAccountBasics = investAccountBasicResponses.stream()
+          .map(bankProtoConverter::toBankInvestAccountBasic)
+          .collect(Collectors.toList());
+
+      responseObserver.onNext(
+          ListBankInvestAccountBasicsResponse.newBuilder()
+              .addAllInvestAccountBasics(bankInvestAccountBasics)
+              .build());
       responseObserver.onCompleted();
 
     } catch (GrpcException e) {
@@ -224,11 +244,15 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
 
       List<InvestAccountDetailResponse> investAccountDetailResponses = investAccountPublishService
           .getInvestAccountDetailResponses(banksaladUserId, organizationId);
-      InvestAccountDetailsProtoResponse investAccountDetailsProtoResponse = InvestAccountDetailsProtoResponse.builder()
-          .investAccountDetailResponses(investAccountDetailResponses)
-          .build();
 
-      responseObserver.onNext(investAccountDetailsProtoResponse.toListBankInvestAccountDetailsResponse());
+      List<BankInvestAccountDetail> bankInvestAccountDetails = investAccountDetailResponses.stream()
+          .map(bankProtoConverter::toBankInvestAccountDetail)
+          .collect(Collectors.toList());
+
+      responseObserver.onNext(
+          ListBankInvestAccountDetailsResponse.newBuilder()
+              .addAllInvestAccountDetails(bankInvestAccountDetails)
+              .build());
       responseObserver.onCompleted();
 
     } catch (GrpcException e) {
@@ -254,12 +278,15 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       List<InvestAccountTransactionResponse> investAccountTransactionResponses = investAccountPublishService
           .getInvestAccountTransactionResponses(banksaladUserId, organizationId, request.getAccountNum(),
               request.getSeqno().getValue(), createdAt, Long.valueOf(request.getLimit()).intValue());
-      InvestAccountTransactionsProtoResponse investAccountTransactionsProtoResponse = InvestAccountTransactionsProtoResponse
-          .builder()
-          .investAccountTransactionResponses(investAccountTransactionResponses)
-          .build();
 
-      responseObserver.onNext(investAccountTransactionsProtoResponse.toListBankInvestAccountTransactionsResponse());
+      List<BankInvestAccountTransaction> bankInvestAccountTransactions = investAccountTransactionResponses.stream()
+          .map(bankProtoConverter::toBankInvestAccountTransaction)
+          .collect(Collectors.toList());
+
+      responseObserver.onNext(
+          ListBankInvestAccountTransactionsResponse.newBuilder()
+              .addAllInvestAccountTransactions(bankInvestAccountTransactions)
+              .build());
       responseObserver.onCompleted();
 
     } catch (GrpcException e) {
@@ -283,11 +310,15 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
 
       List<LoanAccountBasicResponse> loanAccountBasicResponses = loanAccountPublishService
           .getLoanAccountBasicResponses(banksaladUserId, organizationId);
-      LoanAccountBasicsProtoResponse loanAccountBasicsProtoResponse = LoanAccountBasicsProtoResponse.builder()
-          .loanAccountBasicResponses(loanAccountBasicResponses)
-          .build();
 
-      responseObserver.onNext(loanAccountBasicsProtoResponse.toListBankLoanAccountBasicsResponse());
+      List<BankLoanAccountBasic> bankLoanAccountBasics = loanAccountBasicResponses.stream()
+          .map(bankProtoConverter::toBankLoanAccountBasic)
+          .collect(Collectors.toList());
+
+      responseObserver.onNext(
+          ListBankLoanAccountBasicsResponse.newBuilder()
+              .addAllLoanAccountBasics(bankLoanAccountBasics)
+              .build());
       responseObserver.onCompleted();
 
     } catch (GrpcException e) {
@@ -311,11 +342,15 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
 
       List<LoanAccountDetailResponse> loanAccountDetailResponses = loanAccountPublishService
           .getLoanAccountDetailResponses(banksaladUserId, organizationId);
-      LoanAccountDetailsProtoResponse loanAccountDetailsProtoResponse = LoanAccountDetailsProtoResponse.builder()
-          .loanAccountDetailResponses(loanAccountDetailResponses)
-          .build();
 
-      responseObserver.onNext(loanAccountDetailsProtoResponse.toListBankLoanAccountDetailsResponse());
+      List<BankLoanAccountDetail> bankLoanAccountDetails = loanAccountDetailResponses.stream()
+          .map(bankProtoConverter::toBankLoanAccountDetail)
+          .collect(Collectors.toList());
+
+      responseObserver.onNext(
+          ListBankLoanAccountDetailsResponse.newBuilder()
+              .addAllLoanAccountDetails(bankLoanAccountDetails)
+              .build());
       responseObserver.onCompleted();
 
     } catch (GrpcException e) {
@@ -341,12 +376,15 @@ public class BankGrpcService extends CollectmydatabankGrpc.CollectmydatabankImpl
       List<LoanAccountTransactionResponse> loanAccountTransactionsProtoResponses = loanAccountPublishService
           .getLoanAccountTransactionResponse(banksaladUserId, organizationId, request.getAccountNum(),
               request.getSeqno().getValue(), createdAt, Long.valueOf(request.getLimit()).intValue());
-      LoanAccountTransactionsProtoResponse loanAccountTransactionsProtoResponse = LoanAccountTransactionsProtoResponse
-          .builder()
-          .loanAccountTransactionResponses(loanAccountTransactionsProtoResponses)
-          .build();
 
-      responseObserver.onNext(loanAccountTransactionsProtoResponse.toListLoanAccountTransactionsResponse());
+      List<BankLoanAccountTransaction> bankLoanAccountTransactions = loanAccountTransactionsProtoResponses.stream()
+          .map(bankProtoConverter::toBankLoanAccountTransaction)
+          .collect(Collectors.toList());
+
+      responseObserver.onNext(
+          ListBankLoanAccountTransactionsResponse.newBuilder()
+              .addAllLoanAccountTransactions(bankLoanAccountTransactions)
+              .build());
       responseObserver.onCompleted();
 
     } catch (GrpcException e) {
