@@ -40,23 +40,16 @@ public class InsuranceTransactionResponseHelper implements
       List<InsuranceTransaction> insuranceTransactions) {
 
     for (InsuranceTransaction insuranceTransaction : insuranceTransactions) {
-      insuranceTransaction.setInsuNum(insuranceSummary.getInsuNum());
-
-      InsuranceTransactionEntity insuranceTransactionEntity = InsuranceTransactionEntity.builder()
-          .transactionYearMonth(Integer.parseInt(insuranceTransaction.getTransAppliedMonth()))
-          .syncedAt(executionContext.getSyncStartedAt())
-          .banksaladUserId(executionContext.getBanksaladUserId())
-          .organizationId(executionContext.getOrganizationId())
-          .insuNum(insuranceTransaction.getInsuNum())
-          .transNo(insuranceTransaction.getTransNo())
-          .transDate(insuranceTransaction.getTransDate())
-          .transAppliedMonth(Integer.valueOf(insuranceTransaction.getTransAppliedMonth()))
-          .paidAmt(insuranceTransaction.getPaidAmt())
-          .currencyCode(insuranceTransaction.getCurrencyCode())
-          .payMethod(insuranceTransaction.getPayMethod())
-          .consentId(executionContext.getConsentId())
-          .syncRequestId(executionContext.getSyncRequestId())
-          .build();
+      InsuranceTransactionEntity insuranceTransactionEntity = insuranceTransactionMapper
+          .dtoToEntity(insuranceTransaction);
+      insuranceTransactionEntity.setInsuNum(insuranceSummary.getInsuNum());
+      insuranceTransactionEntity.setTransactionYearMonth(
+          Integer.valueOf(insuranceTransaction.getTransDate().substring(0, 6)));
+      insuranceTransactionEntity.setSyncedAt(executionContext.getSyncStartedAt());
+      insuranceTransactionEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
+      insuranceTransactionEntity.setOrganizationId(executionContext.getOrganizationId());
+      insuranceTransactionEntity.setConsentId(executionContext.getConsentId());
+      insuranceTransactionEntity.setSyncRequestId(executionContext.getSyncRequestId());
       insuranceTransactionEntity.setCreatedBy(executionContext.getRequestedBy());
       insuranceTransactionEntity.setUpdatedBy(executionContext.getRequestedBy());
 
@@ -70,7 +63,6 @@ public class InsuranceTransactionResponseHelper implements
           ).orElse(null);
 
       if (existingTransactionEntity == null) {
-        insuranceTransactionMapper.merge(insuranceTransactionEntity, insuranceTransactionEntity);
         insuranceTransactionRepository.save(insuranceTransactionEntity);
       }
     }
