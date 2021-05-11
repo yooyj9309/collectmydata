@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.BILL_DEFAUTL_SEARCH_MONTH;
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.DEFAULT_PAGING_LIMIT;
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.DEFAULT_SEARCH_YEAR;
 
@@ -33,7 +34,7 @@ public class BillBasicRequestHelper implements BillRequestHelper<ListBillBasicRe
         executionContext.getOrganizationId(),
         Apis.finance_card_bills.getId()
     ).map(UserSyncStatusEntity::getSyncedAt)
-        .orElse(executionContext.getSyncStartedAt().minusYears(DEFAULT_SEARCH_YEAR));
+        .orElse(executionContext.getSyncStartedAt().minusMonths(BILL_DEFAUTL_SEARCH_MONTH));
   }
 
   @Override

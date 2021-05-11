@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.card.common.db.entity.BillEntity;
-import javax.transaction.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,6 +33,7 @@ public interface BillRepository extends JpaRepository<BillEntity, Long> {
    *
    * @author : hyunjun
    */
+  @Transactional
   @Query("delete from BillEntity b where b.banksaladUserId = :banksaladUserId and b.organizationId = :organizationId "
       + "and b.chargeMonth = :chargeMonth and b.cardType = :cardType and (:seqno is null or b.seqno = :seqno)")
   @Modifying(clearAutomatically = true)

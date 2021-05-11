@@ -6,6 +6,7 @@ import com.banksalad.collectmydata.card.card.dto.BillBasic;
 import com.banksalad.collectmydata.card.card.dto.BillDetail;
 import com.banksalad.collectmydata.card.card.dto.ListBillDetailResponse;
 import com.banksalad.collectmydata.card.common.db.entity.BillDetailEntity;
+import com.banksalad.collectmydata.card.common.db.entity.BillDetailHistoryEntity;
 import com.banksalad.collectmydata.card.common.db.repository.BillDetailHistoryRepository;
 import com.banksalad.collectmydata.card.common.db.repository.BillDetailRepository;
 import com.banksalad.collectmydata.card.common.mapper.BillDetailHistoryMapper;
@@ -57,12 +58,18 @@ public class BillDetailResponseHelper implements BillTransactionResponseHelper<B
           billDetailEntity.setChargeMonth(billBasic.getChargeMonth());
           billDetailEntity.setSeqno(billBasic.getSeqno());
           billDetailEntity.setBillDetailNo((short) atomicInteger.getAndIncrement());
+          billDetailEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+          billDetailEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+          billDetailEntity.setConsentId(executionContext.getConsentId());
+          billDetailEntity.setSyncRequestId(executionContext.getSyncRequestId());
           return billDetailEntity;
         }).collect(Collectors.toList());
 
     billDetailRepository.saveAll(billDetailEntities);
     billDetailHistoryRepository.saveAll(
-        billDetailEntities.stream().map(billDetailHistoryMapper::toHistoryEntity).collect(Collectors.toList()));
+        billDetailEntities.stream().map(billDetailEntity -> billDetailHistoryMapper
+            .toHistoryEntity(billDetailEntity, BillDetailHistoryEntity.builder().build()))
+            .collect(Collectors.toList()));
 
   }
 }

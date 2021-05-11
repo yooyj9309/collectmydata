@@ -27,7 +27,6 @@ public class CardBillPublishServiceImpl implements CardBillPublishService {
   private final BillDetailMapper billDetailMapper = Mappers.getMapper(BillDetailMapper.class);
 
   @Override
-
   public List<BillBasicPublishment> getCardBillBasicResponse(long banksaladUserId, String organizationId,
       LocalDateTime createdAt, int limit) {
 

@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.banksalad.collectmydata.card.common.db.entity.BillDetailEntity;
 
@@ -23,6 +24,7 @@ public interface BillDetailRepository extends JpaRepository<BillDetailEntity, Lo
    *
    * @author : hyunjun
    */
+  @Transactional
   @Query("delete from BillDetailEntity b where b.banksaladUserId = :banksaladUserId and b.organizationId = :organizationId "
       + "and b.chargeMonth = :chargeMonth and (:seqno is null or b.seqno = :seqno)")
   @Modifying(clearAutomatically = true)

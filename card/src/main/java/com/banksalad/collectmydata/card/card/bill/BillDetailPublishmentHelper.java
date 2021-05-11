@@ -1,4 +1,4 @@
-package com.banksalad.collectmydata.card.card.accountInfo;
+package com.banksalad.collectmydata.card.card.bill;
 
 import org.springframework.stereotype.Component;
 
@@ -8,13 +8,13 @@ import com.banksalad.collectmydata.common.enums.FinanceSyncItem;
 import com.banksalad.collectmydata.common.message.MessageTopic;
 import com.banksalad.collectmydata.common.message.PublishmentRequestedCardMessage;
 import com.banksalad.collectmydata.common.message.PublishmentRequestedMessage;
-import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoPublishmentHelper;
+import com.banksalad.collectmydata.finance.api.bill.BillPublishmentHelper;
 
 @Component
-public class CardAccountInfoPublishmentHelper implements AccountInfoPublishmentHelper {
+public class BillDetailPublishmentHelper implements BillPublishmentHelper {
 
   private static final FinanceIndustry financeIndustry = FinanceIndustry.CARD;
-  private static final FinanceSyncItem financeSyncItem = FinanceSyncItem.COLLECTMYDATACARD_SYNC_ITEM_CARD_BASIC;
+  private static final FinanceSyncItem financeSyncItem = FinanceSyncItem.COLLECTMYDATACARD_SYNC_ITEM_CARD_BILL_DETAIL;
 
   @Override
   public String getMessageTopic() {

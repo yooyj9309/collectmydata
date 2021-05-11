@@ -20,7 +20,7 @@ public class BillDetailPublishment {
 
   private Integer chargeMonth;
 
-  private String seqNo;
+  private String seqno;
 
   private String cardId;
 
@@ -34,9 +34,9 @@ public class BillDetailPublishment {
 
   private BigDecimal creditFeeAmt;
 
-  private int totalInstallCnt;
+  private Integer totalInstallCnt;
 
-  private int curInstallCnt;
+  private Integer curInstallCnt;
 
   private BigDecimal balanceAmt;
 

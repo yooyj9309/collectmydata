@@ -3,9 +3,15 @@ package com.banksalad.collectmydata.card;
 
 import org.springframework.stereotype.Service;
 
+import com.banksalad.collectmydata.card.card.bill.BillBasicPublishmentHelper;
+import com.banksalad.collectmydata.card.card.bill.BillDetailPublishmentHelper;
 import com.banksalad.collectmydata.card.card.accountInfo.CardAccountInfoPublishmentHelper;
+import com.banksalad.collectmydata.card.card.dto.BillBasic;
+import com.banksalad.collectmydata.card.card.dto.BillDetail;
 import com.banksalad.collectmydata.card.card.dto.CardBasic;
 import com.banksalad.collectmydata.card.card.dto.GetCardBasicRequest;
+import com.banksalad.collectmydata.card.card.dto.ListBillBasicRequest;
+import com.banksalad.collectmydata.card.card.dto.ListBillDetailRequest;
 import com.banksalad.collectmydata.card.card.dto.ListPaymentsRequest;
 import com.banksalad.collectmydata.card.card.dto.ListPointsRequest;
 import com.banksalad.collectmydata.card.card.dto.ListRevolvingsRequest;
@@ -36,6 +42,11 @@ import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoRequestHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoResponseHelper;
 import com.banksalad.collectmydata.finance.api.accountinfo.AccountInfoService;
+import com.banksalad.collectmydata.finance.api.bill.BillRequestHelper;
+import com.banksalad.collectmydata.finance.api.bill.BillResponseHelper;
+import com.banksalad.collectmydata.finance.api.bill.BillService;
+import com.banksalad.collectmydata.finance.api.bill.BillTransactionRequestHelper;
+import com.banksalad.collectmydata.finance.api.bill.BillTransactionResponseHelper;
 import com.banksalad.collectmydata.finance.api.summary.SummaryRequestHelper;
 import com.banksalad.collectmydata.finance.api.summary.SummaryResponseHelper;
 import com.banksalad.collectmydata.finance.api.summary.SummaryService;
@@ -81,6 +92,17 @@ public class CardApiServiceImpl implements CardApiService {
   private final UserBaseRequestHelper<ListPointsRequest> pointRequestHelper;
   private final UserBaseResponseHelper<List<Point>> pointResponseHelper;
   private final PointPublishmentHelper pointPublishmentHelper;
+
+  // billBasic 6.3.4
+  private final BillService<ListBillBasicRequest, BillBasic, ListBillDetailRequest, BillDetail> billService;
+  private final BillRequestHelper<ListBillBasicRequest> billBasicRequestHelper;
+  private final BillResponseHelper<BillBasic> billBasicResponseHelper;
+  private final BillBasicPublishmentHelper billBasicPublishmentHelper;
+
+  // billDetail 6.3.5
+  private final BillTransactionRequestHelper<ListBillDetailRequest, BillBasic> billDetailRequestHelper;
+  private final BillTransactionResponseHelper<BillBasic, BillDetail> billDetailResponseHelper;
+  private final BillDetailPublishmentHelper billDetailPublishmentHelper;
 
   // Payment 6.3.6
   private final UserBaseService<ListPaymentsRequest, List<Payment>> paymentUserBaseService;
@@ -135,12 +157,23 @@ public class CardApiServiceImpl implements CardApiService {
     accountSummaryService.listAccountSummaries(executionContext, Executions.finance_card_summaries,
         summaryRequestHelper, summaryResponseHelper, cardSummaryPublishmentHelper);
 
+    /** 6.3.5는 6.3.4가 있어야 가져올 수 있으니 비동기가 아닌 먼저 받아온다.
+     * @author hyunjun
+     */
+    List<BillBasic> billBasics = billService
+        .listBills(executionContext, Executions.finance_card_bills, billBasicRequestHelper, billBasicResponseHelper,
+            billBasicPublishmentHelper);
+
     // TODO (hyujun) : summary 외에 나머지 api 추가.
     CompletableFuture.allOf(
         CompletableFuture
             .runAsync(() -> accountInfoService.listAccountInfos(executionContext, Executions.finance_card_basic,
                 accountInfoRequestHelper, accountInfoResponseHelper, cardAccountInfoPublishmentHelper)
             ).handle(this::handleException),
+
+        CompletableFuture.runAsync(() -> billService
+            .listBillDetails(executionContext, Executions.finance_card_bills_detail, billBasics, billDetailRequestHelper,
+                billDetailResponseHelper, billDetailPublishmentHelper)).handle(this::handleException),
 
         CompletableFuture
             .runAsync(() -> pointUserBaseService

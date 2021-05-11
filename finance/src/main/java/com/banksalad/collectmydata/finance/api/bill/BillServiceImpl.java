@@ -8,7 +8,7 @@ import com.banksalad.collectmydata.common.collect.executor.CollectExecutor;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.bill.dto.BillResponse;
 import com.banksalad.collectmydata.finance.api.bill.dto.BillTransactionResponse;
-import com.banksalad.collectmydata.finance.common.exception.ResponseNotOkException;
+import com.banksalad.collectmydata.finance.common.service.FinanceMessageService;
 import com.banksalad.collectmydata.finance.common.service.HeaderService;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
 
@@ -33,6 +33,7 @@ public class BillServiceImpl<BillRequest, Bill, BillTransactionRequest, BillTran
 
   private final CollectExecutor collectExecutor;
   private final UserSyncStatusService userSyncStatusService;
+  private final FinanceMessageService financeMessageService;
   private final HeaderService headerService;
 
   @Override
@@ -41,8 +42,14 @@ public class BillServiceImpl<BillRequest, Bill, BillTransactionRequest, BillTran
       Execution execution,
       BillRequestHelper<BillRequest> requestHelper,
       BillResponseHelper<Bill> responseHelper
-  ) throws ResponseNotOkException {
+  ) {
+    return listBills(executionContext, execution, requestHelper, responseHelper, null);
+  }
 
+  @Override
+  public List<Bill> listBills(ExecutionContext executionContext, Execution execution,
+      BillRequestHelper<BillRequest> requestHelper, BillResponseHelper<Bill> responseHelper,
+      BillPublishmentHelper billPublishmentHelper) {
     List<Bill> billAll = new ArrayList<>();
 
     /* copy ExecutionContext for new executionRequestId */
@@ -54,6 +61,7 @@ public class BillServiceImpl<BillRequest, Bill, BillTransactionRequest, BillTran
 
     String nextPage = null;
     boolean hasNextPage = false;
+    boolean isAllPaginationResponseOk = true;
     ExecutionResponse<BillResponse> executionResponse;
 
     do {
@@ -67,7 +75,10 @@ public class BillServiceImpl<BillRequest, Bill, BillTransactionRequest, BillTran
               .build());
 
       /* validate response and break pagination */
-      checkResponseAndThrow(executionResponse);
+      if (executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
+        isAllPaginationResponseOk = false;
+        break;
+      }
       List<Bill> bills = responseHelper.getBillsFromResponse(executionResponse.getResponse());
 
       /* Skip saving when no transaction exist. */
@@ -76,34 +87,53 @@ public class BillServiceImpl<BillRequest, Bill, BillTransactionRequest, BillTran
         billAll.addAll(bills);
 
         System.out.println(
-            "***\nnext_page: " + nextPage + "\nbills: " + bills + "\nnext_page: " + executionResponse.getNextPage() + "\n***");
+            "***\nnext_page: " + nextPage + "\nbills: " + bills + "\nnext_page: " + executionResponse.getNextPage()
+                + "\n***");
       }
 
-      hasNextPage = StringUtils.hasLength(executionResponse.getNextPage()) && !executionResponse.getNextPage().equals(nextPage);
+      hasNextPage =
+          StringUtils.hasLength(executionResponse.getNextPage()) && !executionResponse.getNextPage().equals(nextPage);
       nextPage = executionResponse.getNextPage();
+
+      if (billPublishmentHelper != null) {
+        financeMessageService.producePublishmentRequested(billPublishmentHelper.getMessageTopic(),
+            billPublishmentHelper.makePublishmentRequestedMessage(executionContext));
+      }
 
     } while (hasNextPage);
 
-    userSyncStatusService.updateUserSyncStatus(
-        executionContext.getBanksaladUserId(),
-        executionContext.getOrganizationId(),
-        execution.getApi().getId(),
-        executionContext.getSyncStartedAt(),
-        0L
-    );
+    /** bill pagination 성공할때만 sync_at 업데이트 필요.. 사용자 기반이라 userSyncStatus에 업데이트.
+     *  @author hyunjun
+     */
+    if (isAllPaginationResponseOk) {
+      userSyncStatusService.updateUserSyncStatus(
+          executionContext.getBanksaladUserId(),
+          executionContext.getOrganizationId(),
+          execution.getApi().getId(),
+          executionContext.getSyncStartedAt(),
+          0L
+      );
+    }
 
     return billAll;
   }
 
   @Override
-  public List<BillTransaction> listBillTransactions(
+  public void listBillDetails(
       ExecutionContext executionContext,
       Execution execution,
       List<Bill> bills,
       BillTransactionRequestHelper<BillTransactionRequest, Bill> requestHelper,
       BillTransactionResponseHelper<Bill, BillTransaction> responseHelper
   ) {
+    listBillDetails(executionContext, execution, bills, requestHelper, responseHelper, null);
+  }
 
+  @Override
+  public void listBillDetails(ExecutionContext executionContext, Execution execution,
+      List<Bill> bills, BillTransactionRequestHelper<BillTransactionRequest, Bill> requestHelper,
+      BillTransactionResponseHelper<Bill, BillTransaction> responseHelper,
+      BillPublishmentHelper billPublishmentHelper) {
     List<BillTransaction> billDetailsAll = new ArrayList<>();
 
     ExecutionResponse<BillTransactionResponse> executionResponse;
@@ -140,9 +170,18 @@ public class BillServiceImpl<BillRequest, Bill, BillTransactionRequest, BillTran
           billDetailsAll.addAll(billTransactions);
         }
 
-        hasNextPage = StringUtils.hasLength(executionResponse.getNextPage()) && !executionResponse.getNextPage().equals(nextPage);
+        hasNextPage =
+            StringUtils.hasLength(executionResponse.getNextPage()) && !executionResponse.getNextPage().equals(nextPage);
         nextPage = executionResponse.getNextPage();
       } while (hasNextPage);
+    }
+
+    /** transaction DB 저장 후 publishment message produce
+     *  @author hyunjun
+     */
+    if (billPublishmentHelper != null) {
+      financeMessageService.producePublishmentRequested(billPublishmentHelper.getMessageTopic(),
+          billPublishmentHelper.makePublishmentRequestedMessage(executionContext));
     }
 
     userSyncStatusService.updateUserSyncStatus(
@@ -152,18 +191,5 @@ public class BillServiceImpl<BillRequest, Bill, BillTransactionRequest, BillTran
         executionContext.getSyncStartedAt(),
         0L
     );
-
-    return billDetailsAll;
-  }
-
-
-  private void checkResponseAndThrow(ExecutionResponse<BillResponse> executionResponse) throws ResponseNotOkException {
-    BillResponse billResponse = executionResponse.getResponse();
-
-    if (executionResponse.getHttpStatusCode() != HttpStatus.OK.value()) {
-
-      throw new ResponseNotOkException(executionResponse.getHttpStatusCode(), billResponse.getRspCode(),
-          billResponse.getRspMsg());
-    }
   }
 }

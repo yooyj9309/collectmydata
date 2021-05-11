@@ -21,9 +21,11 @@ import java.util.stream.Stream;
 
 import static com.banksalad.collectmydata.common.util.NumberUtil.bigDecimalOf;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.BANKSALAD_USER_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.CONSENT_ID;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.NEW_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_SYNCED_AT;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.ORGANIZATION_ID;
+import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.SYNC_REQUEST_ID;
 
 public class BillBasicInvocationContextProvider implements TestTemplateInvocationContextProvider {
 
@@ -46,6 +48,8 @@ public class BillBasicInvocationContextProvider implements TestTemplateInvocatio
         .chargeMonth(202103)
         .paidOutDate("20210314")
         .cardType("01")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     BillEntity main2 = BillEntity.builder()
         .syncedAt(OLD_SYNCED_AT)
@@ -56,6 +60,8 @@ public class BillBasicInvocationContextProvider implements TestTemplateInvocatio
         .chargeMonth(202102)
         .paidOutDate("20210214")
         .cardType("01")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     BillEntity main3 = BillEntity.builder()
         .syncedAt(OLD_SYNCED_AT)
@@ -66,6 +72,8 @@ public class BillBasicInvocationContextProvider implements TestTemplateInvocatio
         .chargeMonth(202103)
         .paidOutDate("20210317")
         .cardType("02")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     Map<String, BillEntity> mainMap = Map.of(
         "main1", main1,

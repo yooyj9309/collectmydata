@@ -56,4 +56,9 @@ public class BillEntity extends BaseEntity {
 
   @Column(nullable = false)
   private String paidOutDate;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
 }

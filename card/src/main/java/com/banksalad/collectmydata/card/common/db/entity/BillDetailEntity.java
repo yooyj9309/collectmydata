@@ -73,4 +73,9 @@ public class BillDetailEntity extends BaseEntity {
 
   @Column(nullable = false)
   private String prodType;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
 }

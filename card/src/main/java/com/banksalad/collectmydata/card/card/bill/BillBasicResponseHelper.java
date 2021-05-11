@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import com.banksalad.collectmydata.card.card.dto.BillBasic;
 import com.banksalad.collectmydata.card.card.dto.ListBillBasicResponse;
 import com.banksalad.collectmydata.card.common.db.entity.BillEntity;
+import com.banksalad.collectmydata.card.common.db.entity.BillHistoryEntity;
 import com.banksalad.collectmydata.card.common.db.repository.BillHistoryRepository;
 import com.banksalad.collectmydata.card.common.db.repository.BillRepository;
 import com.banksalad.collectmydata.card.common.mapper.BillHistoryMapper;
@@ -60,10 +61,14 @@ public class BillBasicResponseHelper implements BillResponseHelper<BillBasic> {
       billEntity.setSyncedAt(syncedAt);
       billEntity.setBanksaladUserId(banksaladUserId);
       billEntity.setOrganizationId(organizationId);
+      billEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+      billEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+      billEntity.setConsentId(executionContext.getConsentId());
+      billEntity.setSyncRequestId(executionContext.getSyncRequestId());
 
       /* insert */
       billRepository.save(billEntity);
-      billHistoryRepository.save(billHistoryMapper.toHistoryEntity(billEntity));
+      billHistoryRepository.save(billHistoryMapper.toHistoryEntity(billEntity, BillHistoryEntity.builder().build()));
     });
   }
 }

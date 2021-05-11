@@ -13,13 +13,30 @@ public interface BillService<BillRequest, Bill, BillTransactionRequest, BillTran
       Execution execution,
       BillRequestHelper<BillRequest> requestHelper,
       BillResponseHelper<Bill> responseHelper
-  ) throws ResponseNotOkException;
+  );
 
-  List<BillTransaction> listBillTransactions(
+  List<Bill> listBills(
+      ExecutionContext executionContext,
+      Execution execution,
+      BillRequestHelper<BillRequest> requestHelper,
+      BillResponseHelper<Bill> responseHelper,
+      BillPublishmentHelper billPublishmentHelper
+  );
+
+  void listBillDetails(
       ExecutionContext executionContext,
       Execution execution,
       List<Bill> bills,
       BillTransactionRequestHelper<BillTransactionRequest, Bill> requestHelper,
       BillTransactionResponseHelper<Bill, BillTransaction> responseHelper
+  );
+
+  void listBillDetails(
+      ExecutionContext executionContext,
+      Execution execution,
+      List<Bill> bills,
+      BillTransactionRequestHelper<BillTransactionRequest, Bill> requestHelper,
+      BillTransactionResponseHelper<Bill, BillTransaction> responseHelper,
+      BillPublishmentHelper billPublishmentHelper
   );
 }

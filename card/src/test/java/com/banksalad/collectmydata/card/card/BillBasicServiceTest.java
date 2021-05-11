@@ -80,11 +80,11 @@ public class BillBasicServiceTest extends ServiceTest<Object, Object, BillEntity
 
     final Integer status = testCase.getExpectedResponses().get(testCase.getExpectedResponses().size() - 1).getStatus();
 
-    if (status != null && status != STATUS_OK) { // if (mainService instanceof SummaryService)
-      runAndTestException(testCase);
-    } else {
+//    if (status != null && status != STATUS_OK) { // if (mainService instanceof SummaryService)
+//      runAndTestException(testCase);
+//    } else {
       runMainService(testCase);
-    }
+//    }
 
     validate(testCase);
   }

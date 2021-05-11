@@ -8,6 +8,7 @@ public class FinanceConstant {
   public static final String[] INVALID_RESPONSE_CODE = {"40305", "40404"};
 
   public static final int DEFAULT_SEARCH_YEAR = 5;
+  public static final int BILL_DEFAUTL_SEARCH_MONTH = 13;
   public static final int DEFAULT_PAGING_LIMIT = 500;
   public static final String CURRENCY_KRW = "KRW";
 
