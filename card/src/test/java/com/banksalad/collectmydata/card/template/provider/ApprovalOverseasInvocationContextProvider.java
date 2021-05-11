@@ -85,6 +85,8 @@ public class ApprovalOverseasInvocationContextProvider implements TestTemplateIn
         .approvedAmt(bigDecimalOf(5000, 3))
         .countryCode("US")
         .currencyCode("USD")
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     ApprovalOverseasEntity main2 = ApprovalOverseasEntity.builder()
         .approvalYearMonth(202103)
@@ -102,6 +104,8 @@ public class ApprovalOverseasInvocationContextProvider implements TestTemplateIn
         .countryCode("KR")
         .currencyCode("KRW")
         .krwAmt(bigDecimalOf(15000,3))
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     ApprovalOverseasEntity main3 = ApprovalOverseasEntity.builder()
         .approvalYearMonth(202103)
@@ -118,10 +122,12 @@ public class ApprovalOverseasInvocationContextProvider implements TestTemplateIn
         .countryCode("KR")
         .currencyCode("KRW")
         .krwAmt(bigDecimalOf(3000,3))
+        .consentId(CONSENT_ID)
+        .syncRequestId(SYNC_REQUEST_ID)
         .build();
     Map<String, ApprovalOverseasEntity> mainMap = Map.of(
         "main1", main1,
-        "updatedMain1", main1.toBuilder().syncedAt(NEW_SYNCED_AT).approvedAmt(bigDecimalOf(5,3)).build(),
+        "updatedMain1", main1.toBuilder().syncedAt(NEW_SYNCED_AT).approvedAmt(bigDecimalOf(5000,3)).build(),
         "newMain1", main1.toBuilder().syncedAt(NEW_SYNCED_AT).build(),
         "newMain2", main2.toBuilder().syncedAt(NEW_SYNCED_AT).build(),
         "newMain3", main3.toBuilder().syncedAt(NEW_SYNCED_AT).build()

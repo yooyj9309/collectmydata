@@ -3,13 +3,19 @@ package com.banksalad.collectmydata.card;
 
 import org.springframework.stereotype.Service;
 
+import com.banksalad.collectmydata.card.card.transaction.ApprovalDomesticPublishmentHelper;
+import com.banksalad.collectmydata.card.card.transaction.ApprovalOverseasPublishmentHelper;
+import com.banksalad.collectmydata.card.card.accountInfo.CardAccountInfoPublishmentHelper;
 import com.banksalad.collectmydata.card.card.bill.BillBasicPublishmentHelper;
 import com.banksalad.collectmydata.card.card.bill.BillDetailPublishmentHelper;
-import com.banksalad.collectmydata.card.card.accountInfo.CardAccountInfoPublishmentHelper;
+import com.banksalad.collectmydata.card.card.dto.ApprovalDomestic;
+import com.banksalad.collectmydata.card.card.dto.ApprovalOverseas;
 import com.banksalad.collectmydata.card.card.dto.BillBasic;
 import com.banksalad.collectmydata.card.card.dto.BillDetail;
 import com.banksalad.collectmydata.card.card.dto.CardBasic;
 import com.banksalad.collectmydata.card.card.dto.GetCardBasicRequest;
+import com.banksalad.collectmydata.card.card.dto.ListApprovalDomesticRequest;
+import com.banksalad.collectmydata.card.card.dto.ListApprovalOverseasRequest;
 import com.banksalad.collectmydata.card.card.dto.ListBillBasicRequest;
 import com.banksalad.collectmydata.card.card.dto.ListBillDetailRequest;
 import com.banksalad.collectmydata.card.card.dto.ListPaymentsRequest;
@@ -50,6 +56,9 @@ import com.banksalad.collectmydata.finance.api.bill.BillTransactionResponseHelpe
 import com.banksalad.collectmydata.finance.api.summary.SummaryRequestHelper;
 import com.banksalad.collectmydata.finance.api.summary.SummaryResponseHelper;
 import com.banksalad.collectmydata.finance.api.summary.SummaryService;
+import com.banksalad.collectmydata.finance.api.transaction.TransactionApiService;
+import com.banksalad.collectmydata.finance.api.transaction.TransactionRequestHelper;
+import com.banksalad.collectmydata.finance.api.transaction.TransactionResponseHelper;
 import com.banksalad.collectmydata.finance.api.userbase.UserBaseRequestHelper;
 import com.banksalad.collectmydata.finance.api.userbase.UserBaseResponseHelper;
 import com.banksalad.collectmydata.finance.api.userbase.UserBaseService;
@@ -110,6 +119,18 @@ public class CardApiServiceImpl implements CardApiService {
   private final UserBaseResponseHelper<List<Payment>> paymentResponseHelper;
   private final PaymentPublishmentHelper paymentPublishmentHelper;
 
+  // ApprovalDomestic 6.3.7
+  private final TransactionApiService<CardSummary, ListApprovalDomesticRequest, ApprovalDomestic> approvalDomesticService;
+  private final TransactionRequestHelper<CardSummary, ListApprovalDomesticRequest> approvalDomesticRequestHelper;
+  private final TransactionResponseHelper<CardSummary, ApprovalDomestic> approvalDomesticResponseHelper;
+  private final ApprovalDomesticPublishmentHelper approvalDomesticPublishmentHelper;
+
+  // ApprovalOverseas 6.3.8
+  private final TransactionApiService<CardSummary, ListApprovalOverseasRequest, ApprovalOverseas> approvalOverseasService;
+  private final TransactionRequestHelper<CardSummary, ListApprovalOverseasRequest> approvalOverseasRequestHelper;
+  private final TransactionResponseHelper<CardSummary, ApprovalOverseas> approvalOverseasResponseHelper;
+  private final ApprovalOverseasPublishmentHelper approvalOverseasPublishmentHelper;
+
   // LoanSummary 6.3.9
   private final UserBaseService<GetLoanSummaryRequest, LoanSummary> loanSummaryUserBaseService;
   private final UserBaseRequestHelper<GetLoanSummaryRequest> loanSummaryRequestHelper;
@@ -164,7 +185,6 @@ public class CardApiServiceImpl implements CardApiService {
         .listBills(executionContext, Executions.finance_card_bills, billBasicRequestHelper, billBasicResponseHelper,
             billBasicPublishmentHelper);
 
-    // TODO (hyujun) : summary 외에 나머지 api 추가.
     CompletableFuture.allOf(
         CompletableFuture
             .runAsync(() -> accountInfoService.listAccountInfos(executionContext, Executions.finance_card_basic,
@@ -172,7 +192,8 @@ public class CardApiServiceImpl implements CardApiService {
             ).handle(this::handleException),
 
         CompletableFuture.runAsync(() -> billService
-            .listBillDetails(executionContext, Executions.finance_card_bills_detail, billBasics, billDetailRequestHelper,
+            .listBillDetails(executionContext, Executions.finance_card_bills_detail, billBasics,
+                billDetailRequestHelper,
                 billDetailResponseHelper, billDetailPublishmentHelper)).handle(this::handleException),
 
         CompletableFuture
@@ -184,6 +205,15 @@ public class CardApiServiceImpl implements CardApiService {
             .runAsync(() -> paymentUserBaseService
                 .getUserBaseInfo(executionContext, Executions.finance_card_payment, paymentRequestHelper,
                     paymentResponseHelper, paymentPublishmentHelper)).handle(this::handleException),
+
+        CompletableFuture.runAsync(() -> approvalDomesticService
+            .listTransactions(executionContext, Executions.finance_card_approval_domestic,
+                approvalDomesticRequestHelper, approvalDomesticResponseHelper, approvalDomesticPublishmentHelper)),
+
+        CompletableFuture.runAsync(
+            () -> approvalOverseasService.listTransactions(executionContext, Executions.finance_card_approval_overseas,
+                approvalOverseasRequestHelper, approvalOverseasResponseHelper, approvalOverseasPublishmentHelper))
+            .handle(this::handleException),
 
         CompletableFuture.runAsync(() -> loanSummaryUserBaseService
             .getUserBaseInfo(executionContext, Executions.finance_loan_summary, loanSummaryRequestHelper,

@@ -73,4 +73,9 @@ public class ApprovalOverseasEntity extends BaseEntity {
 
   @Column(precision = 18, scale = 3)
   private BigDecimal krwAmt;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
 }

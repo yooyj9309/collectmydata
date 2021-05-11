@@ -20,8 +20,9 @@ import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
-import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD_FOR_TESTBED;
 
 @Component
 @RequiredArgsConstructor
@@ -38,9 +39,14 @@ public class ApprovalDomesticResponseHelper implements TransactionResponseHelper
     return response.getApprovalDomestics();
   }
 
+  /**
+   * 기존 데이터와 비교 후 데이터가 동일하면 skip, 하나라도 다르면 save()한다. update하지 않고 history 쌓는 느낌.
+   * @author hyunjun
+   */
   @Override
   public void saveTransactions(ExecutionContext executionContext, CardSummary cardSummary,
       List<ApprovalDomestic> approvalDomestics) {
+
     approvalDomestics.forEach(approvalDomestic -> {
       ApprovalDomesticEntity approvalDomesticEntity = approvalDomesticMapper.dtoToEntity(approvalDomestic);
       if (approvalDomestic.getTotalInstallCnt() < 1) {
@@ -52,8 +58,12 @@ public class ApprovalDomesticResponseHelper implements TransactionResponseHelper
       approvalDomesticEntity.setBanksaladUserId(executionContext.getBanksaladUserId());
       approvalDomesticEntity.setOrganizationId(executionContext.getOrganizationId());
       approvalDomesticEntity.setCardId(cardSummary.getCardId());
+      approvalDomesticEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+      approvalDomesticEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+      approvalDomesticEntity.setConsentId(executionContext.getConsentId());
+      approvalDomesticEntity.setSyncRequestId(executionContext.getSyncRequestId());
 
-      ApprovalDomesticEntity existingApprovalDomesticEntity = approvalDomesticRepository
+      Optional<ApprovalDomesticEntity> existingEntity = approvalDomesticRepository
           .findByBanksaladUserIdAndOrganizationIdAndApprovalYearMonthAndCardIdAndApprovedNumAndStatus(
               approvalDomesticEntity.getBanksaladUserId(),
               approvalDomesticEntity.getOrganizationId(),
@@ -61,15 +71,15 @@ public class ApprovalDomesticResponseHelper implements TransactionResponseHelper
               approvalDomesticEntity.getCardId(),
               approvalDomesticEntity.getApprovedNum(),
               approvalDomesticEntity.getStatus()
-          )
-          .map(foundApprovalDomesticEntity -> {
-            approvalDomesticEntity.setId(foundApprovalDomesticEntity.getId());
-            return foundApprovalDomesticEntity;
-          })
-          .orElseGet(() -> ApprovalDomesticEntity.builder().build());
+          );
 
-      if (!ObjectComparator.isSame(approvalDomesticEntity, existingApprovalDomesticEntity, ENTITY_EXCLUDE_FIELD)) {
+      if (existingEntity.isEmpty()) {
         approvalDomesticRepository.save(approvalDomesticEntity);
+      }
+      if (existingEntity.isPresent()) {
+        if (!ObjectComparator.isSame(approvalDomesticEntity, existingEntity.get(), ENTITY_EXCLUDE_FIELD_FOR_TESTBED)) {
+          approvalDomesticRepository.save(approvalDomesticEntity);
+        }
       }
     });
   }

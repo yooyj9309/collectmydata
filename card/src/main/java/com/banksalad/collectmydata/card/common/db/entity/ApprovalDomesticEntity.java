@@ -66,4 +66,9 @@ public class ApprovalDomesticEntity extends BaseEntity {
   private BigDecimal approvedAmt;
 
   private Integer totalInstallCnt;
+
+  @Column(nullable = false)
+  private String consentId;
+
+  private String syncRequestId;
 }

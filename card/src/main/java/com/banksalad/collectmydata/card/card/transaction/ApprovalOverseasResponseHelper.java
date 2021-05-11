@@ -21,9 +21,10 @@ import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.CURRENCY_KRW;
-import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD_FOR_TESTBED;
 
 @Component
 @RequiredArgsConstructor
@@ -60,8 +61,12 @@ public class ApprovalOverseasResponseHelper implements TransactionResponseHelper
       approvalOverseasEntity.setBanksaladUserId(banksaladUserId);
       approvalOverseasEntity.setOrganizationId(organizationId);
       approvalOverseasEntity.setCardId(cardId);
+      approvalOverseasEntity.setCreatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+      approvalOverseasEntity.setUpdatedBy(String.valueOf(executionContext.getBanksaladUserId()));
+      approvalOverseasEntity.setConsentId(executionContext.getConsentId());
+      approvalOverseasEntity.setSyncRequestId(executionContext.getSyncRequestId());
 
-      ApprovalOverseasEntity existingApprovalOverseasEntity = approvalOverseasRepository
+      Optional<ApprovalOverseasEntity> existingEntity = approvalOverseasRepository
           .findByApprovalYearMonthAndBanksaladUserIdAndOrganizationIdAndCardIdAndApprovedNumAndStatus(
               approvalOverseasEntity.getApprovalYearMonth(),
               approvalOverseasEntity.getBanksaladUserId(),
@@ -69,15 +74,15 @@ public class ApprovalOverseasResponseHelper implements TransactionResponseHelper
               approvalOverseasEntity.getCardId(),
               approvalOverseasEntity.getApprovedNum(),
               approvalOverseasEntity.getStatus()
-          )
-          .map(foundApprovalOverseasEntity -> {
-            approvalOverseasEntity.setId(foundApprovalOverseasEntity.getId());
-            return foundApprovalOverseasEntity;
-          })
-          .orElseGet(() -> ApprovalOverseasEntity.builder().build());
+          );
 
-      if (!ObjectComparator.isSame(approvalOverseasEntity, existingApprovalOverseasEntity, ENTITY_EXCLUDE_FIELD)) {
+      if (existingEntity.isEmpty()) {
         approvalOverseasRepository.save(approvalOverseasEntity);
+      }
+      if (existingEntity.isPresent()) {
+        if (!ObjectComparator.isSame(approvalOverseasEntity, existingEntity.get(), ENTITY_EXCLUDE_FIELD_FOR_TESTBED)) {
+          approvalOverseasRepository.save(approvalOverseasEntity);
+        }
       }
     });
   }
