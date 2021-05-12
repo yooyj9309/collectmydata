@@ -25,7 +25,9 @@ public class LoanSummaryServiceImpl implements LoanSummaryService {
 
   @Override
   public List<LoanSummary> listLoanSummaries(long banksaladUserId, String organizationId) {
-    return loanSummaryRepository.findAllByBanksaladUserIdAndOrganizationId(banksaladUserId, organizationId).stream()
+    return loanSummaryRepository
+        .findAllByBanksaladUserIdAndOrganizationIdAndConsentIsTrue(banksaladUserId, organizationId)
+        .stream()
         .map(loanSummaryMapper::entityToDto)
         .collect(Collectors.toList());
   }

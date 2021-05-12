@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.insu.common.mapper;
 
 import com.banksalad.collectmydata.insu.common.db.entity.InsuranceSummaryEntity;
+import com.banksalad.collectmydata.insu.publishment.summary.dto.InsuranceSummaryPublishmentResponse;
 import com.banksalad.collectmydata.insu.summary.dto.InsuranceSummary;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -23,4 +24,6 @@ public interface InsuranceSummaryMapper {
   void mergeDtoToEntity(InsuranceSummary insuranceSummary, @MappingTarget InsuranceSummaryEntity entity);
 
   InsuranceSummary entityToDto(InsuranceSummaryEntity entity);
+
+  InsuranceSummaryPublishmentResponse entityToPublishmentDto(InsuranceSummaryEntity insuranceSummaryEntity);
 }

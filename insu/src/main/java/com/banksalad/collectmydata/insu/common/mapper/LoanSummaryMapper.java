@@ -1,6 +1,7 @@
 package com.banksalad.collectmydata.insu.common.mapper;
 
 import com.banksalad.collectmydata.insu.common.db.entity.LoanSummaryEntity;
+import com.banksalad.collectmydata.insu.publishment.summary.dto.LoanSummaryPublishmentResponse;
 import com.banksalad.collectmydata.insu.summary.dto.LoanSummary;
 
 import org.mapstruct.Mapper;
@@ -22,4 +23,6 @@ public interface LoanSummaryMapper {
   void mergeDtoToEntity(LoanSummary loanSummary, @MappingTarget LoanSummaryEntity loanSummaryEntity);
 
   LoanSummary entityToDto(LoanSummaryEntity entity);
+
+  LoanSummaryPublishmentResponse entityToPublishmentDto(LoanSummaryEntity loanSummaryEntity);
 }
