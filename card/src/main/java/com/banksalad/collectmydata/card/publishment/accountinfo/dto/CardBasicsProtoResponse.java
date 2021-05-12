@@ -1,6 +1,5 @@
 package com.banksalad.collectmydata.card.publishment.accountinfo.dto;
 
-import com.banksalad.collectmydata.card.card.dto.CardBasic;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.common.util.NumberUtil;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatacardProto;
@@ -33,8 +32,8 @@ public class CardBasicsProtoResponse {
             .setCardBrand(cardBasicPublishment.getCardBrand())
             .setAnnualFee3F(NumberUtil.multiply1000(cardBasicPublishment.getAnnualFee()))
             .setIssueDate(cardBasicPublishment.getIssueDate())
-            .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(cardBasicPublishment.getCreatedAt()))
-            .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(cardBasicPublishment.getUpdatedAt()))
+            .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(cardBasicPublishment.getCreatedAt()))
+            .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(cardBasicPublishment.getUpdatedAt()))
             .build())
         .collect(Collectors.toList());
 

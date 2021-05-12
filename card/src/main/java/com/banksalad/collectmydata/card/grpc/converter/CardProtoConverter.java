@@ -36,8 +36,8 @@ public class CardProtoConverter {
         .setChargeMonth(String.valueOf(billBasicPublishment.getChargeMonth()))
         .setPaidOutDate(billBasicPublishment.getPaidOutDate())
         .setCardType(billBasicPublishment.getCardType())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(billBasicPublishment.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(billBasicPublishment.getUpdatedAt()))
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(billBasicPublishment.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(billBasicPublishment.getUpdatedAt()))
         .build();
   }
 
@@ -71,8 +71,8 @@ public class CardProtoConverter {
         .setCreditFeeAmt3F(
             toInt64ValueMultiply1000(billDetailPublishment.getCreditFeeAmt()).getValue())
         .setProdType(billDetailPublishment.getProdType())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(billDetailPublishment.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(billDetailPublishment.getUpdatedAt())).build();
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(billDetailPublishment.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(billDetailPublishment.getUpdatedAt())).build();
   }
 
   // 6.3.6
@@ -87,8 +87,8 @@ public class CardProtoConverter {
     return builder
         .setPayDueDate(paymentPublishment.getPayDueDate())
         .setPayAmt3F(toInt64ValueMultiply1000(paymentPublishment.getPayAmt()).getValue())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(paymentPublishment.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(paymentPublishment.getUpdatedAt())).build();
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(paymentPublishment.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(paymentPublishment.getUpdatedAt())).build();
   }
 
   // 6.3.7
@@ -111,8 +111,8 @@ public class CardProtoConverter {
         .setApprovedDtime(approvalDomesticPublishment.getApprovedDtime())
         .setMerchantName(approvalDomesticPublishment.getMerchantName())
         .setApprovedAmt3F(toInt64ValueMultiply1000(approvalDomesticPublishment.getApprovedAmt()).getValue())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(approvalDomesticPublishment.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(approvalDomesticPublishment.getCreatedAt()))
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(approvalDomesticPublishment.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(approvalDomesticPublishment.getCreatedAt()))
         .build();
   }
 
@@ -137,8 +137,8 @@ public class CardProtoConverter {
         .setMerchantName(approvalOverseasPublishment.getMerchantName())
         .setApprovedAmt3F(toInt64ValueMultiply1000(approvalOverseasPublishment.getApprovedAmt()).getValue())
         .setCountryCode(approvalOverseasPublishment.getCountryCode())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(approvalOverseasPublishment.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(approvalOverseasPublishment.getUpdatedAt()))
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(approvalOverseasPublishment.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(approvalOverseasPublishment.getUpdatedAt()))
         .build();
   }
 
@@ -162,8 +162,8 @@ public class CardProtoConverter {
         .setBalanceAmt3F(toInt64ValueMultiply1000(loanLongTermPublishment.getBalanceAmt()).getValue())
         .setRepayMethod(loanLongTermPublishment.getRepayMethod())
         .setIntAmt3F(toInt64ValueMultiply1000(loanLongTermPublishment.getIntAmt()).getValue())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(loanLongTermPublishment.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(loanLongTermPublishment.getUpdatedAt()))
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(loanLongTermPublishment.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(loanLongTermPublishment.getUpdatedAt()))
         .build();
   }
 }

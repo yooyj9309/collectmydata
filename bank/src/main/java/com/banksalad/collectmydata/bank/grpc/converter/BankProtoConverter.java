@@ -54,8 +54,8 @@ public class BankProtoConverter {
         .setProdName(summaryResponse.getProdName())
         .setAccountType(summaryResponse.getAccountType())
         .setAccountStatus(summaryResponse.getAccountStatus())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(summaryResponse.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(summaryResponse.getUpdatedAt()))
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(summaryResponse.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(summaryResponse.getUpdatedAt()))
         .build();
   }
 
@@ -83,8 +83,8 @@ public class BankProtoConverter {
         .setSavingMethod(basicResponse.getSavingMethod())
         .setHolderName(basicResponse.getHolderName())
         .setIssueDate(basicResponse.getIssueDate())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(basicResponse.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(basicResponse.getUpdatedAt()))
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(basicResponse.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(basicResponse.getUpdatedAt()))
         .build();
   }
 
@@ -104,8 +104,8 @@ public class BankProtoConverter {
         .setBalanceAmt3F(toInt64ValueMultiply1000(detailResponse.getBalanceAmt()).getValue())
         .setWithdrawableAmt3F(toInt64ValueMultiply1000(detailResponse.getWithdrawableAmt()).getValue())
         .setOfferedRate5F(toInt64ValueMultiply100000(detailResponse.getOfferedRate()).getValue())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(detailResponse.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(detailResponse.getUpdatedAt()))
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(detailResponse.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(detailResponse.getUpdatedAt()))
         .build();
   }
 
@@ -132,8 +132,8 @@ public class BankProtoConverter {
         .setTransClass(transactionResponse.getTransClass())
         .setTransAmt3F(toInt64ValueMultiply1000(transactionResponse.getTransAmt()).getValue())
         .setBalanceAmt3F(toInt64ValueMultiply1000(transactionResponse.getBalanceAmt()).getValue())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(transactionResponse.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(transactionResponse.getUpdatedAt()))
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(transactionResponse.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(transactionResponse.getUpdatedAt()))
         .build();
   }
 
@@ -152,8 +152,8 @@ public class BankProtoConverter {
         .setStandardFundCode(basicResponse.getStandardFundCode())
         .setPaidInType(basicResponse.getPaidInType())
         .setIssueDate(basicResponse.getIssueDate())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(basicResponse.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(basicResponse.getUpdatedAt()))
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(basicResponse.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(basicResponse.getUpdatedAt()))
         .build();
   }
 
@@ -173,8 +173,8 @@ public class BankProtoConverter {
         .setBalanceAmt3F(toInt64ValueMultiply1000(detailResponse.getBalanceAmt()).getValue())
         .setEvalAmt3F(toInt64ValueMultiply1000(detailResponse.getEvalAmt()).getValue())
         .setInvPrincipal3F(toInt64ValueMultiply1000(detailResponse.getInvPrincipal()).getValue())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(detailResponse.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(detailResponse.getUpdatedAt()))
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(detailResponse.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(detailResponse.getUpdatedAt()))
         .build();
   }
 
@@ -203,8 +203,8 @@ public class BankProtoConverter {
         .setTransType(transactionResponse.getTransType())
         .setTransAmt3F(toInt64ValueMultiply1000(transactionResponse.getTransAmt()).getValue())
         .setBalanceAmt3F(toInt64ValueMultiply1000(transactionResponse.getBalanceAmt()).getValue())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(transactionResponse.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(transactionResponse.getUpdatedAt()))
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(transactionResponse.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(transactionResponse.getUpdatedAt()))
         .build();
   }
 
@@ -232,8 +232,8 @@ public class BankProtoConverter {
         .setExpDate(basicResponse.getExpDate())
         .setLastOfferedRate3F(toInt64ValueMultiply1000(basicResponse.getLastOfferedRate()).getValue())
         .setRepayMethod(basicResponse.getRepayMethod())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(basicResponse.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(basicResponse.getUpdatedAt()))
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(basicResponse.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(basicResponse.getUpdatedAt()))
         .build();
   }
 
@@ -248,8 +248,8 @@ public class BankProtoConverter {
         .setBalanceAmt3F(toInt64ValueMultiply1000(detailResponse.getBalanceAmt()).getValue())
         .setLoanPrincipal3F(toInt64ValueMultiply1000(detailResponse.getLoanPrincipal()).getValue())
         .setNextRepayDate(detailResponse.getNextRepayDate())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(detailResponse.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(detailResponse.getUpdatedAt()))
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(detailResponse.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(detailResponse.getUpdatedAt()))
         .build();
   }
 
@@ -273,8 +273,8 @@ public class BankProtoConverter {
         .setIntAmt3F(toInt64ValueMultiply1000(transactionResponse.getIntAmt()).getValue())
         .addAllLoanAccountTransactionInterests(
             toBankLoanAccountTransactionInterests(transactionResponse.getLoanAccountTransactionInterests()))
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(transactionResponse.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(transactionResponse.getUpdatedAt()))
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(transactionResponse.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(transactionResponse.getUpdatedAt()))
         .build();
   }
 

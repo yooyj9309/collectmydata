@@ -26,8 +26,8 @@ public class CardLoanSummaryProtoResponse {
         .setIsLoanRevolving(loanSummaryPublishment.isLoanRevolving())
         .setIsLoanShortTerm(loanSummaryPublishment.isLoanShortTerm())
         .setIsLoanLongTerm(loanSummaryPublishment.isLoanLongTerm())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(loanSummaryPublishment.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(loanSummaryPublishment.getUpdatedAt()))
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(loanSummaryPublishment.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(loanSummaryPublishment.getUpdatedAt()))
         .build()).collect(Collectors.toList());
 
     return ListCardLoanSummariesResponse.newBuilder()

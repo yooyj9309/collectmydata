@@ -1,12 +1,11 @@
 package com.banksalad.collectmydata.finance.common.service;
 
+import org.springframework.stereotype.Service;
+
 import com.banksalad.collectmydata.common.collect.executor.ApiLog;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.common.db.entity.ApiLogEntity;
 import com.banksalad.collectmydata.finance.common.db.repository.ApiLogRepository;
-
-import org.springframework.stereotype.Service;
-
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import lombok.Builder;
@@ -92,8 +91,8 @@ public class ApiLogServiceImpl implements ApiLogService {
     apiLogEntity.setUpdatedBy(String.valueOf(banksaladUserId));
 
     if (apiLogEntity.getRequestDtime() != null) {
-      long elapsedTime = DateUtil.utcLocalDateTimeToEpochMilliSecond(apiLogEntity.getResponseDtime()) - DateUtil
-          .utcLocalDateTimeToEpochMilliSecond(apiLogEntity.getRequestDtime());
+      long elapsedTime = DateUtil.kstLocalDateTimeToEpochMilliSecond(apiLogEntity.getResponseDtime()) - DateUtil
+          .kstLocalDateTimeToEpochMilliSecond(apiLogEntity.getRequestDtime());
       apiLogEntity.setElapsedTime(elapsedTime);
     }
 

@@ -1,6 +1,5 @@
 package com.banksalad.collectmydata.card.publishment.summary.dto;
 
-import com.banksalad.collectmydata.card.summary.dto.CardSummary;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatacardProto;
 import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatacardProto.ListCardSummariesResponse;
@@ -29,8 +28,8 @@ public class CardSummariesProtoResponse {
             .setIsConsent(cardSummaryPublishment.isConsent())
             .setCardName(cardSummaryPublishment.getCardName())
             .setCardMember(cardSummaryPublishment.getCardMember())
-            .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(cardSummaryPublishment.getCreatedAt()))
-            .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(cardSummaryPublishment.getUpdatedAt()))
+            .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(cardSummaryPublishment.getCreatedAt()))
+            .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(cardSummaryPublishment.getUpdatedAt()))
             .build())
         .collect(Collectors.toList());
 

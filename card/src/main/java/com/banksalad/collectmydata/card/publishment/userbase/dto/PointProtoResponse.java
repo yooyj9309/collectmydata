@@ -26,8 +26,8 @@ public class PointProtoResponse {
         .setPointName(pointPublishment.getPointName())
         .setRemainPointAmt(pointPublishment.getRemainPointAmt())
         .setExpiringPointAmt(pointPublishment.getExpiringPointAmt())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(pointPublishment.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(pointPublishment.getUpdatedAt())).build())
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(pointPublishment.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(pointPublishment.getUpdatedAt())).build())
         .collect(Collectors.toList());
 
     return ListCardPointsResponse.newBuilder()

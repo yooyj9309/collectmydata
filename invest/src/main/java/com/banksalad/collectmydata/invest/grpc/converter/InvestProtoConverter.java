@@ -29,8 +29,8 @@ public class InvestProtoConverter {
         .setAccountName(summary.getAccountName())
         .setAccountType(summary.getAccountType())
         .setAccountStatus(summary.getAccountStatus())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(summary.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(summary.getUpdatedAt()))
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(summary.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(summary.getUpdatedAt()))
         .build();
   }
 
@@ -43,8 +43,8 @@ public class InvestProtoConverter {
         .setCreditLoanAmt3F(basic.getCreditLoanAmt().multiply(BigDecimal.valueOf(SCALE_3F)).longValueExact())
         .setMortgageAmt3F(basic.getMortgageAmt().multiply(BigDecimal.valueOf(SCALE_3F)).longValueExact())
         .setCurrencyCode(basic.getCurrencyCode())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(basic.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(basic.getUpdatedAt()))
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(basic.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(basic.getUpdatedAt()))
         .build();
   }
 
@@ -67,8 +67,8 @@ public class InvestProtoConverter {
         .setSettleAmt3F(transaction.getSettleAmt().multiply(BigDecimal.valueOf(SCALE_3F)).longValueExact())
         .setBalanceAmt3F(transaction.getBalanceAmt().multiply(BigDecimal.valueOf(SCALE_3F)).longValueExact())
         .setCurrencyCode(transaction.getCurrencyCode())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(transaction.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(transaction.getUpdatedAt()));
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(transaction.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(transaction.getUpdatedAt()));
 
     return builder.build();
   }
@@ -132,8 +132,8 @@ public class InvestProtoConverter {
     }
 
     builder.setCurrencyCode(product.getCurrencyCode())
-        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(product.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(product.getUpdatedAt()));
+        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(product.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(product.getUpdatedAt()));
 
     return builder.build();
   }
