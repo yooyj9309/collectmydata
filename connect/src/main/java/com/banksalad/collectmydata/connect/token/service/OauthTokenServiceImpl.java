@@ -52,6 +52,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.banksalad.collectmydata.common.util.DateUtil.KST_ZONE_ID;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -364,7 +366,7 @@ public class OauthTokenServiceImpl implements OauthTokenService {
   }
 
   private boolean isTokenExpired(LocalDateTime expirationTime) {
-    return expirationTime.isBefore(LocalDateTime.now());
+    return expirationTime.isBefore(LocalDateTime.now(KST_ZONE_ID));
   }
 
   private String generateRequestToken(String token) {

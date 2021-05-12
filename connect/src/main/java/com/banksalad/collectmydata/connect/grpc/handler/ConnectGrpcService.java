@@ -269,8 +269,10 @@ public class ConnectGrpcService extends CollectmydataconnectGrpc.Collectmydataco
           .build();
       responseObserver.onNext(organizationForFinanceProtoResponse.toListFinanceOrganizationsProto());
       responseObserver.onCompleted();
+
     } catch (GrpcException e) {
       responseObserver.onError(e.handle());
+
     } catch (Exception e) {
       log.error("listFinanceOrganizations error message,{}", e.getMessage(), e);
       responseObserver.onError(new GrpcException().handle());
@@ -293,10 +295,12 @@ public class ConnectGrpcService extends CollectmydataconnectGrpc.Collectmydataco
           .build();
       responseObserver.onNext(organizationForFinanceProtoResponse.toListConnectedFinanceOrganizationsProto());
       responseObserver.onCompleted();
+
     } catch (GrpcException e) {
       responseObserver.onError(e.handle());
+
     } catch (Exception e) {
-      log.error("listFinanceOrganizations error message,{}", e.getMessage(), e);
+      log.error("listConnectedFinanceOrganizations error message,{}", e.getMessage(), e);
       responseObserver.onError(new GrpcException().handle());
     }
   }

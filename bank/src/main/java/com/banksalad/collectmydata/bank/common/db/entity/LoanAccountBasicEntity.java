@@ -52,7 +52,7 @@ public class LoanAccountBasicEntity extends BaseEntity {
 
   private String expDate;
 
-  @Column(nullable = false, precision = 5, scale = 3)
+  @Column(nullable = false, precision = 7, scale = 5)
   private BigDecimal lastOfferedRate;
 
   private String repayDate;

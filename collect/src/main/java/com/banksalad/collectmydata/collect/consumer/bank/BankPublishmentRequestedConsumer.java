@@ -39,15 +39,12 @@ public class BankPublishmentRequestedConsumer {
       LoggingMdcUtil
           .set(Sector.FINANCE.name(), Industry.BANK.name(), message.getBanksaladUserId(), message.getOrganizationId(),
               message.getSyncRequestId());
-      log.info("[collect] consume PublishmentRequestedBankMessage. financeSyncItem: {}, syncRequestId: {}",
-          message.getFinanceSyncItem(), message.getSyncRequestId());
 
       /* notify */
       financeStub.notifyCollectmydatabankSynced(message.toNotifyRequest(),
           new StreamObserver<>() {
             @Override
             public void onNext(NotifyCollectmydatabankSyncedResponse value) {
-
             }
 
             @Override
