@@ -13,6 +13,8 @@ public interface InsuranceContractRepository extends JpaRepository<InsuranceCont
   List<InsuranceContractEntity> findAllByBanksaladUserIdAndOrganizationIdAndInsuNum(Long banksaladUserId,
       String organizationId, String insuNum);
 
+  List<InsuranceContractEntity> findAllByBanksaladUserIdAndOrganizationId(Long banksaladUserId, String organizationId);
+
   @Transactional
   void deleteAllByBanksaladUserIdAndOrganizationIdAndInsuNumAndInsuredNo(Long banksaladUserId,
       String organizationId, String insuNum, String insuredNo);

@@ -11,4 +11,6 @@ public interface InsurancePaymentRepository extends JpaRepository<InsurancePayme
   Optional<InsurancePaymentEntity> findByBanksaladUserIdAndOrganizationIdAndInsuNum(
       Long banksaladUserId, String organizationId, String insuNum
   );
+
+  Optional<InsurancePaymentEntity> findByBanksaladUserIdAndOrganizationId(Long banksaladUserId, String organizationId);
 }
