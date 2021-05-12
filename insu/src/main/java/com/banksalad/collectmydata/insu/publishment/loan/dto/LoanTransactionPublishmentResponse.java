@@ -29,7 +29,6 @@ public class LoanTransactionPublishmentResponse {
 
   private BigDecimal intPaidAmt;
 
-  @Builder.Default
   private final List<LoanTransactionInterestPublishmentResponse> interestPublishmentResponses = new ArrayList<>();
 
   private LocalDateTime createdAt;

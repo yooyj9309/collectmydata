@@ -44,7 +44,6 @@ public class InsuranceBasicPublishmentResponse {
   @JsonProperty("is_loanable")
   private Boolean loanable;
 
-  @Builder.Default
   private final List<InsuredPublishmentResponse> insuredPublishmentResponse = new ArrayList<>();
 
   private LocalDateTime createdAt;
