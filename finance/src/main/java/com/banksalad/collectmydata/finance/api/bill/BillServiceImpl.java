@@ -1,5 +1,9 @@
 package com.banksalad.collectmydata.finance.api.bill;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionRequest;
@@ -11,11 +15,6 @@ import com.banksalad.collectmydata.finance.api.bill.dto.BillTransactionResponse;
 import com.banksalad.collectmydata.finance.common.service.FinanceMessageService;
 import com.banksalad.collectmydata.finance.common.service.HeaderService;
 import com.banksalad.collectmydata.finance.common.service.UserSyncStatusService;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -97,7 +96,7 @@ public class BillServiceImpl<BillRequest, Bill, BillTransactionRequest, BillTran
 
       if (billPublishmentHelper != null) {
         financeMessageService.producePublishmentRequested(billPublishmentHelper.getMessageTopic(),
-            billPublishmentHelper.makePublishmentRequestedMessage(executionContext));
+            billPublishmentHelper.makePublishmentRequestedMessage(executionContext, hasNextPage));
       }
 
     } while (hasNextPage);
@@ -176,12 +175,12 @@ public class BillServiceImpl<BillRequest, Bill, BillTransactionRequest, BillTran
       } while (hasNextPage);
     }
 
-    /** transaction DB 저장 후 publishment message produce
+    /** pagnation 다 끝나고 transaction DB 저장 후 publishment message produce
      *  @author hyunjun
      */
     if (billPublishmentHelper != null) {
       financeMessageService.producePublishmentRequested(billPublishmentHelper.getMessageTopic(),
-          billPublishmentHelper.makePublishmentRequestedMessage(executionContext));
+          billPublishmentHelper.makePublishmentRequestedMessage(executionContext, false));
     }
 
     userSyncStatusService.updateUserSyncStatus(

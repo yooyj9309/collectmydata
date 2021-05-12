@@ -39,7 +39,7 @@ public class CardSyncCompletedConsumer {
       LoggingMdcUtil
           .set(Sector.FINANCE.name(), Industry.CARD.name(), message.getBanksaladUserId(),
               message.getOrganizationId(), message.getSyncRequestId());
-      log.debug("[collect] consume SyncCompletedMessage syncRequestId: {} ", message.getSyncRequestId());
+      log.info("[collect] consume SyncCompletedMessage syncRequestId: {} ", message.getSyncRequestId());
 
       /* notify */
       financeStub.notifyCollectmydatacardSynced(message.toNotifyCardRequest(),
@@ -51,18 +51,18 @@ public class CardSyncCompletedConsumer {
 
             @Override
             public void onError(Throwable t) {
-              log.error("[collect] error while notifying to finance syncRequestId: {}, t: {} ",
+              log.error("[collect][card][syncCompleted] error while notifying to finance syncRequestId: {}, t: {} ",
                   message.getSyncRequestId(), t.getMessage());
             }
 
             @Override
             public void onCompleted() {
-              log.debug("[collect] notified to finance syncRequestId: {} ", message.getSyncRequestId());
+              log.info("[collect][card][syncCompleted] notified to finance syncRequestId: {} ", message.getSyncRequestId());
             }
           });
 
     } catch (JsonProcessingException e) {
-      log.error("Fail to deserialize SyncCompletedMessage: {}", e.getMessage());
+      log.error("[card] Fail to deserialize SyncCompletedMessage: {}", e.getMessage());
 
     } finally {
       LoggingMdcUtil.clear();

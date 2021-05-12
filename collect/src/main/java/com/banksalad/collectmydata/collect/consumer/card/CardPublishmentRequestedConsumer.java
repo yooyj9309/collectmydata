@@ -37,9 +37,10 @@ public class CardPublishmentRequestedConsumer {
           .readValue(source, PublishmentRequestedCardMessage.class);
 
       LoggingMdcUtil.set(Sector.FINANCE.name(), Industry.CARD.name(), message.getBanksaladUserId(),
-          message.getOrganizationId(), message.getSyncRequestId() );
+          message.getOrganizationId(), message.getSyncRequestId());
 
-      log.info("[collect] consume PublishmentRequestedCardMessage syncRequestId: {} ", message.getSyncRequestId());
+      log.info("[collect][card] consume PublishmentRequestedCardMessage financeSyncItem: {}, syncRequestId: {} ",
+          message.getFinanceSyncItem(), message.getSyncRequestId());
 
       /* notify */
       financeStub.notifyCollectmydatacardSynced(message.toNotifyRequest(),
@@ -51,19 +52,21 @@ public class CardPublishmentRequestedConsumer {
 
             @Override
             public void onError(Throwable t) {
-              log.error("[collect] error while notifying to finance syncRequestId: {}, t: {} ",
-                  message.getSyncRequestId(), t.getMessage());
+              log.error(
+                  "[collect][card][publishment] error while notifying to finance. financeSyncItem: {}, syncRequestId: {}, t: {} ",
+                  message.getFinanceSyncItem(), message.getSyncRequestId(), t.getMessage());
             }
 
             @Override
             public void onCompleted() {
-              log.debug("[collect] notified to finance syncRequestId: {} ", message.getSyncRequestId());
+              log.info("[collect][card][publishment] notified to finance. financeSyncItem: {},syncRequestId: {}",
+                  message.getFinanceSyncItem(), message.getSyncRequestId());
             }
           });
 
 
     } catch (JsonProcessingException e) {
-      log.error("Fail to deserialize PublishmentRequestedCardMessage: {}", e.getMessage());
+      log.error("[card] Fail to deserialize PublishmentRequestedCardMessage: {}", e.getMessage());
 
     } finally {
       LoggingMdcUtil.clear();

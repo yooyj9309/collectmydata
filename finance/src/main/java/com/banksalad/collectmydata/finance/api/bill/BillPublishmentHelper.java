@@ -7,5 +7,5 @@ public interface BillPublishmentHelper {
 
   String getMessageTopic();
 
-  PublishmentRequestedMessage makePublishmentRequestedMessage(ExecutionContext executionContext);
+  PublishmentRequestedMessage makePublishmentRequestedMessage(ExecutionContext executionContext, boolean hasNextPage);
 }

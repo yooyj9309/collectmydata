@@ -22,12 +22,14 @@ public class BillBasicPublishmentHelper implements BillPublishmentHelper {
   }
 
   @Override
-  public PublishmentRequestedMessage makePublishmentRequestedMessage(ExecutionContext executionContext) {
+  public PublishmentRequestedMessage makePublishmentRequestedMessage(ExecutionContext executionContext, boolean hasNextPage) {
     return PublishmentRequestedCardMessage.builder()
         .financeIndustry(financeIndustry)
         .financeSyncItem(financeSyncItem)
         .banksaladUserId(executionContext.getBanksaladUserId())
         .organizationId(executionContext.getOrganizationId())
-        .syncRequestId(executionContext.getSyncRequestId()).build();
+        .syncRequestId(executionContext.getSyncRequestId())
+        .cardId("")
+        .hasNextPage(hasNextPage).build();
   }
 }
