@@ -14,4 +14,6 @@ public interface CarInsuranceRepository extends JpaRepository<CarInsuranceEntity
 
   List<CarInsuranceEntity> findByBanksaladUserIdAndOrganizationIdAndInsuNum(Long banksaladUserId, String organizationId,
       String insuNum);
+
+  List<CarInsuranceEntity> findByBanksaladUserIdAndOrganizationId(Long banksaladUserId, String organizationId);
 }

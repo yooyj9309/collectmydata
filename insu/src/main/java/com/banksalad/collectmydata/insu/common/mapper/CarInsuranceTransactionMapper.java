@@ -3,9 +3,9 @@ package com.banksalad.collectmydata.insu.common.mapper;
 import com.banksalad.collectmydata.common.mapper.BigDecimalMapper;
 import com.banksalad.collectmydata.insu.car.dto.CarInsuranceTransaction;
 import com.banksalad.collectmydata.insu.common.db.entity.CarInsuranceTransactionEntity;
+import com.banksalad.collectmydata.insu.publishment.car.dto.CarInsuranceTransactionPublishmentResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.ReportingPolicy;
 
@@ -19,4 +19,7 @@ public interface CarInsuranceTransactionMapper {
       }
   )
   CarInsuranceTransactionEntity dtoToEntity(CarInsuranceTransaction carInsuranceTransaction);
+
+  CarInsuranceTransactionPublishmentResponse entityToPublishmentDto(
+      CarInsuranceTransactionEntity carInsuranceTransactionEntity);
 }
