@@ -26,3 +26,4 @@ management:
 banksalad:
   cipher.uri: dns:///cipher-headless:18081
   collectSchedule.uri: dns:///fixme:8080
+  auth.uri: dns:///auth-headless:18081
