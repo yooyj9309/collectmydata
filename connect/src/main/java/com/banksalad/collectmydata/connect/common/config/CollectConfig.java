@@ -10,15 +10,15 @@ import com.banksalad.collectmydata.common.collect.executor.TransferClientImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import lombok.RequiredArgsConstructor;
-
 @Configuration
-public class CollectConfiguration {
+public class CollectConfig {
+
   private final TransferClient transferClient;
   private final IdGenerator idGenerator;
   private final ApiLogger apiLogger;
 
-  public CollectConfiguration(IdGenerator idGenerator, ApiLogger apiLogger) {
+
+  public CollectConfig(IdGenerator idGenerator, ApiLogger apiLogger) {
     this.transferClient = new TransferClientImpl();
     this.idGenerator = idGenerator;
     this.apiLogger = apiLogger;
