@@ -11,6 +11,10 @@ spring:
     url: jdbc:h2:mem://localhost/~/connect
     name: sa
     password:
+  redis:
+    cluster:
+      nodes:
+        - localhost:6379
 
 grpc:
   port: 0

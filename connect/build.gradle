@@ -78,6 +78,10 @@ dependencies {
     implementation("ch.qos.logback.contrib:logback-json-classic:0.1.5")
     implementation("ch.qos.logback.contrib:logback-jackson:0.1.5")
 
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.apache.commons:commons-pool2:2.9.0'
+
     // application monitoring
     implementation("io.micrometer:micrometer-core:${micrometerVersion}")
     implementation("io.micrometer:micrometer-registry-statsd:${micrometerVersion}")

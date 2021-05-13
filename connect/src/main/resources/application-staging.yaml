@@ -22,6 +22,12 @@ spring:
       validation-timeout: 4000
       max-lifetime: 60000
     type: com.zaxxer.hikari.HikariDataSource
+  redis:
+    cluster:
+      nodes:
+        - collect-001.a8qgjr.0001.apn2.cache.amazonaws.com:6379
+        - collect-002.a8qgjr.0001.apn2.cache.amazonaws.com:6379
+        - collect-003.a8qgjr.0001.apn2.cache.amazonaws.com:6379
 
 grpc:
   port: 18081

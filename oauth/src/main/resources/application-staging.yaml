@@ -6,8 +6,8 @@ spring:
   redis:
     cluster:
       nodes:
-        - collect.a8qgjr.ng.0001.apn2.cache.amazonaws.com:6379
-        - collect-ro.a8qgjr.ng.0001.apn2.cache.amazonaws.com:6379
-
+        - collect-001.a8qgjr.0001.apn2.cache.amazonaws.com:6379
+        - collect-002.a8qgjr.0001.apn2.cache.amazonaws.com:6379
+        - collect-003.a8qgjr.0001.apn2.cache.amazonaws.com:6379
 organization:
   mydata-client-id: fixme
