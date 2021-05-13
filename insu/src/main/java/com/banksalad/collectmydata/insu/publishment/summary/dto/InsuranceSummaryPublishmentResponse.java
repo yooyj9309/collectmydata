@@ -1,6 +1,5 @@
 package com.banksalad.collectmydata.insu.publishment.summary.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +16,6 @@ public class InsuranceSummaryPublishmentResponse {
 
   private String insuNum;
 
-  @JsonProperty("is_consent")
   private boolean consent;
 
   private String insuType;

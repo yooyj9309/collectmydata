@@ -17,7 +17,6 @@ public class LoanSummaryPublishmentResponse {
 
   private String accountNum;
 
-  @JsonProperty("is_consent")
   private boolean consent;
 
   private String prodName;

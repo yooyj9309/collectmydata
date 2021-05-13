@@ -20,7 +20,6 @@ public class InsuranceBasicPublishmentResponse {
 
   private String insuNum;
 
-  @JsonProperty("is_renewable")
   private boolean renewable;
 
   private String issueDate;
@@ -31,17 +30,14 @@ public class InsuranceBasicPublishmentResponse {
 
   private String currencyCode;
 
-  @JsonProperty("is_variable")
   private Boolean variable;
 
-  @JsonProperty("is_universal")
   private Boolean universal;
 
   private String pensionRcvStartDate;
 
   private String pensionRcvCycle;
 
-  @JsonProperty("is_loanable")
   private Boolean loanable;
 
   private final List<InsuredPublishmentResponse> insuredPublishmentResponse = new ArrayList<>();

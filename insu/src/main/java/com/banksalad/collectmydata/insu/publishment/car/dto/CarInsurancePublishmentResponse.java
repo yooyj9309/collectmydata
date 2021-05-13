@@ -32,7 +32,6 @@ public class CarInsurancePublishmentResponse {
 
   private String contractDriver;
 
-  @JsonProperty("is_own_dmg_coverage")
   private Boolean ownDmgCoverage;
 
   private String selfPayRate;

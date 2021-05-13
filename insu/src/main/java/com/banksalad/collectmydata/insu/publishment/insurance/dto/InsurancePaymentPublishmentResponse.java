@@ -34,7 +34,6 @@ public class InsurancePaymentPublishmentResponse {
 
   private String currencyCode;
 
-  @JsonProperty("is_auto_pay")
   private Boolean autoPay;
 
   private LocalDateTime createdAt;

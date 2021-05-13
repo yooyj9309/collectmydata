@@ -33,7 +33,6 @@ public class InsuranceContractPublishmentResponse {
 
   private String currencyCode;
 
-  @JsonProperty("is_required")
   private Boolean required;
 
   private LocalDateTime createdAt;
