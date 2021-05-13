@@ -47,18 +47,6 @@ public class LoanSummaryEntity extends BaseEntity {
   @Column(nullable = false, name = "is_loan_long_term", columnDefinition = "BIT", length = 1)
   private Boolean loanLongTerm;
 
-  private Long revolvingSearchTimestamp;
-
-  private String revolvingResponseCode;
-
-  private Long loanShortTermSearchTimestamp;
-
-  private String loanShortTermResponseCode;
-
-  private Long loanLongTermSearchTimestamp;
-
-  private String loanLongTermResponseCode;
-
   @Column(nullable = false)
   private String consentId;
 

@@ -4,13 +4,11 @@ import com.banksalad.collectmydata.common.collect.execution.Execution;
 import com.banksalad.collectmydata.finance.test.template.dto.BareRequest;
 import com.banksalad.collectmydata.finance.test.template.dto.BareResponse;
 import com.banksalad.collectmydata.finance.test.template.dto.TestCase;
-
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
 
-import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_ST1;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.OLD_USS_ST;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.RSP_CODE_SYSTEM_FAILURE;
 import static com.banksalad.collectmydata.finance.test.constant.FinanceTestConstants.STATUS_INTERNAL_SERVER_ERROR;
@@ -87,22 +85,23 @@ public class CardSummaryTestCaseGenerator<GParent, Parent, Main, Child> {
             .expectedMainEntities(List.of(mainMap.get("main1"), mainMap.get("newMain2")))
             .build()
         ,
-        TestCase.<GParent, Parent, Main, Child>builder()
-            .displayName("005. 기존 1건 + 동일 1건")
-            .parentEntities(List.of(parentMap.get("parent1")))
-            .mainEntities(List.of(mainMap.get("main1")))
-            .execution(execution)
-            .requestParams(List.of(
-                BareRequest.builder().searchTimestamp(OLD_USS_ST).build()
-            ))
-            .expectedResponses(List.of(
-                BareResponse.builder().mockId("005_page_01").build()
-            ))
-            .expectedParentEntities(List.of(parentMap.get("touchedParent1")))
-            /* summary는 DB와 비교없이 무조건 save()한다. */
-            .expectedMainEntities(List.of(mainMap.get("newMain1")))
-            .build()
-        ,
+          // FIXME : 저장로직 결정하고 추후 변경
+//        TestCase.<GParent, Parent, Main, Child>builder()
+//            .displayName("005. 기존 1건 + 동일 1건")
+//            .parentEntities(List.of(parentMap.get("parent1")))
+//            .mainEntities(List.of(mainMap.get("main1")))
+//            .execution(execution)
+//            .requestParams(List.of(
+//                BareRequest.builder().searchTimestamp(OLD_USS_ST).build()
+//            ))
+//            .expectedResponses(List.of(
+//                BareResponse.builder().mockId("005_page_01").build()
+//            ))
+//            .expectedParentEntities(List.of(parentMap.get("touchedParent1")))
+//            /* summary는 DB와 비교없이 무조건 save()한다. */
+//            .expectedMainEntities(List.of(mainMap.get("newMain1")))
+//            .build()
+//        ,
         TestCase.<GParent, Parent, Main, Child>builder()
             .displayName("006. 기존 1건 + 변경 1건")
             .parentEntities(List.of(parentMap.get("parent1")))

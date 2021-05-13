@@ -54,7 +54,7 @@ public class UserBaseServiceImpl<UserBaseRequest, UserBaseInfo> implements
     ExecutionContext executionContextLocal = executionContext.copyWith(ExecutionContext.generateExecutionRequestId());
 
     if (executionContextLocal.getSyncRequestId() == null) {
-      throw new CollectRuntimeException("syncRequestId is not setted");
+      throw new CollectRuntimeException("syncRequestId is not set");
     }
 
     long searchTimeStamp = userSyncStatusService.getSearchTimestamp(

@@ -48,6 +48,10 @@ public class CardBasicResponseHelper implements AccountInfoResponseHelper<CardSu
     String organizationId = executionContext.getOrganizationId();
     LocalDateTime syncedAt = executionContext.getSyncStartedAt();
 
+    CardEntity existingEntity = cardRepository
+        .findByBanksaladUserIdAndOrganizationIdAndCardId(banksaladUserId, organizationId, cardSummary.getCardId())
+        .orElse(null);
+
     CardEntity cardEntity = cardMapper.dtoToEntity(cardBasic);
     cardEntity.setSyncedAt(syncedAt);
     cardEntity.setBanksaladUserId(banksaladUserId);
@@ -58,15 +62,14 @@ public class CardBasicResponseHelper implements AccountInfoResponseHelper<CardSu
     cardEntity.setCreatedBy(executionContext.getRequestedBy());
     cardEntity.setUpdatedBy(executionContext.getRequestedBy());
 
-    CardEntity existingCardEntity = cardRepository
-        .findByBanksaladUserIdAndOrganizationIdAndCardId(banksaladUserId, organizationId, cardSummary.getCardId())
-        .map(c -> {
-          cardEntity.setId(c.getId());
-          return c;
-        })
-        .orElseGet(() -> CardEntity.builder().build());
+    if (existingEntity != null) {
+      cardEntity.setId(existingEntity.getId());
+      cardEntity.setCreatedAt(existingEntity.getCreatedAt());
+      cardEntity.setCreatedBy(existingEntity.getCreatedBy());
+    }
 
-    if (!ObjectComparator.isSame(cardEntity, existingCardEntity, ENTITY_EXCLUDE_FIELD)) {
+    /* update if entity has changed */
+    if (!ObjectComparator.isSame(existingEntity, cardEntity, ENTITY_EXCLUDE_FIELD)) {
       cardRepository.save(cardEntity);
       cardHistoryRepository.save(cardHistoryMapper.toHistoryEntity(cardEntity, CardHistoryEntity.builder().build()));
     }

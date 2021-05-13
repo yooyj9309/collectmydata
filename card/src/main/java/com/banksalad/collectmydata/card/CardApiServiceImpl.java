@@ -31,6 +31,8 @@ import com.banksalad.collectmydata.card.card.userbase.PaymentPublishmentHelper;
 import com.banksalad.collectmydata.card.card.userbase.PointPublishmentHelper;
 import com.banksalad.collectmydata.card.card.userbase.RevolvingPublishmentHelper;
 import com.banksalad.collectmydata.card.collect.Executions;
+import com.banksalad.collectmydata.card.common.db.entity.LoanSummaryEntity;
+import com.banksalad.collectmydata.card.common.db.repository.LoanSummaryRepository;
 import com.banksalad.collectmydata.card.loan.dto.GetLoanSummaryRequest;
 import com.banksalad.collectmydata.card.loan.dto.ListLoanLongTermsRequest;
 import com.banksalad.collectmydata.card.loan.dto.ListLoanShortTermsRequest;
@@ -155,6 +157,9 @@ public class CardApiServiceImpl implements CardApiService {
   private final UserBaseResponseHelper<List<LoanLongTerm>> loanLongTermResponseHelper;
   private final LoanLongTermPublishmentHelper loanLongTermPublishmentHelper;
 
+  // LoanSummary 6.3.9 Repository
+  private final LoanSummaryRepository loanSummaryRepository;
+
   @Override
   public void requestApi(long banksaladUserId, String organizationId, String syncRequestId,
       SyncRequestType syncRequestType) throws ResponseNotOkException {
@@ -175,62 +180,99 @@ public class CardApiServiceImpl implements CardApiService {
         .requestedBy(String.valueOf(banksaladUserId))
         .build();
 
+    /* 6.3.1 */
     accountSummaryService.listAccountSummaries(executionContext, Executions.finance_card_summaries,
         summaryRequestHelper, summaryResponseHelper, cardSummaryPublishmentHelper);
 
-    /** 6.3.5는 6.3.4가 있어야 가져올 수 있으니 비동기가 아닌 먼저 받아온다.
-     * @author hyunjun
+    /** 6.3.4
+     *
+     *  6.3.5는 6.3.4가 있어야 가져올 수 있으니 비동기 요청 전 먼저 받아온다.
+     *  @author hyunjun
      */
     List<BillBasic> billBasics = billService
         .listBills(executionContext, Executions.finance_card_bills, billBasicRequestHelper, billBasicResponseHelper,
             billBasicPublishmentHelper);
 
+    /** 6.3.9
+     *
+     *  6.3.9를 요청하고 존재여부에 따라 6.3.10 / 6.3.11 / 6.3.12 요청 여부 결정.
+     *  @author hyunjun
+     */
+    loanSummaryUserBaseService
+        .getUserBaseInfo(executionContext, Executions.finance_loan_summary, loanSummaryRequestHelper,
+            loanSummaryResponseHelper, loanSummaryPublishmentHelper);
+
+    /* search loanSummary */
+    LoanSummaryEntity loanSummaryEntity = loanSummaryRepository
+        .findByBanksaladUserIdAndOrganizationId(banksaladUserId, organizationId).orElse(
+            LoanSummaryEntity.builder().loanRevolving(false).loanShortTerm(false).loanLongTerm(false).build());
+
     CompletableFuture.allOf(
+        /* 6.3.2 */
         CompletableFuture
             .runAsync(() -> accountInfoService.listAccountInfos(executionContext, Executions.finance_card_basic,
                 accountInfoRequestHelper, accountInfoResponseHelper, cardAccountInfoPublishmentHelper)
             ).handle(this::handleException),
 
-        CompletableFuture.runAsync(() -> billService
-            .listBillDetails(executionContext, Executions.finance_card_bills_detail, billBasics,
-                billDetailRequestHelper,
-                billDetailResponseHelper, billDetailPublishmentHelper)).handle(this::handleException),
-
+        /* 6.3.3 */
         CompletableFuture
             .runAsync(() -> pointUserBaseService
                 .getUserBaseInfo(executionContext, Executions.finance_card_point, pointRequestHelper,
                     pointResponseHelper, pointPublishmentHelper)).handle(this::handleException),
 
+        /* 6.3.5 */
+        CompletableFuture.runAsync(() -> billService
+            .listBillDetails(executionContext, Executions.finance_card_bills_detail, billBasics,
+                billDetailRequestHelper,
+                billDetailResponseHelper, billDetailPublishmentHelper)).handle(this::handleException),
+
+        /* 6.3.6 */
         CompletableFuture
             .runAsync(() -> paymentUserBaseService
                 .getUserBaseInfo(executionContext, Executions.finance_card_payment, paymentRequestHelper,
                     paymentResponseHelper, paymentPublishmentHelper)).handle(this::handleException),
 
+        /* 6.3.7 */
         CompletableFuture.runAsync(() -> approvalDomesticService
             .listTransactions(executionContext, Executions.finance_card_approval_domestic,
-                approvalDomesticRequestHelper, approvalDomesticResponseHelper, approvalDomesticPublishmentHelper)),
+                approvalDomesticRequestHelper, approvalDomesticResponseHelper, approvalDomesticPublishmentHelper))
+            .handle(this::handleException),
 
+        /* 6.3.8 */
         CompletableFuture.runAsync(
             () -> approvalOverseasService.listTransactions(executionContext, Executions.finance_card_approval_overseas,
                 approvalOverseasRequestHelper, approvalOverseasResponseHelper, approvalOverseasPublishmentHelper))
             .handle(this::handleException),
 
-        CompletableFuture.runAsync(() -> loanSummaryUserBaseService
-            .getUserBaseInfo(executionContext, Executions.finance_loan_summary, loanSummaryRequestHelper,
-                loanSummaryResponseHelper, loanSummaryPublishmentHelper)),
+        /** 6.3.10 / 6.3.11 / 6.3.12
+         *
+         *  6.3.9의 값들이 true인 경우만 실행
+         *  @author : hyunjun
+         */
+        CompletableFuture.runAsync(() -> {
+          if (loanSummaryEntity.getLoanRevolving()) {
+            revolvingUserBaseService
+                .getUserBaseInfo(executionContext, Executions.finance_loan_revolvings, revolvingRequestHelper,
+                    revolvingResponseHelper, revolvingPublishmentHelper);
+          }
+        }).handle(this::handleException),
 
-        // FIXME : 6.3.9에서 true일 경우만 아래 3개 api 실행해야함
-        CompletableFuture.runAsync(() -> revolvingUserBaseService
-            .getUserBaseInfo(executionContext, Executions.finance_loan_revolvings, revolvingRequestHelper,
-                revolvingResponseHelper, revolvingPublishmentHelper)),
+        CompletableFuture.runAsync(() -> {
+          if (loanSummaryEntity.getLoanShortTerm()) {
+            loanShortTermUserBaseService
+                .getUserBaseInfo(executionContext, Executions.finance_loan_short_terms, loanShortTermsRequestHelper,
+                    loanShortTermResponseHelper, loanShortTermPublishmentHelper);
+          }
+        }).handle(this::handleException),
 
-        CompletableFuture.runAsync(() -> loanShortTermUserBaseService
-            .getUserBaseInfo(executionContext, Executions.finance_loan_short_terms, loanShortTermsRequestHelper,
-                loanShortTermResponseHelper, loanShortTermPublishmentHelper)),
+        CompletableFuture.runAsync(() -> {
+          if (loanSummaryEntity.getLoanLongTerm()) {
+            loanLongTermUserBaseService
+                .getUserBaseInfo(executionContext, Executions.finance_loan_long_terms, loanLongTermsRequestHelper,
+                    loanLongTermResponseHelper, loanLongTermPublishmentHelper);
+          }
+        }).handle(this::handleException)
 
-        CompletableFuture.runAsync(() -> loanLongTermUserBaseService
-            .getUserBaseInfo(executionContext, Executions.finance_loan_long_terms, loanLongTermsRequestHelper,
-                loanLongTermResponseHelper, loanLongTermPublishmentHelper))
     ).join();
 
     /* produce syncCompleted */

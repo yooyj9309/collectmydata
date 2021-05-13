@@ -8,6 +8,7 @@ import com.banksalad.collectmydata.card.common.mapper.CardSummaryMapper;
 import com.banksalad.collectmydata.card.summary.dto.CardSummary;
 import com.banksalad.collectmydata.card.summary.dto.ListCardSummariesResponse;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
+import com.banksalad.collectmydata.common.util.ObjectComparator;
 import com.banksalad.collectmydata.finance.api.summary.SummaryResponseHelper;
 import com.banksalad.collectmydata.finance.api.summary.dto.SummaryResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,8 @@ import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.Iterator;
-import java.util.Optional;
+
+import static com.banksalad.collectmydata.finance.common.constant.FinanceConstant.ENTITY_EXCLUDE_FIELD;
 
 @Component
 @RequiredArgsConstructor
@@ -36,8 +38,8 @@ public class CardSummaryResponseHelper implements SummaryResponseHelper<CardSumm
   }
 
   /**
-   * FIXME : 재발급 카드가 존재할 경우, card_id가 같은 카드 2개가 올 수 있음. -> 추후 저장로직 변경 필요
-   * 6.3.1 저장로직 : upsert
+   * FIXME : 재발급 카드가 존재할 경우, card_id가 같은 카드 2개가 올 수 있음. -> 추후 저장로직 변경 필요 6.3.1 저장로직 : upsert
+   *
    * @author hyunjun
    */
   @Override
@@ -48,8 +50,8 @@ public class CardSummaryResponseHelper implements SummaryResponseHelper<CardSumm
     final String cardId = cardSummary.getCardId();
     final LocalDateTime syncedAt = executionContext.getSyncStartedAt();
 
-    Optional<CardSummaryEntity> existingEntity = cardSummaryRepository
-        .findByBanksaladUserIdAndOrganizationIdAndCardId(banksaladUserId, organizationId, cardId);
+    CardSummaryEntity existingEntity = cardSummaryRepository
+        .findByBanksaladUserIdAndOrganizationIdAndCardId(banksaladUserId, organizationId, cardId).orElse(null);
 
     CardSummaryEntity newCardSummaryEntity = CardSummaryEntity.builder().build();
     cardSummaryMapper.mergeDtoToEntity(cardSummary, newCardSummaryEntity);
@@ -62,14 +64,15 @@ public class CardSummaryResponseHelper implements SummaryResponseHelper<CardSumm
     newCardSummaryEntity.setConsentId(executionContext.getConsentId());
     newCardSummaryEntity.setSyncRequestId(executionContext.getSyncRequestId());
 
-    /* update */
-    if (existingEntity.isPresent()) {
-      CardSummaryEntity cardSummaryEntity = existingEntity.get();
-      newCardSummaryEntity.setId(cardSummaryEntity.getId());
-      newCardSummaryEntity.setCreatedBy(cardSummaryEntity.getCreatedBy());
-      newCardSummaryEntity.setCreatedAt(cardSummaryEntity.getCreatedAt());
+    if (existingEntity != null) {
+      newCardSummaryEntity.setId(existingEntity.getId());
+      newCardSummaryEntity.setCreatedBy(existingEntity.getCreatedBy());
+      newCardSummaryEntity.setCreatedAt(existingEntity.getCreatedAt());
     }
 
-    cardSummaryRepository.save(newCardSummaryEntity);
+    /* update if entity has changed */
+    if (!ObjectComparator.isSame(existingEntity, newCardSummaryEntity, ENTITY_EXCLUDE_FIELD)) {
+      cardSummaryRepository.save(newCardSummaryEntity);
+    }
   }
 }
