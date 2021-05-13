@@ -8,7 +8,7 @@ on:
 
 jobs:
   deploy-efin:
-    runs-on: [ self-hosted, default ]
+    runs-on: [self-hosted, default]
     if: (github.event.deployment.task == 'deploy:efin') && (github.event.deployment.environment == 'production' || github.event.deployment.environment == 'staging')
     steps:
       - name: Checkout

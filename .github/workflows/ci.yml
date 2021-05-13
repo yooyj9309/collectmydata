@@ -185,6 +185,13 @@ jobs:
           push: true
           tags: rainist/collectmydatabank:${{ github.sha }}
 
+      - name: capital docker push
+        uses: docker/build-push-action@v2
+        with:
+          context: capital
+          push: true
+          tags: rainist/collectmydatacapital:${{ github.sha }}
+
       - name: card docker push
         uses: docker/build-push-action@v2
         with:
