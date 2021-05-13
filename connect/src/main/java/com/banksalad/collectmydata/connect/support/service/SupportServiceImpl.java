@@ -1,7 +1,9 @@
 package com.banksalad.collectmydata.connect.support.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import com.banksalad.collectmydata.common.collect.api.Api;
@@ -58,8 +60,6 @@ public class SupportServiceImpl implements SupportService {
   @Value("${organization.finance-portal-domain}")
   private String financePortalDomain;
 
-  public static final String AUTHORIZATION = "Authorization";
-
   private static final String FINANCE_REQUEST_GRANT_TYPE = "Bearer";
   private static final String FINANCE_RESPONSE_TOKEN_TYPE = "Bearer";
   private static final String FINANCE_SCOPE = "manage";
@@ -91,7 +91,7 @@ public class SupportServiceImpl implements SupportService {
     String accessToken = getAccessToken(SecretType.FINANCE);
     Long timestamp = getTimeStamp(Apis.support_get_organization_info);
 
-    Map<String, String> headers = Map.of(AUTHORIZATION, accessToken);
+    Map<String, String> headers = Map.of(HttpHeaders.AUTHORIZATION, accessToken);
     FinanceOrganizationRequest request = FinanceOrganizationRequest.builder().searchTimestamp(timestamp).build();
 
     ExecutionRequest<FinanceOrganizationRequest> executionRequest = ExecutionUtil
@@ -128,7 +128,7 @@ public class SupportServiceImpl implements SupportService {
     String accessToken = getAccessToken(SecretType.FINANCE);
     Long timestamp = getTimeStamp(Apis.support_get_organization_service_info); // 7.1.3 timestamp 조회
     // 7.1.3 기관 서비스 정보 조회 및 적재
-    Map<String, String> headers = Map.of(AUTHORIZATION, accessToken);
+    Map<String, String> headers = Map.of(HttpHeaders.AUTHORIZATION, accessToken);
     FinanceOrganizationRequest request = FinanceOrganizationRequest.builder()
         .searchTimestamp(timestamp)
         .build();
@@ -216,8 +216,9 @@ public class SupportServiceImpl implements SupportService {
           .scope(FINANCE_SCOPE)
           .build();
 
+      Map<String, String> header = Map.of(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
       ExecutionRequest<FinanceOrganizationTokenRequest> executionRequest = ExecutionUtil
-          .assembleExecutionRequest(request);
+          .assembleExecutionRequest(header, request);
 
       // 7.1.1 토큰정보 조회
       FinanceOrganizationTokenResponse response = execute(Executions.support_get_access_token,

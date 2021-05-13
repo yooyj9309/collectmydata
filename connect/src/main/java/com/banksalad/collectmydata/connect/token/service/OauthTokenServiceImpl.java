@@ -38,7 +38,9 @@ import com.banksalad.collectmydata.connect.token.dto.GetRevokeTokenRequest;
 import com.banksalad.collectmydata.connect.token.dto.OauthToken;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,7 +76,7 @@ public class OauthTokenServiceImpl implements OauthTokenService {
   private final OauthTokenMapper oauthTokenMapper = Mappers.getMapper(OauthTokenMapper.class);
   private final OauthTokenHistoryMapper oauthTokenHistoryMapper = Mappers.getMapper(OauthTokenHistoryMapper.class);
 
-  private static final String AUTHORIZATION = "Authorization";
+  private final Map<String, String> header = Map.of(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 
   @Value("${banksalad.oauth-callback-url}")
   private String redirectUrl;
@@ -256,12 +258,12 @@ public class OauthTokenServiceImpl implements OauthTokenService {
 
   private GetConsentResponse requestContent(Organization organization, String accessToken) {
     ExecutionContext executionContext = getExecutionContext(organization);
-    Map<String, String> headers = Map.of(AUTHORIZATION, generateRequestToken(accessToken)); // TODO : finance - headerService
+    Map<String, String> header = Map.of(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
 
     GetConsentRequest request = GetConsentRequest.builder()
         .orgCode(organization.getOrganizationCode())
         .build();
-    ExecutionRequest<GetConsentRequest> executionRequest = ExecutionUtil.assembleExecutionRequest(headers, request);
+    ExecutionRequest<GetConsentRequest> executionRequest = ExecutionUtil.assembleExecutionRequest(header, request);
 
     ExecutionResponse<GetConsentResponse> executionResponse = collectExecutor
         .execute(executionContext, Executions.common_consent, executionRequest);
@@ -281,7 +283,7 @@ public class OauthTokenServiceImpl implements OauthTokenService {
         .clientSecret(banksaladClientSecretEntity.getClientSecret())
         .redirectUri(redirectUrl)
         .build();
-    ExecutionRequest<GetIssueTokenRequest> executionRequest = ExecutionUtil.assembleExecutionRequest(request);
+    ExecutionRequest<GetIssueTokenRequest> executionRequest = ExecutionUtil.assembleExecutionRequest(header, request);
 
     ExecutionResponse<GetOauthTokenResponse> executionResponse = collectExecutor
         .execute(executionContext, Executions.oauth_issue_token, executionRequest);
@@ -300,7 +302,7 @@ public class OauthTokenServiceImpl implements OauthTokenService {
         .clientId(banksaladClientSecretEntity.getClientId())
         .clientSecret(banksaladClientSecretEntity.getClientSecret())
         .build();
-    ExecutionRequest<GetRefreshTokenRequest> executionRequest = ExecutionUtil.assembleExecutionRequest(request);
+    ExecutionRequest<GetRefreshTokenRequest> executionRequest = ExecutionUtil.assembleExecutionRequest(header, request);
 
     ExecutionResponse<GetOauthTokenResponse> executionResponse = collectExecutor
         .execute(executionContext, Executions.oauth_refresh_token, executionRequest);
@@ -319,7 +321,7 @@ public class OauthTokenServiceImpl implements OauthTokenService {
         .clientId(banksaladClientSecretEntity.getClientId())
         .clientSecret(banksaladClientSecretEntity.getClientSecret())
         .build();
-    ExecutionRequest<GetRevokeTokenRequest> executionRequest = ExecutionUtil.assembleExecutionRequest(request);
+    ExecutionRequest<GetRevokeTokenRequest> executionRequest = ExecutionUtil.assembleExecutionRequest(header, request);
 
     ExecutionResponse<ExecutionResponse> executionResponse = collectExecutor
         .execute(executionContext, Executions.oauth_revoke_token, executionRequest);
@@ -367,9 +369,5 @@ public class OauthTokenServiceImpl implements OauthTokenService {
 
   private boolean isTokenExpired(LocalDateTime expirationTime) {
     return expirationTime.isBefore(LocalDateTime.now(KST_ZONE_ID));
-  }
-
-  private String generateRequestToken(String token) {
-    return new StringBuilder().append("Bearer ").append(token).toString();
   }
 }
