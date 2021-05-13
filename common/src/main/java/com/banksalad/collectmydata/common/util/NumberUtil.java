@@ -7,6 +7,7 @@ public class NumberUtil {
 
   private static final int X100 = 100;
   private static final int X1000 = 1000;
+  private static final int X10000 = 10000;
   private static final int X100000 = 100000;
   private static final int DEFAULT_SCALE = 3;
 
@@ -29,6 +30,19 @@ public class NumberUtil {
     }
 
     BigDecimal result = source.multiply(BigDecimal.valueOf(X100));
+    if (result.compareTo(BigDecimal.valueOf(Long.MAX_VALUE)) > 0) {
+      throw new IllegalArgumentException();
+    }
+
+    return result.longValueExact();
+  }
+
+  public static long multiply10000(BigDecimal source) {
+    if (source == null) {
+      throw new IllegalArgumentException();
+    }
+
+    BigDecimal result = source.multiply(BigDecimal.valueOf(X10000));
     if (result.compareTo(BigDecimal.valueOf(Long.MAX_VALUE)) > 0) {
       throw new IllegalArgumentException();
     }

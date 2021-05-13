@@ -3,6 +3,7 @@ package com.banksalad.collectmydata.invest.grpc.converter;
 import org.springframework.stereotype.Component;
 
 import com.banksalad.collectmydata.common.util.DateUtil;
+import com.banksalad.collectmydata.common.util.NumberUtil;
 import com.banksalad.collectmydata.invest.publishment.account.dto.AccountBasicResponse;
 import com.banksalad.collectmydata.invest.publishment.account.dto.AccountProductResponse;
 import com.banksalad.collectmydata.invest.publishment.account.dto.AccountTransactionResponse;
@@ -14,13 +15,8 @@ import com.github.banksalad.idl.apis.v1.collectmydata.CollectmydatainvestProto.I
 import com.google.protobuf.Int64Value;
 import com.google.protobuf.StringValue;
 
-import java.math.BigDecimal;
-
 @Component
 public class InvestProtoConverter {
-
-  private static final int SCALE_3F = 1000;
-  private static final int SCALE_4F = 10000;
 
   public InvestAccountSummary toInvestAccountSummary(AccountSummaryResponse summary) {
     return InvestAccountSummary.newBuilder()
@@ -29,8 +25,8 @@ public class InvestProtoConverter {
         .setAccountName(summary.getAccountName())
         .setAccountType(summary.getAccountType())
         .setAccountStatus(summary.getAccountStatus())
-        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(summary.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(summary.getUpdatedAt()))
+        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(summary.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(summary.getUpdatedAt()))
         .build();
   }
 
@@ -39,12 +35,12 @@ public class InvestProtoConverter {
         .setAccountNum(basic.getAccountNum())
         .setIssueDate(basic.getIssueDate())
         .setIsTaxBenefits(basic.getTaxBenefits())
-        .setWithholdingsAmt3F(basic.getWithholdingsAmt().multiply(BigDecimal.valueOf(SCALE_3F)).longValueExact())
-        .setCreditLoanAmt3F(basic.getCreditLoanAmt().multiply(BigDecimal.valueOf(SCALE_3F)).longValueExact())
-        .setMortgageAmt3F(basic.getMortgageAmt().multiply(BigDecimal.valueOf(SCALE_3F)).longValueExact())
+        .setWithholdingsAmt3F(NumberUtil.multiply1000(basic.getWithholdingsAmt()))
+        .setCreditLoanAmt3F(NumberUtil.multiply1000(basic.getCreditLoanAmt()))
+        .setMortgageAmt3F(NumberUtil.multiply1000(basic.getMortgageAmt()))
         .setCurrencyCode(basic.getCurrencyCode())
-        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(basic.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(basic.getUpdatedAt()))
+        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(basic.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(basic.getUpdatedAt()))
         .build();
   }
 
@@ -62,13 +58,13 @@ public class InvestProtoConverter {
     }
 
     builder.setTransNum(transaction.getTransNum())
-        .setBaseAmt4F(transaction.getBalanceAmt().multiply(BigDecimal.valueOf(SCALE_4F)).longValueExact())
-        .setTransAmt3F(transaction.getTransAmt().multiply(BigDecimal.valueOf(SCALE_3F)).longValueExact())
-        .setSettleAmt3F(transaction.getSettleAmt().multiply(BigDecimal.valueOf(SCALE_3F)).longValueExact())
-        .setBalanceAmt3F(transaction.getBalanceAmt().multiply(BigDecimal.valueOf(SCALE_3F)).longValueExact())
+        .setBaseAmt4F(NumberUtil.multiply10000(transaction.getBalanceAmt()))
+        .setTransAmt3F(NumberUtil.multiply1000(transaction.getTransAmt()))
+        .setSettleAmt3F(NumberUtil.multiply1000(transaction.getSettleAmt()))
+        .setBalanceAmt3F(NumberUtil.multiply1000(transaction.getBalanceAmt()))
         .setCurrencyCode(transaction.getCurrencyCode())
-        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(transaction.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(transaction.getUpdatedAt()));
+        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(transaction.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(transaction.getUpdatedAt()));
 
     return builder.build();
   }
@@ -83,7 +79,7 @@ public class InvestProtoConverter {
 
     if (product.getPurchaseAmt() != null) {
       builder.setPurchaseAmt3F(Int64Value.newBuilder()
-          .setValue(product.getPurchaseAmt().multiply(BigDecimal.valueOf(SCALE_3F)).longValueExact())
+          .setValue(NumberUtil.multiply1000(product.getPurchaseAmt()))
           .build());
     }
 
@@ -101,7 +97,7 @@ public class InvestProtoConverter {
 
     if (product.getEvalAmt() != null) {
       builder.setEvalAmt3F(Int64Value.newBuilder()
-          .setValue(product.getEvalAmt().multiply(BigDecimal.valueOf(SCALE_3F)).longValueExact())
+          .setValue(NumberUtil.multiply1000(product.getEvalAmt()))
           .build());
     }
 
@@ -111,13 +107,13 @@ public class InvestProtoConverter {
 
     if (product.getPaidInAmt() != null) {
       builder.setPaidInAmt3F(Int64Value.newBuilder()
-          .setValue(product.getPaidInAmt().multiply(BigDecimal.valueOf(SCALE_3F)).longValueExact())
+          .setValue(NumberUtil.multiply1000(product.getPaidInAmt()))
           .build());
     }
 
     if (product.getWithdrawalAmt() != null) {
       builder.setWithdrawalAmt3F(Int64Value.newBuilder()
-          .setValue(product.getWithdrawalAmt().multiply(BigDecimal.valueOf(SCALE_3F)).longValueExact())
+          .setValue(NumberUtil.multiply1000(product.getWithdrawalAmt()))
           .build());
     }
 
@@ -127,13 +123,13 @@ public class InvestProtoConverter {
 
     if (product.getRcvAmt() != null) {
       builder.setRcvAmt3F(Int64Value.newBuilder()
-          .setValue(product.getRcvAmt().multiply(BigDecimal.valueOf(SCALE_3F)).longValueExact())
+          .setValue(NumberUtil.multiply1000(product.getRcvAmt()))
           .build());
     }
 
     builder.setCurrencyCode(product.getCurrencyCode())
-        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(product.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(product.getUpdatedAt()));
+        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(product.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(product.getUpdatedAt()));
 
     return builder.build();
   }
