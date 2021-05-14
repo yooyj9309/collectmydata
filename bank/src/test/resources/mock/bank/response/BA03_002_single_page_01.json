@@ -1,0 +1,14 @@
+{
+  "rsp_code": "00000",
+  "rsp_msg": "rsp_msg",
+  "search_timestamp": 1000,
+  "detail_cnt": 1,
+  "detail_list": [
+    {
+      "currency_code": "KRW",
+      "balance_amt": 10000.10,
+      "withdrawable_amt": 2000.20,
+      "offered_rate": 30.3
+    }
+  ]
+}

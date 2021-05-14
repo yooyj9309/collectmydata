@@ -12,8 +12,6 @@ import com.banksalad.collectmydata.bank.common.db.entity.AccountSummaryEntity;
 import com.banksalad.collectmydata.bank.common.db.repository.AccountSummaryRepository;
 import com.banksalad.collectmydata.bank.summary.dto.AccountSummary;
 import com.banksalad.collectmydata.bank.summary.dto.ListAccountSummariesRequest;
-import com.banksalad.collectmydata.bank.testutil.AccountSummaryUtil;
-import com.banksalad.collectmydata.bank.testutil.ExecutionContextUtil;
 import com.banksalad.collectmydata.common.collect.execution.ExecutionContext;
 import com.banksalad.collectmydata.common.util.DateUtil;
 import com.banksalad.collectmydata.finance.api.summary.SummaryRequestHelper;
@@ -29,12 +27,12 @@ import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static com.banksalad.collectmydata.bank.testutil.FileUtil.readText;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -44,7 +42,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@Disabled("consentId 추가로 인한 테스트 에러 - 확인 후 변경") // TODO
 @DisplayName("6.2.1 계좌 목록 조회 테스트")
 @SpringBootTest
 @Transactional
@@ -97,8 +94,7 @@ public class AccountSummaryServiceImplTest {
 
     setupMockServer(100, HttpStatus.INTERNAL_SERVER_ERROR, "mock/bank/response/BA01_001_error_response_00.json");
 
-    ExecutionContext executionContext = ExecutionContextUtil
-        .create(BANKSALAD_USER_ID, ORGANIZATION_ID, LocalDateTime.now(DateUtil.UTC_ZONE_ID), wiremock.port());
+    ExecutionContext executionContext = getExecutionContext(wiremock.port());
 
     // when
     ResponseNotOkException responseNotOkException = assertThrows(ResponseNotOkException.class,
@@ -122,8 +118,7 @@ public class AccountSummaryServiceImplTest {
     // given
     setupMockServer(0, HttpStatus.OK, "mock/bank/response/BA01_002_single_page_00.json");
 
-    ExecutionContext executionContext = ExecutionContextUtil
-        .create(BANKSALAD_USER_ID, ORGANIZATION_ID, LocalDateTime.now(DateUtil.UTC_ZONE_ID), wiremock.port());
+    ExecutionContext executionContext = getExecutionContext(wiremock.port());
 
     // when
     summaryService.listAccountSummaries(executionContext, Executions.finance_bank_summaries, summaryRequestHelper,
@@ -147,8 +142,7 @@ public class AccountSummaryServiceImplTest {
     // given
     LocalDateTime beforeSyncedAt = LocalDateTime.now(DateUtil.UTC_ZONE_ID).minusDays(1);
 
-    AccountSummaryEntity accountSummaryEntity = AccountSummaryUtil
-        .createDepositAccountSummary(ORGANIZATION_ID, BANKSALAD_USER_ID, "123123123", "a10230", beforeSyncedAt);
+    AccountSummaryEntity accountSummaryEntity = createDepositAccountSummary(beforeSyncedAt);
     accountSummaryRepository.save(accountSummaryEntity);
 
     userSyncStatusService.updateUserSyncStatus(BANKSALAD_USER_ID, ORGANIZATION_ID, Apis.finance_bank_summaries.getId(),
@@ -156,8 +150,7 @@ public class AccountSummaryServiceImplTest {
 
     setupMockServer(100, HttpStatus.OK, "mock/bank/response/BA01_003_empty_response_00.json");
 
-    ExecutionContext executionContext = ExecutionContextUtil
-        .create(BANKSALAD_USER_ID, ORGANIZATION_ID, LocalDateTime.now(DateUtil.UTC_ZONE_ID), wiremock.port());
+    ExecutionContext executionContext = getExecutionContext(wiremock.port());
 
     // when
     summaryService.listAccountSummaries(executionContext, Executions.finance_bank_summaries, summaryRequestHelper,
@@ -184,8 +177,7 @@ public class AccountSummaryServiceImplTest {
     // given
     LocalDateTime beforeSyncedAt = LocalDateTime.now(DateUtil.UTC_ZONE_ID).minusDays(1);
 
-    AccountSummaryEntity accountSummaryEntity = AccountSummaryUtil
-        .createDepositAccountSummary(ORGANIZATION_ID, BANKSALAD_USER_ID, "123123123", "a10230", beforeSyncedAt);
+    AccountSummaryEntity accountSummaryEntity = createDepositAccountSummary(beforeSyncedAt);
     accountSummaryRepository.save(accountSummaryEntity);
 
     userSyncStatusService.updateUserSyncStatus(BANKSALAD_USER_ID, ORGANIZATION_ID, Apis.finance_bank_summaries.getId(),
@@ -193,8 +185,7 @@ public class AccountSummaryServiceImplTest {
 
     setupMockServer(100, HttpStatus.OK, "mock/bank/response/BA01_004_single_page_00.json");
 
-    ExecutionContext executionContext = ExecutionContextUtil
-        .create(BANKSALAD_USER_ID, ORGANIZATION_ID, LocalDateTime.now(DateUtil.UTC_ZONE_ID), wiremock.port());
+    ExecutionContext executionContext = getExecutionContext(wiremock.port());
 
     // when
     summaryService.listAccountSummaries(executionContext, Executions.finance_bank_summaries, summaryRequestHelper,
@@ -221,8 +212,7 @@ public class AccountSummaryServiceImplTest {
     // given
     LocalDateTime beforeSyncedAt = LocalDateTime.now(DateUtil.UTC_ZONE_ID).minusDays(1);
 
-    AccountSummaryEntity beforeAccountSummaryEntity = AccountSummaryUtil
-        .createDepositAccountSummary(ORGANIZATION_ID, BANKSALAD_USER_ID, "123123123", "a10230", beforeSyncedAt);
+    AccountSummaryEntity beforeAccountSummaryEntity = createDepositAccountSummary(beforeSyncedAt);
     accountSummaryRepository.save(beforeAccountSummaryEntity);
 
     userSyncStatusService.updateUserSyncStatus(BANKSALAD_USER_ID, ORGANIZATION_ID, Apis.finance_bank_summaries.getId(),
@@ -230,8 +220,7 @@ public class AccountSummaryServiceImplTest {
 
     setupMockServer(100, HttpStatus.OK, "mock/bank/response/BA01_005_single_page_00.json");
 
-    ExecutionContext executionContext = ExecutionContextUtil
-        .create(BANKSALAD_USER_ID, ORGANIZATION_ID, LocalDateTime.now(DateUtil.UTC_ZONE_ID), wiremock.port());
+    ExecutionContext executionContext = getExecutionContext(wiremock.port());
 
     // when
     summaryService.listAccountSummaries(executionContext, Executions.finance_bank_summaries, summaryRequestHelper,
@@ -264,8 +253,7 @@ public class AccountSummaryServiceImplTest {
     // given
     LocalDateTime beforeSyncedAt = LocalDateTime.now(DateUtil.UTC_ZONE_ID).minusDays(1);
 
-    AccountSummaryEntity beforeAccountSummaryEntity = AccountSummaryUtil
-        .createDepositAccountSummary(ORGANIZATION_ID, BANKSALAD_USER_ID, "123123123", "a10230", beforeSyncedAt);
+    AccountSummaryEntity beforeAccountSummaryEntity = createDepositAccountSummary(beforeSyncedAt);
     accountSummaryRepository.save(beforeAccountSummaryEntity);
 
     userSyncStatusService.updateUserSyncStatus(BANKSALAD_USER_ID, ORGANIZATION_ID, Apis.finance_bank_summaries.getId(),
@@ -273,8 +261,7 @@ public class AccountSummaryServiceImplTest {
 
     setupMockServer(100, HttpStatus.OK, "mock/bank/response/BA01_006_single_page_00.json");
 
-    ExecutionContext executionContext = ExecutionContextUtil
-        .create(BANKSALAD_USER_ID, ORGANIZATION_ID, LocalDateTime.now(DateUtil.UTC_ZONE_ID), wiremock.port());
+    ExecutionContext executionContext = getExecutionContext(wiremock.port());
 
     // when
     summaryService.listAccountSummaries(executionContext, Executions.finance_bank_summaries, summaryRequestHelper,
@@ -310,8 +297,7 @@ public class AccountSummaryServiceImplTest {
     setupMockPaginationServer(0, HttpStatus.OK, "02", "mock/bank/response/BA01_007_multi_page_02.json");
     setupMockPaginationServer(0, HttpStatus.OK, "03", "mock/bank/response/BA01_007_multi_page_03.json");
 
-    ExecutionContext executionContext = ExecutionContextUtil
-        .create(BANKSALAD_USER_ID, ORGANIZATION_ID, LocalDateTime.now(DateUtil.UTC_ZONE_ID), wiremock.port());
+    ExecutionContext executionContext = getExecutionContext(wiremock.port());
 
     // when
     summaryService.listAccountSummaries(executionContext, Executions.finance_bank_summaries, summaryRequestHelper,
@@ -343,8 +329,7 @@ public class AccountSummaryServiceImplTest {
     setupMockPaginationServer(0, HttpStatus.INTERNAL_SERVER_ERROR, "02",
         "mock/bank/response/BA01_008_multi_page_02.json");
 
-    ExecutionContext executionContext = ExecutionContextUtil
-        .create(BANKSALAD_USER_ID, ORGANIZATION_ID, LocalDateTime.now(DateUtil.UTC_ZONE_ID), wiremock.port());
+    ExecutionContext executionContext = getExecutionContext(wiremock.port());
 
     // when
     ResponseNotOkException responseNotOkException = assertThrows(ResponseNotOkException.class,
@@ -370,6 +355,35 @@ public class AccountSummaryServiceImplTest {
     assertThat(userSyncStatusEntity.getSyncedAt()).isEqualTo(beforeSyncedAt);
   }
 
+  private AccountSummaryEntity createDepositAccountSummary(LocalDateTime syncedAt) {
+    return AccountSummaryEntity.builder()
+        .organizationId(ORGANIZATION_ID)
+        .banksaladUserId(BANKSALAD_USER_ID)
+        .accountNum("123123123")
+        .seqno("a10230")
+        .consent(true)
+        .foreignDeposit(false)
+        .prodName("자유입출금")
+        .accountType("1001")
+        .accountStatus("01")
+        .syncedAt(syncedAt)
+        .consentId("consentId")
+        .build();
+  }
+
+  private ExecutionContext getExecutionContext(int port) {
+    return ExecutionContext.builder()
+        .banksaladUserId(BANKSALAD_USER_ID)
+        .organizationId(ORGANIZATION_ID)
+        .syncRequestId(UUID.randomUUID().toString())
+        .executionRequestId(UUID.randomUUID().toString())
+        .accessToken("test")
+        .organizationCode("020")
+        .organizationHost("http://localhost:" + port)
+        .syncStartedAt(LocalDateTime.now(DateUtil.UTC_ZONE_ID))
+        .consentId("consentId")
+        .build();
+  }
 
   private void setupMockServer(int searchTimestamp, HttpStatus httpStatus, String fileInClassPath) {
     wiremock.stubFor(get(urlMatching("/accounts.*"))
