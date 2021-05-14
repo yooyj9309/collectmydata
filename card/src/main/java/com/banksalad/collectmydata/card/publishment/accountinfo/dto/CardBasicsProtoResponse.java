@@ -32,8 +32,8 @@ public class CardBasicsProtoResponse {
             .setCardBrand(cardBasicPublishment.getCardBrand())
             .setAnnualFee3F(NumberUtil.multiply1000(cardBasicPublishment.getAnnualFee()))
             .setIssueDate(cardBasicPublishment.getIssueDate())
-            .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(cardBasicPublishment.getCreatedAt()))
-            .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(cardBasicPublishment.getUpdatedAt()))
+            .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(cardBasicPublishment.getCreatedAt()))
+            .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(cardBasicPublishment.getUpdatedAt()))
             .build())
         .collect(Collectors.toList());
 

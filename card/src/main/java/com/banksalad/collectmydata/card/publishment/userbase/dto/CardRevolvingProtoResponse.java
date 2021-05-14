@@ -32,8 +32,8 @@ public class CardRevolvingProtoResponse {
         .setMinPayAmt3F(toInt64ValueMultiply1000(revolvingPublishment.getMinPayAmt()).getValue())
         .setAgreedPayRate3F(toInt64ValueMultiply1000(revolvingPublishment.getAgreedPayRate()).getValue())
         .setRemainedAmt3F(toInt64ValueMultiply1000(revolvingPublishment.getRemainedAmt()).getValue())
-        .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(revolvingPublishment.getCreatedAt()))
-        .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(revolvingPublishment.getUpdatedAt())).build())
+        .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(revolvingPublishment.getCreatedAt()))
+        .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(revolvingPublishment.getUpdatedAt())).build())
         .collect(Collectors.toList());
 
     return ListCardRevolvingsResponse.newBuilder()

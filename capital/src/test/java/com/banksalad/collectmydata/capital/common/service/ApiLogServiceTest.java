@@ -112,8 +112,8 @@ public class ApiLogServiceTest {
             .responseCode("200")
             .responseBody("{\"rsp_code\":\"00000\",\"rsp_msg\":\"성공\",\"field\":\"test\"}")
             .transformedResponseBody("{\"rsp_code\":\"00000\",\"rsp_msg\":\"성공\",\"field\":\"test\"}")
-            .elapsedTime(DateUtil.kstLocalDateTimeToEpochMilliSecond(entities.get(0).getResponseDtime()) - DateUtil
-                .kstLocalDateTimeToEpochMilliSecond(entities.get(0).getRequestDtime()))
+            .elapsedTime(DateUtil.utcLocalDateTimeToEpochMilliSecond(entities.get(0).getResponseDtime()) - DateUtil
+                .utcLocalDateTimeToEpochMilliSecond(entities.get(0).getRequestDtime()))
             .build());
   }
 }

@@ -91,8 +91,8 @@ public class ApiLogServiceImpl implements ApiLogService {
     apiLogEntity.setUpdatedBy(String.valueOf(banksaladUserId));
 
     if (apiLogEntity.getRequestDtime() != null) {
-      long elapsedTime = DateUtil.kstLocalDateTimeToEpochMilliSecond(apiLogEntity.getResponseDtime()) - DateUtil
-          .kstLocalDateTimeToEpochMilliSecond(apiLogEntity.getRequestDtime());
+      long elapsedTime = DateUtil.utcLocalDateTimeToEpochMilliSecond(apiLogEntity.getResponseDtime()) - DateUtil
+          .utcLocalDateTimeToEpochMilliSecond(apiLogEntity.getRequestDtime());
       apiLogEntity.setElapsedTime(elapsedTime);
     }
 

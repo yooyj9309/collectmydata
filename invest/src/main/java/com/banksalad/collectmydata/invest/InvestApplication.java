@@ -16,6 +16,7 @@ import com.banksalad.collectmydata.irp.context.annotation.EnableIrp;
 public class InvestApplication {
 
   public static void main(String[] args) {
+    System.setProperty("user.timezone", "UTC");
     SpringApplication.run(InvestApplication.class, args);
   }
 

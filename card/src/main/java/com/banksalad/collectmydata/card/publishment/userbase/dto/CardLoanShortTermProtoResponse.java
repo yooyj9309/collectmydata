@@ -31,8 +31,8 @@ public class CardLoanShortTermProtoResponse {
             .setLoanAmt3F(toInt64ValueMultiply1000(loanShortTermPublishment.getLoanAmt()).getValue())
             .setPayDueDate(loanShortTermPublishment.getPayDueDate())
             .setIntRate3F(toInt64ValueMultiply1000(loanShortTermPublishment.getIntRate()).getValue())
-            .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(loanShortTermPublishment.getCreatedAt()))
-            .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(loanShortTermPublishment.getUpdatedAt()))
+            .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(loanShortTermPublishment.getCreatedAt()))
+            .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(loanShortTermPublishment.getUpdatedAt()))
             .build()).collect(Collectors.toList());
 
     return ListCardLoanShortTermsResponse.newBuilder()

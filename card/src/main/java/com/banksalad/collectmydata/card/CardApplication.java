@@ -14,7 +14,7 @@ import com.banksalad.collectmydata.finance.context.annotation.EnableFinance;
 public class CardApplication {
 
   public static void main(String[] args) {
+    System.setProperty("user.timezone", "UTC");
     SpringApplication.run(CardApplication.class, args);
   }
-
 }

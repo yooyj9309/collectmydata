@@ -28,8 +28,8 @@ public class CardSummariesProtoResponse {
             .setIsConsent(cardSummaryPublishment.isConsent())
             .setCardName(cardSummaryPublishment.getCardName())
             .setCardMember(cardSummaryPublishment.getCardMember())
-            .setCreatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(cardSummaryPublishment.getCreatedAt()))
-            .setUpdatedAtMs(DateUtil.kstLocalDateTimeToEpochMilliSecond(cardSummaryPublishment.getUpdatedAt()))
+            .setCreatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(cardSummaryPublishment.getCreatedAt()))
+            .setUpdatedAtMs(DateUtil.utcLocalDateTimeToEpochMilliSecond(cardSummaryPublishment.getUpdatedAt()))
             .build())
         .collect(Collectors.toList());
 
