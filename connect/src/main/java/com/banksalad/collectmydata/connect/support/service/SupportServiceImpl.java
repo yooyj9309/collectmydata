@@ -18,6 +18,7 @@ import com.banksalad.collectmydata.connect.collect.Executions;
 import com.banksalad.collectmydata.connect.common.db.entity.ApiSyncStatusEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.BanksaladClientSecretEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.OrganizationEntity;
+import com.banksalad.collectmydata.connect.common.db.entity.OrganizationHistoryEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.OrganizationOauthTokenEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.ServiceClientIpEntity;
 import com.banksalad.collectmydata.connect.common.db.entity.ServiceEntity;
@@ -110,7 +111,8 @@ public class SupportServiceImpl implements SupportService {
       entity.setSyncedAt(now);
 
       organizationRepository.save(entity);
-      organizationHistoryRepository.save(organizationHistoryMapper.toHistoryEntity(entity));
+      organizationHistoryRepository
+          .save(organizationHistoryMapper.toHistoryEntity(entity, OrganizationHistoryEntity.builder().build()));
     }
 
     apiSyncStatusRepository.save(

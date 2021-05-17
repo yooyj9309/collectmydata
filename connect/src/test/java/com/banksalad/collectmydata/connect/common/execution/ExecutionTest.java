@@ -86,8 +86,8 @@ public class ExecutionTest {
     GetOauthTokenResponse response = executionResponse.getResponse();
 
     // then
-    assertThat(response).usingRecursiveComparison().isEqualTo(
-        GetOauthTokenResponse.builder()
+    assertThat(response).usingRecursiveComparison().ignoringFields("errorResponse")
+        .isEqualTo(GetOauthTokenResponse.builder()
             .tokenType(TOKEN_TYPE)
             .accessToken(ACCESS_TOKEN)
             .expiresIn(ACCESS_TOKEN_EXPIRES_IN)
@@ -117,8 +117,8 @@ public class ExecutionTest {
     GetOauthTokenResponse response = executionResponse.getResponse();
 
     // then
-    assertThat(response).usingRecursiveComparison().isEqualTo(
-        GetOauthTokenResponse.builder()
+    assertThat(response).usingRecursiveComparison().ignoringFields("errorResponse")
+        .isEqualTo(GetOauthTokenResponse.builder()
             .tokenType(TOKEN_TYPE)
             .accessToken(ACCESS_TOKEN)
             .expiresIn(ACCESS_TOKEN_EXPIRES_IN)
@@ -149,9 +149,8 @@ public class ExecutionTest {
     GetOauthTokenResponse response = executionResponse.getResponse();
 
     // then
-    assertThat(response).usingRecursiveComparison().isEqualTo(
-        GetOauthTokenResponse.builder()
-        .build());
+    assertThat(response).usingRecursiveComparison().ignoringFields("errorResponse")
+        .isEqualTo(GetOauthTokenResponse.builder().build());
   }
 
   private ExecutionContext getExecutionContext() {
